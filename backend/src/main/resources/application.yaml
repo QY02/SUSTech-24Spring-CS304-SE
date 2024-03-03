@@ -1,0 +1,47 @@
+server:
+  port: 25568
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://47.107.113.54:3306/events_center
+    username: root
+    password: me#u6236kuGfsv
+  data:
+    redis:
+      host: 47.107.113.54
+      port: 6379
+      password: me#u6236kuGfsv
+      database: 0
+#  mail:
+#    protocol: smtp
+#    host: smtp.163.com
+#    username:
+#    password:
+#    port: 25
+#    default-encoding: utf-8
+#    properties:
+#      mail:
+#        debug: false
+#        smtp:
+#          auth: true
+#          ssl:
+#            trust: smtp.163.com
+#          starttls:
+#            enable: true
+#            required: true
+#          socketFactory:
+#            port: 465
+#            class: javax.net.ssl.SSLSocketFactory
+  servlet:
+    multipart:
+      max-file-size: 2048MB
+      max-request-size: 2048MB
+
+
+logging:
+  file:
+    name: ./logs/EventsCenter.log
+    path: ./logs
+  level:
+    root: INFO
