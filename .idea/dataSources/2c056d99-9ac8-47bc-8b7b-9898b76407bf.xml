@@ -962,7 +962,7 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
       <CollationName>utf8mb4_0900_ai_ci</CollationName>
     </schema>
     <schema id="289" parent="1" name="events_center">
-      <LastIntrospectionLocalTimestamp>2024-03-03.14:22:38</LastIntrospectionLocalTimestamp>
+      <LastIntrospectionLocalTimestamp>2024-03-04.06:26:09</LastIntrospectionLocalTimestamp>
       <CollationName>utf8mb4_0900_ai_ci</CollationName>
     </schema>
     <schema id="290" parent="1" name="information_schema">
@@ -1004,5 +1004,469 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
     <user id="300" parent="1" name="root">
       <Plugin>caching_sha2_password</Plugin>
     </user>
+    <table id="301" parent="289" name="attachment">
+      <Engine>InnoDB</Engine>
+      <CollationName>utf8mb4_0900_ai_ci</CollationName>
+    </table>
+    <table id="302" parent="289" name="comment">
+      <Engine>InnoDB</Engine>
+      <CollationName>utf8mb4_0900_ai_ci</CollationName>
+    </table>
+    <table id="303" parent="289" name="event">
+      <Engine>InnoDB</Engine>
+      <CollationName>utf8mb4_0900_ai_ci</CollationName>
+    </table>
+    <table id="304" parent="289" name="favorite">
+      <Engine>InnoDB</Engine>
+      <CollationName>utf8mb4_0900_ai_ci</CollationName>
+    </table>
+    <table id="305" parent="289" name="history">
+      <Engine>InnoDB</Engine>
+      <CollationName>utf8mb4_0900_ai_ci</CollationName>
+    </table>
+    <table id="306" parent="289" name="order_record">
+      <Engine>InnoDB</Engine>
+      <CollationName>utf8mb4_0900_ai_ci</CollationName>
+    </table>
+    <table id="307" parent="289" name="post_attachment_relation">
+      <Engine>InnoDB</Engine>
+      <CollationName>utf8mb4_0900_ai_ci</CollationName>
+    </table>
+    <table id="308" parent="289" name="reply">
+      <Engine>InnoDB</Engine>
+      <CollationName>utf8mb4_0900_ai_ci</CollationName>
+    </table>
+    <table id="309" parent="289" name="seat">
+      <Engine>InnoDB</Engine>
+      <CollationName>utf8mb4_0900_ai_ci</CollationName>
+    </table>
+    <table id="310" parent="289" name="seat_map">
+      <Engine>InnoDB</Engine>
+      <CollationName>utf8mb4_0900_ai_ci</CollationName>
+    </table>
+    <table id="311" parent="289" name="user">
+      <Engine>InnoDB</Engine>
+      <CollationName>utf8mb4_0900_ai_ci</CollationName>
+    </table>
+    <column id="312" parent="301" name="id">
+      <AutoIncrement>1</AutoIncrement>
+      <DasType>int|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+    </column>
+    <column id="313" parent="301" name="file_name">
+      <DasType>varchar(1024)|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+    </column>
+    <index id="314" parent="301" name="PRIMARY">
+      <ColNames>id</ColNames>
+      <Type>btree</Type>
+      <Unique>1</Unique>
+    </index>
+    <key id="315" parent="301" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <Primary>1</Primary>
+      <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
+    </key>
+    <column id="316" parent="302" name="id">
+      <AutoIncrement>1</AutoIncrement>
+      <DasType>int|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+    </column>
+    <column id="317" parent="302" name="event_id">
+      <DasType>int|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+    </column>
+    <column id="318" parent="302" name="publisher_id">
+      <DasType>varchar(8)|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+    </column>
+    <column id="319" parent="302" name="publish_date">
+      <DasType>datetime|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>4</Position>
+    </column>
+    <column id="320" parent="302" name="content">
+      <DasType>varchar(10240)|0s</DasType>
+      <Position>5</Position>
+    </column>
+    <column id="321" parent="302" name="up_vote">
+      <DasType>int|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>6</Position>
+    </column>
+    <column id="322" parent="302" name="down_vote">
+      <DasType>int|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>7</Position>
+    </column>
+    <index id="323" parent="302" name="PRIMARY">
+      <ColNames>id</ColNames>
+      <Type>btree</Type>
+      <Unique>1</Unique>
+    </index>
+    <key id="324" parent="302" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <Primary>1</Primary>
+      <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
+    </key>
+    <column id="325" parent="303" name="id">
+      <AutoIncrement>1</AutoIncrement>
+      <DasType>int|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+    </column>
+    <column id="326" parent="303" name="publisher_id">
+      <DasType>varchar(8)|0s</DasType>
+      <Position>2</Position>
+    </column>
+    <column id="327" parent="303" name="name">
+      <DasType>varchar(1024)|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+    </column>
+    <column id="328" parent="303" name="content">
+      <DasType>varchar(10240)|0s</DasType>
+      <Position>4</Position>
+    </column>
+    <column id="329" parent="303" name="type">
+      <DasType>int|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>5</Position>
+    </column>
+    <column id="330" parent="303" name="registration_required">
+      <DasType>tinyint(1)|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>6</Position>
+    </column>
+    <column id="331" parent="303" name="registration_start_time">
+      <DasType>datetime|0s</DasType>
+      <Position>7</Position>
+    </column>
+    <column id="332" parent="303" name="registration_end_time">
+      <DasType>datetime|0s</DasType>
+      <Position>8</Position>
+    </column>
+    <column id="333" parent="303" name="start_time">
+      <DasType>datetime|0s</DasType>
+      <Position>9</Position>
+    </column>
+    <column id="334" parent="303" name="end_time">
+      <DasType>datetime|0s</DasType>
+      <Position>10</Position>
+    </column>
+    <column id="335" parent="303" name="min_size">
+      <DasType>int|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>11</Position>
+    </column>
+    <column id="336" parent="303" name="max_size">
+      <DasType>int|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>12</Position>
+    </column>
+    <column id="337" parent="303" name="seat_map_id">
+      <DasType>int|0s</DasType>
+      <Position>13</Position>
+    </column>
+    <column id="338" parent="303" name="venue">
+      <DasType>varchar(1024)|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>14</Position>
+    </column>
+    <column id="339" parent="303" name="location">
+      <DasType>varchar(1024)|0s</DasType>
+      <Position>15</Position>
+    </column>
+    <column id="340" parent="303" name="status">
+      <DasType>int|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>16</Position>
+    </column>
+    <column id="341" parent="303" name="visible">
+      <DasType>tinyint(1)|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>17</Position>
+    </column>
+    <index id="342" parent="303" name="PRIMARY">
+      <ColNames>id</ColNames>
+      <Type>btree</Type>
+      <Unique>1</Unique>
+    </index>
+    <key id="343" parent="303" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <Primary>1</Primary>
+      <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
+    </key>
+    <column id="344" parent="304" name="user_id">
+      <DasType>varchar(8)|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+    </column>
+    <column id="345" parent="304" name="event_id">
+      <DasType>int|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+    </column>
+    <index id="346" parent="304" name="user_id">
+      <ColNames>user_id
+event_id</ColNames>
+      <Type>btree</Type>
+      <Unique>1</Unique>
+    </index>
+    <key id="347" parent="304" name="user_id">
+      <UnderlyingIndexName>user_id</UnderlyingIndexName>
+    </key>
+    <column id="348" parent="305" name="user_id">
+      <DasType>varchar(8)|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+    </column>
+    <column id="349" parent="305" name="event_id">
+      <DasType>int|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+    </column>
+    <column id="350" parent="305" name="visit_time">
+      <DasType>datetime|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+    </column>
+    <column id="351" parent="306" name="id">
+      <AutoIncrement>100001</AutoIncrement>
+      <DasType>int|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+    </column>
+    <column id="352" parent="306" name="user_id">
+      <DasType>varchar(8)|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+    </column>
+    <column id="353" parent="306" name="event_id">
+      <DasType>int|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+    </column>
+    <column id="354" parent="306" name="seat_id">
+      <DasType>varchar(10)|0s</DasType>
+      <Position>4</Position>
+    </column>
+    <column id="355" parent="306" name="status">
+      <DasType>int|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>5</Position>
+    </column>
+    <column id="356" parent="306" name="price">
+      <DasType>int|0s</DasType>
+      <Position>6</Position>
+    </column>
+    <column id="357" parent="306" name="submit_time">
+      <DasType>datetime|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>7</Position>
+    </column>
+    <column id="358" parent="306" name="payment_time">
+      <DasType>datetime|0s</DasType>
+      <Position>8</Position>
+    </column>
+    <index id="359" parent="306" name="PRIMARY">
+      <ColNames>id</ColNames>
+      <Type>btree</Type>
+      <Unique>1</Unique>
+    </index>
+    <key id="360" parent="306" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <Primary>1</Primary>
+      <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
+    </key>
+    <column id="361" parent="307" name="post_type">
+      <DasType>int|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+    </column>
+    <column id="362" parent="307" name="post_id">
+      <DasType>int|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+    </column>
+    <column id="363" parent="307" name="attachment_id">
+      <DasType>int|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+    </column>
+    <column id="364" parent="307" name="attachment_title">
+      <DasType>varchar(1024)|0s</DasType>
+      <Position>4</Position>
+    </column>
+    <column id="365" parent="307" name="attachment_type">
+      <DasType>int|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>5</Position>
+    </column>
+    <index id="366" parent="307" name="post_type">
+      <ColNames>post_type
+post_id</ColNames>
+      <Type>btree</Type>
+    </index>
+    <column id="367" parent="308" name="id">
+      <AutoIncrement>1</AutoIncrement>
+      <DasType>int|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+    </column>
+    <column id="368" parent="308" name="comment_id">
+      <DasType>int|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+    </column>
+    <column id="369" parent="308" name="publisher_id">
+      <DasType>varchar(8)|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+    </column>
+    <column id="370" parent="308" name="publish_date">
+      <DasType>datetime|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>4</Position>
+    </column>
+    <column id="371" parent="308" name="content">
+      <DasType>varchar(10240)|0s</DasType>
+      <Position>5</Position>
+    </column>
+    <column id="372" parent="308" name="up_vote">
+      <DasType>int|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>6</Position>
+    </column>
+    <column id="373" parent="308" name="down_vote">
+      <DasType>int|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>7</Position>
+    </column>
+    <index id="374" parent="308" name="PRIMARY">
+      <ColNames>id</ColNames>
+      <Type>btree</Type>
+      <Unique>1</Unique>
+    </index>
+    <key id="375" parent="308" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <Primary>1</Primary>
+      <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
+    </key>
+    <column id="376" parent="309" name="seat_map_id">
+      <DasType>int|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+    </column>
+    <column id="377" parent="309" name="seat_id">
+      <DasType>varchar(10)|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+    </column>
+    <column id="378" parent="309" name="type">
+      <DasType>varchar(10)|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+    </column>
+    <column id="379" parent="309" name="availability">
+      <DasType>tinyint(1)|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>4</Position>
+    </column>
+    <column id="380" parent="309" name="price">
+      <DasType>int|0s</DasType>
+      <Position>5</Position>
+    </column>
+    <index id="381" parent="309" name="seat_map_id">
+      <ColNames>seat_map_id
+seat_id</ColNames>
+      <Type>btree</Type>
+      <Unique>1</Unique>
+    </index>
+    <key id="382" parent="309" name="seat_map_id">
+      <UnderlyingIndexName>seat_map_id</UnderlyingIndexName>
+    </key>
+    <column id="383" parent="310" name="id">
+      <AutoIncrement>1</AutoIncrement>
+      <DasType>int|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+    </column>
+    <column id="384" parent="310" name="type">
+      <DasType>int|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+    </column>
+    <column id="385" parent="310" name="description">
+      <DasType>varchar(1024)|0s</DasType>
+      <Position>3</Position>
+    </column>
+    <column id="386" parent="310" name="data">
+      <DasType>varchar(5120)|0s</DasType>
+      <Position>4</Position>
+    </column>
+    <index id="387" parent="310" name="PRIMARY">
+      <ColNames>id</ColNames>
+      <Type>btree</Type>
+      <Unique>1</Unique>
+    </index>
+    <key id="388" parent="310" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <Primary>1</Primary>
+      <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
+    </key>
+    <column id="389" parent="311" name="id">
+      <DasType>varchar(8)|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+    </column>
+    <column id="390" parent="311" name="name">
+      <DasType>varchar(50)|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+    </column>
+    <column id="391" parent="311" name="type">
+      <DasType>int|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+    </column>
+    <column id="392" parent="311" name="password">
+      <DasType>varchar(50)|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>4</Position>
+    </column>
+    <column id="393" parent="311" name="email">
+      <DasType>varchar(50)|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>5</Position>
+    </column>
+    <column id="394" parent="311" name="phone_number">
+      <DasType>varchar(20)|0s</DasType>
+      <Position>6</Position>
+    </column>
+    <column id="395" parent="311" name="department">
+      <DasType>varchar(50)|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>7</Position>
+    </column>
+    <column id="396" parent="311" name="icon_id">
+      <DasType>int|0s</DasType>
+      <Position>8</Position>
+    </column>
+    <index id="397" parent="311" name="PRIMARY">
+      <ColNames>id</ColNames>
+      <Type>btree</Type>
+      <Unique>1</Unique>
+    </index>
+    <key id="398" parent="311" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <Primary>1</Primary>
+      <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
+    </key>
   </database-model>
 </dataSource>
