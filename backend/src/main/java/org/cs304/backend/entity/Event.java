@@ -19,33 +19,11 @@ public class Event {
 
     private String publisherId;
 
+    private LocalDateTime publishDate;
+
     private String name;
 
     private String content;
 
     private Integer type;
-
-    private Boolean registrationRequired;
-
-    private LocalDateTime registrationStartTime;
-
-    private LocalDateTime registrationEndTime;
-
-    private LocalDateTime startTime;
-
-    private LocalDateTime endTime;
-
-    private Integer minSize;
-
-    private Integer maxSize;
-
-    private Integer seatMapId;
-
-    private String venue;
-
-    private String location;
-
-    private Integer status;
-
-    private Boolean visible;
 }

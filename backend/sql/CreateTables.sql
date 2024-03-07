@@ -25,6 +25,7 @@ create table if not exists event
 (
     id           int primary key auto_increment,
     publisher_id varchar(8),
+    publish_date datetime not null,
     name         varchar(1024) not null,
     content      varchar(10240),
     type         int           not null
