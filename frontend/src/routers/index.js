@@ -10,12 +10,12 @@ const routes = [
         // 此处的‘@’表示src目录
         name: 'login',
         path: '/login',
-        component: () => import('@/components/login/loginIn.vue')
+        component: () => import('@/components/ApplyForCheck.vue')
     },
     //userLayout
     {
         path: '/layout',
-        component: () => import('@/components/layouts/LayOutOfCourse.vue'), // 导入公告组件
+        // component: () => import('@/components/layouts/LayOutOfCourse.vue'), // 导入公告组件
         children: [
             {//默认路径
                 path: '',
@@ -24,7 +24,7 @@ const routes = [
             {//进入的路径
                 path: '/courseHome', // 使用动态路由参数来传递课程ID
                 // name: '/CourseDetail',
-                component: () => import('@/components/courseHome/courseMain.vue'), // 课程详情组件的路径
+                // component: () => import('@/components/courseHome/courseMain.vue'), // 课程详情组件的路径
             },
         ],
     },
@@ -32,7 +32,7 @@ const routes = [
     // teacher-layout-course
     {
         path: '/layoutEventTeacher',
-        component: () => import('@/components/layouts/LayOutOfEventTeacher.vue'),
+        // component: () => import('@/components/layouts/LayOutOfEventTeacher.vue'),
         children: [
             {//默认路径
                 path: '',
