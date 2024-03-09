@@ -17,6 +17,8 @@ public class User {
 
     private Integer type;
 
+    private Boolean twoFactorAuthentication;
+
     private String password;
 
     private String email;
