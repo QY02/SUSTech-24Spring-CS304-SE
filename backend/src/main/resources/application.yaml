@@ -13,30 +13,36 @@ spring:
       port: 6379
       password: me#u6236kuGfsv
       database: 0
-#  mail:
-#    protocol: smtp
-#    host: smtp.163.com
-#    username:
-#    password:
-#    port: 25
-#    default-encoding: utf-8
-#    properties:
-#      mail:
-#        debug: false
-#        smtp:
-#          auth: true
-#          ssl:
-#            trust: smtp.163.com
-#          starttls:
-#            enable: true
-#            required: true
-#          socketFactory:
-#            port: 465
-#            class: javax.net.ssl.SSLSocketFactory
+  mail:
+    protocol: smtp
+    host: smtp.163.com
+    username: projecthelper@163.com
+    password: XJMWVPFMWJCNKZKZ
+    port: 25
+    default-encoding: utf-8
+    properties:
+      mail:
+        debug: false
+        smtp:
+          auth: true
+          ssl:
+            trust: smtp.163.com
+          starttls:
+            enable: true
+            required: true
+          socketFactory:
+            port: 465
+            class: javax.net.ssl.SSLSocketFactory
   servlet:
     multipart:
       max-file-size: 2048MB
       max-request-size: 2048MB
+#  rabbitmq:
+#    host: 127.0.0.1
+#    port: 5672
+#    username: user
+#    password: 123456
+#    virtual-host: test
 
 
 logging:

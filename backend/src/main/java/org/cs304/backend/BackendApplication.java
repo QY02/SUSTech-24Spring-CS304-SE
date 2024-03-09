@@ -13,6 +13,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 public class BackendApplication {
 
     public static void main(String[] args) {
+//        System.setProperty("spring.amqp.deserialization.trust.all", "true");
         SpringApplication springApplication = new SpringApplication(BackendApplication.class);
         springApplication.addListeners(new ApplicationPidFileWriter("app.pid"));
         ConfigurableApplicationContext configurableApplicationContext = springApplication.run(args);
