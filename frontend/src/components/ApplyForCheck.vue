@@ -6,7 +6,7 @@
       v-model:visible="visibleBody"
       attach="body"
       header="请填写活动信息"
-      destroy-on-close
+      destroy-on-close="true"
       width="50%"
       :cancel-btn="null"
       :confirm-btn="null"
@@ -42,15 +42,15 @@
             <t-switch v-model="formData.registration_required" :label="['是', '否']"></t-switch>
           </t-form-item>
           <t-form-item label="报名开始时间-报名结束时间" name="register_time">
-            <t-date-range-picker enable-time-picker allow-input clearable @pick="onPick" @change="onChange"
+            <t-date-range-picker enable-time-picker allow-input clearable v-model="formData.register_time" @pick="onPick" @change="onChange"
                                  :disabled="!formData.registration_required"/>
           </t-form-item>
           <t-form-item label="开始时间-结束时间" name="time">
-            <t-date-range-picker enable-time-picker allow-input clearable @pick="onPick" @change="onChange"/>
+            <t-date-range-picker enable-time-picker allow-input clearable v-model="formData.time" @pick="onPick" @change="onChange"/>
           </t-form-item>
 
-          <t-form-item label="人数" name="count">
-            <t-range-input v-model="formData.count" :placeholder="['最小值','最大值']"/>
+          <t-form-item label="人数" name="countOfPeople">
+            <t-range-input v-model="formData.countOfPeople" :placeholder="['最小值','最大值']"/>
           </t-form-item>
           <t-form-item label="地址" name="venue">
             <t-input v-model="formData.venue">地址</t-input>
@@ -81,15 +81,19 @@
   </t-dialog>
 </template>
 <script setup>
-import {ref, reactive} from 'vue';
+import {ref, reactive, inject} from 'vue';
 import {MessagePlugin} from 'tdesign-vue-next';
+import axios from "axios";
+
+const apiUrl = inject('$API_URL');
+
 
 const FORM_RULES = {
   name: [{required: true, message: '标题必填'}],
   profile: [{required: true, message: '简介必填'}],
   type: [{required: true, message: '类型必填'}],
   time: [{required: true, message: '活动时间必填'}],
-  count: [{required: true, message: '人数必填'}],
+  countOfPeople: [{required: true, message: '人数必填'}],
   venue: [{required: true, message: '地址必填'}],
 };
 
@@ -110,7 +114,7 @@ const formData = reactive({
   name: '',
   profile: '',
   type: '',
-  count:undefined,
+  countOfPeople:undefined,
   registration_required: false,
   register_time: '',
   time: '',
@@ -126,6 +130,12 @@ const onReset = () => {
 
 const onSubmit = ({validateResult, firstError}) => {
   if (validateResult === true) {
+    // console.log(formData)
+    axios.get(`${apiUrl}/bug/single`).then(
+        response => {
+          console.log(response)
+        }
+    ).catch(error => alert(error))
     MessagePlugin.success('提交成功');
   } else {
     console.log('Errors: ', validateResult);
