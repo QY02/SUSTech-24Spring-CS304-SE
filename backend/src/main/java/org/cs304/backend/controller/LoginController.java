@@ -49,6 +49,7 @@ public class LoginController {
                 return Result.error(response, "400", "Invalid Input");
             }
             user = userService.login(user);
+            user.setPassword(null);
         } catch (Exception e) {
             log.error(e.getMessage());
             return Result.error(response, "401", "Invalid username or password");
@@ -151,6 +152,7 @@ public class LoginController {
             return Result.error(response, "401", "Verification error, please try again");
         }
         User user = userService.loginWithEmail(emailVerify);
+        user.setPassword(null);
         return Result.success(response, user);
     }
 
