@@ -97,6 +97,7 @@ const FORM_RULES = {
   venue: [{required: true, message: '地址必填'}],
 };
 
+
 const onPick = (value, context) => console.log('onPick:', value, context);
 const onChange = (value, context) => {
   console.log('onChange:', value, context);
