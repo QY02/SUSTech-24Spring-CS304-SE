@@ -6,9 +6,9 @@ const routes = [
         component: () => import('@/layouts/MainLayout.vue'),
         children: [
             {
-                name: 'Home',
+                name: 'OuterHome',
                 path: '/',
-                component: () => import('@/components/HelloWorld.vue')
+                component: () => import('@/components/OuterHome.vue')
             },
             {
                 // 此处的‘@’表示src目录
