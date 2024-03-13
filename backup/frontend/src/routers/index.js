@@ -3,20 +3,14 @@ import {createRouter, createWebHistory} from 'vue-router';
 const routes = [
     {
         path: '/',
-        component: () => import('@/layouts/MainLayout.vue'),
-        children: [
-            {
-                name: 'Home',
-                path: '/',
-                component: () => import('@/components/HelloWorld.vue')
-            },
-            {
-                // 此处的‘@’表示src目录
-                name: 'login',
-                path: '/login',
-                component: () => import('@/components/ApplyForCheck.vue')
-            },
-        ]
+        // redirect: '/assignments', // 默认跳转到公告页 test
+        redirect: '/login', // 默认跳转到公告页 test
+    },
+    {
+        // 此处的‘@’表示src目录
+        name: 'login',
+        path: '/login',
+        component: () => import('@/components/ApplyForCheck.vue')
     },
     //userLayout
     {
