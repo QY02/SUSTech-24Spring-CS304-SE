@@ -14,15 +14,20 @@ const routes = [
                 // 此处的‘@’表示src目录
                 name: 'login',
                 path: '/login',
-                // component: () => import('@/components/ApplyForCheck.vue')
-                component: () => import('@/components/login/loginIn.vue')
+                component: () => import('@/components/Event/ApplyForEvent.vue')
+                // component: () => import('@/components/login/loginIn.vue')
             },
             {
                 path: '/register',
                 component: () => import('@/components/login/registerForm.vue')
-            }
+            },
+            {
+                path: '/apply',
+                component: () => import('@/components/Event/ApplyForEvent.vue')
+            },
         ]
     },
+
     //userLayout
     {
         path: '/layout',
