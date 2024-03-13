@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import {provide} from 'vue';
+import { provide } from 'vue';
 
 export default {
   name: 'App',
@@ -15,3 +15,5 @@ export default {
   }
 }
 </script>
+
+
