@@ -88,13 +88,5 @@ const handleNav = (value: string) => {
 </script>
 
 <style scoped>
-.content-layout{
-overflow: auto;
-width: 100%;
-  background-color: antiquewhite;
-display: flex;
-align-items: center;
-//justify-content: center
 
-}
 </style>
