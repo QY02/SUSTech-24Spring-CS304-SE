@@ -55,8 +55,8 @@ import {
             </template>
           </t-head-menu>
         </t-header>
-        <t-content>
-          <t-layout class="content-layout">
+        <t-content >
+          <t-layout class="content-layout" >
             <t-content>
               <router-view></router-view>
             </t-content>
@@ -88,5 +88,13 @@ const handleNav = (value: string) => {
 </script>
 
 <style scoped>
+.content-layout{
+overflow: auto;
+width: 100%;
+  background-color: antiquewhite;
+display: flex;
+align-items: center;
+//justify-content: center
 
+}
 </style>

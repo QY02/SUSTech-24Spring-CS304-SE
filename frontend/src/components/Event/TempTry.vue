@@ -1,5 +1,71 @@
 <template>
   <div class="t-table-demo__editable-row" style="width: 100%">
+    <div style="display: flex;justify-content: space-between;margin: 10px;align-items: center">
+      <va-button
+          @click="()=>visibleBody=true"
+          icon="add"
+          style="width: fit-content;height: fit-content"
+      >
+        Add New project
+      </va-button>
+      <va-input
+          v-model.number="perPage"
+          type="number"
+          placeholder="Items..."
+          label="Items per page"
+      />
+      <va-input
+          v-model.number="currentPage"
+          type="number"
+          placeholder="Page..."
+          label="Current page"
+      />
+      <va-input
+          v-model="filter"
+          class="sm:col-span-2 md:col-span-3"
+          placeholder="Filter..."
+      />
+
+    </div>
+    <va-data-table
+        class="table-crud"
+        :items="data"
+        :columns="columns"
+        :per-page="perPage"
+        :current-page="currentPage"
+        striped
+        selectable
+        v-model="selectedList"
+        :filter="filter"
+        @filtered="filtered = $event.items"
+    >
+      <template #cell(introduction)="{ value }">
+        <div style="white-space: pre-wrap; word-break: break-all;"> {{ value }}</div>
+      </template>
+      <template #cell(actions)="{ rowIndex }">
+        <va-button
+            preset="plain"
+            icon="edit"
+        />
+        <va-button
+            preset="plain"
+            icon="delete"
+            class="ml-3"
+        />
+      </template>
+
+      <template #bodyAppend>
+        <tr>
+          <td colspan="8">
+            <div style="display: flex;
+                             justify-content: center;
+                              margin-top: 7px;width: 100%;">
+              <va-pagination v-model="currentPage" :pages="pages"/>
+            </div>
+          </td>
+        </tr>
+      </template>
+    </va-data-table>
     <div>
       <t-button @click="()=>visibleBody=true">
         <template #icon>
@@ -9,24 +75,9 @@
       </t-button>
     </div>
     <br/>
-    <t-table
-        ref="tableRef"
-        row-key="key"
-        :columns="columns"
-        :rules="FORM_RULES"
-        :data="data"
-        stripe="true"
-        :editable-row-keys="editableRowKeys"
-        bordered="true"
-        :pagination="pagination"
-        lazy-load="true"
-        @row-edit="onRowEdit"
-        @row-validate="onRowValidate"
-        @validate="onValidate"
-    />
   </div>
     <t-dialog
-        v-model:visible="visibleBody"
+        :visible="visibleBody"
         attach="body"
         header="请填写场次信息"
         destroy-on-close="true"
@@ -92,7 +143,14 @@ import {DateRangePicker, Input, MessagePlugin, RangeInput, Switch} from 'tdesign
 import {AddIcon} from "tdesign-icons-vue-next";
 import React from 'react';
 
-
+const selectedList = ref([]);
+const filter = ref("");
+const filtered = ref("");
+const pages = computed(() => {
+  return perPage.value && perPage.value !== 0
+      ? Math.ceil(filtered.value.length / perPage.value)
+      : filtered.value.length;
+});
 let cnt = 1;
 const initData = new Array(7).fill(null).map(() => ({
   key: String(cnt++),
@@ -125,11 +183,6 @@ const currentSaveId = ref('');
 // 保存变化过的行信息
 const editMap = {};
 const visibleBody = ref(false);
-const pagination = computed(() => ({
-  defaultCurrent: 1,
-  defaultPageSize: 5,
-  total: data.value.length
-}));
 
 const onEdit = (e) => {
   const {id} = e.currentTarget.dataset;
@@ -175,9 +228,6 @@ const onSave = (e) => {
 };
 
 // 行校验反馈事件，tableRef.value.validateRowData 执行结束后触发
-const onRowValidate = (params) => {
-  console.log('Event Table Row Validate:', params);
-};
 
 const onDelete = (e) => {
   const {id} = e.currentTarget.dataset;
@@ -215,20 +265,9 @@ const addData = ({validateResult, firstError}) => {
   }
 }
 
-function onValidate(params) {
-  console.log('Event Table Data Validate:', params);
-}
 
-const onRowEdit = (params) => {
-  const {row, col, value} = params;
-  const oldRowData = editMap[row.key]?.editedRow || row;
-  const editedRow = {...oldRowData, [col.colKey]: value};
-  editMap[row.key] = {
-    ...params,
-    editedRow,
-  };
-};
-
+const perPage = ref(10);
+const currentPage = ref(1);
 
 const columns = computed(() => [
   {
@@ -416,17 +455,9 @@ const onReset = () => {
 </script>
 
 <style lang="css">
-.t-table-demo__editable-row .table-operations > .t-link {
-  margin-right: 8px;
-}
-
-.t-table-demo__editable-row .t-demo-col__datepicker .t-date-picker {
-  width: 120px;
-}
-
 .operations {
   display: flex;
-  //justify-content: space-around;
+  justify-content: space-around;
   gap: 10px;
 }
 </style>
