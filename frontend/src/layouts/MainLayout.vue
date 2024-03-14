@@ -1,13 +1,3 @@
-<script setup lang="ts">
-import {
-  NotificationIcon,
-  UserCircleIcon,
-  SettingIcon,
-  HomeIcon,
-  ViewListIcon
-} from 'tdesign-icons-vue-next';
-</script>
-
 <template>
   <div>
     <t-layout>
@@ -67,12 +57,45 @@ import {
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import {
+  NotificationIcon,
+  UserCircleIcon,
+  SettingIcon,
+  HomeIcon,
+  ViewListIcon
+} from 'tdesign-icons-vue-next';
 import config from '@/config/style.js';
-import {computed, ref} from "vue";
+import {onMounted, onBeforeUnmount, ref} from "vue";
 import router from '@/routers';
 
 let isSidebarCollapsed = ref(config.isSidebarCollapsed);
+const sidebarElement = ref(null);
+const contentElement = ref(null);
+
+const updateWidth = () => {
+  if (sidebarElement.value && contentElement.value) {
+    const sidebarElementWidth = sidebarElement.value.offsetWidth;
+    contentElement.value.style.width = 'calc(100vw - ' + sidebarElementWidth + 'px)';
+  }
+};
+
+const resizeObserver = new ResizeObserver(() => {
+  updateWidth();
+});
+
+onMounted(() => {
+  sidebarElement.value = document.querySelector('.side-nav');
+  contentElement.value = document.querySelector('.content-layout');
+  window.addEventListener('resize', updateWidth);
+  resizeObserver.observe(sidebarElement.value);
+  updateWidth();
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', updateWidth);
+  resizeObserver.unobserve(sidebarElement.value);
+});
 
 const changeCollapsed = () => {
   isSidebarCollapsed.value = !isSidebarCollapsed.value;
