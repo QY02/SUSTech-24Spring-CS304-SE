@@ -5,6 +5,7 @@ import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
 import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import io.swagger.v3.oas.annotations.Operation;
 import org.cs304.backend.utils.Encryption;
 import org.cs304.backend.utils.Result;
 import org.cs304.backend.entity.*;
@@ -341,6 +342,7 @@ public class UserController {
     /**
      * 获取当前用户ID
      */
+    @Operation(summary = "获取当前用户ID",description = "这是一个详细的描述，你可以在这里添加更多的信息。")
     @PostMapping("/getMyID")
     public Result getMyID(HttpServletResponse response, HttpServletRequest request) {
         String id = (String) request.getAttribute("loginUserId");

@@ -25,6 +25,10 @@ const routes = [
                 path: '/apply',
                 component: () => import('@/components/Event/ApplyForEvent.vue')
             },
+            {
+                path: '/approval',
+                component: () => import('@/components/Admin/EventApproval.vue')
+            },
         ]
     },
 
