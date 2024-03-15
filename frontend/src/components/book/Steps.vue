@@ -26,10 +26,10 @@
         </template>
       </t-step-item>
     </t-steps>
-    <ChooseSession v-if="currentStep === 0"></ChooseSession>
-    <ChooseSeat v-if="currentStep === 1"></ChooseSeat>
-    <InputInformation v-if="currentStep === 2"></InputInformation>
-    <Finish v-if="currentStep === 3"></Finish>
+    <div v-show="currentStep === 0"><ChooseSession></ChooseSession></div>
+    <div v-show="currentStep === 1"><ChooseSeat></ChooseSeat></div>
+    <div v-show="currentStep === 2"><InputInformation></InputInformation></div>
+    <div v-show="currentStep === 3"><Finish></Finish></div>
   </div>
 </template>
 
