@@ -1,6 +1,7 @@
 package org.cs304.backend.controller;
 
 import com.alibaba.fastjson2.*;
+import org.cs304.backend.constant.constant_User;
 import org.cs304.backend.entity.User;
 import org.cs304.backend.exception.ServiceException;
 import org.cs304.backend.service.IUserService;
@@ -124,7 +125,7 @@ public class LoginController {
             }
             User user;
             user = JSON.parseObject(redisUtil.get(emailVerify.getString("email"), false, true), User.class);
-            user.setType(1);
+            user.setType(constant_User.USER.getValue());
             user.setPassword(Encryption.encrypt(user.getPassword()));
             userService.save(user);
             user.setPassword(null);

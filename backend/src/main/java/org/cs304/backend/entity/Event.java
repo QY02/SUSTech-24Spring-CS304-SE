@@ -11,7 +11,7 @@ import lombok.AllArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(name = "Event", description = "")
+@Schema(name = "Event")
 public class Event {
 
     @TableId(type = IdType.AUTO)
@@ -24,6 +24,10 @@ public class Event {
     private String name;
 
     private String content;
+
+    private Integer status;
+
+    private Integer lowestPrice;
 
     private Integer type;
 }
