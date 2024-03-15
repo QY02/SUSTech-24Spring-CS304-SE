@@ -12,6 +12,12 @@
             </template>
             首页
           </t-menu-item>
+          <t-menu-item value="book" @click="handleNav('book')">
+            <template #icon>
+              <HomeIcon/>
+            </template>
+            book
+          </t-menu-item>
         </t-menu>
       </t-aside>
       <t-layout>
@@ -105,6 +111,9 @@ const handleNav = (value: string) => {
   switch (value) {
     case 'home':
       router.push('/');
+      break;
+    case 'book':
+      router.push('/book');
       break;
   }
 }
