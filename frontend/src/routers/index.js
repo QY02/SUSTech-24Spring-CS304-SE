@@ -29,6 +29,11 @@ const routes = [
                 path: '/approval',
                 component: () => import('@/components/Admin/EventApproval.vue')
             },
+            {
+                name: 'book',
+                path: '/book',
+                component: () => import('@/components/book/Steps.vue')
+            },
         ]
     },
 
