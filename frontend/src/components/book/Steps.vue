@@ -26,10 +26,18 @@
         </template>
       </t-step-item>
     </t-steps>
-    <div v-show="currentStep === 0"><ChooseSession></ChooseSession></div>
-    <div v-show="currentStep === 1"><ChooseSeat></ChooseSeat></div>
-    <div v-show="currentStep === 2"><InputInformation></InputInformation></div>
-    <div v-show="currentStep === 3"><Finish></Finish></div>
+    <div v-show="currentStep === 0">
+      <ChooseSession></ChooseSession>
+    </div>
+    <div v-show="currentStep === 1">
+      <ChooseSeat></ChooseSeat>
+    </div>
+    <div v-show="currentStep === 2">
+      <InputInformation></InputInformation>
+    </div>
+    <div v-show="currentStep === 3">
+      <Finish></Finish>
+    </div>
   </div>
 </template>
 
@@ -62,9 +70,49 @@ onMounted(() => {
 </script>
 
 <script lang="ts">
-import {ref} from "vue";
+import {reactive, ref} from "vue";
+import {FormRule} from "tdesign-vue-next";
 
 export let currentStep = ref(0);
+
+export function toNextStep() {
+  currentStep.value++;
+}
+
+export interface AdditionalInformationItem {
+  name: string;
+  nameEng: string;
+  required: boolean;
+  rules: FormRule[];
+  value: string;
+}
+
+interface BookingInformation {
+  additionalInformation: AdditionalInformationItem[];
+}
+
+export const bookingInformation: BookingInformation = reactive({
+  additionalInformation: [
+    {
+      name: '手机号',
+      nameEng: 'phoneNumber',
+      required: true,
+      rules: [
+        {
+          telnumber: true,
+          message: '请输入正确的手机号码'
+        }
+      ],
+      value: ''
+    },
+    {
+      name: '书院',
+      nameEng: 'college',
+      required: true,
+      rules: null,
+      value: ''
+    }]
+})
 
 </script>
 
