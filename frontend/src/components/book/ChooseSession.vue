@@ -1,11 +1,80 @@
 <template>
-  <t-button @click="currentStep++">下一步</t-button>
+  <div class="choose-session-main-div">
+    <t-space direction="vertical" align="center">
+      <h1 class="choose-session-title">选择场次</h1>
+      <t-collapse style="width: 50vw">
+        <t-collapse-panel v-for="(session, index) in sessionInformation"
+                          :header="`${dateToString(session.startTime)} - ${dateToString(session.endTime)} ${session.venue}`">
+          <template #headerRightContent>
+            <t-button :disabled="!session.registrationRequired" :theme="bookingInformation.chosenSession === index ? 'success' : 'primary'" @click="choose(index)">{{getChooseButtonStatus(index)}}</t-button>
+          </template>
+          <div class="choose-session-detail-div">
+            <p v-if="session.registrationRequired" class="choose-session-detail-text">
+              {{
+                `报名时间: ${dateToString(session.registrationStartTime)} - ${dateToString(session.registrationEndTime)}`
+              }}</p>
+            <p v-else class="choose-session-detail-text">无需报名</p>
+            <p class="choose-session-detail-text">{{ `人数限制: ${session.minSize} - ${session.maxSize}` }}</p>
+          </div>
+        </t-collapse-panel>
+      </t-collapse>
+      <t-button>返回</t-button>
+    </t-space>
+  </div>
 </template>
 
-<script setup>
-import { currentStep } from '@/components/book/Steps.vue';
+<script setup lang="ts">
+import {sessionInformation, bookingInformation, toNextStep} from '@/components/book/Steps.vue';
+
+const dateToString = (date: Date) => {
+  let result: string = date.toLocaleString();
+  return result;
+}
+
+const choose = (index: number) => {
+  bookingInformation.chosenSession = index;
+  toNextStep();
+}
+
+const getChooseButtonStatus = (index: number) => {
+  if (!sessionInformation[index].registrationRequired) {
+    return '无需报名';
+  }
+  else if (bookingInformation.chosenSession === index) {
+    return '已选择';
+  }
+  else {
+    return '选择';
+  }
+}
 </script>
 
-<style scoped>
+<style scoped lang="less">
+.choose-session {
+  &-main-div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    top: 5vh;
+  }
 
+  &-detail {
+    &-div {
+      display: flex;
+      flex-direction: column;
+    }
+
+    &-text {
+      margin-top: 7px;
+      margin-bottom: 7px;
+    }
+  }
+
+  &-title {
+    text-align: center;
+    font-size: 25px;
+    line-height: 0;
+  }
+}
 </style>

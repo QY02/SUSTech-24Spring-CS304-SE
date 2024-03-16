@@ -88,10 +88,12 @@ export interface AdditionalInformationItem {
 }
 
 interface BookingInformation {
+  chosenSession: number;
   additionalInformation: AdditionalInformationItem[];
 }
 
 export const bookingInformation: BookingInformation = reactive({
+  chosenSession: null,
   additionalInformation: [
     {
       name: '手机号',
@@ -113,6 +115,52 @@ export const bookingInformation: BookingInformation = reactive({
       value: ''
     }]
 })
+
+export interface Session {
+  startTime: Date;
+  endTime: Date;
+  venue: string;
+  registrationRequired: boolean;
+  registrationStartTime: Date;
+  registrationEndTime: Date;
+  minSize: number;
+  maxSize: number;
+  location: string;
+}
+
+export const sessionInformation: Session[] = reactive([{
+  startTime: new Date(2024, 3, 1, 8),
+  endTime: new Date(2024, 3, 1, 10),
+  venue: '三教107',
+  registrationRequired: true,
+  registrationStartTime: new Date(2024, 2, 25, 10),
+  registrationEndTime: new Date(2024, 2, 27, 0),
+  minSize: 10,
+  maxSize: 100,
+  location: ''
+},
+  {
+    startTime: new Date(2024, 3, 1, 10),
+    endTime: new Date(2024, 3, 1, 12),
+    venue: '三教107',
+    registrationRequired: false,
+    registrationStartTime: null,
+    registrationEndTime: null,
+    minSize: 5,
+    maxSize: 500,
+    location: ''
+  },
+  {
+    startTime: new Date(2024, 3, 2, 8),
+    endTime: new Date(2024, 3, 2, 10),
+    venue: '一教111',
+    registrationRequired: true,
+    registrationStartTime: new Date(2024, 2, 26, 10),
+    registrationEndTime: new Date(2024, 2, 28, 0),
+    minSize: 20,
+    maxSize: 80,
+    location: ''
+  }])
 
 </script>
 

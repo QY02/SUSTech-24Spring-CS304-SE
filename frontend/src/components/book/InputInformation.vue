@@ -1,6 +1,6 @@
 <template>
   <div class="input-information-main-div">
-    <h1 class="title-input-information">信息填写</h1>
+    <h1 class="input-information-title">信息填写</h1>
     <t-form :rules="FORM_RULES" :data="formData" :colon="true" @submit="onSubmit">
       <t-form-item v-for="information in additionalInformation" :label="information.name" :name="information.nameEng">
         <t-input v-model="formData[information.nameEng]" :placeholder="`请输入${information.name}`"></t-input>
@@ -65,12 +65,11 @@ const onSubmit: FormProps['onSubmit'] = ({validateResult, firstError}) => {
     display: flex;
     justify-content: center;
   }
-}
 
-
-.title-input-information {
-  text-align: center;
-  font-size: 25px;
-  line-height: 0;
+  &-title {
+    text-align: center;
+    font-size: 25px;
+    line-height: 0;
+  }
 }
 </style>
