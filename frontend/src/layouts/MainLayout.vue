@@ -2,7 +2,7 @@
   <div>
     <t-layout>
       <t-aside :width="isSidebarCollapsed ? '64px' : null">
-        <t-menu class="side-nav" theme="light" value="home" :collapsed="isSidebarCollapsed">
+        <t-menu class="side-nav" theme="light" :value='highlightItem' :collapsed="isSidebarCollapsed">
           <template #logo>
             <img height="28" src="https://tdesign.gtimg.com/site/baseLogo-light.png" alt="logo"/>
           </template>
@@ -17,6 +17,12 @@
               <HomeIcon/>
             </template>
             book
+          </t-menu-item>
+          <t-menu-item value="event" @click="handleNav('event')">
+            <template #icon>
+              <HomeIcon/>
+            </template>
+            event
           </t-menu-item>
         </t-menu>
       </t-aside>
@@ -74,7 +80,7 @@ import {
 import config from '@/config/style.js';
 import {onMounted, onBeforeUnmount, ref} from "vue";
 import router from '@/routers';
-
+const highlightItem = ref('home')
 let isSidebarCollapsed = ref(config.isSidebarCollapsed);
 const sidebarElement = ref(null);
 const contentElement = ref(null);
@@ -108,6 +114,7 @@ const changeCollapsed = () => {
 };
 
 const handleNav = (value: string) => {
+  highlightItem.value = value
   switch (value) {
     case 'home':
       router.push('/');
@@ -115,6 +122,8 @@ const handleNav = (value: string) => {
     case 'book':
       router.push('/book');
       break;
+    case 'event':
+      router.push('/event');
   }
 }
 </script>
