@@ -140,13 +140,12 @@ Backend
 1. **Product Backlog**
    
 ![](/assets/product_backlog.png)
+2. **Sprint Backlog**   
 
-3. **Sprint Backlog**
-   
 ![](/assets/sprint_backlog.png)
 
-5. **RoadMap**
-   
+3. **RoadMap**
+
 ![](/assets/roadmap1.png)
 ![](/assets/roadmap2.png)
 ![](/assets/roadmap3.png)
