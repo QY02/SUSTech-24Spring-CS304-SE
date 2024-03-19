@@ -23,7 +23,7 @@ The proposed system encompasses several key functionalities:
 1. **Event Exploration:** Users can browse diverse event categories, view detailed event information including schedules and venues.
 2. **Publish a New Event:** Allow event initiators to publish new events and their related information. Once approved by the administrator, make them available for other users to view.
 3. **Booking and Reservation:** Users can make reservations, book seats, and purchase event tickets directly. Merchants manage ticket distribution and transactions through the platform.
-4. **User Interaction:**Users can view and write reviews, communicate with others, and share event-related information like video clips and pictures.
+4. **User Interaction:** Users can view and write reviews, communicate with others, and share event-related information like video clips and pictures.
 5. **Event Recommendations:** The system offers personalized event suggestions based on user preferences and past interactions.
 6. **Notifications:** Users receive timely notifications about upcoming events, newly added events, and any changes in event details.
 7. **User Management:** The system governs varying user roles with distinct permissions, ensuring differential access to functionalities. 
@@ -32,7 +32,7 @@ Regarding non-functional requirements:
 1. **Usability:** The system prioritizes an intuitive user interface and seamless navigation.
 2. **Safety:** User data is securely stored and protected against unauthorized access.
 3. **Performance:** The system is designed to handle a large number of concurrent users without significant performance degradation.
-4. **Reliability:**Each transaction shall be guaranteed with reliabilty.
+4. **Reliability:** Each transaction shall be guaranteed with reliabilty.
 ### **Expected Outcome:**
 
 The expected outcome of the proposed system is to provide a centralized platform for the SUSTech community to discover, engage with, and participate in various campus events and entertainment activities. 
