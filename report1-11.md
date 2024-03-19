@@ -61,7 +61,7 @@ The system aims to enhance the overall experience of users by simplifying the pr
 6. **User Management:** The system efficiently handles user access with secure login and registration processes. Users can manage their profiles and preferences. The system governs varying user roles with distinct permissions, ensuring differential access to functionalities.
 -- Highlight: Two-factor authentication,  token-based authentication (Redis)
 
-7. **Publish a New****Event****:** The platform facilitates event initiators in submitting comprehensive details via a user-friendly form, including title, description, date, time, location and so on. Administrators review submissions to ensure accuracy and appropriateness, providing feedback for necessary adjustments. Upon approval, events are seamlessly integrated for user viewing and participation, fostering community engagement.
+7. **Publish a New Event:** The platform facilitates event initiators in submitting comprehensive details via a user-friendly form, including title, description, date, time, location and so on. Administrators review submissions to ensure accuracy and appropriateness, providing feedback for necessary adjustments. Upon approval, events are seamlessly integrated for user viewing and participation, fostering community engagement.
 -- Highlight: Logical and beautiful interface design
 
 #### **Non-functional Requirements:**
@@ -79,13 +79,13 @@ The system aims to enhance the overall experience of users by simplifying the pr
 1. **Event Information:** Including event details, schedules, venues, and locations. 
 Source: users upload and Internet based.
 
-2. **User Data:**User profiles, preferences, booking history, and reviews.
+2. **User Data:** User profiles, preferences, booking history, and reviews.
 Source: users filled in and adminstrator exported in.
 
-3. **M****ultimedia Content:** Video clips, pictures, and other media shared by users.
+3. **Multimedia Content:** Video clips, pictures, and other media shared by users.
 Source: users upload and Internet based.
 
-4. **API Retrieved Data:**This encompasses map data and other data retrieved from third-party APIs.
+4. **API Retrieved Data:** This encompasses map data and other data retrieved from third-party APIs.
 Source: Internet based.
 
 #### **Technical Requirements:**
