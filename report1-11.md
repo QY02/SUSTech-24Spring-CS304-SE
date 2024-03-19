@@ -73,7 +73,7 @@ The system aims to enhance the overall experience of users by simplifying the pr
 -- Highlight: Encryption
 
 3. **Performance:** The system should be able to handle a large number of concurrent users accessing some critical services.
-4. **Reliability:**Each transaction shall be guaranteed and rollback shall be performed when error occurs.
+4. **Reliability:** Each transaction shall be guaranteed and rollback shall be performed when error occurs.
 #### **Data Requirements:**
 
 1. **Event Information:** Including event details, schedules, venues, and locations. 
