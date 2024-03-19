@@ -139,19 +139,12 @@ Backend
 
 1. **Product Backlog**
 
-   ![Sprint Bakclog](C:\Users\28262\Downloads\Sprint Bakclog.png)
 
 2. **Sprint Backlog**
 
-   ![Sprint Bakclog](C:\Users\28262\Downloads\Sprint Bakclog.png)
 
 3. **RoadMap**
 
-   ![2bc311c08ba700c888ef466eb354b655](C:\Users\28262\Documents\Tencent Files\2826287819\nt_qq\nt_data\Pic\2024-03\Ori\2bc311c08ba700c888ef466eb354b655.png)
-
-   
-
-   ![{2D095B7D-333D-40e6-B0A8-F2A654C36227}](C:\Users\28262\AppData\Local\Temp\{2D095B7D-333D-40e6-B0A8-F2A654C36227}.png)![{485C3890-C9F8-42e4-9E26-21858AFCE55D}](C:\Users\28262\AppData\Local\Temp\{485C3890-C9F8-42e4-9E26-21858AFCE55D}.png)![{7A574F77-7FBD-43f7-9D27-EA0D88C270C8}](C:\Users\28262\AppData\Local\Temp\{7A574F77-7FBD-43f7-9D27-EA0D88C270C8}.png)
 
 ## PART III. AI Usage
 
