@@ -89,11 +89,13 @@ export interface AdditionalInformationItem {
 
 interface BookingInformation {
   chosenSession: number;
+  chosenSeat: string;
   additionalInformation: AdditionalInformationItem[];
 }
 
 export const bookingInformation: BookingInformation = reactive({
   chosenSession: null,
+  chosenSeat: null,
   additionalInformation: [
     {
       name: '手机号',
