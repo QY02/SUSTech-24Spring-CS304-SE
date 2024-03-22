@@ -39,9 +39,9 @@ public class RedisUtil {
         if (userToken == null) {
             return null;
         } else {
-            if (resetExpireTime) {
-                stringRedisTemplate.expire(userToken, timeout, timeUnit);
-            }
+//            if (resetExpireTime) {
+//                stringRedisTemplate.expire(userToken, timeout, timeUnit);
+//            }
             String value = stringRedisTemplate.opsForValue().get(userToken);
             if (value == null) {
                 return null;

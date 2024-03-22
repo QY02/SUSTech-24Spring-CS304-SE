@@ -58,6 +58,16 @@ const routes = [
                 path: '/event',
                 component: () => import('@/components/Event/EventPage.vue')
             },
+            {
+                name: 'comment',
+                path: '/comment',
+                component: () => import('@/components/Event/Comment.vue')
+            },
+            {
+                name: 'test',
+                path: '/test',
+                component: () => import('@/components/Event/test.vue')
+            }
         ]
     },
 

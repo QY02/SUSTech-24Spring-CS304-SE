@@ -24,6 +24,18 @@
             </template>
             event
           </t-menu-item>
+          <t-menu-item value="approval" @click="handleNav('approval')">
+            <template #icon>
+              <HomeIcon/>
+            </template>
+            审批
+          </t-menu-item>
+          <t-menu-item value="comment" @click="handleNav('comment')">
+            <template #icon>
+              <HomeIcon/>
+            </template>
+            动态
+          </t-menu-item>
         </t-menu>
       </t-aside>
       <t-layout>
@@ -124,6 +136,13 @@ const handleNav = (value: string) => {
       break;
     case 'event':
       router.push('/event');
+      break;
+    case 'approval':
+      router.push('/approval');
+      break;
+    case 'comment':
+      router.push('/comment');
+      break;
   }
 }
 </script>
