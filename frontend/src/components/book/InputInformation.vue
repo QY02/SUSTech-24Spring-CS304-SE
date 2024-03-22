@@ -1,14 +1,14 @@
 <template>
   <div class="input-information-main-div">
     <h1 class="input-information-title">信息填写</h1>
-    <t-form :rules="FORM_RULES" :data="formData" :colon="true" @submit="onSubmit">
+    <t-form ref="form" :rules="FORM_RULES" :data="formData" :colon="true" @submit="onSubmit">
       <t-form-item v-for="information in additionalInformation" :label="information.name" :name="information.nameEng">
         <t-input v-model="formData[information.nameEng]" :placeholder="`请输入${information.name}`"></t-input>
       </t-form-item>
       <div class="input-information-button-div">
         <t-space size="medium">
           <t-button @click="currentStep--">上一步</t-button>
-          <t-button type="submit">提交</t-button>
+          <t-button type="submit">下一步</t-button>
         </t-space>
       </div>
     </t-form>
@@ -18,7 +18,7 @@
 <script setup lang="ts">
 import {currentStep, toNextStep} from '@/components/book/Steps.vue';
 import {AdditionalInformationItem, bookingInformation} from '@/components/book/Steps.vue';
-import {reactive} from "vue";
+import {reactive, ref} from "vue";
 import {FormProps, FormRule, MessagePlugin} from "tdesign-vue-next";
 
 const additionalInformation: AdditionalInformationItem[] = bookingInformation.additionalInformation;
@@ -46,12 +46,37 @@ const onSubmit: FormProps['onSubmit'] = ({validateResult, firstError}) => {
     for (let i = 0; i < additionalInformation.length; i++) {
       additionalInformation[i].value = formData[i];
     }
-    MessagePlugin.success('提交成功');
     toNextStep();
   } else {
     MessagePlugin.warning(firstError);
   }
 };
+</script>
+
+<script lang="ts">
+import {ref} from "vue";
+import {MessagePlugin} from "tdesign-vue-next";
+
+const form = ref(null);
+
+export function checkForm() {
+  return form.value.validate().then((validateResult) => {
+    if (validateResult && Object.keys(validateResult).length) {
+      const firstErrorArray = Object.values(validateResult)[0];
+      let firstError = null;
+      for (let i = 0; i < firstErrorArray.length; i++) {
+        if (firstErrorArray[i].result === false) {
+          firstError = firstErrorArray[i].message;
+        }
+      }
+      MessagePlugin.warning(`请完成信息填写${firstError !== null ? `：${firstError}` : ''}`);
+      return false;
+    }
+    else {
+      return true;
+    }
+  });
+}
 </script>
 
 <style scoped lang="less">
