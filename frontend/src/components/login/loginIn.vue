@@ -1,29 +1,30 @@
-<template>
-  <NavBarWithOnlyTitle v-if="showNavBar"></NavBarWithOnlyTitle>
-  <div class="parent-container">
-    <div class="form-container">
-      <p class="title">Welcome!</p>
-      <t-tabs :default-value="'ID'">
-        <t-tab-panel v-for="tab in tabs" :key="tab.title" :value="tab.title" :label="tab.title">
-  <!--        {{ tab.title }}-->
-        </t-tab-panel>
-      </t-tabs>
+<template >
+  <!--  <NavBarWithOnlyTitle v-if="showNavBar"></NavBarWithOnlyTitle>-->
+  <div id="building">
+    <div class="parent-container">
+      <div class="form-container">
+        <p class="title">Welcome!</p>
+        <t-tabs :default-value="'ID'" @change="handlerChange" size="medium">
+          <t-tab-panel v-for="tab in tabs" :key="tab.title" :value="tab.title" :label="tab.title">
+            <!--        {{ tab.title }}-->
+          </t-tab-panel>
+        </t-tabs>
 
-<!--      <va-tabs v-model="value" grow>-->
-<!--        <template #tabs>-->
-<!--          <va-tab v-for="tab in tabs" :key="tab.title" :name="tab.title">-->
-<!--            {{ tab.title }}-->
-<!--          </va-tab>-->
-<!--        </template>-->
+        <!--      <va-tabs v-model="value" grow>-->
+        <!--        <template #tabs>-->
+        <!--          <va-tab v-for="tab in tabs" :key="tab.title" :name="tab.title">-->
+        <!--            {{ tab.title }}-->
+        <!--          </va-tab>-->
+        <!--        </template>-->
 
-      <div class="demo-card">
-<!--        <t-card :title="title" hover-shadow :style="{ width: '340px' }">-->
-<!--          {{ infoMessage }}-->
-<!--          <template #actions>-->
-<!--            <a href="javascript:void(0)" @click="clickHandler">操作</a>-->
-<!--          </template>-->
-<!--        </t-card>-->
-      </div>
+        <div class="demo-card">
+          <!--        <t-card :title="title" hover-shadow :style="{ width: '340px' }">-->
+          <!--          {{ infoMessage }}-->
+          <!--          <template #actions>-->
+          <!--            <a href="javascript:void(0)" @click="clickHandler">操作</a>-->
+          <!--          </template>-->
+          <!--        </t-card>-->
+        </div>
         <t-card class="va-card" hover-shadow>
           <template class="va-card-content">
             <component :is="currentTab.component"></component>
@@ -33,20 +34,20 @@
             </p>
           </template>
         </t-card>
-<!--      </va-tabs>-->
+        <!--      </va-tabs>-->
+      </div>
     </div>
   </div>
-
 </template>
 
 <script>
 import {computed, ref, watchEffect} from "vue";
-import NavBarWithOnlyTitle from "@/components/layouts/NavBarWithOnlyTitle.vue";
+// import NavBarWithOnlyTitle from "@/components/layouts/NavBarWithOnlyTitle.vue";
 import {useRoute} from "vue-router";
 import IDLogin from "./IDLogin.vue"
 import EmailLogin from "./EmailLogin.vue"
 // import GitHubLogin from "./GitHubLogin.vue"
-import { MessagePlugin } from 'tdesign-vue-next';
+import {MessagePlugin} from 'tdesign-vue-next';
 
 
 const TABS = [
@@ -65,39 +66,41 @@ const TABS = [
   // }
 ];
 export default {
-  components: {
-    NavBarWithOnlyTitle
-  },
+  // components: {
+  //   NavBarWithOnlyTitle
+  // },
 
   setup() {
+
     sessionStorage.setItem('primary-color', '#154EC1')
     const clickHandler = () => {
       MessagePlugin.success('操作');
     };
 
-    const title = '标题';
-    const infoMessage = `卡片内容，以描述性为主，可以是文字、图片或图文组合的形式。按业务需求进行自定义组合。`;
     const showNavBar = ref(true);
     const tabs = TABS;
     const value = ref(TABS[0].title);
 
     const currentTab = computed(() => {
+      // alert(currentTab)
       return tabs.find((tab) => tab.title === value.value);
     });
+    const handlerChange = (newValue) => {
+      value.value = newValue;
+    };
 
     const route = useRoute()
 
     watchEffect(() => {
-      showNavBar.value = route.matched.some((route) => route.name === "login");
-    },
+          showNavBar.value = route.matched.some((route) => route.name === "login");
+        },
         // {immediate: true}
     );
 
     return {
       clickHandler,
-      title,
-      infoMessage,
       showNavBar,
+      handlerChange,
       currentTab,
       value,
       tabs
@@ -109,10 +112,10 @@ export default {
 <style scoped>
 .parent-container {
   display: flex;
-  justify-content:right; /* 水平居中 */
-  margin-right: 9%;
-  margin-top: 5%;
-  align-items: center; /* 垂直居中 */
+  justify-content: center; /* 水平居中 */
+  //margin-right: 9%;
+  margin-top: 7%;
+  align-content: center; /* 垂直居中 */
 }
 
 .form-container {
@@ -175,6 +178,27 @@ export default {
 .va-card-content {
   display: flex;
   flex-direction: column;
+}
+
+.background_login {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  background-image: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url("@/assets/login.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+#building{
+  //background:url("@/assets/login.jpg");
+  background-image: linear-gradient(rgba(0,0,0, 0.1), rgba(0,0,0, 0.1)), url("@/assets/login.jpg");
+
+  width:100%;
+  height:100%;
+  position:fixed;
+  background-size:100% 100%;
 }
 
 </style>

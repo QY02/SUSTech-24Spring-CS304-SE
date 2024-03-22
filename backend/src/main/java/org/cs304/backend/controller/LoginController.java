@@ -51,7 +51,8 @@ public class LoginController {
             }
             System.out.println(user.getId()+"  "+user.getPassword());
             user = userService.login(user);
-            user.setPassword(null);
+//            user.setPassword(null);
+//            System.out.println(response);
         } catch (Exception e) {
             log.error(e.getMessage());
             return Result.error(response, "401", "Invalid username or password");
@@ -94,6 +95,7 @@ public class LoginController {
         }
         try {
             userService.sendEmail(user.getEmail());
+            user.setTwoFactorAuthentication(false);//暂且设置成false
             redisUtil.add(user.getEmail(), JSON.toJSONString(JSON.toJSON(user)), 300);
         } catch (ServiceException e) {
             log.error(e.getMessage());

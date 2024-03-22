@@ -117,7 +117,7 @@ const handleNav = (value: string) => {
   highlightItem.value = value
   switch (value) {
     case 'home':
-      router.push('/');
+      router.push('/HomePage');
       break;
     case 'book':
       router.push('/book');

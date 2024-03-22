@@ -54,6 +54,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         if (dbuser == null) {
             throw new ServiceException("Invalid username or password");
         }
+        System.out.println(redisUtil.generateToken(dbuser));
         return redisUtil.generateToken(dbuser);
     }
 
