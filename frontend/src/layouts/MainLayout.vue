@@ -141,7 +141,7 @@ const handleNav = (value: string) => {
       router.push('/approval');
       break;
     case 'comment':
-      router.push('/comment');
+      router.push('/apply');
       break;
   }
 }
