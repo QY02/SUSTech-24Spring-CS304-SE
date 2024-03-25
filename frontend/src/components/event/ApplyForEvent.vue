@@ -1,4 +1,5 @@
 <template>
+  <temp-try></temp-try>
   <t-space direction="vertical" size="large" style="width: 100%">
     <div style="max-width: 1000px;margin: 30px auto;">
     <b>请输入活动信息</b>
@@ -26,8 +27,14 @@
                     action="https://service-bv448zsw-1257786608.gz.apigw.tencentcs.com/api/upload-demo" theme="image"
                     tips="请选择单张图片文件上传" accept="image/*"></t-upload>
         </t-form-item>
-        <event-session v-model:sessionData="formData.eventSessionData"></event-session>
+        <event-session v-model:sessionData="eventSessionData"></event-session>
       </div>
+<!--      <div>-->
+<!--        {{formData}}-->
+<!--        {{eventSessionData}}-->
+<!--      </div>-->
+      <!--    改密码-->
+
 
       <t-form-item style="margin: 30px auto">
         <t-space size="small">
@@ -44,6 +51,7 @@ import { ref, inject } from 'vue';
 import { MessagePlugin } from 'tdesign-vue-next';
 import axios from "axios";
 import EventSession from "@/components/event/EventSession.vue";
+import TempTry from "@/components/event/TempTry.vue";
 
 const apiUrl = inject('$API_URL');
 
@@ -70,14 +78,11 @@ const session=new Array(8).fill(null).map(() => ({
 const formData = ref({
   name: '',
   content: '',
-  type: '',
+  type: 0,
+  publisher_id: '12111947',
   poster: [{ url: 'https://tdesign.gtimg.com/site/avatar.jpg' }],
-  eventSessionData:session
 });
-
-const updateSessionData=(val)=>{
-  formData.value.eventSessionData=val
-}
+const eventSessionData= ref(session)
 const onReset = () => {
   MessagePlugin.success('重置成功');
 };
@@ -86,7 +91,10 @@ const onSubmit = ({ validateResult, firstError }) => {
   alert(JSON.stringify(formData.value))
   if (validateResult === true) {
     // console.log(formData)
-    axios.post(`${apiUrl}/event/add`,{data:formData.value}).then(
+    axios.post(`${apiUrl}/event/add`,{
+      "event":formData.value,
+      "sessions":eventSessionData.value
+    }).then(
       response => {
         console.log(response)
       }

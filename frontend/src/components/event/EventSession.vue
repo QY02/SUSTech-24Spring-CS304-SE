@@ -15,11 +15,11 @@
         :columns="columns"
         :rules="FORM_RULES"
         :data="data"
-        stripe=true
+        stripe:true
         :editable-row-keys="editableRowKeys"
-        bordered=true
+        bordered:true
         :pagination="pagination"
-        lazy-load=true
+        lazy-load:true
         @row-edit="onRowEdit"
         @row-validate="onRowValidate"
         @validate="onValidate"
@@ -38,13 +38,13 @@
       </template>
 
     </t-table>
-    <div>{{props.sessionData}}</div>
+    <div>{{data}}</div>
   </div>
   <t-dialog
       v-model:visible="visibleBody"
       attach="body"
       header="请填写场次信息"
-      destroy-on-close=true
+      destroy-on-close:true
       width="45%"
       :cancel-btn=null
       :confirm-btn=null
@@ -66,12 +66,12 @@
             <t-switch v-model="newData.registration_required" :label="['是', '否']"></t-switch>
           </t-form-item>
           <t-form-item label="报名开始时间-报名结束时间" name="registration_time_range">
-            <t-date-range-picker enable-time-picker="true" allow-input="true" clearable="true"
+            <t-date-range-picker enable-time-picker:true allow-input:true clearable:true
                                  v-model="newData.registration_time_range"
                                  :disabled="!newData.registration_required"/>
           </t-form-item>
           <t-form-item label="开始时间-结束时间" name="event_time_range">
-            <t-date-range-picker enable-time-picker="true" allow-input="true" clearable="true"
+            <t-date-range-picker enable-time-picker:true allow-input:true clearable:true
                                  v-model="newData.event_time_range"/>
           </t-form-item>
 
@@ -99,8 +99,6 @@
 
     </template>
   </t-dialog>
-
-
 </template>
 
 <script setup>
@@ -401,14 +399,6 @@ const onReset = () => {
 
 </script>
 <style lang="css">
-.t-table-demo__editable-row .table-operations > .t-link {
-  margin-right: 8px;
-}
-
-.t-table-demo__editable-row .t-demo-col__datepicker .t-date-picker {
-  width: 120px;
-}
-
 .operations {
   display: flex;
   //justify-content: space-around;
