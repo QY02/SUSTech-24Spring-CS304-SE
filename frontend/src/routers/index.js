@@ -59,15 +59,15 @@ const routes = [
                 component: () => import('@/components/event/EventPage.vue')
             },
             {
-                name: 'live',
-                path: '/live',
-                component: () => import('@/components/event/Live.vue')
+                name: 'comment',
+                path: '/comment',
+                // component: () => import('@/components/Event/Comment.vue')
             },
-            // {
-            //     name: 'test',
-            //     path: '/test',
-            //     component: () => import('@/components/Event/test.vue')
-            // }
+            {
+                name: 'test',
+                path: '/test',
+                // component: () => import('@/components/Event/test.vue')
+            }
         ]
     },
 

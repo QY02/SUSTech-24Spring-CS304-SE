@@ -1,7 +1,7 @@
 <script setup>
 import {ref} from 'vue';
-import ChangePasswordByOld from "@/components/event/ChangePasswordByOld.vue";
-import ChangePasswordByEmail from "@/components/event/ChangePasswordByEmail.vue";
+import ChangePasswordByOld from "@/components/profile/ChangePasswordByOld.vue";
+import ChangePasswordByEmail from "@/components/profile/ChangePasswordByEmail.vue";
 
 const visibleOld=ref(false)
 const visibleEmail=ref(false)
@@ -27,3 +27,8 @@ const visibleEmail=ref(false)
   </div>
 
 </template>
+<style>
+.btn{
+  margin-right: 30px;
+}
+</style>
