@@ -37,12 +37,12 @@ spring:
     multipart:
       max-file-size: 2048MB
       max-request-size: 2048MB
-#  rabbitmq:
-#    host: 127.0.0.1
-#    port: 5672
-#    username: user
-#    password: 123456
-#    virtual-host: test
+  rabbitmq:
+    host: 47.107.113.54
+    port: 25569
+    username: user
+    password: 56481367
+    virtual-host: test
 
 
 logging:

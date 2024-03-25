@@ -42,7 +42,7 @@ const routes = [
 
             {
                 path: '/apply',
-                component: () => import('@/components/Event/ApplyForEvent.vue')
+                component: () => import('@/components/event/ApplyForEvent.vue')
             },
             {
                 path: '/approval',
@@ -56,18 +56,18 @@ const routes = [
             {
                 name: 'event',
                 path: '/event',
-                component: () => import('@/components/Event/EventPage.vue')
+                component: () => import('@/components/event/EventPage.vue')
             },
             {
-                name: 'comment',
-                path: '/comment',
-                component: () => import('@/components/Event/Comment.vue')
+                name: 'live',
+                path: '/live',
+                component: () => import('@/components/event/Live.vue')
             },
-            {
-                name: 'test',
-                path: '/test',
-                component: () => import('@/components/Event/test.vue')
-            }
+            // {
+            //     name: 'test',
+            //     path: '/test',
+            //     component: () => import('@/components/Event/test.vue')
+            // }
         ]
     },
 
