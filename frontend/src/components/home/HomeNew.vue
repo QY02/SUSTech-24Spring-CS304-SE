@@ -1,6 +1,6 @@
 <template>
 
-  <div id="course">
+  <div id="event">
     <t-card
         v-for="(item,index) in events"
         :key="index"
@@ -141,7 +141,7 @@ axios.defaults.baseURL = apiUrl;
 
 </script>
 <style scoped>
-#course {
+#event {
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
