@@ -47,7 +47,7 @@
             <t-tab-panel value="about" label="EVENT DETAILS"></t-tab-panel>
             <t-tab-panel value="price" label="TICKET PRICING"></t-tab-panel>
             <t-tab-panel value="reviews" label="REVIEWS"></t-tab-panel>
-            <t-tab-panel value="policy" label="ADMISSION POLICY"></t-tab-panel>
+            <t-tab-panel value="gallery" label="GALLERY"></t-tab-panel>
     </t-tabs>
   </el-affix>
   <div :id="`${path}#events`" style="height: 60px;"></div>
@@ -80,9 +80,27 @@
           </div>
       </div>
   </t-space>
-  <el-card style="height:720px; padding: 5px;  max-width: 100% ; margin-right: 30px; margin-left: 30px; margin-bottom: 40px;">
-    <div v-if="show_event_type">
-      <EventTicketTable></EventTicketTable>
+  <el-card style="height: auto; padding: 5px;  max-width: 100% ; margin-right: 30px; margin-left: 30px; margin-bottom: 40px;">
+    <div v-if="show_event_type" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+      <t-space direction="vertical" style="margin-top: 20px; ">
+        <t-collapse style="width: 50vw">
+        <t-collapse-panel v-for="(session, index) in sessionInformation"
+                          :header="`${dateToString(session.startTime)} - ${dateToString(session.endTime)} ${session.venue}`">
+          <div class="choose-session-detail-div">
+            <p v-if="session.registrationRequired" class="choose-session-detail-text">
+              {{
+                `报名时间: ${dateToString(session.registrationStartTime)} - ${dateToString(session.registrationEndTime)}`
+              }}</p>
+            <p v-else class="choose-session-detail-text">无需报名</p>
+            <p class="choose-session-detail-text">{{ `人数限制: ${session.minSize} - ${session.maxSize}` }}</p>
+          </div>
+        </t-collapse-panel>
+      </t-collapse>
+      </t-space>
+      <br>
+      <t-button @click="">前往报名</t-button>
+
+      <!-- <EventTicketTable></EventTicketTable> -->
     </div>
     <div v-else>
       <EventTicketCalender></EventTicketCalender>
@@ -147,6 +165,18 @@
         CAT5: ¥288
         <br>
       </p>
+      <el-divider />
+      <p style="  color: rgba(7, 63, 216, 1); font-size: 18px; font-weight: 700; letter-spacing: 1px;">
+        ADMISSION POLICY
+      </p>
+      <p style="  margin-top: 0.4rem; line-height: 1.625;color: rgb(70, 73, 79);;">
+        1. 不允许携带食物或饮料进场
+        <br>
+        2. 不允许开闪光灯拍照
+        <br>
+        3. 演出48h前不予退款
+        <br>
+      </p>
   </div>
   <div style="height: 20px;"></div>
   <div style="height: 20px;"></div>
@@ -209,11 +239,35 @@
       </p>
   </div>
   <div style="height: 20px;"></div>
-  <div style="height: 20px;"></div>
+
+  <div :id="`${path}#gallery`" style="height: 60px;"></div>
+  <t-space style="display: flex; width: 100%; margin-left: 24px;">
+      <div>
+        <div class="title">GALLERY</div>
+        <div class="line"></div>
+      </div>
+  </t-space>
+  <el-card style="padding: 5px; height: 340px ; max-width: 100% ; margin-right: 30px; margin-left: 30px; margin-bottom: 40px;">
+    <el-carousel :interval="4000" type="card" height="300px">
+    <el-carousel-item v-for="item in 6" :key="item">
+      <h3 text="2xl" justify="center"><t-image
+      src="https://tdesign.gtimg.com/demo/demo-image-1.png"
+      fit="fill"
+      :style="{ width: '100%', height: '100%' }"
+      shape="round"
+    /></h3>
+    </el-carousel-item>
+  </el-carousel>
+  </el-card>
+
+  <div style="height: 40px;"></div>
 
 </template>
 
+
+
 <script setup>
+import {sessionInformation, bookingInformation, toNextStep} from '@/components/book/Steps.vue';
 import { HeartIcon, HeartFilledIcon, ListIcon, TableIcon, StarFilledIcon, DiscountIcon } from 'tdesign-icons-vue-next';
 import { MessagePlugin } from 'tdesign-vue-next';
 import { NotifyPlugin, Link } from 'tdesign-vue-next';
@@ -223,6 +277,8 @@ import { defineExpose,watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import EventTicketTable from './EventTicketTable.vue';
 import EventTicketCalender from './EventTicketCalender.vue';
+import ChooseSession from '../book/ChooseSession.vue';
+import router from '@/routers';
 const value_lable = ref('events');
 
 const show_event_type = ref(true);
@@ -241,6 +297,19 @@ const navigateToTab = (tabName) => {
   window.scrollTo(0, window.scrollY + 55);
 };
 
+
+const dateToString = (date) => {
+  const dayNameArray = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+  const dayName = dayNameArray[date.getDay()];
+  const localeDateStringArray = date.toLocaleString().split(' ');
+  const result = `${localeDateStringArray[0]} ${dayName} ${localeDateStringArray[1]}`;
+  return result;
+}
+
+
+const pushRouter = ()=>{
+  router.push('/book');
+}
 
 
 const fix = ref('false')
@@ -264,16 +333,16 @@ onMounted(() => {
     scrolled.value = window.scrollY;
   });
 });
-onUnmounted(() => {
-  window.removeEventListener('touchmove', handleTouchMove);
-});
+// onUnmounted(() => {
+//   window.removeEventListener('touchmove', handleTouchMove);
+// });
 window.addEventListener('scroll', () => {
   scrolled.value = window.scrollY;
-  init('页面已滚动距离：', scrolled);
-  NotifyPlugin({ title: scrolled, content: '用户表示普通操作信息提示'});
+  // init('页面已滚动距离：', scrolled);
+  // NotifyPlugin({ title: scrolled, content: '用户表示普通操作信息提示'});
 });
 watch(scrolled, (newValue, oldValue) => {
-  NotifyPlugin({ title: newValue, content: '用户表示普通操作信息提示' });
+  // NotifyPlugin({ title: newValue, content: '用户表示普通操作信息提示' });
 });
 
 
@@ -358,6 +427,8 @@ const commentsData = [
   },
 ];
 </script>
+
+
 
 <style lang="css">
 .anchor-demo {
@@ -528,4 +599,21 @@ button#scrollButton.fixed {
   color: rgba(107, 114, 128, 1);
 }
 
+</style>
+<style scoped>
+.el-carousel__item h3 {
+  color: #475669;
+  opacity: 0.75;
+  line-height: 200px;
+  margin: 0;
+  text-align: center;
+}
+
+.el-carousel__item:nth-child(2n) {
+  background-color: #99a9bf;
+}
+
+.el-carousel__item:nth-child(2n + 1) {
+  background-color: #d3dce6;
+}
 </style>
