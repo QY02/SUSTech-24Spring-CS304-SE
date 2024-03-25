@@ -27,7 +27,10 @@
 import {sessionInformation, bookingInformation, toNextStep} from '@/components/book/Steps.vue';
 
 const dateToString = (date: Date) => {
-  let result: string = date.toLocaleString();
+  const dayNameArray = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+  const dayName = dayNameArray[date.getDay()];
+  const localeDateStringArray = date.toLocaleString().split(' ');
+  const result: string = `${localeDateStringArray[0]} ${dayName} ${localeDateStringArray[1]}`;
   return result;
 }
 
