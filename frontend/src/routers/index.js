@@ -46,7 +46,7 @@ const routes = [
             },
             {
                 path: '/approval',
-                component: () => import('@/components/Admin/EventApproval.vue')
+                component: () => import('@/components/admin/EventApproval.vue')
             },
             {
                 name: 'book',
@@ -59,9 +59,9 @@ const routes = [
                 component: () => import('@/components/event/EventPage.vue')
             },
             {
-                name: 'comment',
-                path: '/comment',
-                // component: () => import('@/components/Event/Comment.vue')
+                name: 'moments',
+                path: '/moments',
+                component: () => import('@/components/event/Moments.vue')
             },
             {
                 name: 'test',

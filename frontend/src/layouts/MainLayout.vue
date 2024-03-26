@@ -30,7 +30,7 @@
             </template>
             审批
           </t-menu-item>
-          <t-menu-item value="comment" @click="handleNav('comment')">
+          <t-menu-item value="moments" @click="handleNav('moments')">
             <template #icon>
               <HomeIcon/>
             </template>
@@ -140,8 +140,8 @@ const handleNav = (value: string) => {
     case 'approval':
       router.push('/approval');
       break;
-    case 'comment':
-      router.push('/apply');
+    case 'moments':
+      router.push('/moments');
       break;
   }
 }
