@@ -1,17 +1,7 @@
 package org.cs304.backend.constant;
 
-import lombok.Getter;
-
-@Getter
-public enum constant_EventStatus {
-    AUDITING(0),//审核中
-    PASSED(1),//审核通过
-    REJECTED(2);//审核未通过
-
-    private final int value;
-
-    constant_EventStatus(int value) {
-        this.value = value;
-    }
-
+public class constant_EventStatus {
+    public static int AUDITING = 0;//审核中
+    public static int PASSED = 1;//审核通过
+    public static int REJECTED = 2;//审核未通过
 }

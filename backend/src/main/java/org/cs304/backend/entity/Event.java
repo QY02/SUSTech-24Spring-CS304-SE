@@ -25,9 +25,13 @@ public class Event {
 
     private String content;
 
+    private Integer type;
+
     private Integer status;
+
+    private Integer highestPrice;
 
     private Integer lowestPrice;
 
-    private Integer type;
+    private Boolean visible;
 }

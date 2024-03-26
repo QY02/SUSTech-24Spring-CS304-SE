@@ -23,30 +23,34 @@ create table if not exists attachment
 
 create table if not exists event
 (
-    id           int primary key auto_increment,
-    publisher_id varchar(8),
-    publish_date datetime not null,
-    name         varchar(1024) not null,
-    content      varchar(10240),
-    type         int           not null
+    id            int primary key auto_increment,
+    publisher_id  varchar(8),
+    publish_date  datetime      not null,
+    name          varchar(1024) not null,
+    content       varchar(10240),
+    type          int           not null,
+    status        int           not null,
+    highest_price int,
+    lowest_price  int,
+    visible       boolean       not null
 );
 
 create table if not exists event_session
 (
-    event_session_id        int primary key auto_increment,
-    event_id                int           not null,
-    registration_required   boolean       not null,
-    registration_start_time datetime,
-    registration_end_time   datetime,
-    start_time              datetime,
-    end_time                datetime,
-    min_size                int           not null,
-    max_size                int           not null,
-    seat_map_id             int,
-    venue                   varchar(1024) not null,
-    location                varchar(1024),
-    status                  int           not null,
-    visible                 boolean       not null
+    event_session_id                int primary key auto_increment,
+    event_id                        int           not null,
+    registration_required           boolean       not null,
+    registration_start_time         datetime,
+    registration_end_time           datetime,
+    start_time                      datetime,
+    end_time                        datetime,
+    min_size                        int           not null,
+    max_size                        int           not null,
+    seat_map_id                     int,
+    venue                           varchar(1024) not null,
+    location                        varchar(1024),
+    additional_information_required varchar(10240),
+    visible                         boolean       not null
 );
 
 create table if not exists post_attachment_relation

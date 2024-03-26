@@ -127,7 +127,7 @@ public class LoginController {
             }
             User user;
             user = JSON.parseObject(redisUtil.get(emailVerify.getString("email"), false, true), User.class);
-            user.setType(constant_User.USER.getValue());
+            user.setType(constant_User.USER);
             user.setPassword(Encryption.encrypt(user.getPassword()));
             userService.save(user);
             user.setPassword(null);

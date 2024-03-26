@@ -39,5 +39,7 @@ public class EventSession {
 
     private String location;
 
+    private String additionalInformationRequired;
+
     private Boolean visible;
 }

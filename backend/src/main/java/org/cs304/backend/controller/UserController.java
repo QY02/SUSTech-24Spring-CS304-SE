@@ -48,7 +48,7 @@ public class UserController {
     public Result add(HttpServletResponse response, HttpServletRequest request, @RequestBody User user) {
         try {
             int userType = (int) request.getAttribute("loginUserType");
-            if (userType != constant_User.ADMIN.getValue()) {
+            if (userType != constant_User.ADMIN) {
                 log.error("Only admin can alter");
                 return Result.error(response, "403", "Only admin can alter");
             }
@@ -78,7 +78,7 @@ public class UserController {
     public Result addBatch(HttpServletRequest request, HttpServletResponse response, @RequestBody List<User> users) {
         try {
             int userType = (int) request.getAttribute("loginUserType");
-            if (userType != constant_User.ADMIN.getValue()) {
+            if (userType != constant_User.ADMIN) {
                 log.error("Only admin can alter");
                 return Result.error(response, "403", "Only admin can alter");
             }
@@ -127,7 +127,7 @@ public class UserController {
     public Result importUser(HttpServletRequest request, HttpServletResponse response, MultipartFile file) {
         try {
             int userType = (int) request.getAttribute("loginUserType");
-            if (userType != constant_User.ADMIN.getValue()) {
+            if (userType != constant_User.ADMIN) {
                 log.error("Only admin can alter");
                 return Result.error(response, "403", "Only admin can alter");
             }
@@ -181,7 +181,7 @@ public class UserController {
     public Result updateAdmin(HttpServletResponse response, HttpServletRequest request, @RequestBody User user) {
         try {
             int userType = (int) request.getAttribute("loginUserType");
-            if (userType != constant_User.ADMIN.getValue()) {
+            if (userType != constant_User.ADMIN) {
                 log.error("Only admin can alter");
                 return Result.error(response, "403", "Only admin can alter");
             }
@@ -358,7 +358,7 @@ public class UserController {
     public Result delete(HttpServletRequest request, HttpServletResponse response, @PathVariable String id) {
         try {
             int userType = (int) request.getAttribute("loginUserType");
-            if (userType != constant_User.ADMIN.getValue()) {
+            if (userType != constant_User.ADMIN) {
                 log.error("Only admin can alter");
                 return Result.error(response, "403", "Only admin can alter");
             }
@@ -400,7 +400,7 @@ public class UserController {
     public Result deleteBatch(HttpServletRequest request, HttpServletResponse response, @RequestBody List<String> ids) {
         try {
             int userType = (int) request.getAttribute("loginUserType");
-            if (userType != constant_User.ADMIN.getValue()) {
+            if (userType != constant_User.ADMIN) {
                 log.error("Only admin can alter");
                 return Result.error(response, "403", "Only admin can alter");
             }
@@ -455,7 +455,7 @@ public class UserController {
     public Result listAll(HttpServletResponse response,HttpServletRequest request) {
         try {
             int userType = (int) request.getAttribute("loginUserType");
-            if (userType != constant_User.ADMIN.getValue()) {
+            if (userType != constant_User.ADMIN) {
                 log.error("Only admin can alter");
                 return Result.error(response, "403", "Only admin can alter");
             }
