@@ -264,6 +264,7 @@ const onResetFilter = () => {
   });
 };
 
+
 const onSubmitFilter = () => {
 const { eventName, priceRange, location, eventType, dateRange } = filterData.value;
 console.log('eventType', eventType);
