@@ -76,7 +76,8 @@ const route = useRoute();
 bookingInformation.eventId = Number(route.query.eventId);
 const fetchSessionInformation = async () => {
   fetchSessionInformationStatus.value = 0;
-  axios.post("/event/getEventSessionsByEventId", {eventId: bookingInformation.eventId}, {headers: {token: globalProperties.token}} as AxiosRequestConfig).then(response => {
+  try {
+    let response = await axios.post("/event/getEventSessionsByEventId", {eventId: bookingInformation.eventId}, {headers: {token: globalProperties.token}} as AxiosRequestConfig);
     const dataConverted = response.data.data.map((item: Session) => ({
       ...item,
       startTime: new Date(item.startTime),
@@ -85,15 +86,20 @@ const fetchSessionInformation = async () => {
       registrationEndTime: new Date(item.registrationEndTime)
     } as Session));
     Object.assign(sessionInformation, dataConverted);
+    response = await axios.post("/orderRecord/getMyOrderRecordByEventId", {eventId: bookingInformation.eventId, mode: 0}, {headers: {token: globalProperties.token}} as AxiosRequestConfig);
+    const registeredEventSessionIdArray = response.data.data;
+    sessionInformation.forEach(session => {
+      session.registered = !!registeredEventSessionIdArray.includes(session.eventSessionId);
+    })
     fetchSessionInformationStatus.value = 1;
-  }).catch(error => {
+  } catch(error) {
     fetchSessionInformationStatus.value = -1;
     if (error.response) {
-      NotifyPlugin.error({title: error.response.data.msg});
+      await NotifyPlugin.error({title: error.response.data.msg});
     } else {
-      NotifyPlugin.error({title: error.message});
+      await NotifyPlugin.error({title: error.message});
     }
-  })
+  }
 }
 
 onMounted(() => {
@@ -169,10 +175,12 @@ export interface Session {
   registrationEndTime: Date;
   minSize: number;
   maxSize: number;
+  currentSize: number;
   seatMapId: number;
   venue: string;
   location: string;
   additionalInformationRequired: string;
+  registered: boolean;
 }
 
 export let sessionInformation: Session[] = reactive([{
@@ -183,11 +191,13 @@ export let sessionInformation: Session[] = reactive([{
   registrationStartTime: new Date(2024, 2, 25, 10),
   registrationEndTime: new Date(2024, 2, 27, 0),
   minSize: 10,
+  currentSize: 20,
   maxSize: 100,
   seatMapId: 1,
   venue: '三教107',
   location: '',
-  additionalInformationRequired: '[{"name": "手机号", "nameEng": "phoneNumber", "required": true, "rules": [{"telnumber": true ,"message": "请输入正确的手机号码"}], "value": ""}, {"name": "书院", "nameEng": "college", "required": true, "rules": null, "value": ""}]'
+  additionalInformationRequired: '[{"name": "手机号", "nameEng": "phoneNumber", "required": true, "rules": [{"telnumber": true ,"message": "请输入正确的手机号码"}], "value": ""}, {"name": "书院", "nameEng": "college", "required": true, "rules": null, "value": ""}]',
+  registered: false
 },
   {
     eventSessionId: 2,
@@ -198,10 +208,12 @@ export let sessionInformation: Session[] = reactive([{
     registrationEndTime: null,
     minSize: 5,
     maxSize: 500,
+    currentSize: 100,
     seatMapId: 1,
     venue: '三教107',
     location: '',
-    additionalInformationRequired: '[{"name": "手机号", "nameEng": "phoneNumber", "required": true, "rules": [{"telnumber": true ,"message": "请输入正确的手机号码"}], "value": ""}, {"name": "书院", "nameEng": "college", "required": true, "rules": null, "value": ""}]'
+    additionalInformationRequired: '[{"name": "手机号", "nameEng": "phoneNumber", "required": true, "rules": [{"telnumber": true ,"message": "请输入正确的手机号码"}], "value": ""}, {"name": "书院", "nameEng": "college", "required": true, "rules": null, "value": ""}]',
+    registered: false
   },
   {
     eventSessionId: 3,
@@ -212,10 +224,12 @@ export let sessionInformation: Session[] = reactive([{
     registrationEndTime: new Date(2024, 2, 28, 0),
     minSize: 20,
     maxSize: 80,
+    currentSize: 60,
     seatMapId: 1,
     venue: '一教111',
     location: '',
-    additionalInformationRequired: '[{"name": "手机号", "nameEng": "phoneNumber", "required": true, "rules": [{"telnumber": true ,"message": "请输入正确的手机号码"}], "value": ""}, {"name": "书院", "nameEng": "college", "required": true, "rules": null, "value": ""}]'
+    additionalInformationRequired: '[{"name": "手机号", "nameEng": "phoneNumber", "required": true, "rules": [{"telnumber": true ,"message": "请输入正确的手机号码"}], "value": ""}, {"name": "书院", "nameEng": "college", "required": true, "rules": null, "value": ""}]',
+    registered: true
   }])
 
 export const submitData = async () => {
