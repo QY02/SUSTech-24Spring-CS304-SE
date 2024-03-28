@@ -43,20 +43,22 @@
 
 <script setup lang="ts">
 
-import {onMounted, ref} from "vue";
+import {onMounted, ref, getCurrentInstance} from "vue";
 import {TimeIcon, VerifyIcon, CheckCircleIcon} from 'tdesign-icons-vue-next';
 import ChooseSession from '@/components/book/ChooseSession.vue';
 import ChooseSeat from '@/components/book/ChooseSeat.vue';
 import InputInformation from '@/components/book/InputInformation.vue';
 import Finish from '@/components/book/Finish.vue';
-import {MessagePlugin} from "tdesign-vue-next";
+import {MessagePlugin, NotifyPlugin} from "tdesign-vue-next";
+import axios, {AxiosRequestConfig} from 'axios';
+import {useRoute} from "vue-router";
+import {globalProperties} from '@/main';
 
 const stepChange = (current: number, previous: number) => {
   if ((previous !== 3) && (current !== 3)) {
     if (!((previous === 0) && (bookingInformation.chosenSession === null))) {
       currentStep.value = current;
-    }
-    else {
+    } else {
       MessagePlugin.warning('请选择一个场次');
     }
   }
@@ -69,21 +71,53 @@ const removeClickableOnFinishStepItem = () => {
   }
 }
 
+axios.defaults.baseURL = globalProperties.apiBaseUrl;
+const route = useRoute();
+bookingInformation.eventId = Number(route.query.eventId);
+const fetchSessionInformation = async () => {
+  fetchSessionInformationStatus.value = 0;
+  axios.post("/event/getEventSessionsByEventId", {eventId: bookingInformation.eventId}, {headers: {token: globalProperties.token}} as AxiosRequestConfig).then(response => {
+    const dataConverted = response.data.data.map((item: Session) => ({
+      ...item,
+      startTime: new Date(item.startTime),
+      endTime: new Date(item.endTime),
+      registrationStartTime: new Date(item.registrationStartTime),
+      registrationEndTime: new Date(item.registrationEndTime)
+    } as Session));
+    Object.assign(sessionInformation, dataConverted);
+    fetchSessionInformationStatus.value = 1;
+  }).catch(error => {
+    fetchSessionInformationStatus.value = -1;
+    if (error.response) {
+      NotifyPlugin.error({title: error.response.data.msg});
+    } else {
+      NotifyPlugin.error({title: error.message});
+    }
+  })
+}
+
 onMounted(() => {
   removeClickableOnFinishStepItem();
+  fetchSessionInformation();
 });
 
 </script>
 
 <script lang="ts">
 import {reactive, ref} from "vue";
-import {FormRule} from "tdesign-vue-next";
+import {FormRule, MessagePlugin, NotifyPlugin} from "tdesign-vue-next";
+import axios, {AxiosRequestConfig} from "axios";
+import {globalProperties} from '@/main';
+import {useRoute} from "vue-router";
+
 
 export let currentStep = ref(0);
 
 export function toNextStep() {
   currentStep.value++;
 }
+
+export let fetchSessionInformationStatus = ref(0);
 
 export interface AdditionalInformationItem {
   name: string;
@@ -94,12 +128,14 @@ export interface AdditionalInformationItem {
 }
 
 interface BookingInformation {
+  eventId: number;
   chosenSession: number;
   chosenSeat: string;
   additionalInformation: AdditionalInformationItem[];
 }
 
 export const bookingInformation: BookingInformation = reactive({
+  eventId: null,
   chosenSession: null,
   chosenSeat: null,
   additionalInformation: [
@@ -125,50 +161,85 @@ export const bookingInformation: BookingInformation = reactive({
 })
 
 export interface Session {
+  eventSessionId: number;
   startTime: Date;
   endTime: Date;
-  venue: string;
   registrationRequired: boolean;
   registrationStartTime: Date;
   registrationEndTime: Date;
   minSize: number;
   maxSize: number;
+  seatMapId: number;
+  venue: string;
   location: string;
+  additionalInformationRequired: string;
 }
 
-export const sessionInformation: Session[] = reactive([{
+export let sessionInformation: Session[] = reactive([{
+  eventSessionId: 1,
   startTime: new Date(2024, 3, 1, 8),
   endTime: new Date(2024, 3, 1, 10),
-  venue: '三教107',
   registrationRequired: true,
   registrationStartTime: new Date(2024, 2, 25, 10),
   registrationEndTime: new Date(2024, 2, 27, 0),
   minSize: 10,
   maxSize: 100,
-  location: ''
+  seatMapId: 1,
+  venue: '三教107',
+  location: '',
+  additionalInformationRequired: '[{"name": "手机号", "nameEng": "phoneNumber", "required": true, "rules": [{"telnumber": true ,"message": "请输入正确的手机号码"}], "value": ""}, {"name": "书院", "nameEng": "college", "required": true, "rules": null, "value": ""}]'
 },
   {
+    eventSessionId: 2,
     startTime: new Date(2024, 3, 1, 10),
     endTime: new Date(2024, 3, 1, 12),
-    venue: '三教107',
     registrationRequired: false,
     registrationStartTime: null,
     registrationEndTime: null,
     minSize: 5,
     maxSize: 500,
-    location: ''
+    seatMapId: 1,
+    venue: '三教107',
+    location: '',
+    additionalInformationRequired: '[{"name": "手机号", "nameEng": "phoneNumber", "required": true, "rules": [{"telnumber": true ,"message": "请输入正确的手机号码"}], "value": ""}, {"name": "书院", "nameEng": "college", "required": true, "rules": null, "value": ""}]'
   },
   {
+    eventSessionId: 3,
     startTime: new Date(2024, 3, 2, 8),
     endTime: new Date(2024, 3, 2, 10),
-    venue: '一教111',
     registrationRequired: true,
     registrationStartTime: new Date(2024, 2, 26, 10),
     registrationEndTime: new Date(2024, 2, 28, 0),
     minSize: 20,
     maxSize: 80,
-    location: ''
+    seatMapId: 1,
+    venue: '一教111',
+    location: '',
+    additionalInformationRequired: '[{"name": "手机号", "nameEng": "phoneNumber", "required": true, "rules": [{"telnumber": true ,"message": "请输入正确的手机号码"}], "value": ""}, {"name": "书院", "nameEng": "college", "required": true, "rules": null, "value": ""}]'
   }])
+
+export const submitData = async () => {
+  axios.defaults.baseURL = globalProperties.apiBaseUrl;
+  axios.post("/event/submitBookingData", {
+    eventId: bookingInformation.eventId,
+    eventSessionId: sessionInformation[bookingInformation.chosenSession].eventSessionId,
+    seatId: bookingInformation.chosenSeat,
+    additionalInformation: JSON.stringify(bookingInformation.additionalInformation.map(item => ({
+      name: item.name,
+      nameEng: item.nameEng,
+      value: item.value
+    })))
+  }, {headers: {token: globalProperties.token}} as AxiosRequestConfig).then(() => {
+    MessagePlugin.success('提交成功');
+    currentStep.value++;
+  }).catch(error => {
+    if (error.response) {
+      NotifyPlugin.error({title: error.response.data.msg});
+    } else {
+      NotifyPlugin.error({title: error.message});
+    }
+  })
+}
 
 </script>
 

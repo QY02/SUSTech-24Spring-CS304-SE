@@ -33,69 +33,72 @@
         </div>
       </t-space>
     </div>
-    <div ref="seatChooserDiv" class="choose-seat-seat-div">
-      <div ref="seatChooserInnerDiv">
-        <div ref="seatChooserInnermostDiv" class="choose-seat-seat-innermost-div">
-          <vue-draggable-resizable class="choose-seat-seat-chooser-draggable-resizable"
-                                   :w="seatChooserWidth"
-                                   :h="seatChooserHeight"
-                                   :x="seatChooserX"
-                                   :y="seatChooserY"
-                                   :lock-aspect-ratio="true"
-                                   :onDragStart="handleDragAndResizeStart"
-                                   :onResizeStart="handleDragAndResizeStart"
-                                   :onDrag="handleDrag"
-                                   :onResize="handleResize"
-                                   @dragStop="handleDragStop"
-                                   @resizeStop="handleResizeStop"
-                                   @wheel="onWheel">
-            <div class="choose-seat-inside-div">
-              <div v-for="seat in seatMap.seats"
-                   :style="`position: absolute; left: ${(seat.x / seatMap.size.width) * 100}%; top: ${(seat.y / seatMap.size.height) * 100}%; width: ${(10 / seatMap.size.width) * 100}%; height: ${(10 / seatMap.size.height) * 100}%; display: flex; justify-content: center; align-items: center;`">
-                <t-popconfirm theme="default" cancel-btn="取消">
-                  <template #confirmBtn>
-                    <t-button size="small" theme="primary" style="margin-left: 6px" @click="handleChoose(seat)">
-                      {{ getConfirmBtnStatus(seat) }}
-                    </t-button>
-                  </template>
-                  <template #content>
-                    <p style="margin-top: 1px; margin-left: 10px; margin-bottom: 0; font-weight: bold; font-size: 18px">{{ seat.id }}</p>
-                    <p style="margin-left: 10px">{{ `类型: ${seat.type}` }}</p>
-                    <p style="margin-bottom: 0; margin-left: 10px">{{ `价格: ${seat.price}` }}</p>
-                  </template>
-                  <template #icon>
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 512 512" width="1.5em" height="1.5em">
-                      <path fill="#0052d9"
+    <t-loading :loading="fetchSeatMapStatus !== 1" :show-overlay="true">
+      <div ref="seatChooserDiv" class="choose-seat-seat-div">
+        <div ref="seatChooserInnerDiv">
+          <div ref="seatChooserInnermostDiv" class="choose-seat-seat-innermost-div">
+            <vue-draggable-resizable class="choose-seat-seat-chooser-draggable-resizable"
+                                     :w="seatChooserWidth"
+                                     :h="seatChooserHeight"
+                                     :x="seatChooserX"
+                                     :y="seatChooserY"
+                                     :lock-aspect-ratio="true"
+                                     :onDragStart="handleDragAndResizeStart"
+                                     :onResizeStart="handleDragAndResizeStart"
+                                     :onDrag="handleDrag"
+                                     :onResize="handleResize"
+                                     @dragStop="handleDragStop"
+                                     @resizeStop="handleResizeStop"
+                                     @wheel="onWheel">
+              <div class="choose-seat-inside-div">
+                <div v-for="seat in seatMap.seats"
+                     :style="`position: absolute; left: ${(seat.x / seatMap.size.width) * 100}%; top: ${(seat.y / seatMap.size.height) * 100}%; width: ${(10 / seatMap.size.width) * 100}%; height: ${(10 / seatMap.size.height) * 100}%; display: flex; justify-content: center; align-items: center;`">
+                  <t-popconfirm theme="default" cancel-btn="取消">
+                    <template #confirmBtn>
+                      <t-button size="small" theme="primary" style="margin-left: 6px" @click="handleChoose(seat)">
+                        {{ getConfirmBtnStatus(seat) }}
+                      </t-button>
+                    </template>
+                    <template #content>
+                      <p style="margin-top: 1px; margin-left: 10px; margin-bottom: 0; font-weight: bold; font-size: 18px">
+                        {{ seat.id }}</p>
+                      <p style="margin-left: 10px">{{ `类型: ${seat.type}` }}</p>
+                      <p style="margin-bottom: 0; margin-left: 10px">{{ `价格: ${seat.price}` }}</p>
+                    </template>
+                    <template #icon>
+                      <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 512 512" width="1.5em" height="1.5em">
+                        <path fill="#0052d9"
+                              d="M176 80H336c44.2 0 80 35.8 80 80v34.8c7.7-1.8 15.7-2.8 24-2.8s16.3 1 24 2.8V160c0-70.7-57.3-128-128-128H176C105.3 32 48 89.3 48 160v34.8c7.7-1.8 15.7-2.8 24-2.8s16.3 1 24 2.8V160c0-44.2 35.8-80 80-80zM462.5 227.6c-7.1-2.3-14.6-3.6-22.5-3.6c-9.5 0-18.5 1.8-26.8 5.2c-24.1 9.7-41.8 32-44.7 58.8H143.6c-3-26.8-20.6-49.1-44.7-58.8C90.5 225.8 81.5 224 72 224c-7.9 0-15.4 1.3-22.5 3.6C20.7 237 0 264.1 0 296V432c0 26.5 21.5 48 48 48H96c20.9 0 38.7-13.4 45.3-32H370.7c6.6 18.6 24.4 32 45.3 32h48c26.5 0 48-21.5 48-48V296c0-31.9-20.7-59-49.5-68.4zM368 400H144V336h32H336h32v64zM96 400v32H48l0-136c0-13.3 10.7-24 24-24s24 10.7 24 24v40 64zM464 296V432H416V296c0-13.3 10.7-24 24-24s24 10.7 24 24z"/>
+                      </svg>
+                    </template>
+                    <svg v-if="!seat.availability" style="width: 70%; height: 70%" xmlns="http://www.w3.org/2000/svg"
+                         viewBox="0 0 512 512">
+                      <path :fill="seat.color" style="opacity: 0.6;"
+                            d="M192 32C121.3 32 64 89.3 64 160v66.7c18.6 6.6 32 24.4 32 45.3v80H416V272c0-20.9 13.4-38.7 32-45.3V160c0-70.7-57.3-128-128-128H192z"/>
+                      <path :fill="seat.color"
+                            d="M48 224c-26.5 0-48 21.5-48 48V448c0 17.7 14.3 32 32 32H64c17.7 0 32-14.3 32-32H416c0 17.7 14.3 32 32 32h32c17.7 0 32-14.3 32-32V272c0-26.5-21.5-48-48-48s-48 21.5-48 48v80H96V272c0-26.5-21.5-48-48-48z"/>
+                    </svg>
+                    <svg v-else-if="seat.id === bookingInformation.chosenSeat" style="width: 70%; height: 70%"
+                         xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                      <path :fill="seat.color"
+                            d="M64 32V192H96h32v32 96H384V224 192h32 32V32H64zm0 192H0V480H96V448H416v32h96V224H448 416v32 64 32H384 128 96V320 256 224H64z"/>
+                    </svg>
+                    <svg v-else style="width: 70%; height: 70%"
+                         xmlns="http://www.w3.org/2000/svg"
+                         viewBox="0 0 512 512">
+                      <path :fill="seat.color"
                             d="M176 80H336c44.2 0 80 35.8 80 80v34.8c7.7-1.8 15.7-2.8 24-2.8s16.3 1 24 2.8V160c0-70.7-57.3-128-128-128H176C105.3 32 48 89.3 48 160v34.8c7.7-1.8 15.7-2.8 24-2.8s16.3 1 24 2.8V160c0-44.2 35.8-80 80-80zM462.5 227.6c-7.1-2.3-14.6-3.6-22.5-3.6c-9.5 0-18.5 1.8-26.8 5.2c-24.1 9.7-41.8 32-44.7 58.8H143.6c-3-26.8-20.6-49.1-44.7-58.8C90.5 225.8 81.5 224 72 224c-7.9 0-15.4 1.3-22.5 3.6C20.7 237 0 264.1 0 296V432c0 26.5 21.5 48 48 48H96c20.9 0 38.7-13.4 45.3-32H370.7c6.6 18.6 24.4 32 45.3 32h48c26.5 0 48-21.5 48-48V296c0-31.9-20.7-59-49.5-68.4zM368 400H144V336h32H336h32v64zM96 400v32H48l0-136c0-13.3 10.7-24 24-24s24 10.7 24 24v40 64zM464 296V432H416V296c0-13.3 10.7-24 24-24s24 10.7 24 24z"/>
                     </svg>
-                  </template>
-                  <svg v-if="!seat.availability" style="width: 70%; height: 70%" xmlns="http://www.w3.org/2000/svg"
-                       viewBox="0 0 512 512">
-                    <path :fill="seat.color" style="opacity: 0.6;"
-                          d="M192 32C121.3 32 64 89.3 64 160v66.7c18.6 6.6 32 24.4 32 45.3v80H416V272c0-20.9 13.4-38.7 32-45.3V160c0-70.7-57.3-128-128-128H192z"/>
-                    <path :fill="seat.color"
-                          d="M48 224c-26.5 0-48 21.5-48 48V448c0 17.7 14.3 32 32 32H64c17.7 0 32-14.3 32-32H416c0 17.7 14.3 32 32 32h32c17.7 0 32-14.3 32-32V272c0-26.5-21.5-48-48-48s-48 21.5-48 48v80H96V272c0-26.5-21.5-48-48-48z"/>
-                  </svg>
-                  <svg v-else-if="seat.id === bookingInformation.chosenSeat" style="width: 70%; height: 70%"
-                       xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-                    <path :fill="seat.color"
-                          d="M64 32V192H96h32v32 96H384V224 192h32 32V32H64zm0 192H0V480H96V448H416v32h96V224H448 416v32 64 32H384 128 96V320 256 224H64z"/>
-                  </svg>
-                  <svg v-else style="width: 70%; height: 70%"
-                       xmlns="http://www.w3.org/2000/svg"
-                       viewBox="0 0 512 512">
-                    <path :fill="seat.color"
-                          d="M176 80H336c44.2 0 80 35.8 80 80v34.8c7.7-1.8 15.7-2.8 24-2.8s16.3 1 24 2.8V160c0-70.7-57.3-128-128-128H176C105.3 32 48 89.3 48 160v34.8c7.7-1.8 15.7-2.8 24-2.8s16.3 1 24 2.8V160c0-44.2 35.8-80 80-80zM462.5 227.6c-7.1-2.3-14.6-3.6-22.5-3.6c-9.5 0-18.5 1.8-26.8 5.2c-24.1 9.7-41.8 32-44.7 58.8H143.6c-3-26.8-20.6-49.1-44.7-58.8C90.5 225.8 81.5 224 72 224c-7.9 0-15.4 1.3-22.5 3.6C20.7 237 0 264.1 0 296V432c0 26.5 21.5 48 48 48H96c20.9 0 38.7-13.4 45.3-32H370.7c6.6 18.6 24.4 32 45.3 32h48c26.5 0 48-21.5 48-48V296c0-31.9-20.7-59-49.5-68.4zM368 400H144V336h32H336h32v64zM96 400v32H48l0-136c0-13.3 10.7-24 24-24s24 10.7 24 24v40 64zM464 296V432H416V296c0-13.3 10.7-24 24-24s24 10.7 24 24z"/>
-                  </svg>
-                </t-popconfirm>
+                  </t-popconfirm>
+                </div>
               </div>
-            </div>
-          </vue-draggable-resizable>
+            </vue-draggable-resizable>
+          </div>
         </div>
       </div>
-    </div>
+    </t-loading>
     <t-space size="medium">
       <t-button @click="currentStep--">上一步</t-button>
       <t-button @click="handleSubmit">提交</t-button>
@@ -104,11 +107,12 @@
 </template>
 
 <script setup lang="ts">
-import {currentStep, toNextStep} from '@/components/book/Steps.vue';
-import {onMounted, reactive, Ref, ref} from "vue";
-import {bookingInformation} from '@/components/book/Steps.vue';
-import {MessagePlugin} from "tdesign-vue-next";
+import {currentStep, toNextStep, submitData} from '@/components/book/Steps.vue';
+import {getCurrentInstance, onMounted, reactive, Ref, ref, watch} from "vue";
+import {sessionInformation, bookingInformation} from '@/components/book/Steps.vue';
+import {MessagePlugin, NotifyPlugin} from "tdesign-vue-next";
 import {checkForm} from '@/components/book/InputInformation.vue';
+import axios, {AxiosRequestConfig} from "axios";
 
 const seatMap = reactive({
   size: {
@@ -315,10 +319,39 @@ const handleSubmit = async () => {
     result = false;
   }
   if (result) {
-    await MessagePlugin.success('提交成功');
-    toNextStep();
+    await submitData();
   }
 }
+
+let fetchSeatMapStatus = ref(0);
+
+const instance = getCurrentInstance();
+const globalProperties = instance.appContext.config.globalProperties;
+const apiBaseUrl = globalProperties.$apiBaseUrl;
+const token = globalProperties.$token;
+axios.defaults.baseURL = apiBaseUrl;
+
+const fetchSessionInformation = async () => {
+  fetchSeatMapStatus.value = 0;
+  axios.post("/seatMap/getSeatMapWithSeatsById", {seatMapId: sessionInformation[bookingInformation.chosenSession].seatMapId}, {headers: {token: token}} as AxiosRequestConfig).then(response => {
+    Object.assign(seatMap, response.data.data.detailedData);
+    fetchSeatMapStatus.value = 1;
+  }).catch(error => {
+    fetchSeatMapStatus.value = -1;
+    if (error.response) {
+      NotifyPlugin.error({title: error.response.data.msg});
+    } else {
+      NotifyPlugin.error({title: error.message});
+    }
+  })
+}
+
+watch(() => bookingInformation.chosenSession, (newSession, oldSession) => {
+  bookingInformation.chosenSeat = null;
+  if ((oldSession === null) || (newSession === null) || (sessionInformation[oldSession].seatMapId !== sessionInformation[newSession].seatMapId)) {
+    fetchSessionInformation();
+  }
+})
 </script>
 
 <style scoped lang="less">

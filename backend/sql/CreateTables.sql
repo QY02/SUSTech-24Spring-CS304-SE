@@ -46,6 +46,7 @@ create table if not exists event_session
     end_time                        datetime,
     min_size                        int           not null,
     max_size                        int           not null,
+    current_size                    int           not null,
     seat_map_id                     int,
     venue                           varchar(1024) not null,
     location                        varchar(1024),
@@ -83,14 +84,16 @@ create table if not exists seat
 
 create table if not exists order_record
 (
-    id           int primary key auto_increment,
-    user_id      varchar(8) not null,
-    event_id     int        not null,
-    seat_id      varchar(10),
-    status       int        not null,
-    price        int,
-    submit_time  datetime   not null,
-    payment_time datetime
+    id                     int primary key auto_increment,
+    user_id                varchar(8) not null,
+    event_id               int        not null,
+    event_session_id       int        not null,
+    seat_id                varchar(10),
+    additional_information varchar(10240),
+    price                  int,
+    status                 int        not null,
+    submit_time            datetime   not null,
+    payment_time           datetime
 ) auto_increment = 100001;
 
 create table if not exists history

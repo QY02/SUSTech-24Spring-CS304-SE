@@ -1,4 +1,4 @@
-import { createApp } from 'vue';
+import {createApp, reactive} from 'vue';
 import App from './App.vue';
 import router from './routers';
 import TDesign from 'tdesign-vue-next';
@@ -16,8 +16,14 @@ app.use(router);
 // 初始化全局变量 $userRole、$apiBaseUr
 app.config.globalProperties.$userRole = null;
 app.config.globalProperties.$userId = null;
-app.config.globalProperties.$token = null;
+app.config.globalProperties.$token = "a";
 app.config.globalProperties.$apiBaseUrl = 'http://localhost:8083';
 app.config.globalProperties.$webSocketBaseUrl = 'ws://localhost:8083';
 app.component("vue-draggable-resizable", VueDraggableResizable);
 app.mount('#app');
+
+export const globalProperties = reactive({
+    apiBaseUrl: 'http://localhost:8083',
+    webSocketBaseUrl: 'ws://localhost:8083',
+    token: 'a'
+});

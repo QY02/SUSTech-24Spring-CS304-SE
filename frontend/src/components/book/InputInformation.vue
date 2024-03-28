@@ -17,18 +17,18 @@
 
 <script setup lang="ts">
 import {currentStep, toNextStep} from '@/components/book/Steps.vue';
-import {AdditionalInformationItem, bookingInformation} from '@/components/book/Steps.vue';
-import {reactive, ref} from "vue";
+import {sessionInformation, AdditionalInformationItem, bookingInformation} from '@/components/book/Steps.vue';
+import {nextTick, reactive, ref, UnwrapNestedRefs, watch, watchEffect} from "vue";
 import {FormProps, FormRule, MessagePlugin} from "tdesign-vue-next";
 
-const additionalInformation: AdditionalInformationItem[] = bookingInformation.additionalInformation;
+let additionalInformation: UnwrapNestedRefs<AdditionalInformationItem[]> = reactive(bookingInformation.additionalInformation);
 
-const formData: FormProps['data'] = reactive(additionalInformation.reduce((acc, item) => {
+let formData: UnwrapNestedRefs<FormProps['data']> = reactive(additionalInformation.reduce((acc, item) => {
   acc[item.nameEng] = item.value;
   return acc;
 }, {} as Record<string, string>));
 
-const FORM_RULES: FormProps['rules'] = additionalInformation.reduce((acc, item) => {
+let FORM_RULES: UnwrapNestedRefs<FormProps['rules']> = reactive(additionalInformation.reduce((acc, item) => {
   acc[item.nameEng] = [
     {
       required: item.required,
@@ -36,15 +36,39 @@ const FORM_RULES: FormProps['rules'] = additionalInformation.reduce((acc, item) 
     },
   ];
   if (item.rules !== null) {
-    acc[item.nameEng].push(...item.rules);
+    acc[item.nameEng].push(...(item.rules as FormRule[]));
   }
   return acc;
-}, {} as Record<string, Array<FormRule>>);
+}, {} as Record<string, Array<FormRule>>));
+
+watch(() => bookingInformation.chosenSession, (newSession, oldSession) => {
+  if ((oldSession === null) || (newSession === null) || (sessionInformation[oldSession].additionalInformationRequired !== sessionInformation[newSession].additionalInformationRequired)) {
+    bookingInformation.additionalInformation = JSON.parse(sessionInformation[newSession].additionalInformationRequired);
+    Object.assign(additionalInformation, bookingInformation.additionalInformation);
+    Object.assign(formData, additionalInformation.reduce((acc, item) => {
+      acc[item.nameEng] = item.value;
+      return acc;
+    }, {} as Record<string, string>));
+    Object.assign(FORM_RULES, additionalInformation.reduce((acc, item) => {
+      acc[item.nameEng] = [
+        {
+          required: item.required,
+          message: `${item.name}必填`,
+        },
+      ];
+      if (item.rules !== null) {
+        acc[item.nameEng].push(...(item.rules as FormRule[]));
+      }
+      return acc;
+    }, {} as Record<string, Array<FormRule>>));
+    form.value.validate({showErrorMessage: false}).then(() => form.value.clearValidate());
+  }
+});
 
 const onSubmit: FormProps['onSubmit'] = ({validateResult, firstError}) => {
   if (validateResult === true) {
-    for (let i = 0; i < additionalInformation.length; i++) {
-      additionalInformation[i].value = formData[i];
+    for (let i = 0; i < bookingInformation.additionalInformation.length; i++) {
+      bookingInformation.additionalInformation[i].value = formData[bookingInformation.additionalInformation[i].nameEng];
     }
     toNextStep();
   } else {
@@ -57,7 +81,7 @@ const onSubmit: FormProps['onSubmit'] = ({validateResult, firstError}) => {
 import {ref} from "vue";
 import {MessagePlugin} from "tdesign-vue-next";
 
-const form = ref(null);
+export const form = ref(null);
 
 export function checkForm() {
   return form.value.validate().then((validateResult) => {
@@ -71,8 +95,7 @@ export function checkForm() {
       }
       MessagePlugin.warning(`请完成信息填写${firstError !== null ? `：${firstError}` : ''}`);
       return false;
-    }
-    else {
+    } else {
       return true;
     }
   });

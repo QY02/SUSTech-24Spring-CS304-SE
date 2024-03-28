@@ -2,29 +2,39 @@
   <div class="choose-session-main-div">
     <t-space direction="vertical" align="center">
       <h1 class="choose-session-title">选择场次</h1>
-      <t-collapse style="width: 50vw">
-        <t-collapse-panel v-for="(session, index) in sessionInformation"
-                          :header="`${dateToString(session.startTime)} - ${dateToString(session.endTime)} ${session.venue}`">
-          <template #headerRightContent>
-            <t-button :disabled="!session.registrationRequired" :theme="bookingInformation.chosenSession === index ? 'success' : 'primary'" @click="choose(index)">{{getChooseButtonStatus(index)}}</t-button>
-          </template>
-          <div class="choose-session-detail-div">
-            <p v-if="session.registrationRequired" class="choose-session-detail-text">
-              {{
-                `报名时间: ${dateToString(session.registrationStartTime)} - ${dateToString(session.registrationEndTime)}`
-              }}</p>
-            <p v-else class="choose-session-detail-text">无需报名</p>
-            <p class="choose-session-detail-text">{{ `人数限制: ${session.minSize} - ${session.maxSize}` }}</p>
-          </div>
-        </t-collapse-panel>
-      </t-collapse>
+      <t-loading :loading="fetchSessionInformationStatus !== 1" :show-overlay="true">
+        <t-collapse style="width: 50vw">
+          <t-collapse-panel v-for="(session, index) in sessionInformation"
+                            :header="`${dateToString(session.startTime)} - ${dateToString(session.endTime)} ${session.venue}`">
+            <template #headerRightContent>
+              <t-button :disabled="getChooseButtonStatus(index)[0]"
+                        :theme="bookingInformation.chosenSession === index ? 'success' : 'primary'"
+                        @click="choose(index)">{{ getChooseButtonStatus(index)[1] }}
+              </t-button>
+            </template>
+            <div class="choose-session-detail-div">
+              <p v-if="session.registrationRequired" class="choose-session-detail-text">
+                {{
+                  `报名时间: ${dateToString(session.registrationStartTime)} - ${dateToString(session.registrationEndTime)}`
+                }}</p>
+              <p v-else class="choose-session-detail-text">无需报名</p>
+              <p class="choose-session-detail-text">{{ `人数限制: ${session.minSize} - ${session.maxSize}` }}</p>
+            </div>
+          </t-collapse-panel>
+        </t-collapse>
+      </t-loading>
       <t-button>返回</t-button>
     </t-space>
   </div>
 </template>
 
 <script setup lang="ts">
-import {sessionInformation, bookingInformation, toNextStep} from '@/components/book/Steps.vue';
+import {
+  sessionInformation,
+  bookingInformation,
+  toNextStep,
+  fetchSessionInformationStatus
+} from '@/components/book/Steps.vue';
 
 const dateToString = (date: Date) => {
   const dayNameArray = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
@@ -40,14 +50,17 @@ const choose = (index: number) => {
 }
 
 const getChooseButtonStatus = (index: number) => {
+  const timeNow = new Date();
   if (!sessionInformation[index].registrationRequired) {
-    return '无需报名';
+    return [true, '无需报名'];
+  }
+  else if ((timeNow < sessionInformation[index].registrationStartTime) || (timeNow > sessionInformation[index].registrationEndTime)) {
+    return [true, '不在报名时间段内'];
   }
   else if (bookingInformation.chosenSession === index) {
-    return '已选择';
-  }
-  else {
-    return '选择';
+    return [false, '已选择'];
+  } else {
+    return [false, '选择'];
   }
 }
 </script>

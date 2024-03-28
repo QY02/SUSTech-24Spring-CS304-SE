@@ -33,6 +33,8 @@ public class EventSession {
 
     private Integer maxSize;
 
+    private Integer currentSize;
+
     private Integer seatMapId;
 
     private String venue;

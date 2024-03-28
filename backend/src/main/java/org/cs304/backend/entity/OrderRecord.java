@@ -22,11 +22,15 @@ public class OrderRecord {
 
     private Integer eventId;
 
+    private Integer eventSessionId;
+
     private String seatId;
 
-    private Integer status;
+    private String additionalInformation;
 
     private Integer price;
+
+    private Integer status;
 
     private LocalDateTime submitTime;
 

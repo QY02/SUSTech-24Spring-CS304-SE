@@ -1,6 +1,8 @@
 package org.cs304.backend.entity;
 
+import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -22,4 +24,7 @@ public class SeatMap {
     private String description;
 
     private String data;
+
+    @TableField(exist = false)
+    private JSONObject detailedData;
 }
