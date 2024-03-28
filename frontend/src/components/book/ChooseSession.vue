@@ -8,7 +8,7 @@
                             :header="`${dateToString(session.startTime)} - ${dateToString(session.endTime)} ${session.venue}`">
             <template #headerRightContent>
               <t-button :disabled="getChooseButtonStatus(index)[0]"
-                        :theme="bookingInformation.chosenSession === index ? 'success' : 'primary'"
+                        :theme="getChooseButtonStatus(index)[2]"
                         @click="choose(index)">{{ getChooseButtonStatus(index)[1] }}
               </t-button>
             </template>
@@ -19,6 +19,7 @@
                 }}</p>
               <p v-else class="choose-session-detail-text">无需报名</p>
               <p class="choose-session-detail-text">{{ `人数限制: ${session.minSize} - ${session.maxSize}` }}</p>
+              <p class="choose-session-detail-text">{{`当前人数: ${session.currentSize}`}}</p>
             </div>
           </t-collapse-panel>
         </t-collapse>
@@ -52,15 +53,21 @@ const choose = (index: number) => {
 const getChooseButtonStatus = (index: number) => {
   const timeNow = new Date();
   if (!sessionInformation[index].registrationRequired) {
-    return [true, '无需报名'];
+    return [true, '无需报名', 'primary'];
+  }
+  else if (sessionInformation[index].registered) {
+    return [true, '已报名', 'success'];
   }
   else if ((timeNow < sessionInformation[index].registrationStartTime) || (timeNow > sessionInformation[index].registrationEndTime)) {
-    return [true, '不在报名时间段内'];
+    return [true, '不在报名时间段内', 'primary'];
+  }
+  else if (sessionInformation[index].currentSize >= sessionInformation[index].maxSize) {
+    return [true, '容量已满', 'primary'];
   }
   else if (bookingInformation.chosenSession === index) {
-    return [false, '已选择'];
+    return [false, '已选择', 'success'];
   } else {
-    return [false, '选择'];
+    return [false, '选择', 'primary'];
   }
 }
 </script>
