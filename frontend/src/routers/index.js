@@ -44,10 +44,10 @@ const routes = [
                 path: '/apply',
                 component: () => import('@/components/event/ApplyForEvent.vue')
             },
-            // {
-            //     path: '/approval',
-            //     component: () => import('@/components/admin/EventApproval.vue')
-            // },
+            {
+                path: '/approval',
+                component: () => import('@/components/admin/EventApproval.vue')
+            },
             {
                 name: 'book',
                 path: '/book',

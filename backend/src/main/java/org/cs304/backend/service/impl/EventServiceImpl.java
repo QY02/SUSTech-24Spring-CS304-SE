@@ -48,6 +48,11 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
             for (int i = 0; i < jsonArray.size(); i++) {
                 QueryWrapper<EventSession> queryWrapper1 = new QueryWrapper<EventSession>().eq("event_id", jsonArray.getJSONObject(i).getInteger("id"));
                 List<EventSession> eventSessionList = eventSessionService.list(queryWrapper1);
+                if (eventSessionList == null || eventSessionList.isEmpty()) {
+                    jsonArray.getJSONObject(i).put("startTime", null);
+                    jsonArray.getJSONObject(i).put("location", null);
+                    continue;
+                }
                 LocalDateTime start_time = eventSessionList.get(0).getStartTime();
                 for (int j = 1; j < eventSessionList.size(); j++) {
                     if (start_time.isAfter(eventSessionList.get(j).getStartTime())) {

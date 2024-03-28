@@ -1,28 +1,72 @@
 <template>
   <t-card :bordered="false" shadow class="card-with-margin">
+    <t-button class="button-right" size="small" theme="success" variant="base">审核历史</t-button>
     <h1 class="title"> 审核 </h1>
     <t-divider/>
+    <t-collapse borderless="true" expand-mutex>
+      <t-collapse-panel value="0" header="筛选" >
+        <t-space direction="vertical">
+        <t-space direction="horizontal">
+          <t-input placeholder="活动名称" v-model:value="filterData.eventName" clearable>
+            <template #suffixIcon>
+              <search-icon :style="{ cursor: 'pointer' }" />
+            </template><t-button class="button-right" theme="default" size="small" variant="base" @click="viewHistory">审核历史</t-button>
+          </t-input>
+          <t-range-input v-model:value="filterData.priceRange" placeholder="请输入价格"
+                         clearable
+                         :tips="errorPriceTips"
+                         :status="errorPriceTips ? 'error' : ''"
+                         @change="onPriceChange">
+            <template #suffixIcon>
+              <money-icon :style="{ cursor: 'pointer' }" />
+            </template>
+          </t-range-input>
+        </t-space>
+        <t-space direction="horizontal">
+          <t-input placeholder="地点" v-model:value="filterData.location" clearable>
+            <template #suffixIcon>
+              <search-icon :style="{ cursor: 'pointer' }" />
+            </template>
+          </t-input>
+          <t-date-range-picker enable-time-picker allow-input clearable v-model:value="filterData.dateRange" />
+        </t-space>
+        <t-select
+            :options="eventType"
+            placeholder="请选择活动类型"
+            v-model:value="filterData.eventType"
+            multiple
+        />
+        <t-space direction="horizontal">
+          <t-button @click="onResetFilter">重置</t-button>
+          <t-button @click="onSubmitFilter">提交</t-button>
+        </t-space>
+      </t-space>
+      </t-collapse-panel>
+    </t-collapse>
     <div class="spacing"></div>
     <t-space direction="vertical" class="centered">
-      <t-list :split="true">
+      <div v-if="listData.length === 0" class="centered">
+        结果为空
+      </div>
+      <t-list v-else :split="true">
         <t-list-item v-for="item in listData" :key="item.id">
-          <t-list-item-meta :image="avatarUrl" title="林俊杰世界巡回演唱会" description="林俊杰世界巡回演唱会深圳站会在5.4-5.5举办" />
+          <t-list-item-meta :image="avatarUrl" :title="item.title" :description="item.description" />
           <t-space direction="vertical">
-            <t-text>2024-05-04</t-text>
-            <t-text>深圳市大运中心体育场</t-text>
+            <t-text>{{ item.date }}</t-text>
+            <t-text>{{ item.location }}</t-text>
           </t-space>
           <t-space direction="horizontal">
-            <t-tag theme="primary" variant="light">演唱会</t-tag>
-            <t-tag theme="warning" variant="light">￥380起</t-tag>
+            <t-tag theme="primary" variant="light">{{ item.type }}</t-tag>
+            <t-tag theme="warning" variant="light">￥{{ item.price }}起</t-tag>
           </t-space>
           <template #action>
-            <t-button variant="text" shape="square">
+            <t-button variant="text" shape="square" @click="viewDetail">
               <icon name="task-1" />
             </t-button>
-            <t-button variant="text" shape="square">
+            <t-button variant="text" shape="square" @click="onSuccess">
               <icon name="check" color="green" />
             </t-button>
-            <t-button variant="text" shape="square">
+            <t-button variant="text" shape="square" @click="onDelete">
               <icon name="close" color="red" />
             </t-button>
           </template>
@@ -31,30 +75,117 @@
     </t-space>
     <div class="spacing"></div>
     <t-pagination
-        :total="36"
-        :default-current="2"
-        :default-page-size="10"
+        :total="filter_list_data ? filter_list_data.length : 0"
+        :default-current="1"
+        :default-page-size="pageSize"
         show-first-and-last-page-btn
         @current-change="onCurrentChange"
         @page-size-change="onPageSizeChange"
-        @change="onChange"
     />
     <div class="spacing"></div>
   </t-card>
+  <t-dialog
+      v-model:visible="deleteVisible"
+      theme="danger"
+      header="拒绝申请"
+      :on-close="closeDelete"
+      :cancel-btn="null"
+      :confirm-btn="null"
+      @confirm="onClickConfirm"
+  >
+    <t-input placeholder="请输入拒绝原因"
+             clearable
+             :tips="deleteTips"
+             :status="deleteTips ? 'error' : ''"
+             @change="onDeleteChange"/>
+    <template #footer>
+      <t-button theme="danger" @click="onClickConfirm">确定</t-button>
+      <t-button @click="closeDelete">取消</t-button>
+    </template>
+  </t-dialog>
+  <t-dialog
+      v-model:visible="successVisible"
+      theme="success"
+      header="确认通过申请"
+      :on-close="closeSuccess"
+      @confirm="onSuccessClickConfirm"
+  />
+  <t-dialog
+      closeBtn
+      showOverlay
+      preventScrollThrough
+      header
+      destroyOnClose
+      :footer="false"
+      v-model:visible="historyVisible"
+  >
+    <p>This is a dialog</p>
+  </t-dialog>
+  <t-drawer v-model:visible="detailVisible" header="活动详情" :confirm-btn="null">
+    <p>具体活动细节</p>
+  </t-drawer>
 </template>
 
+
+
 <script setup>
-import {ref, onMounted, getCurrentInstance} from 'vue';
-import { MessagePlugin } from 'tdesign-vue-next';
+import {ref, onMounted, getCurrentInstance, nextTick} from 'vue';
 import { Icon } from 'tdesign-icons-vue-next';
 import axios from 'axios';
+import { SearchIcon,MoneyIcon } from 'tdesign-icons-vue-next';
 const appConfig = ref(getCurrentInstance().appContext.config.globalProperties).value;
 
-// ###### 获取数据 开始 ######
+// ###### 数据 开始 ######
+// 审核列表数据
 const audit_list_data = ref(null);
+// 筛选的数据
+const filter_list_data = ref(null);
+// 当前页展示的数据
 const listData = ref([]);
-const pageSize = ref(5);
+// 分页
+const pageSize = ref(8);
+const eventType = [
+  { label: '全选', checkAll: true },
+  { label: '讲座', value: 0 },
+  { label: '工作坊', value: 1 },
+  { label: '比赛', value: 2 },
+  { label: '表演', value: 3 },
+  { label: '展览', value: 4 },
+  { label: '论坛', value: 5 },
+  { label: '体育', value: 6 },
+  { label: '志愿', value: 7 },
+  { label: '学院', value: 8 },
+  { label: '沙龙', value: 9 },
+  { label: '培训', value: 10 },
+  { label: '社团', value: 11 },
+  { label: '其他', value: 12 },
+];
+const eventTypeMapping = {
+  0: '讲座',
+  1: '工作坊',
+  2: '比赛',
+  3: '表演',
+  4: '展览',
+  5: '论坛',
+  6: '体育',
+  7: '志愿',
+  8: '学院',
+  9: '沙龙',
+  10: '培训',
+  11: '社团',
+  12: '其他',
+};
 
+const eventTypeReverseMapping = Object.fromEntries(
+    Object.entries(eventTypeMapping).map(([key, value]) => [value, Number(key)])
+);
+
+const mapEventType = (type) => {
+  return eventTypeMapping[type];
+};
+// ###### 数据 结束 ######
+
+// ###### 获取数据 开始 ######
 axios.defaults.baseURL = appConfig.$apiBaseUrl;
 onMounted(() => {
   axios.get(`/admin/getAuditList`,{
@@ -63,7 +194,20 @@ onMounted(() => {
     }
   })
       .then(response => {
-        audit_list_data.value = response.data.data;
+        audit_list_data.value = response.data.data.map(item => ({
+          id: item.id,
+          title: item.name,
+          description: item.content,
+          date: item.startTime,
+          location: item.location,
+          price: item.lowestPrice,
+          type: mapEventType(item.type),
+          status: item.status,
+          publisherId: item.publisherId,
+          publishDate: item.publishDate
+        }));
+        filter_list_data.value = audit_list_data.value;
+        listData.value = filter_list_data.value.slice(0, pageSize.value);
       })
       .catch(error => {
         if (error.response) {
@@ -75,30 +219,136 @@ onMounted(() => {
 });
 // ###### 获取数据 结束 ######
 
+// ###### 查看审核历史 开始 ######
+const historyVisible = ref(false);
+
+const viewHistory = () => {
+  historyVisible.value = true;
+};
+
+// ###### 查看审核历史 结束 ######
+
+// ###### 搜索 开始 ######
+// 重置表单
+const filterData = ref({
+  eventName: '',
+  priceRange: [],
+  location: '',
+  eventType: [],
+  dateRange: [],
+});
+
+// 价格验证
+const errorPriceTips = ref('');
+const onPriceChange = (value) => {
+  if (isNaN(value[0])&& value[0]!==undefined || isNaN(value[1])&& value[1]!==undefined) {
+    errorPriceTips.value = '输入必须是数字';
+  } else if (value[0] > value[1]&&value[0]!==undefined&&value[1]!==undefined &&value[0]!==""&&value[1]!=="" ||value[0]<0||value[1]<0) {
+    errorPriceTips.value = '价格范围不合法';
+  } else {
+    errorPriceTips.value = '';
+  }
+};
+
+const onResetFilter = () => {
+  filterData.value = {
+    eventName: '',
+    priceRange: [],
+    location: '',
+    eventType: [],
+    dateRange: [],
+  };
+  nextTick(() => {
+    filter_list_data.value = [...audit_list_data.value];
+    listData.value = [...filter_list_data.value];
+  });
+};
+
+const onSubmitFilter = () => {
+const { eventName, priceRange, location, eventType, dateRange } = filterData.value;
+console.log('eventType', eventType);
+  filter_list_data.value = audit_list_data.value.filter(item => {
+    if (eventName && !item.title.includes(eventName)) {
+      return false;
+    }
+    if (priceRange.length > 0 && (item.price < priceRange[0] || item.price > priceRange[1])) {
+      return false;
+    }
+    if (location && !item.location.includes(location)) {
+      return false;
+    }
+    if (eventType.length > 0 && !eventType.includes(eventTypeReverseMapping[item.type])) {
+      return false;
+    }
+    return !(dateRange.length > 0 && (item.date < dateRange[0] || item.date > dateRange[1]));
+
+  });
+  listData.value = filter_list_data.value.slice(0, pageSize.value);
+};
+
+// ###### 搜索 结束 ######
+
 // ###### 列表 开始 ######
 const avatarUrl = 'https://tdesign.gtimg.com/site/avatar.jpg';
 // ###### 列表 结束 ######
 
 // ###### 分页 开始 ######
-const current = ref(1);
-
-const onPageSizeChange = (size) => {
-  console.log('page-size:', size);
-  MessagePlugin.success(`pageSize变化为${size}`);
+const onPageSizeChange = (pageInfo) => {
+  pageSize.value = pageInfo;
+  listData.value = filter_list_data.value.slice(0, pageSize.value);
 };
 
-const onCurrentChange = (index, pageInfo) => {
-  MessagePlugin.success(`转到第${index}页`);
-  console.log(pageInfo);
+const onCurrentChange = (index) => {
   const start = (index - 1) * pageSize.value;
   const end = start + pageSize.value;
-  listData.value = audit_list_data.value.slice(start, end);
+  listData.value = filter_list_data.value.slice(start, end);
 };
 
-const onChange = (pageInfo) => {
-  console.log(pageInfo);
-};
 // ###### 分页 结束 ######
+
+// ###### 对话框 开始 ######
+const deleteVisible = ref(false);
+const successVisible = ref(false);
+const detailVisible = ref(false);
+const deleteTips = ref('请输入拒绝原因');
+
+
+const onDeleteChange = (value) => {
+  deleteTips.value = value ? '' : '请输入拒绝原因';
+};
+
+const onDelete = () => {
+  deleteVisible.value = true;
+};
+
+const viewDetail = () => {
+  detailVisible.value = true;
+};
+
+const onSuccess = () => {
+  successVisible.value = true;
+};
+
+const onClickConfirm = () => {
+  if (deleteTips.value==='请输入拒绝原因') {
+    return;
+  }
+  deleteVisible.value = false;
+  console.log('删除原因：', deleteTips.value);
+};
+
+const onSuccessClickConfirm = () => {
+  successVisible.value = false;
+};
+
+const closeSuccess = () => {
+  successVisible.value = false;
+};
+
+const closeDelete = () => {
+  deleteVisible.value = false;
+};
+// ###### 对话框 结束 ######
 </script>
 
 <style scoped>
@@ -120,4 +370,11 @@ const onChange = (pageInfo) => {
   margin: 50px 40px;
   font-size: 50px;
 }
+
+.button-right {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
 </style>
