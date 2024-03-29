@@ -45,7 +45,7 @@ body {
 
 .content-layout {
   height: calc(100vh - var(--td-comp-size-xxxl));
-  overflow-y: auto;
+  overflow-y: scroll;
   position: absolute;
   right: 0;
 }
@@ -65,4 +65,10 @@ body {
 
 ::-webkit-scrollbar-corner {
   background-color: transparent;
+}
+
+.t-message__list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }

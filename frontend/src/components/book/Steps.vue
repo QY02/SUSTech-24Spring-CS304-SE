@@ -43,7 +43,7 @@
 
 <script setup lang="ts">
 
-import {onMounted, ref, getCurrentInstance} from "vue";
+import {onMounted, ref} from "vue";
 import {TimeIcon, VerifyIcon, CheckCircleIcon} from 'tdesign-icons-vue-next';
 import ChooseSession from '@/components/book/ChooseSession.vue';
 import ChooseSeat from '@/components/book/ChooseSeat.vue';
@@ -263,6 +263,6 @@ export const submitData = async () => {
   flex-direction: column;
   align-items: center;
   position: relative;
-  top: 5%;
+  top: 5vh;
 }
 </style>
