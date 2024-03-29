@@ -1,6 +1,6 @@
 <template>
   <t-card :bordered="false" shadow class="card-with-margin">
-    <t-button class="button-right" size="small" theme="success" variant="base">审核历史</t-button>
+    <t-button class="button-right" size="small" theme="success" variant="base" @click="viewHistory">审核历史</t-button>
     <h1 class="title"> 审核 </h1>
     <t-divider/>
     <t-collapse borderless="true" expand-mutex>
@@ -111,15 +111,35 @@
       @confirm="onSuccessClickConfirm"
   />
   <t-dialog
-      closeBtn
+      width="auto"
       showOverlay
       preventScrollThrough
-      header
+      header="审核历史"
       destroyOnClose
       :footer="false"
       v-model:visible="historyVisible"
   >
-    <p>This is a dialog</p>
+    <t-table
+        style="width: max-content"
+        row-key="index"
+        :data="historyData"
+        :columns="historyColumns"
+        :stripe="stripe"
+        :bordered="bordered"
+        :hover="hover"
+        :table-layout="tableLayout ? 'auto' : 'fixed'"
+        :size="size"
+        :pagination="historyPagination"
+        :show-header="showHeader"
+        cell-empty-content="-"
+        lazy-load
+    >
+      <template #status="{ row }">
+        <t-tag shape="round" :theme="statusNameListMap[row.status].theme" variant="light-outline">
+          {{statusNameListMap[row.status].label}}
+        </t-tag>
+      </template>
+    </t-table>
   </t-dialog>
   <t-drawer v-model:visible="detailVisible" header="活动详情" :confirm-btn="null">
     <p>具体活动细节</p>
@@ -188,7 +208,7 @@ const mapEventType = (type) => {
 // ###### 获取数据 开始 ######
 axios.defaults.baseURL = appConfig.$apiBaseUrl;
 onMounted(() => {
-  axios.get(`/admin/getAuditList`,{
+  axios.get(`/admin/getAuditList/0`,{
     headers: {
       token: 'z',
     }
@@ -220,12 +240,62 @@ onMounted(() => {
 // ###### 获取数据 结束 ######
 
 // ###### 查看审核历史 开始 ######
-const historyVisible = ref(false);
+const stripe = ref(true);
+const bordered = ref(true);
+const hover = ref(false);
+const tableLayout = ref(true);
+const size = ref('small');
+const showHeader = ref(true);
 
-const viewHistory = () => {
-  historyVisible.value = true;
+const statusNameListMap = {
+  0: { label: '等待审批', theme: 'warning' },
+  1: { label: '审批通过', theme: 'success' },
+  2: { label: '审批失败', theme: 'danger' },
 };
 
+const historyVisible = ref(false);
+const historyData = ref(null);
+
+const viewHistory = async () => {
+  try {
+    const response = await axios.get('/admin/getAuditList/1,2', {
+      headers: {
+        token: 'z',
+      }
+    });
+    historyData.value = response.data.data.map(item => ({
+      name: item.name,
+      startTime: item.startTime,
+      location: item.location,
+      lowestPrice: item.lowestPrice,
+      type: mapEventType(item.type),
+      status: item.status,
+      publisherId: item.publisherId,
+      publishDate: item.publishDate
+    }));
+    historyPagination.value.total = historyData.value.length;
+    historyVisible.value = true;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+
+const historyColumns = ref([
+  { colKey: 'name', title: '活动名称' },
+  { colKey: 'status', title: '申请状态',},
+  { colKey: 'publishDate', title: '申请时间' },
+  { colKey: 'publisherId', title: '申请人ID' },
+  { colKey: 'type', title: '活动类型' },
+  { colKey: 'startTime', title: '活动时间' },
+  { colKey: 'location', title: '活动地点' },
+]);
+
+let historyPagination = ref({
+  defaultCurrent: 1,
+  defaultPageSize: 10,
+  total: 0,
+});
 // ###### 查看审核历史 结束 ######
 
 // ###### 搜索 开始 ######

@@ -22,6 +22,7 @@ import org.cs304.backend.service.IEventSessionService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -39,8 +40,10 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
     private OrderRecordMapper orderRecordMapper;
 
     @Override
-    public JSONArray getAuditList() {
-        QueryWrapper<Event> queryWrapper = new QueryWrapper<Event>().eq("status", constant_EventStatus.AUDITING);
+    public JSONArray getAuditList(String eventStatus) {
+        String[] eventStatusArray = eventStatus.split(",");
+        List<Integer> eventStatusList = Arrays.stream(eventStatusArray).map(Integer::parseInt).toList();
+        QueryWrapper<Event> queryWrapper = new QueryWrapper<Event>().in("status", eventStatusList);
         List<Event> list = list(queryWrapper);
         if (list != null) {
             JSONArray jsonArray = new JSONArray();

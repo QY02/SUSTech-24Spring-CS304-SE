@@ -19,11 +19,11 @@ public class AdminController {
     @Resource
     private IEventService eventService;
 
-    @GetMapping("/getAuditList")
+    @GetMapping("/getAuditList/{eventStatus}")
     @Operation(summary = "获取审核列表",
             description = """
             ### 参数 ###
-            无
+            eventStatus(String): 事件状态列表, 逗号分开, 0表示未审核，1表示审核通过，2表示审核未通过
             ### 返回值 ###
             {
                 "code": "200",
@@ -46,11 +46,11 @@ public class AdminController {
             ### 注意事项 ###
             无
             """)
-    public Result getAuditList(@NotNull HttpServletRequest request,HttpServletResponse response) {
+    public Result getAuditList(@NotNull HttpServletRequest request,HttpServletResponse response,@PathVariable("eventStatus")String eventStatus) {
         int userType = (int) request.getAttribute("loginUserType");
         if (userType != 0) {
             throw new ServiceException("403","Only admin can alter");
         }
-        return Result.success(response,eventService.getAuditList());
+        return Result.success(response,eventService.getAuditList(eventStatus));
     }
 }
