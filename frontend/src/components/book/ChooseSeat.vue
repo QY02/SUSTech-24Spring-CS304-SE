@@ -43,6 +43,7 @@
                                      :x="seatChooserX"
                                      :y="seatChooserY"
                                      :lock-aspect-ratio="true"
+                                     :handles="[]"
                                      :onDragStart="handleDragAndResizeStart"
                                      :onResizeStart="handleDragAndResizeStart"
                                      :onDrag="handleDrag"
@@ -107,7 +108,7 @@
 </template>
 
 <script setup lang="ts">
-import {currentStep, toNextStep, submitData} from '@/components/book/Steps.vue';
+import {currentStep, submitData} from '@/components/book/Steps.vue';
 import {getCurrentInstance, onMounted, reactive, Ref, ref, watch} from "vue";
 import {sessionInformation, bookingInformation} from '@/components/book/Steps.vue';
 import {MessagePlugin, NotifyPlugin} from "tdesign-vue-next";
@@ -393,6 +394,11 @@ watch(() => bookingInformation.chosenSession, (newSession, oldSession) => {
       position: absolute;
       top: 0;
       left: 0;
+    }
+
+    &-chooser-draggable-resizable {
+      border: 2px solid #0052d9;
+      border-radius: 10px;
     }
   }
 

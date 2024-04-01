@@ -1,5 +1,5 @@
 <template>
-  <div class="main-div-steps">
+  <div class="steps-main-div">
     <t-steps style="width: 70%" :current="currentStep" :readonly="currentStep===3" @change="stepChange">
       <t-step-item title="选择场次">
         <template #icon>
@@ -38,6 +38,7 @@
     <div v-show="currentStep === 3">
       <Finish></Finish>
     </div>
+    <div class="steps-footer-div"></div>
   </div>
 </template>
 
@@ -86,13 +87,16 @@ const fetchSessionInformation = async () => {
       registrationEndTime: new Date(item.registrationEndTime)
     } as Session));
     Object.assign(sessionInformation, dataConverted);
-    response = await axios.post("/orderRecord/getMyOrderRecordByEventId", {eventId: bookingInformation.eventId, mode: 0}, {headers: {token: globalProperties.token}} as AxiosRequestConfig);
+    response = await axios.post("/orderRecord/getMyOrderRecordByEventId", {
+      eventId: bookingInformation.eventId,
+      mode: 0
+    }, {headers: {token: globalProperties.token}} as AxiosRequestConfig);
     const registeredEventSessionIdArray = response.data.data;
     sessionInformation.forEach(session => {
       session.registered = !!registeredEventSessionIdArray.includes(session.eventSessionId);
     })
     fetchSessionInformationStatus.value = 1;
-  } catch(error) {
+  } catch (error) {
     fetchSessionInformationStatus.value = -1;
     if (error.response) {
       await NotifyPlugin.error({title: error.response.data.msg});
@@ -258,11 +262,17 @@ export const submitData = async () => {
 </script>
 
 <style scoped lang="less">
-.main-div-steps {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: relative;
-  top: 5vh;
+.steps {
+  &-main-div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    top: 5vh;
+  }
+
+  &-footer-div {
+    height: 10vh;
+  }
 }
 </style>
