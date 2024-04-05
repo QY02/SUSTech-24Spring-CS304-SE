@@ -46,8 +46,9 @@
             <t-tab-panel value="events" label="EVENTS"></t-tab-panel>
             <t-tab-panel value="about" label="EVENT DETAILS"></t-tab-panel>
             <t-tab-panel value="price" label="TICKET PRICING"></t-tab-panel>
-            <t-tab-panel value="reviews" label="REVIEWS"></t-tab-panel>
+            <t-tab-panel value="policy" label="ADMISSION POLICY"></t-tab-panel>
             <t-tab-panel value="gallery" label="GALLERY"></t-tab-panel>
+            <t-tab-panel value="reviews" label="REVIEWS"></t-tab-panel>
     </t-tabs>
   </el-affix>
   <div :id="`${path}#events`" style="height: 60px;"></div>
@@ -98,7 +99,7 @@
       </t-collapse>
       </t-space>
       <br>
-      <t-button @click="">前往报名</t-button>
+      <t-button @click="pushRouter('book')">前往报名</t-button>
 
       <!-- <EventTicketTable></EventTicketTable> -->
     </div>
@@ -116,6 +117,7 @@
         </div>
     </t-space>
     <div style="margin-left: 25px;margin-right: 25px; margin-bottom: 40px;">
+      介绍部分
       Taylor Swift in Concert
         
         She is, quite simply, a global superstar.
@@ -165,21 +167,58 @@
         CAT5: ¥288
         <br>
       </p>
-      <el-divider />
-      <p style="  color: rgba(7, 63, 216, 1); font-size: 18px; font-weight: 700; letter-spacing: 1px;">
-        ADMISSION POLICY
-      </p>
-      <p style="  margin-top: 0.4rem; line-height: 1.625;color: rgb(70, 73, 79);;">
-        1. 不允许携带食物或饮料进场
-        <br>
-        2. 不允许开闪光灯拍照
-        <br>
-        3. 演出48h前不予退款
-        <br>
-      </p>
   </div>
   <div style="height: 20px;"></div>
   <div style="height: 20px;"></div>
+
+  <div :id="`${path}#policy`" style="height: 36px;"></div>
+  <div class="card" style="flex-direction: column;">
+    <t-space style="display: flex; width: 100%;">
+        <div>
+          <div class="title">ADMISSION POLICY</div>
+          <div class="line"></div>
+        </div>
+    </t-space>
+    <div class="ticket_card" style="margin-left: 55px; margin-top: -10px;">
+        <p style="  margin-top: 0.4rem; color: rgb(70, 73, 79);font-weight: 600;">
+          Admission Rules:
+        </p>
+        <p style="  margin-top: 0.4rem; line-height: 1.625;color: rgb(70, 73, 79);;">
+          1. 不允许携带食物或饮料进场
+          <br>
+          2. 不允许开闪光灯拍照
+          <br>
+          3. 演出48h前不予退款
+          <br>
+        </p>
+    </div>
+    <div style="height: 40px;"></div>
+  </div>
+  
+  <div :id="`${path}#gallery`" style="height: 60px;"></div>
+  <t-space style="display: flex; width: 100%; margin-left: 24px;">
+      <div>
+        <div class="title">GALLERY</div>
+        <div class="line"></div>
+      </div>
+  </t-space>
+  <el-card style="padding: 5px; height: 390px ; max-width: 100% ; margin-right: 30px; margin-left: 30px; margin-bottom: 40px;">
+    <el-carousel :interval="4000" type="card" height="300px" width="100%" indicator-position="outside">
+        <el-carousel-item v-for="item in 6" :key="item">
+          <h3 text="2xl" justify="center"><t-image
+          src="https://tdesign.gtimg.com/demo/demo-image-1.png"
+          fit="fill"
+          :style="{ width: '100%', height: '100%' }"
+          shape="round"
+        /></h3>
+        </el-carousel-item>
+      </el-carousel>
+    <div style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+      <t-button @click="pushRouter('gallery')">前往画廊</t-button>
+    </div>
+  </el-card>
+  <div style="height: 40px;"></div>
+
 
   <!-- review part -->
   <div :id="`${path}#reviews`" style="height: 36px;"></div>
@@ -215,52 +254,8 @@
         </t-list-item>
       </t-list>
     </div>
+    <div style="height: 40px;"></div>
   </div>
-
-
-  <div :id="`${path}#policy`" style="height: 60px;"></div>
-  <t-space style="display: flex; width: 100%; margin-left: 24px;">
-      <div>
-        <div class="title">ADMISSION POLICY</div>
-        <div class="line"></div>
-      </div>
-  </t-space>
-  <div class="ticket_card" style="margin-left: 55px; margin-top: -10px;">
-      <p style="  margin-top: 0.4rem; color: rgb(70, 73, 79);font-weight: 600;">
-        Admission Rules:
-      </p>
-      <p style="  margin-top: 0.4rem; line-height: 1.625;color: rgb(70, 73, 79);;">
-        1. 不允许携带食物或饮料进场
-        <br>
-        2. 不允许开闪光灯拍照
-        <br>
-        3. 演出48h前不予退款
-        <br>
-      </p>
-  </div>
-  <div style="height: 20px;"></div>
-
-  <div :id="`${path}#gallery`" style="height: 60px;"></div>
-  <t-space style="display: flex; width: 100%; margin-left: 24px;">
-      <div>
-        <div class="title">GALLERY</div>
-        <div class="line"></div>
-      </div>
-  </t-space>
-  <el-card style="padding: 5px; height: 340px ; max-width: 100% ; margin-right: 30px; margin-left: 30px; margin-bottom: 40px;">
-    <el-carousel :interval="4000" type="card" height="300px">
-    <el-carousel-item v-for="item in 6" :key="item">
-      <h3 text="2xl" justify="center"><t-image
-      src="https://tdesign.gtimg.com/demo/demo-image-1.png"
-      fit="fill"
-      :style="{ width: '100%', height: '100%' }"
-      shape="round"
-    /></h3>
-    </el-carousel-item>
-  </el-carousel>
-  </el-card>
-
-  <div style="height: 40px;"></div>
 
 </template>
 
@@ -307,43 +302,17 @@ const dateToString = (date) => {
 }
 
 
-const pushRouter = ()=>{
-  router.push('/book');
+const pushRouter = (value)=>{
+  switch (value) {
+    case 'gallery':
+      router.push('/gallery');
+      break;
+    case 'book':
+      router.push('/book');
+      break;
+  }
 }
 
-
-const fix = ref('false')
-// 监听页面滚动事件
-const handleScroll = () => {
-  if (stickyElement.value) {
-    const distanceFromTop = stickyElement.value.getBoundingClientRect().top;
-    if (distanceFromTop <= 0) {
-      fix.value = true
-      alert("in")
-    } else {
-      fix.value= false
-    }
-  }
-};
-const scrolled = ref(window.scrollY);
-onMounted(() => {
-  window.addEventListener('scroll', () => {
-    handleScroll
-    console.log('触发滚动事件'); // 检查是否触发了滚动事件
-    scrolled.value = window.scrollY;
-  });
-});
-// onUnmounted(() => {
-//   window.removeEventListener('touchmove', handleTouchMove);
-// });
-window.addEventListener('scroll', () => {
-  scrolled.value = window.scrollY;
-  // init('页面已滚动距离：', scrolled);
-  // NotifyPlugin({ title: scrolled, content: '用户表示普通操作信息提示'});
-});
-watch(scrolled, (newValue, oldValue) => {
-  // NotifyPlugin({ title: newValue, content: '用户表示普通操作信息提示' });
-});
 
 
 
@@ -426,6 +395,9 @@ const commentsData = [
     content: '评论作者名C写的评论内容。',
   },
 ];
+
+
+
 </script>
 
 

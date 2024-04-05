@@ -1,6 +1,8 @@
 package org.cs304.backend.controller;
 
 import com.alibaba.fastjson2.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -9,9 +11,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.cs304.backend.entity.Event;
 import org.cs304.backend.entity.OrderRecord;
+import org.cs304.backend.exception.ServiceException;
 import org.cs304.backend.service.IEventService;
 import org.cs304.backend.service.IOrderRecordService;
 import org.cs304.backend.utils.Result;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -48,5 +52,15 @@ public class EventController {
         String userId = (String) request.getAttribute("loginUserId");
         eventService.submitBookingData(userType, userId, orderRecord);
         return Result.success(response);
+    }
+
+    @GetMapping("/getEventDetail/{eventId}")
+    public Result getEventDetail(HttpServletResponse response, @PathVariable("eventId")int eventId) {
+        QueryWrapper<Event> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("id", eventId);
+        if (!eventService.exists(queryWrapper)) {
+            throw new ServiceException("404","No such event");
+        }
+        return Result.success(response,eventService.getById(eventId));
     }
 }
