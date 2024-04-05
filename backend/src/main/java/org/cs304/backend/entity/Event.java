@@ -33,5 +33,7 @@ public class Event {
 
     private Integer lowestPrice;
 
+    private String eventPolicy;
+
     private Boolean visible;
 }
