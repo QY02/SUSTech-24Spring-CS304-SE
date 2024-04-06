@@ -1,0 +1,21 @@
+server:
+  port: 8084
+
+spring:
+  data:
+    redis:
+      host: 47.107.113.54
+      port: 6379
+      password: me#u6236kuGfsv
+      database: 1
+  servlet:
+    multipart:
+      max-file-size: 2048MB
+      max-request-size: 2048MB
+
+logging:
+  file:
+    name: ./logs/EventsCenterFileServer.log
+    path: ./logs
+  level:
+    root: INFO
