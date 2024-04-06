@@ -57,6 +57,13 @@ import {ref, getCurrentInstance, onMounted} from 'vue';
 import axios from 'axios';
 import {MessagePlugin} from 'tdesign-vue-next';
 import {FileDownloadIcon} from 'tdesign-icons-vue-next';
+import MarkdownIt from 'markdown-it';
+
+
+const md = new MarkdownIt();
+const renderMarkdown = (text) => {
+  return md.render(text);
+};
 
 // const user = sessionStorage.getItem("uid") ? sessionStorage.getItem("uid") : '';//当前用户
 const user = sessionStorage.getItem("uid") ? sessionStorage.getItem("uid") : '12112003';//当前用户
@@ -197,7 +204,7 @@ const downloadTxtFile = () => {
 
 const createContent = (remoteUser, nowUser, text) => {
   let html;
-  text = text.replace(/\n/g, "<br>");
+  text = renderMarkdown(text);
   if (nowUser) {
     html = `<div class="el-row" style="padding: 5px 0">
       <div class="el-col el-col-22" style="text-align: right; padding-right: 10px">
@@ -227,7 +234,7 @@ const createContent = (remoteUser, nowUser, text) => {
 
 <style>
 .tip {
-  padding: 10px;
+  padding: 0 10px;
   border-radius: 10px;
   display: inline-block;
   font-weight: bold;
