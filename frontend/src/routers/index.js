@@ -67,6 +67,11 @@ const routes = [
                 name: 'test',
                 path: '/test',
                 // component: () => import('@/components/Event/test.vue')
+            },
+            {
+                name: 'chatWithEvent',
+                path: '/chatWithEvent',
+                component: () => import('@/components/chat/chatWithEvent.vue')
             }
         ]
     },
