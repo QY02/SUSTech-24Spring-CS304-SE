@@ -50,15 +50,6 @@ public class WebSocketLLMServer {
         }
         sessionMap.put(userID, session);
         log.info("有新用户加入，username={}, 当前在线人数为：{}", userID, sessionMap.size());
-        JSONObject result = new JSONObject();
-        JSONArray array = new JSONArray();
-        result.put("users", array);
-        for (String key : sessionMap.keySet()) {
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("username", key);
-            array.add(jsonObject);
-        }
-        sendAllMessage(result.toJSONString());  // 后台发送消息给所有的客户端
     }
 
     /**
