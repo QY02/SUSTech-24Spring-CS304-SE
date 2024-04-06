@@ -12,7 +12,6 @@ spring:
       host: 47.107.113.54
       port: 6379
       password: me#u6236kuGfsv
-      database: 0
   mail:
     protocol: smtp
     host: smtp.163.com
