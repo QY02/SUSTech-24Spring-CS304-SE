@@ -12,7 +12,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
  * AI-generated-content
  * tool: GitHub Copilot
  * version: latest
- * usage: 我问Copilot如何同时连接到两个redis数据库，它给我写了这个配置文件，我修改了@Value里的参数以及Bean和方法的名字
+ * usage: 我问Copilot如何同时连接到两个redis数据库，它给我写了这个配置文件，我修改了@Value里的参数以及Bean和方法的名字，并且修了一些bug
  */
 
 
@@ -28,11 +28,17 @@ public class RedisConfig {
     @Value("${spring.data.redis.password}")
     private String password;
 
+    @Value("${spring.data.redis.database-index-authentication}")
+    private int databaseIndexAuthentication;
+
+    @Value("${spring.data.redis.database-index-file}")
+    private int databaseIndexFile;
+
     @Bean(name = "stringRedisTemplateAuthentication")
     public StringRedisTemplate stringRedisTemplateAuthentication() {
         RedisStandaloneConfiguration config = new RedisStandaloneConfiguration(host, port);
         config.setPassword(RedisPassword.of(password));
-        config.setDatabase(0);
+        config.setDatabase(databaseIndexAuthentication);
         LettuceConnectionFactory factory = new LettuceConnectionFactory(config);
         factory.afterPropertiesSet();
         StringRedisTemplate template = new StringRedisTemplate();
@@ -44,7 +50,7 @@ public class RedisConfig {
     public StringRedisTemplate stringRedisTemplateFile() {
         RedisStandaloneConfiguration config = new RedisStandaloneConfiguration(host, port);
         config.setPassword(RedisPassword.of(password));
-        config.setDatabase(1);
+        config.setDatabase(databaseIndexFile);
         LettuceConnectionFactory factory = new LettuceConnectionFactory(config);
         factory.afterPropertiesSet();
         StringRedisTemplate template = new StringRedisTemplate();

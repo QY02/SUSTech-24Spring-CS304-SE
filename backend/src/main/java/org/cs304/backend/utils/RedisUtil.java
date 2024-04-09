@@ -15,13 +15,13 @@ public class RedisUtil {
     private StringRedisTemplate stringRedisTemplateAuthentication;
     @Resource(name = "stringRedisTemplateFile")
     private StringRedisTemplate stringRedisTemplateFile;
-    private final long timeoutAuthentication = 3600;
+    private final long timeoutDefault = 3600;
     private final TimeUnit timeUnit = TimeUnit.SECONDS;
 
     public void add(String value, String key) {
         if ((value != null) && (key != null)) {
-            stringRedisTemplateAuthentication.opsForValue().set(key, value, timeoutAuthentication, timeUnit);
-            stringRedisTemplateAuthentication.opsForValue().set(value, key, timeoutAuthentication, timeUnit);
+            stringRedisTemplateAuthentication.opsForValue().set(key, value, timeoutDefault, timeUnit);
+            stringRedisTemplateAuthentication.opsForValue().set(value, key, timeoutDefault, timeUnit);
         }
     }
 
@@ -61,10 +61,10 @@ public class RedisUtil {
         } else {
             String value;
             if (resetExpireTime) {
-                stringRedisTemplateAuthentication.expire(userToken, timeoutAuthentication, timeUnit);
+                stringRedisTemplateAuthentication.expire(userToken, timeoutDefault, timeUnit);
                 value = stringRedisTemplateAuthentication.opsForValue().get(userToken);
                 if (value != null) {
-                    stringRedisTemplateAuthentication.opsForValue().set(value, userToken, timeoutAuthentication, timeUnit);
+                    stringRedisTemplateAuthentication.opsForValue().set(value, userToken, timeoutDefault, timeUnit);
                 }
             }
             else {
@@ -99,7 +99,21 @@ public class RedisUtil {
         return user;
     }
 
+    public String generateAndAddFileToken(String filePath) {
+        String fileToken = UUID.randomUUID().toString().replaceAll("-", "");
+        while (true) {
+            if (get(fileToken, false, false) == null) {
+                break;
+            }
+            else {
+                fileToken = UUID.randomUUID().toString().replaceAll("-", "");
+            }
+        }
+        stringRedisTemplateFile.opsForValue().set(fileToken, filePath, timeoutDefault, timeUnit);
+        return fileToken;
+    }
+
     public void addFileToken(String fileToken, String filePath) {
-        stringRedisTemplateFile.opsForValue().set(fileToken, filePath, 60, timeUnit);
+        stringRedisTemplateFile.opsForValue().set(fileToken, filePath, timeoutDefault, timeUnit);
     }
 }

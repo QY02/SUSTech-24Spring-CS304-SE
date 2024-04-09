@@ -18,7 +18,7 @@ create table if not exists user
 create table if not exists attachment
 (
     id        int primary key auto_increment,
-    file_name varchar(1024) not null
+    file_path varchar(1024) not null
 );
 
 create table if not exists event

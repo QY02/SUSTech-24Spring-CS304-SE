@@ -13,6 +13,8 @@ spring:
       max-file-size: 2048MB
       max-request-size: 2048MB
 
+admin-token: ca20856d238e4b8e83ac91132456b796
+
 logging:
   file:
     name: ./logs/EventsCenterFileServer.log

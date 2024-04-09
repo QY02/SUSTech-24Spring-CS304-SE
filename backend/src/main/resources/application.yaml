@@ -12,6 +12,8 @@ spring:
       host: 47.107.113.54
       port: 6379
       password: me#u6236kuGfsv
+      database-index-authentication: 0
+      database-index-file: 1
   mail:
     protocol: smtp
     host: smtp.163.com
@@ -43,6 +45,8 @@ spring:
     password: 56481367
     virtual-host: test
 
+file-server:
+  admin-token: ca20856d238e4b8e83ac91132456b796
 
 logging:
   file:
