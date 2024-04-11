@@ -4,10 +4,16 @@ import com.alibaba.fastjson2.JSONObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 public interface IFileService {
     ResponseEntity<?> download(String filePath);
 
     void delete(String filePath);
 
-    JSONObject upload(String fileDir, MultipartFile inputFile);
+    Object upload(String fileDir, MultipartFile inputFile, boolean sendRequestToBackend);
+
+    List<JSONObject> uploadBatch(String backendData, List<MultipartFile> fileList);
+
+    void deleteBatch(List<String> filePathList);
 }

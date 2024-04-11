@@ -1,10 +1,13 @@
 package org.eventCenter.fileServer.service.impl;
 
+import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
+import com.alibaba.fastjson2.TypeReference;
 import lombok.extern.slf4j.Slf4j;
 import org.eventCenter.fileServer.component.GlobalData;
 import org.eventCenter.fileServer.exception.ServiceException;
 import org.eventCenter.fileServer.service.IFileService;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.*;
@@ -19,8 +22,7 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -71,7 +73,7 @@ public class FileServiceImpl implements IFileService {
     }
 
     @Override
-    public JSONObject upload(String fileDir, MultipartFile inputFile) {
+    public Object upload(String fileDir, MultipartFile inputFile, boolean sendRequestToBackend) {
         if (backendHost.isBlank() || backendPort.isBlank() || backendApiToken.isBlank()) {
             throw new ServiceException("500", "This API is currently unavailable");
         }
@@ -80,6 +82,7 @@ public class FileServiceImpl implements IFileService {
         }
         String fileName = UUID.randomUUID().toString().replaceAll("-", "") + "-" + inputFile.getOriginalFilename();
         File file = Paths.get(GlobalData.FILE_DIRECTORY, fileDir, fileName).toFile();
+        String filePathStringForDatabase = Paths.get(fileDir, fileName).toString();
         while (true) {
             if (!file.exists()) {
                 break;
@@ -96,38 +99,113 @@ public class FileServiceImpl implements IFileService {
         else {
             try {
                 inputFile.transferTo(file);
-                RestTemplate restTemplate = new RestTemplate();
-                HttpHeaders httpHeaders = new HttpHeaders();
-                JSONObject requestBody = new JSONObject();
-                requestBody.put("filePath", Paths.get(fileDir, fileName).toString());
-                httpHeaders.set("token", backendApiToken);
-                try {
-                    HttpEntity<JSONObject> httpEntity = new HttpEntity<>(requestBody, httpHeaders);
-                    ResponseEntity<JSONObject> responseFromBackend = restTemplate.exchange("http://" + backendHost + ":" + backendPort + "/attachment/uploadFinish", HttpMethod.POST, httpEntity, JSONObject.class);
-                    if (responseFromBackend.getStatusCode().value() != 200) {
+                if (sendRequestToBackend) {
+                    RestTemplate restTemplate = new RestTemplate();
+                    HttpHeaders httpHeaders = new HttpHeaders();
+                    JSONObject requestBody = new JSONObject();
+                    requestBody.put("filePath", filePathStringForDatabase);
+                    httpHeaders.set("token", backendApiToken);
+                    try {
+                        HttpEntity<JSONObject> httpEntity = new HttpEntity<>(requestBody, httpHeaders);
+                        ResponseEntity<JSONObject> responseFromBackend = restTemplate.exchange("http://" + backendHost + ":" + backendPort + "/attachment/uploadFinish", HttpMethod.POST, httpEntity, JSONObject.class);
+                        if (responseFromBackend.getStatusCode().value() != 200) {
+                            throw new ServiceException("500", "An error occurred when communicating with the backend");
+                        }
+                        else {
+                            return Objects.requireNonNull(responseFromBackend.getBody()).getJSONObject("data");
+                        }
+                    } catch (RestClientException e) {
                         throw new ServiceException("500", "An error occurred when communicating with the backend");
                     }
-                    else {
-                        return Objects.requireNonNull(responseFromBackend.getBody()).getJSONObject("data");
-                    }
-                } catch (RestClientException e) {
-                    throw new ServiceException("500", "An error occurred when communicating with the backend");
+                }
+                else {
+                    return filePathStringForDatabase;
                 }
             } catch (Exception e) {
-                try {
-                    boolean ignore = file.delete();
-                    if (file.exists()) {
-                        log.error("Upload process failed and failed to delete the uploaded file due to unexpected error");
-                    }
-                } catch (SecurityException ex) {
-                    log.error("Upload process failed and failed to delete the uploaded file due to a SecurityException");
-                }
+                deleteFileAndCheckResult(file);
                 if (e instanceof ServiceException) {
                     throw (ServiceException) e;
                 }
                 else {
                     throw new ServiceException("500", "Upload failed");
                 }
+            }
+        }
+    }
+
+    @Override
+    public List<JSONObject> uploadBatch(String fileInfoJsonString, List<MultipartFile> fileList) {
+        if (backendHost.isBlank() || backendPort.isBlank() || backendApiToken.isBlank()) {
+            throw new ServiceException("500", "This API is currently unavailable");
+        }
+        if (fileInfoJsonString == null) {
+            throw new ServiceException("400", "This API can not be used with admin token");
+        }
+        Map<String, String> fileInfoMap = JSONObject.parseObject(fileInfoJsonString, new TypeReference<>() {});
+        if (fileList.size() != fileInfoMap.size()) {
+            throw new ServiceException("400", "Invalid file number");
+        }
+        List<String> filePathStringForDatabaseList = new ArrayList<>();
+        try {
+            for (MultipartFile file : fileList) {
+                String fileDir = fileInfoMap.get(file.getOriginalFilename());
+                if (fileDir == null) {
+                    ServiceException serviceException = new ServiceException("400", "Invalid file name");
+                    serviceException.setCauseObject(file.getOriginalFilename());
+                    throw serviceException;
+                }
+                try {
+                    filePathStringForDatabaseList.add((String) upload(fileDir, file, false));
+                } catch (ServiceException e) {
+                    e.setCauseObject(file.getOriginalFilename());
+                    throw e;
+                }
+            }
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders httpHeaders = new HttpHeaders();
+            JSONObject requestBody = new JSONObject();
+            requestBody.put("filePathList", new JSONArray(filePathStringForDatabaseList));
+            httpHeaders.set("token", backendApiToken);
+            try {
+                HttpEntity<JSONObject> httpEntity = new HttpEntity<>(requestBody, httpHeaders);
+                ResponseEntity<JSONObject> responseFromBackend = restTemplate.exchange("http://" + backendHost + ":" + backendPort + "/attachment/uploadBatchFinish", HttpMethod.POST, httpEntity, JSONObject.class);
+                if (responseFromBackend.getStatusCode().value() != 200) {
+                    throw new ServiceException("500", "An error occurred when communicating with the backend");
+                }
+                else {
+                    return Objects.requireNonNull(responseFromBackend.getBody()).getList("data", JSONObject.class);
+                }
+            } catch (RestClientException e) {
+                throw new ServiceException("500", "An error occurred when communicating with the backend");
+            }
+        } catch (ServiceException e) {
+            for (String filePathStringForDatabase : filePathStringForDatabaseList) {
+                File file = new File(GlobalData.FILE_DIRECTORY, filePathStringForDatabase);
+                deleteFileAndCheckResult(file);
+            }
+            throw e;
+        }
+    }
+
+    private static void deleteFileAndCheckResult(@NotNull File file) {
+        try {
+            boolean ignore = file.delete();
+            if (file.exists()) {
+                log.error("Upload process failed and failed to delete the uploaded file due to unexpected error");
+            }
+        } catch (SecurityException ex) {
+            log.error("Upload process failed and failed to delete the uploaded file due to a SecurityException");
+        }
+    }
+
+    @Override
+    public void deleteBatch(List<String> filePathList) {
+        for (String filePath : filePathList) {
+            try {
+                delete(filePath);
+            } catch (ServiceException e) {
+                e.setCauseObject(filePath);
+                throw e;
             }
         }
     }

@@ -36,9 +36,9 @@ public class TokenInterceptor implements HandlerInterceptor {
             request.setAttribute("admin", true);
             return true;
         }
-        String filePath = redisUtil.getAndDelete(token);
-        if (filePath != null) {
-            request.setAttribute("filePath", filePath);
+        String backendData = redisUtil.getAndDelete(token);
+        if (backendData != null) {
+            request.setAttribute("backendData", backendData);
             return true;
         } else {
             try {
