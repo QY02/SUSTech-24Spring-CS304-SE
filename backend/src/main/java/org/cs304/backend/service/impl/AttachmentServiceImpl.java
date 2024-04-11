@@ -17,6 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import java.nio.file.InvalidPathException;
+import java.nio.file.Paths;
+
 @Service
 public class AttachmentServiceImpl extends ServiceImpl<AttachmentMapper, Attachment> implements IAttachmentService {
 
@@ -25,6 +28,12 @@ public class AttachmentServiceImpl extends ServiceImpl<AttachmentMapper, Attachm
 
     @Value("${file-server.admin-token:}")
     private String adminToken;
+
+    @Value("${file-server.host:}")
+    private String fileServerHost;
+
+    @Value("${file-server.port:}")
+    private String fileServerPort;
 
     @Override
     public Attachment getById(int userType, Integer id) {
@@ -44,14 +53,14 @@ public class AttachmentServiceImpl extends ServiceImpl<AttachmentMapper, Attachm
 
     @Override
     public void deleteById(int userType, Integer id) {
-        if (id == null) {
-            throw new ServiceException("400", "Invalid Attachment Id");
-        }
         if (userType != constant_User.ADMIN) {
             throw new ServiceException("401", "Permission denied");
         }
-        if (adminToken.isBlank()) {
+        if (fileServerHost.isBlank() || fileServerPort.isBlank() || adminToken.isBlank()) {
             throw new ServiceException("500", "This API is currently unavailable");
+        }
+        if (id == null) {
+            throw new ServiceException("400", "Invalid Attachment Id");
         }
         Attachment attachment = baseMapper.selectById(id);
         if (attachment == null) {
@@ -65,12 +74,51 @@ public class AttachmentServiceImpl extends ServiceImpl<AttachmentMapper, Attachm
         httpHeaders.set("token", adminToken);
         try {
             HttpEntity<JSONObject> httpEntity = new HttpEntity<>(requestBody, httpHeaders);
-            int statusCode = restTemplate.exchange("http://localhost:8084/file/delete", HttpMethod.POST, httpEntity, Void.class).getStatusCode().value();
+            int statusCode = restTemplate.exchange("http://" + fileServerHost + ":" + fileServerPort + "/file/delete", HttpMethod.POST, httpEntity, Void.class).getStatusCode().value();
             if (statusCode != 200) {
                 throw new ServiceException("500", "An error occurred when communicating with the file server");
             }
         } catch (RestClientException e) {
             throw new ServiceException("500", "An error occurred when communicating with the file server");
         }
+    }
+
+    @Override
+    public JSONObject uploadStart(int userType, String fileDir) {
+        if (fileDir == null) {
+            throw new ServiceException("400", "Invalid file path");
+        }
+        try {
+            Paths.get(fileDir);
+        } catch (InvalidPathException e) {
+            throw new ServiceException("400", "Invalid file path");
+        }
+        if (userType != constant_User.ADMIN) {
+            throw new ServiceException("401", "Permission denied");
+        }
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("fileToken", redisUtil.generateAndAddFileToken(fileDir));
+        return jsonObject;
+    }
+
+    @Override
+    public JSONObject uploadFinish(int userType, String filePath) {
+        if (filePath == null) {
+            throw new ServiceException("400", "Invalid file path");
+        }
+        try {
+            Paths.get(filePath);
+        } catch (InvalidPathException e) {
+            throw new ServiceException("400", "Invalid file path");
+        }
+        if (userType != constant_User.FILE_SERVER) {
+            throw new ServiceException("401", "Permission denied");
+        }
+        Attachment attachment = new Attachment();
+        attachment.setFilePath(filePath);
+        baseMapper.insert(attachment);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("id", attachment.getId());
+        return jsonObject;
     }
 }

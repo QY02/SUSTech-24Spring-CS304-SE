@@ -9,13 +9,31 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class CheckConfiguration {
 
-    @Value("${admin-token:}")
+    @Value("${file-server.host:}")
+    private String fileServerHost;
+
+    @Value("${file-server.port:}")
+    private String fileServerPort;
+
+    @Value("${file-server.admin-token:}")
     private String adminToken;
+
+    @Value("${user-token.file-server:}")
+    private String fileServerUserToken;
 
     @PostConstruct
     public void checkConfiguration() {
+        if (fileServerHost.isBlank()) {
+            log.warn("File server host not set, some features related to file management will be disabled");
+        }
+        if (fileServerPort.isBlank()) {
+            log.warn("File server port not set, some features related to file management will be disabled");
+        }
         if (adminToken.isBlank()) {
             log.warn("Admin token of file server not set, some features related to file management will be disabled");
+        }
+        if (fileServerUserToken.isBlank()) {
+            log.warn("Token for file server user not set, some features related to file management will be disabled");
         }
     }
 }

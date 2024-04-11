@@ -27,6 +27,23 @@ public class AttachmentController {
         Integer id = requestBody.getInteger("id");
         return Result.success(response, attachmentService.getById(userType, id));
     }
+
+    @PostMapping("/uploadStart")
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, content = @Content(examples = @ExampleObject("{\"fileDir\": \"test\"}")))
+    public Result uploadStart(HttpServletResponse response, HttpServletRequest request, @RequestBody JSONObject requestBody) {
+        int userType = (int) request.getAttribute("loginUserType");
+        String fileDir = requestBody.getString("fileDir");
+        return Result.success(response, attachmentService.uploadStart(userType, fileDir));
+    }
+
+    @PostMapping("/uploadFinish")
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, content = @Content(examples = @ExampleObject("{\"filePath\": \"test.txt\"}")))
+    public Result uploadFinish(HttpServletResponse response, HttpServletRequest request, @RequestBody JSONObject requestBody) {
+        int userType = (int) request.getAttribute("loginUserType");
+        String filePath = requestBody.getString("filePath");
+        return Result.success(response, attachmentService.uploadFinish(userType, filePath));
+    }
+
     @PostMapping("/deleteById")
     @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, content = @Content(examples = @ExampleObject("{\"id\": 1}")))
     public Result deleteById(HttpServletResponse response, HttpServletRequest request, @RequestBody JSONObject requestBody) {

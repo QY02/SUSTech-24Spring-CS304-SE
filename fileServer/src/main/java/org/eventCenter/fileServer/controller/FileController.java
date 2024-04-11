@@ -11,6 +11,7 @@ import org.eventCenter.fileServer.utils.Result;
 import org.springframework.http.ResponseEntity;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/file")
@@ -21,6 +22,11 @@ public class FileController {
     @GetMapping("/download")
     public ResponseEntity<?> download(@NotNull HttpServletRequest request) {
         return fileService.download((String) request.getAttribute("filePath"));
+    }
+
+    @PostMapping("/upload")
+    public Result upload(@NotNull HttpServletRequest request, HttpServletResponse response, @RequestParam("file") MultipartFile file) {
+        return Result.success(response, fileService.upload((String) request.getAttribute("filePath"), file));
     }
 
     @PostMapping("/delete")
