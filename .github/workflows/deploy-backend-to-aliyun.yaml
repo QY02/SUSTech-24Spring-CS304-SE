@@ -32,6 +32,8 @@ jobs:
       - name: Build with Maven
         working-directory: backend
         run: mvn -B package --file pom.xml -DskipTests
+      - name: Move file to root directory
+        run: mv backend/target/backend-0.0.1-SNAPSHOT.jar backend-0.0.1-SNAPSHOT.jar
       - name: Upload file to server
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -39,5 +41,5 @@ jobs:
           username: ${{ secrets.SERVER_USERNAME }}
           password: ${{ secrets.SERVER_PASSWORD }}
           port: ${{ secrets.SERVER_PORT }}
-          source: 'backend/target/backend-0.0.1-SNAPSHOT.jar'
+          source: 'backend-0.0.1-SNAPSHOT.jar'
           target: '/root/SE/auto-deployment'
