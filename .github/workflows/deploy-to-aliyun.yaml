@@ -1,0 +1,115 @@
+# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-maven
+
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+name: Deploy backend to Aliyun
+
+on:
+  push:
+    branches: [ "deploy", "actions" ]
+  pull_request:
+    branches: [ "deploy", "actions" ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment: deploy-to-aliyun
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.2
+        with:
+          ref: deploy
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4.2.1
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+      - name: Upload scripts to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          port: ${{ secrets.SERVER_PORT }}
+          source: 'scripts'
+          target: '/root/SE/auto-deployment'
+      - name: Modify the permissions of the scripts
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          port: ${{ secrets.SERVER_PORT }}
+          script: |
+            cd /root/SE/auto-deployment/scripts
+            chmod +x start-fileServer.sh
+            chmod +x stop-fileServer.sh
+            chmod +x start-backend.sh
+            chmod +x stop-backend.sh
+
+      - name: Build file server with Maven
+        working-directory: fileServer
+        run: mvn -B package --file pom.xml -DskipTests
+      - name: Move file server jar to root directory
+        run: mv fileServer/target/fileServer-0.0.1-SNAPSHOT.jar fileServer-0.0.1-SNAPSHOT.jar
+      - name: Stop file server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          port: ${{ secrets.SERVER_PORT }}
+          script: /root/SE/auto-deployment/scripts/stop-fileServer.sh
+      - name: Upload file server jar to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          port: ${{ secrets.SERVER_PORT }}
+          source: 'fileServer-0.0.1-SNAPSHOT.jar'
+          target: '/root/SE/auto-deployment/fileServer'
+      - name: Start file server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          port: ${{ secrets.SERVER_PORT }}
+          script: /root/SE/auto-deployment/scripts/start-fileServer.sh
+
+      - name: Build backend with Maven
+        working-directory: backend
+        run: mvn -B package --file pom.xml -DskipTests
+      - name: Move backend jar to root directory
+        run: mv backend/target/backend-0.0.1-SNAPSHOT.jar backend-0.0.1-SNAPSHOT.jar
+      - name: Stop backend
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          port: ${{ secrets.SERVER_PORT }}
+          script: /root/SE/auto-deployment/scripts/stop-backend.sh
+      - name: Upload backend jar to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          port: ${{ secrets.SERVER_PORT }}
+          source: 'backend-0.0.1-SNAPSHOT.jar'
+          target: '/root/SE/auto-deployment/backend'
+      - name: Start backend
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          port: ${{ secrets.SERVER_PORT }}
+          script: /root/SE/auto-deployment/scripts/start-backend.sh
