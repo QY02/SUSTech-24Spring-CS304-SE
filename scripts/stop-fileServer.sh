@@ -5,7 +5,7 @@ if [ -f /root/SE/auto-deployment/fileServer/app.pid ]; then
   sleep 10
 fi
 
-sessions=$(screen -ls | grep "\.SE-fileServer[ ]" | awk -F '.' '{print $1}')
+sessions=$(screen -ls | grep "\.SE-fileServer\s" | awk -F '.' '{print $1}')
 
 for session in $sessions; do
   screen -X -S "$session" quit

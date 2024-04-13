@@ -5,7 +5,7 @@ if [ -f /root/SE/auto-deployment/backend/app.pid ]; then
   sleep 10
 fi
 
-sessions=$(screen -ls | grep "\.SE-backend[ ]" | awk -F '.' '{print $1}')
+sessions=$(screen -ls | grep "\.SE-backend\s" | awk -F '.' '{print $1}')
 
 for session in $sessions; do
   screen -X -S "$session" quit
