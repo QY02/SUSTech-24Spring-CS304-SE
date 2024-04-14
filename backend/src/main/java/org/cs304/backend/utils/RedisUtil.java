@@ -11,27 +11,31 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class RedisUtil {
 
-    @Resource
-    private StringRedisTemplate stringRedisTemplate;
-    private final long timeout = 3600;
+    @Resource(name = "stringRedisTemplateAuthentication")
+    private StringRedisTemplate stringRedisTemplateAuthentication;
+    @Resource(name = "stringRedisTemplateFile")
+    private StringRedisTemplate stringRedisTemplateFile;
+    private final long timeoutDefault = 3600;
     private final TimeUnit timeUnit = TimeUnit.SECONDS;
+    private final Object authenticationTokenLock = new Object();
+    private final Object fileTokenLock = new Object();
 
     public void add(String value, String key) {
         if ((value != null) && (key != null)) {
-            stringRedisTemplate.opsForValue().set(key, value, timeout, timeUnit);
-            stringRedisTemplate.opsForValue().set(value, key, timeout, timeUnit);
+            stringRedisTemplateAuthentication.opsForValue().set(key, value, timeoutDefault, timeUnit);
+            stringRedisTemplateAuthentication.opsForValue().set(value, key, timeoutDefault, timeUnit);
         }
     }
 
     public void add(String key, String value, long timeout) {
         if ((key != null) && (value != null)) {
-            stringRedisTemplate.opsForValue().set(key, value, timeout, timeUnit);
+            stringRedisTemplateAuthentication.opsForValue().set(key, value, timeout, timeUnit);
         }
     }
 
     public void add(String key, long timeout) {
         if (key != null) {
-            stringRedisTemplate.opsForValue().set(key, "", timeout, timeUnit);
+            stringRedisTemplateAuthentication.opsForValue().set(key, "", timeout, timeUnit);
         }
     }
 
@@ -42,12 +46,12 @@ public class RedisUtil {
 //            if (resetExpireTime) {
 //                stringRedisTemplate.expire(userToken, timeout, timeUnit);
 //            }
-            String value = stringRedisTemplate.opsForValue().get(userToken);
+            String value = stringRedisTemplateAuthentication.opsForValue().get(userToken);
             if (value == null) {
                 return null;
             }
             if (delete) {
-                stringRedisTemplate.delete(userToken);
+                stringRedisTemplateAuthentication.delete(userToken);
             }
             return value;
         }
@@ -59,20 +63,20 @@ public class RedisUtil {
         } else {
             String value;
             if (resetExpireTime) {
-                stringRedisTemplate.expire(userToken, timeout, timeUnit);
-                value = stringRedisTemplate.opsForValue().get(userToken);
+                stringRedisTemplateAuthentication.expire(userToken, timeoutDefault, timeUnit);
+                value = stringRedisTemplateAuthentication.opsForValue().get(userToken);
                 if (value != null) {
-                    stringRedisTemplate.opsForValue().set(value, userToken, timeout, timeUnit);
+                    stringRedisTemplateAuthentication.opsForValue().set(value, userToken, timeoutDefault, timeUnit);
                 }
             }
             else {
-                value = stringRedisTemplate.opsForValue().get(userToken);
+                value = stringRedisTemplateAuthentication.opsForValue().get(userToken);
             }
             if (value == null) {
                 return null;
             }
             if (delete) {
-                stringRedisTemplate.delete(userToken);
+                stringRedisTemplateAuthentication.delete(userToken);
             }
             return value;
         }
@@ -80,20 +84,42 @@ public class RedisUtil {
 
     public User generateToken(User user) {
         String token = (UUID.randomUUID().toString() + UUID.randomUUID()).replaceAll("-", "");
-        String dbToken = stringRedisTemplate.opsForValue().get(user.getId());
+        String dbToken = stringRedisTemplateAuthentication.opsForValue().get(user.getId());
         if (dbToken != null) {
-            stringRedisTemplate.delete(user.getId());
-            stringRedisTemplate.delete(dbToken);
+            stringRedisTemplateAuthentication.delete(user.getId());
+            stringRedisTemplateAuthentication.delete(dbToken);
         }
-        while (true) {
-            if (get(token, false, false) == null) {
-                break;
-            } else {
-                token = (UUID.randomUUID().toString() + UUID.randomUUID()).replaceAll("-", "");
+        synchronized (authenticationTokenLock) {
+            while (true) {
+                if (get(token, false, false) == null) {
+                    break;
+                } else {
+                    token = (UUID.randomUUID().toString() + UUID.randomUUID()).replaceAll("-", "");
+                }
             }
+            add(user.getId(), token);
         }
-        add(user.getId(), token);
         user.setPassword(token);
         return user;
+    }
+
+    public String generateAndAddFileToken(String filePath) {
+        String fileToken = UUID.randomUUID().toString().replaceAll("-", "");
+        synchronized (fileTokenLock) {
+            while (true) {
+                if (get(fileToken, false, false) == null) {
+                    break;
+                }
+                else {
+                    fileToken = UUID.randomUUID().toString().replaceAll("-", "");
+                }
+            }
+            stringRedisTemplateFile.opsForValue().set(fileToken, filePath, timeoutDefault, timeUnit);
+        }
+        return fileToken;
+    }
+
+    public void addFileToken(String fileToken, String filePath) {
+        stringRedisTemplateFile.opsForValue().set(fileToken, filePath, timeoutDefault, timeUnit);
     }
 }

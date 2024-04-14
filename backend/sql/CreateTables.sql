@@ -18,7 +18,7 @@ create table if not exists user
 create table if not exists attachment
 (
     id        int primary key auto_increment,
-    file_name varchar(1024) not null
+    file_path varchar(1024) not null
 );
 
 create table if not exists event
@@ -27,11 +27,12 @@ create table if not exists event
     publisher_id  varchar(8),
     publish_date  datetime      not null,
     name          varchar(1024) not null,
-    content       varchar(10240),
+    content       text,
     type          int           not null,
     status        int           not null,
     highest_price int,
     lowest_price  int,
+    event_policy text,
     visible       boolean       not null
 );
 
@@ -118,7 +119,8 @@ create table if not exists comment
     publish_date datetime   not null,
     content      varchar(10240),
     up_vote      int        not null,
-    down_vote    int        not null
+    down_vote    int        not null,
+    score double
 );
 
 create table if not exists reply

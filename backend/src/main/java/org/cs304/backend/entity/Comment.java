@@ -28,4 +28,6 @@ public class Comment {
     private Integer upVote;
 
     private Integer downVote;
+
+    private Double score;
 }
