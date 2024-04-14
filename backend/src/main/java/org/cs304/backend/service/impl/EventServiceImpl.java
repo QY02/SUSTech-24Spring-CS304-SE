@@ -121,4 +121,17 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
         orderRecord.setPaymentTime(null);
         orderRecordMapper.insert(orderRecord);
     }
+    @Override
+    public JSONArray getAllEvents(){//开始时间从大到小排序返回
+        QueryWrapper<Event> queryWrapper = new QueryWrapper<Event>();
+        queryWrapper.orderByDesc("publish_date");
+        List<Event> list = list(queryWrapper);
+        if (list != null) {
+            JSONArray jsonArray = new JSONArray();
+            jsonArray.addAll(list.stream().map(JSON::toJSON).toList());
+            return jsonArray;
+        }
+        return new JSONArray();
+    }
+
 }
