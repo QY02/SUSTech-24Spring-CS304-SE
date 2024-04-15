@@ -55,14 +55,14 @@ create table if not exists event_session
     visible                         boolean       not null
 );
 
-create table if not exists post_attachment_relation
+create table if not exists entity_attachment_relation
 (
-    post_type        int not null,
-    post_id          int not null,
-    index (post_type, post_id),
+    entity_type        int not null,
+    entity_id          int not null,
+    attachment_type  int not null,
     attachment_id    int not null,
-    attachment_title varchar(1024),
-    attachment_type  int not null
+    primary key (entity_type, entity_id, attachment_type, attachment_id),
+    attachment_title varchar(1024)
 );
 
 create table if not exists seat_map

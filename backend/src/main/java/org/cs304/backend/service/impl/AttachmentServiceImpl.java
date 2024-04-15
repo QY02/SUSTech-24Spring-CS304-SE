@@ -57,6 +57,20 @@ public class AttachmentServiceImpl extends ServiceImpl<AttachmentMapper, Attachm
     }
 
     @Override
+    public List<Attachment> getBatchByIds(int userType, List<Integer> idList) {
+        List<Attachment> result = new ArrayList<>();
+        for (Integer id : idList) {
+            try {
+                result.add(getById(userType, id));
+            } catch (ServiceException e) {
+                e.setCauseObject(id);
+                throw e;
+            }
+        }
+        return result;
+    }
+
+    @Override
     public void deleteById(int userType, Integer id) {
         if (userType != constant_User.ADMIN) {
             throw new ServiceException("401", "Permission denied");
