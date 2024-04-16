@@ -38,4 +38,41 @@
    - There are also some middleware and additional components including `Token Authentication`, `Redis Buffer`, `Message Queue (Rabbit MQ)`, `Logging Service`, `Permission Control`, and `Exception Handling`.
 
 # UI Design
+### HomePage
 
+![](/assets/首页、本人申报、参加、收藏、浏览历史.png)
+
+### Profile
+
+![](/assets/个人页面.png)
+
+### Apply for new evnets
+
+![](/assets/申请活动.png)
+![](/assets/申请活动(2).png)
+![](/assets/申请活动(3).png)
+![](/assets/申请活动(4).png)
+
+### Reserve seats
+
+![](/assets/9.png)
+![](/assets/10.png)
+![](/assets/11.png)
+![](/assets/12.png)
+![](/assets/13.png)
+
+### Review event application
+
+![](/assets/审核.png)
+
+### Notification
+
+![](/assets/通知页.png)
+
+### Cheating room
+
+![](/assets/聊天室.png)
+
+### News feed
+
+![](/assets/动态页.png)
