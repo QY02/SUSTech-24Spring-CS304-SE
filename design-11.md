@@ -12,7 +12,7 @@
 
 # **Architectural Design**
 
-![](/assets/Architectural_Design.png)
+![](/assets/Architectural_Design.jpg)
 
 **Description：**
 
