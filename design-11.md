@@ -16,11 +16,11 @@
 
 **Description：**
 
-### Reason to Use This Architecture
+##### Reason to Use This Architecture
 
-This architecture follows a multi-tiered pattern, sometimes referred to as an N-tier architecture, where the presentation, application processing, and data management functions are physically separated. This allows for better modularity and flexibility in the development process.
+This architecture follows a multi-tiered pattern, sometimes referred to as an N-tier architecture, where the presentation, application processing, and data management functions are physically separated. This allows for better modularity and flexibility in the development process.This allows us to clearly decompose a specific task into multiple layers, which aligns well with the separation of front-end and back-end in our actual development process.
 
-### Natural Language Description:
+##### Natural Language Description:
 
 1. **User Interface Layer:**
 This layer is where users interact with the system through various user interface components. Components such as "User Register and Login," "Event Overview," and "Recommendations" facilitate user actions like creating an account, browsing events, and receiving personalized event suggestions. Other components like "Interactive Campus" might allow for a virtual exploration of a campus or event space, while "CSS Style Design" ensures consistent styling across all UI components.
