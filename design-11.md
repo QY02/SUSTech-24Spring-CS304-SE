@@ -12,13 +12,15 @@
 
 # **Architectural Design**
 
+![](/assets/Architectural Design.png)
+
 **Description：**
 
 1. **Database Layer**:
 
    - Contains two database entities: `Event` and `User`, with a third entity, `Interaction`, connecting to the `User` entity.
 
-2.**Data Access Layer**:
+2. **Data Access Layer**:
 
    - Includes `Event Mapper` for accessing `Event` and `EventDetail`, `Interaction Mapper` for managing interactions like `EntityAttachmentRelation` and `Comment`, and `User Mapper` for user-related data such as `User`, `History` and `Favorite`.
 
