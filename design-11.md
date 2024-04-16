@@ -75,7 +75,7 @@
 
 ![](/assets/通知页.png)
 
-### Chating room
+### Chat room
 
 
 ![](/assets/聊天室.png)
