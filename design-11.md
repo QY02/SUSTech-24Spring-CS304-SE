@@ -16,28 +16,32 @@
 
 **Description：**
 
-1. **Database Layer**:
+### Reason to Use This Architecture
 
-   - Contains two database entities: `Event` and `User`, with a third entity, `Interaction`, connecting to the `User` entity.
+This architecture follows a multi-tiered pattern, sometimes referred to as an N-tier architecture, where the presentation, application processing, and data management functions are physically separated. This allows for better modularity and flexibility in the development process.
 
-2. **Data Access Layer**:
+### Natural Language Description:
 
-   - Includes `Event Mapper` for accessing `Event` and `EventDetail`, `Interaction Mapper` for managing interactions like `EntityAttachmentRelation` and `Comment`, and `User Mapper` for user-related data such as `User`, `History` and `Favorite`.
+1. **User Interface Layer:**
+This layer is where users interact with the system through various user interface components. Components such as "User Register and Login," "Event Overview," and "Recommendations" facilitate user actions like creating an account, browsing events, and receiving personalized event suggestions. Other components like "Interactive Campus" might allow for a virtual exploration of a campus or event space, while "CSS Style Design" ensures consistent styling across all UI components.
 
-3. **Business (Logic) Layer**:
+2. **Service Interface Layer:**
+This layer serves as the intermediary for communication between the front-end and the server's business logic. It's comprised of RESTful APIs like the "Event REST API" and "User REST API" which define how the UI layer sends requests and receives responses related to events and user data. For example, the "Event REST API" would manage calls for event details, whereas the "Interaction REST API" handles user interactions such as comments and replies.
 
-   - Features multiple services including `History`, `Subscription`, `Comment`, `Interaction`, `Event`, `Third Party Map`, `AI Recommendation System`, `LLM System`, `File Storage System`, `AliPay Sandbox`, `Notification`, `User`, and `Seat`.
+3. **Business Logic Layer:**
+The core computational logic of the application resides here. Services such as the "History Subscription Service" manage user activity history, and the "Comment Interaction Service" handles the logic for user comments and interactions on events. The "AI Recommendation System" likely uses machine learning to provide personalized event recommendations to users, while the "Notification Service" manages alerts and notifications sent to users.
 
-4. **Service Interface Layer**:
+4. **Data Access Layer:**
+This layer provides access to the data stored in the database. It contains "mappers" like the "Event Mapper" and "User Mapper," which convert data between the database and the business services. These mappers ensure that data queries and transactions are performed effectively, abstracting the underlying database queries from the rest of the application.
 
-   - This layer shows `Event REST API`, `Interaction REST API` and `User REST API`, which provide endpoints for interaction between users and the system.
+5. **Database Layer:**
+At this level, we have the actual databases, such as "Event," "Interaction," and "User," which are repositories for storing and retrieving all data relevant to the application. These databases are the persistent storage mechanisms that hold everything from user profiles to event details and interaction records.
 
-5. **User Interface Layer**:
+6. **Middleware**/**Cross-Cutting Concerns:**
+In addition to the main layers, there are services that address system-wide concerns like "Token Authentication" for security, "Redis Buffer" for caching, "Message Queue" using RabbitMQ for handling asynchronous message passing, "Logging Service" for system monitoring, and "Exception Handling" to manage errors across the application.
 
-   - Comprised of various UI components for features such as `User Register and Login`, `Event Overview`, `Event Recommendations`, `Event Publishment`, `Interactive Campus`, `Event Details`, `Review and Rate`, `User Profile Management`, `Reservation and Booking`, `Navigation Layout`, `UI Process`, and `CSS Style`.
+Each layer in this architecture is designed to handle specific aspects of the application, from user interaction to data management, with cross-cutting concerns providing essential support services throughout the architecture.
 
-6. **Middleware**:
-   - There are also some middleware and additional components including `Token Authentication`, `Redis Buffer`, `Message Queue (Rabbit MQ)`, `Logging Service`, `Permission Control`, and `Exception Handling`.
 
 # UI Design
 ### HomePage
