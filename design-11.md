@@ -40,13 +40,16 @@
 # UI Design
 ### HomePage
 
+
 ![](/assets/首页、本人申报、参加、收藏、浏览历史.png)
 
 ### Profile
 
+
 ![](/assets/个人页面.png)
 
 ### Apply for new evnets
+
 
 ![](/assets/申请活动.png)
 ![](/assets/申请活动(2).png)
@@ -55,24 +58,29 @@
 
 ### Reserve seats
 
+
 ![](/assets/9.png)
 ![](/assets/10.png)
 ![](/assets/11.png)
 ![](/assets/12.png)
 ![](/assets/13.png)
 
-### Review event application
+### Review event applications
+
 
 ![](/assets/审核.png)
 
-### Notification
+### Notifications
+
 
 ![](/assets/通知页.png)
 
-### Cheating room
+### Chating room
+
 
 ![](/assets/聊天室.png)
 
 ### News feed
+
 
 ![](/assets/动态页.png)
