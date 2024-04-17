@@ -54,6 +54,11 @@ const routes = [
                 component: () => import('@/components/book/Steps.vue')
             },
             {
+                name: 'applyEvent',
+                path: '/applyEvent',
+                component: () => import('@/components/event/ApplyForEvent.vue')
+            },
+            {
                 name: 'event',
                 path: '/event',
                 component: () => import('@/components/event/EventPage.vue')
@@ -67,6 +72,11 @@ const routes = [
                 name: 'test',
                 path: '/test',
                 // component: () => import('@/components/Event/test.vue')
+            },
+            {
+                name: 'user',
+                path: '/user',
+                component: () => import('@/components/profile/userPage.vue')
             },
             {
                 name: 'chatWithEvent',

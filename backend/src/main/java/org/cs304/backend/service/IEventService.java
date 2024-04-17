@@ -13,6 +13,8 @@ public interface IEventService extends IService<Event> {
 
 
     void insertEventAndSessions(JSONObject eventData);
+
+    JSONArray getAllEvents();
     JSONArray getAuditList(String eventStatus);
 
     List<EventSession> getEventSessionsByEventId(int userType, Integer eventId);

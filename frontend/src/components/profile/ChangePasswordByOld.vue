@@ -72,7 +72,7 @@ const onReset = () => {
       attach="body"
       header="修改密码"
       destroy-on-close:true
-      width="30%"
+      width="40%"
       :cancel-btn=null
       :confirm-btn=null
   >
