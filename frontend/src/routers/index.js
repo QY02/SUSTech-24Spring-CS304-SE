@@ -74,6 +74,11 @@ const routes = [
                 // component: () => import('@/components/Event/test.vue')
             },
             {
+                name: 'user',
+                path: '/user',
+                component: () => import('@/components/profile/userPage.vue')
+            },
+            {
                 name: 'chatWithEvent',
                 path: '/chatWithEvent',
                 component: () => import('@/components/chat/chatWithEvent.vue')

@@ -51,7 +51,7 @@
             <template #operations>
               <div class="operations-container">
                 <t-tooltip placement="bottom" content="用户信息">
-                  <t-button theme="default" shape="square" variant="text">
+                  <t-button theme="default" shape="square" variant="text" @click="handleNav('user')">
                     <UserCircleIcon class="header-menu-icon"/>
                   </t-button>
                 </t-tooltip>
@@ -142,6 +142,9 @@ const handleNav = (value: string) => {
       break;
     case 'moments':
       router.push('/moments');
+      break;
+    case 'user':
+      router.push('/user');
       break;
   }
 }
