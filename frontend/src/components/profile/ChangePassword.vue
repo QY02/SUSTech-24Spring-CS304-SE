@@ -29,6 +29,6 @@ const visibleEmail=ref(false)
 </template>
 <style>
 .btn{
-  margin-right: 30px;
+  margin-right: 10px;
 }
 </style>

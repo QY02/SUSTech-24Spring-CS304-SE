@@ -10,6 +10,7 @@ import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.cs304.backend.entity.Event;
+import org.cs304.backend.entity.EventSession;
 import org.cs304.backend.entity.OrderRecord;
 import org.cs304.backend.exception.ServiceException;
 import org.cs304.backend.service.IEventService;
@@ -17,6 +18,8 @@ import org.cs304.backend.service.IOrderRecordService;
 import org.cs304.backend.utils.Result;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/event")
@@ -63,4 +66,17 @@ public class EventController {
         }
         return Result.success(response,eventService.getById(eventId));
     }
+
+    @PostMapping("/getSeatPriceByEventId/{eventId}")
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, content = @Content(examples = @ExampleObject("{\"seatMapId\": 1}")))
+    public Result getSeatPriceByEventId(HttpServletResponse response, HttpServletRequest request, @PathVariable("eventId")int eventId) {
+        int userType = (int) request.getAttribute("loginUserType");
+        List<EventSession> event = eventService.getEventSessionsByEventId(userType, eventId);
+
+//        int userType = (int) request.getAttribute("loginUserType");
+//        Integer seatMapId = requestBody.getInteger("seatMapId");
+//        return Result.success(response, seatMapService.getSeatMapWithSeatsById(userType, seatMapId));
+        return Result.success(response);
+    }
+
 }
