@@ -10,6 +10,8 @@ import java.util.List;
 
 public interface IEventService extends IService<Event> {
 
+
+    JSONArray getAllEvents();
     JSONArray getAuditList(String eventStatus);
 
     List<EventSession> getEventSessionsByEventId(int userType, Integer eventId);
