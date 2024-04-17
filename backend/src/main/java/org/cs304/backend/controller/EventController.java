@@ -85,9 +85,10 @@ public class EventController {
             """)
     public Result getAllEvents(@NotNull HttpServletRequest request, HttpServletResponse response) {
         int userType = (int) request.getAttribute("loginUserType");
-        if (userType == -1) {
-            throw new ServiceException("403", "Permission denied");
-        }
+        System.out.println(userType+"666666666666666666");
+//        if (userType == -1) {
+//            throw new ServiceException("403", "Permission denied");
+//        }
         return Result.success(response, eventService.getAllEvents());
     }
 
