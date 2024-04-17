@@ -54,6 +54,11 @@ const routes = [
                 component: () => import('@/components/book/Steps.vue')
             },
             {
+                name: 'applyEvent',
+                path: '/applyEvent',
+                component: () => import('@/components/event/ApplyForEvent.vue')
+            },
+            {
                 name: 'event',
                 path: '/event',
                 component: () => import('@/components/event/EventPage.vue')

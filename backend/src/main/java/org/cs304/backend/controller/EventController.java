@@ -13,6 +13,7 @@ import org.cs304.backend.entity.OrderRecord;
 import org.cs304.backend.exception.ServiceException;
 import org.cs304.backend.service.IEventService;
 import org.cs304.backend.utils.Result;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -69,8 +70,8 @@ public class EventController {
     }
 
     @PostMapping("/getAllEvents")
-    @Operation(summary = "获取所有events", description = """
-            ### 参数 ###
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, content = @Content(examples = @ExampleObject("""
+           ### 参数 ###
             无
             ### 返回值 ###
             {
@@ -91,7 +92,7 @@ public class EventController {
               }
             ### 注意事项 ###
             无
-            """)
+            """)))
     public Result getAllEvents(@NotNull HttpServletRequest request, HttpServletResponse response) {
         int userType = (int) request.getAttribute("loginUserType");
         System.out.println(userType+"666666666666666666");
