@@ -13,13 +13,21 @@
               </t-button>
             </template>
             <div class="choose-session-detail-div">
-              <p v-if="session.registrationRequired" class="choose-session-detail-text">
-                {{
-                  `报名时间: ${dateToString(session.registrationStartTime)} - ${dateToString(session.registrationEndTime)}`
-                }}</p>
-              <p v-else class="choose-session-detail-text">无需报名</p>
-              <p class="choose-session-detail-text">{{ `人数限制: ${session.minSize} - ${session.maxSize}` }}</p>
-              <p class="choose-session-detail-text">{{`当前人数: ${session.currentSize}`}}</p>
+              <div class="choose-session-detail-text-div">
+                <p v-if="session.registrationRequired" class="choose-session-detail-text">
+                  {{
+                    `报名时间: ${dateToString(session.registrationStartTime)} - ${dateToString(session.registrationEndTime)}`
+                  }}</p>
+                <p v-else class="choose-session-detail-text">无需报名</p>
+                <p class="choose-session-detail-text">{{ `人数限制: ${session.minSize} - ${session.maxSize}` }}</p>
+                <p class="choose-session-detail-text">{{ `当前人数: ${session.currentSize}` }}</p>
+              </div>
+              <t-button @click="showMap(index)">
+                <template #icon>
+                  <MapInformation2Icon/>
+                </template>
+                查看地图
+              </t-button>
             </div>
           </t-collapse-panel>
         </t-collapse>
@@ -27,6 +35,11 @@
       <t-button>返回</t-button>
     </t-space>
   </div>
+  <t-dialog v-model:visible="mapDialogVisible" placement="center" width="50vw" :header="mapDialogHeader"
+            :confirm-btn="null"
+            :cancel-btn="{content: '关闭', theme: 'primary'}">
+    <div id="mapContainer" class="choose-session-map-div"></div>
+  </t-dialog>
 </template>
 
 <script setup lang="ts">
@@ -36,6 +49,19 @@ import {
   toNextStep,
   fetchSessionInformationStatus
 } from '@/components/book/Steps.vue';
+import AMapLoader from "@amap/amap-jsapi-loader";
+import {onMounted, onUnmounted, ref} from "vue";
+import {MapInformation2Icon} from "tdesign-icons-vue-next";
+
+let AMap = null;
+let map = null;
+let mapScale = null;
+let mapControlBar = null;
+let mapToolBar = null;
+let mapType = null;
+let mapMarker = null;
+const mapDialogVisible = ref(false);
+const mapDialogHeader = ref("");
 
 const dateToString = (date: Date) => {
   const dayNameArray = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
@@ -54,20 +80,88 @@ const getChooseButtonStatus = (index: number) => {
   const timeNow = new Date();
   if (!sessionInformation[index].registrationRequired) {
     return [true, '无需报名', 'primary'];
-  }
-  else if (sessionInformation[index].registered) {
+  } else if (sessionInformation[index].registered) {
     return [true, '已报名', 'success'];
-  }
-  else if ((timeNow < sessionInformation[index].registrationStartTime) || (timeNow > sessionInformation[index].registrationEndTime)) {
+  } else if ((timeNow < sessionInformation[index].registrationStartTime) || (timeNow > sessionInformation[index].registrationEndTime)) {
     return [true, '不在报名时间段内', 'primary'];
-  }
-  else if (sessionInformation[index].currentSize >= sessionInformation[index].maxSize) {
+  } else if (sessionInformation[index].currentSize >= sessionInformation[index].maxSize) {
     return [true, '容量已满', 'primary'];
-  }
-  else if (bookingInformation.chosenSession === index) {
+  } else if (bookingInformation.chosenSession === index) {
     return [false, '已选择', 'success'];
   } else {
     return [false, '选择', 'primary'];
+  }
+}
+
+onMounted(() => {
+  AMapLoader.load({
+    key: "76ed3d07815c638a64f5678ed9c833d3",
+    version: "2.0",
+    plugins: ["AMap.Scale", "AMap.ToolBar", "AMap.ControlBar", "AMap.MapType"],
+  }).then((AMapInstance) => {
+    AMap = AMapInstance;
+  }).catch((e) => {
+    console.log(e);
+  });
+});
+
+onUnmounted(() => {
+  map?.destroy();
+});
+
+const showMap = (index: number) => {
+  mapDialogHeader.value = sessionInformation[index].venue;
+  mapDialogVisible.value = true;
+  if (map === null) {
+    map = new AMap.Map("mapContainer", {
+      viewMode: "3D",
+      zoom: 17,
+      center: sessionInformation[index].location,
+    });
+    mapScale = new AMap.Scale();
+    mapToolBar = new AMap.ToolBar({
+      position: {
+        top: '110px',
+        right: '40px'
+      }
+    });
+    mapControlBar = new AMap.ControlBar({
+      position: {
+        top: '10px',
+        right: '10px',
+      }
+    });
+    mapType = new AMap.MapType({
+      defaultType: 0,
+      position: {
+        top: '10px',
+        left: '100px',
+      }
+    });
+    map.addControl(mapScale);
+    map.addControl(mapToolBar);
+    map.addControl(mapControlBar);
+    map.addControl(mapType);
+    mapMarker = new AMap.Marker({
+      icon: "https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-default.png",
+      position: sessionInformation[index].location,
+      offset: new AMap.Pixel(-13, -30),
+      clickable: false
+    });
+    map.on('complete', function () {
+      map.add(mapMarker);
+      mapMarker.setLabel({
+        content: sessionInformation[index].venue,
+        direction: "top",
+        offset: new AMap.Pixel(-13, -8)
+      });
+    });
+  } else {
+    map.setCenter(sessionInformation[index].location);
+    mapMarker.setPosition(sessionInformation[index].location);
+    mapMarker.setLabel({
+      content: sessionInformation[index].venue
+    });
   }
 }
 </script>
@@ -85,6 +179,14 @@ const getChooseButtonStatus = (index: number) => {
   &-detail {
     &-div {
       display: flex;
+      flex-wrap: nowrap;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    &-text-div {
+      display: flex;
       flex-direction: column;
     }
 
@@ -92,6 +194,10 @@ const getChooseButtonStatus = (index: number) => {
       margin-top: 7px;
       margin-bottom: 7px;
     }
+  }
+
+  &-map-div {
+    height: 50vh;
   }
 
   &-title {
