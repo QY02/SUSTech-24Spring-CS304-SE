@@ -1,5 +1,4 @@
 <template>
-  <change-password></change-password>
   <t-space direction="vertical" size="large" style="width: 100%">
     <div style="max-width: 1000px;margin: 30px auto;">
     <b>请输入活动信息</b>
@@ -51,7 +50,6 @@ import { ref, inject } from 'vue';
 import { MessagePlugin } from 'tdesign-vue-next';
 import axios from "axios";
 import EventSession from "@/components/event/EventSession.vue";
-import ChangePassword from "@/components/profile/ChangePassword.vue";
 
 const apiUrl = inject('$API_URL');
 

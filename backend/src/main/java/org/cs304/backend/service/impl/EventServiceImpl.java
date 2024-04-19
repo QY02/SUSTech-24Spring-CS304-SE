@@ -2,6 +2,7 @@ package org.cs304.backend.service.impl;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
+import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
@@ -32,6 +33,8 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
 
     @Resource
     private IEventSessionService eventSessionService;
+    @Resource
+    private EventMapper eventMapper;
     @Resource
     private EventSessionMapper eventSessionMapper;
     @Resource
@@ -69,6 +72,44 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
         }
         return new JSONArray();
     }
+
+
+    @Override
+    public void insertEventAndSessions(JSONObject data){
+        JSONObject eventData=data.getJSONObject("event");
+        JSONArray eventSessionData = data.getJSONArray("sessions");
+
+        Event event = new Event();
+        event.setName(eventData.getString("name"));
+        event.setContent(eventData.getString("content"));
+        event.setType(eventData.getInteger("type"));
+        event.setPublisherId(eventData.getString("publisher_id"));
+        event.setPublishDate(LocalDateTime.now());
+        event.setStatus(constant_EventStatus.AUDITING);
+        event.setEventPolicy(eventData.getString("event_policy"));
+        event.setVisible(eventData.getBoolean("visible"));
+
+        // 打印 Event 对象的属性值
+//        System.out.println("Event Object: " + event);
+        eventMapper.insert(event);
+
+        insertSessions(event.getId(),eventSessionData);
+
+    }
+    private void insertSessions(int id,JSONArray eventSessionData) {
+        if (eventSessionData != null && !eventSessionData.isEmpty()) {
+                    int dataSize = eventSessionData.size();
+                    for (int i = 0; i < dataSize; i++) {
+                        JSONObject sessionData = eventSessionData.getJSONObject(i);
+                        eventSessionService.insertEventSession(id, sessionData);
+                    }
+                } else {
+                    System.out.println("eventSessionData is null or empty.");
+                }
+            }
+
+
+
 
     @Override
     public List<EventSession> getEventSessionsByEventId(int userType, Integer eventId) {
@@ -121,4 +162,17 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
         orderRecord.setPaymentTime(null);
         orderRecordMapper.insert(orderRecord);
     }
+    @Override
+    public JSONArray getAllEvents(){//开始时间从大到小排序返回
+        QueryWrapper<Event> queryWrapper = new QueryWrapper<Event>();
+        queryWrapper.orderByDesc("publish_date");
+        List<Event> list = list(queryWrapper);
+        if (list != null) {
+            JSONArray jsonArray = new JSONArray();
+            jsonArray.addAll(list.stream().map(JSON::toJSON).toList());
+            return jsonArray;
+        }
+        return new JSONArray();
+    }
+
 }

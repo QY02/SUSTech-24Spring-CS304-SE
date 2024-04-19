@@ -18,7 +18,7 @@ create table if not exists user
 create table if not exists attachment
 (
     id        int primary key auto_increment,
-    file_name varchar(1024) not null
+    file_path varchar(1024) not null
 );
 
 create table if not exists event
@@ -55,14 +55,14 @@ create table if not exists event_session
     visible                         boolean       not null
 );
 
-create table if not exists post_attachment_relation
+create table if not exists entity_attachment_relation
 (
-    post_type        int not null,
-    post_id          int not null,
-    index (post_type, post_id),
+    entity_type        int not null,
+    entity_id          int not null,
+    attachment_type  int not null,
     attachment_id    int not null,
-    attachment_title varchar(1024),
-    attachment_type  int not null
+    primary key (entity_type, entity_id, attachment_type, attachment_id),
+    attachment_title varchar(1024)
 );
 
 create table if not exists seat_map
@@ -132,4 +132,13 @@ create table if not exists reply
     content      varchar(10240),
     up_vote      int        not null,
     down_vote    int        not null
+);
+
+create table if not exists chat_message
+(
+    id int primary key auto_increment,
+    sender_id varchar(8),
+    receiver_id varchar(8),
+    content varchar(5000),
+    send_time datetime
 );

@@ -16,5 +16,5 @@ public class Attachment {
     @TableId(type = IdType.AUTO)
     private Integer id;
 
-    private String fileName;
+    private String filePath;
 }

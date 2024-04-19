@@ -334,7 +334,7 @@ axios.defaults.baseURL = apiBaseUrl;
 
 const fetchSessionInformation = async () => {
   fetchSeatMapStatus.value = 0;
-  axios.post("/seatMap/getSeatMapWithSeatsById", {seatMapId: sessionInformation[bookingInformation.chosenSession].seatMapId}, {headers: {token: token}} as AxiosRequestConfig).then(response => {
+  axios.post("/seatMap/getSeatMapWithSeatsById", {seatMapId: sessionInformation[bookingInformation.chosenSession].seatMapId}, {headers: {token: sessionStorage.getItem('token')}} as AxiosRequestConfig).then(response => {
     Object.assign(seatMap, response.data.data.detailedData);
     fetchSeatMapStatus.value = 1;
   }).catch(error => {
