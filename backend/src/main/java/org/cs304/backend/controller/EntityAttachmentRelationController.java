@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/postAttachmentRelation")
-public class PostAttachmentRelationController {
+public class EntityAttachmentRelationController {
 
 
 }

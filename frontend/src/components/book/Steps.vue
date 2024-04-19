@@ -78,7 +78,7 @@ bookingInformation.eventId = Number(route.query.eventId);
 const fetchSessionInformation = async () => {
   fetchSessionInformationStatus.value = 0;
   try {
-    let response = await axios.post("/event/getEventSessionsByEventId", {eventId: bookingInformation.eventId}, {headers: {token: globalProperties.token}} as AxiosRequestConfig);
+    let response = await axios.post("/event/getEventSessionsByEventId", {eventId: bookingInformation.eventId}, {headers: {token: sessionStorage.getItem('token')}} as AxiosRequestConfig);
     const dataConverted = response.data.data.map((item: Session) => ({
       ...item,
       startTime: new Date(item.startTime),
@@ -90,7 +90,7 @@ const fetchSessionInformation = async () => {
     response = await axios.post("/orderRecord/getMyOrderRecordByEventId", {
       eventId: bookingInformation.eventId,
       mode: 0
-    }, {headers: {token: globalProperties.token}} as AxiosRequestConfig);
+    }, {headers: {token: sessionStorage.getItem('token')}} as AxiosRequestConfig);
     const registeredEventSessionIdArray = response.data.data;
     sessionInformation.forEach(session => {
       session.registered = !!registeredEventSessionIdArray.includes(session.eventSessionId);
@@ -247,7 +247,7 @@ export const submitData = async () => {
       nameEng: item.nameEng,
       value: item.value
     })))
-  }, {headers: {token: globalProperties.token}} as AxiosRequestConfig).then(() => {
+  }, {headers: {token: sessionStorage.getItem('token')}} as AxiosRequestConfig).then(() => {
     MessagePlugin.success('提交成功');
     currentStep.value++;
   }).catch(error => {

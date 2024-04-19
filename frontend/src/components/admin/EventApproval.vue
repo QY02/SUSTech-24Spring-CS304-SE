@@ -210,7 +210,7 @@ axios.defaults.baseURL = appConfig.$apiBaseUrl;
 onMounted(() => {
   axios.get(`/admin/getAuditList/0`,{
     headers: {
-      token: 'z',
+      token: sessionStorage.getItem('token'),
     }
   })
       .then(response => {
@@ -260,7 +260,7 @@ const viewHistory = async () => {
   try {
     const response = await axios.get('/admin/getAuditList/1,2', {
       headers: {
-        token: 'z',
+        token: sessionStorage.getItem('token'),
       }
     });
     historyData.value = response.data.data.map(item => ({

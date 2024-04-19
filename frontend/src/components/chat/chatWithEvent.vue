@@ -6,49 +6,49 @@
     <span>4、模型实际性能取决于第三方提供商，本站不对模型性能负责。</span>
   </t-alert>
   <div style="display: flex; justify-content: center; align-items: center;">
-      <div style="width: 650px; background-color: #f0f0f0;
-                    border-radius: 5px; box-shadow: 0 0 10px #a8b1c9"
-           class="card-with-margin">
-        <div style="text-align: center; line-height: 50px;font-weight: bold;font-size: large">
-          Chat With Event (beta)
-        </div>
-        <div style="height: 60vh; overflow:auto; border-top: 1px solid #a8b1c9;" v-html="content"></div>
-        <div style="padding: 18px 15px;">
-          <t-space>
-            <t-select
+    <div style="width: 650px; background-color: #f0f0f0;
+                    border-radius: 10px; box-shadow: 0 0 20px #a8b1c9"
+         class="card-with-margin">
+      <div style="text-align: center; line-height: 50px;font-weight: bold;font-size: large">
+        Chat With Event (beta)
+      </div>
+      <div style="height: 55vh; overflow:auto; border-top: 1px solid #a8b1c9;" v-html="content"></div>
+      <div style="padding: 18px 15px;">
+        <t-space>
+          <t-select
               v-model="chatModel"
               :options="chatModels"
               placeholder="请选择聊天模型"
           ></t-select>
-            <t-input
-                placeholder="请输入你的API KEY"
-                type="password"
-                v-model="api_key"
-                :tips="apiTips"
-                :status="apiTips ? 'error' : ''"
-                :onChange="apiValidate"
-            />
-            <t-button @click="initChat">开启新的对话</t-button>
-            <t-tooltip content="下载聊天记录">
-              <t-button shape="circle" theme="primary" @click="downloadTxtFile">
-                <template #icon> <file-download-icon /></template>
-              </t-button>
-            </t-tooltip>
-          </t-space>
+          <t-input
+              placeholder="请输入你的API KEY"
+              type="password"
+              v-model="api_key"
+              :tips="apiTips"
+              :status="apiTips ? 'error' : ''"
+              :onChange="apiValidate"
+          />
+          <t-button @click="initChat">开启新的对话</t-button>
+          <t-tooltip content="下载聊天记录">
+            <t-button shape="circle" theme="primary" @click="downloadTxtFile">
+              <template #icon> <file-download-icon /></template>
+            </t-button>
+          </t-tooltip>
+        </t-space>
+      </div>
+      <div style="position: relative;">
+        <t-textarea
+            v-model="text"
+            placeholder="请输入"
+            name="description"
+            :autosize="{ minRows: 6, maxRows: 10 }"
+        />
+        <div style="position: absolute; bottom: 10px; right: 10px;">
+          <t-button @click="send" :disabled="disableSend">发送</t-button>
         </div>
-          <div style="position: relative;">
-            <t-textarea
-                v-model="text"
-                placeholder="请输入"
-                name="description"
-                :autosize="{ minRows: 6, maxRows: 10 }"
-            />
-            <div style="position: absolute; bottom: 10px; right: 10px;">
-              <t-button @click="send" :disabled="disableSend">发送</t-button>
-            </div>
-          </div>
-        </div>
+      </div>
     </div>
+  </div>
 </template>
 
 
@@ -67,16 +67,28 @@ const renderMarkdown = (text) => {
 
 // const user = sessionStorage.getItem("uid") ? sessionStorage.getItem("uid") : '';//当前用户
 const user = sessionStorage.getItem("uid") ? sessionStorage.getItem("uid") : '12112003';//当前用户
-const chatModel = ref('TEST');//聊天对象
+const chatModel = ref('GPT3.5');//聊天对象
 const chatModels = ref([
   {value: 'GPT3.5', label: 'OpenAI GPT3.5 Turbo'},
   {value: 'GPT4', label: 'OpenAI GPT4'},
   {value: 'GOOGLE', label: 'Google Gemini'},
   {value: 'ZHIPU', label: '智谱AI'},
   {value: 'TONGYI', label: '通义千问'},
+  {value: 'BAICHUAN', label: '百川智能'},
+  {value: 'WENXIN', label: '百度文心一言'},
   {value: 'TEST', label: '图灵机器人'},
 ]);
-const api_key = ref('TEST');
+const chatModelLogos = ref([
+  {value: 'GPT3.5', label: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTwBl5CgMuFP51OU_N49Ukp20IR7RayImCwgttcpQwhNg&s'},
+  {value: 'GPT4', label: 'https://chatgptdemo.ai/wp-content/uploads/2023/08/cropped-chatgptdemo.png'},
+  {value: 'GOOGLE', label: 'https://logowik.com/content/uploads/images/google-ai-gemini91216.logowik.com.webp'},
+  {value: 'ZHIPU', label: 'https://k.sinaimg.cn/n/spider20230423/226/w750h276/20230423/2525-d42245b5d574b217e01e27328655db81.png/w300h300z1l10t10q100041.jpg'},
+  {value: 'TONGYI', label: 'http://img3.downza.cn/capmobile/202401/180751-65ae3e77cab7a.png'},
+  {value: 'TEST', label: 'https://img.freepik.com/free-vector/robotic-artificial-intelligence-technology-smart-lerning-from-bigdata_1150-48136.jpg?w=1480'},
+  {value: 'BAICHUAN', label: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ-Pc85w70xJsdvgqzwVMatR7oIdWoDoY6bMtiZ3n7V9w&s'},
+  {value: 'WENXIN', label: 'https://pp.myapp.com/ma_icon/0/icon_54318686_1713316741/256'},
+]);
+const api_key = ref('test');
 const text = ref("");
 const messages = ref([]);
 const content = ref('<br>');
@@ -169,11 +181,11 @@ const send = () => {
     } else {
       console.log("您的浏览器支持WebSocket");
       let message = {session_ID: user,
-                      history: messages.value,
-                      query: text.value,
-                      LLM_type: chatModel.value,
-                      api_key: api_key.value,
-                      tmp_event: "1"};
+        history: messages.value,
+        query: text.value,
+        LLM_type: chatModel.value,
+        api_key: api_key.value,
+        tmp_event: "1"};
       socket.send(JSON.stringify(message));
       messages.value.push({role: "user", content: text.value});
       createContent(null, user, text.value);
@@ -190,7 +202,7 @@ const downloadTxtFile = () => {
     textContent += item.role === 'ai' ? 'AI: ' : 'USER: ';
     textContent += item.content + "\n";
   });
-  const blob = new Blob([textContent], { type: 'text/plain' });
+  const blob = new Blob([textContent], {type: 'text/plain'});
   const a = document.createElement('a');
   const url = window.URL.createObjectURL(blob);
   a.href = url;
@@ -220,7 +232,7 @@ const createContent = (remoteUser, nowUser, text) => {
     html = `<div class="el-row" style="padding: 5px 0">
       <div class="el-col el-col-2" style="text-align: right">
         <span class="el-avatar el-avatar--circle" style="height: 40px; width: 40px; line-height: 40px;">
-          <img src="https://img.freepik.com/free-vector/robotic-artificial-intelligence-technology-smart-lerning-from-bigdata_1150-48136.jpg?w=1480" style="object-fit: cover;" alt="chat">
+          <img src="${chatModelLogos.value.find(item => item.value === chatModel.value).label}" style="object-fit: cover;" alt="chat">
         </span>
       </div>
       <div class="el-col el-col-22" style="padding-left: 10px">
@@ -257,3 +269,4 @@ const createContent = (remoteUser, nowUser, text) => {
   text-align: left;
 }
 </style>
+

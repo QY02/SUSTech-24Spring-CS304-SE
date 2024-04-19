@@ -38,7 +38,6 @@
       </template>
 
     </t-table>
-    <div>{{data}}</div>
   </div>
   <t-dialog
       v-model:visible="visibleBody"

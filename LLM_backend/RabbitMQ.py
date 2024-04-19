@@ -50,28 +50,28 @@ channel.queue_declare(queue=CONFIG.CHAT_PRODUCE_QUEUE_NAME)
 
 # RabbitMQ 消费者回调函数
 def on_message(ch, method, properties, body):
-    msg_data: Dict[str, Any] = eval(body)
-    session_ID = msg_data.get("session_ID")
-    history = msg_data.get("history", [])
-    query = msg_data.get("query")
-    LLM_type = msg_data.get("LLM_type")
-    api_key = msg_data.get("api_key")
-    tmp_event = msg_data.get("event")
-    logger.info(f"Received message: Session_ID={session_ID}, QUERY={query}")
-
-    if LLM_type == "TEST":
-        send_to_rabbitmq("这是一个测试", session_ID)
-        ch.basic_ack(delivery_tag=method.delivery_tag)
-        return
-
     try:
+        msg_data: Dict[str, Any] = eval(body)
+        session_ID = msg_data.get("session_ID")
+        history = msg_data.get("history", [])
+        query = msg_data.get("query")
+        LLM_type = msg_data.get("LLM_type")
+        api_key = msg_data.get("api_key")
+        tmp_event = msg_data.get("event")
+        logger.info(f"Received message: Session_ID={session_ID}, QUERY={query}")
+
+        if LLM_type == "TEST":
+            send_to_rabbitmq("这是一个测试", session_ID)
+            return
+
         chat_history = ChatMessageHistory()
         chat = initialize(LLM_type, api_key)
-        initial_prompt = ("你是“校园活动与娱乐中心”系统的一位有用的助手。"
+        initial_prompt = ("你是“校园活动与娱乐中心”系统的助手。"
                           "在这个系统中，用户可以查看南方科技大学的表演（例如音乐会）、讲座）、比赛以及其他活动的信息。"
-                          "用户还可以预订门票、座位或撰写评论。你只能帮助用户解答有关活动等方面的问题。")
+                          "用户还可以预订门票、座位或撰写评论。注意！你只能帮助用户解答有关活动等方面的问题。")
         chat_history.add_user_message(initial_prompt)
-        # chat_history.add_user_message(tmp_event)
+        # chat_history.add_user_message("当前的活动是：" + tmp_event)
+        chat_history.add_ai_message("你好，我是校园活动与娱乐中心的助手。你有什么问题需要帮助吗？")
         for msg in history:
             if msg.get("role") == "ai":
                 chat_history.add_ai_message(msg.get("content"))
@@ -80,13 +80,13 @@ def on_message(ch, method, properties, body):
         chat_history.add_user_message(query)
         signal.alarm(30)
         response = chat.invoke(chat_history.messages)
-        signal.alarm(0)
         send_to_rabbitmq(response.content, session_ID)
     except Exception as e:
         logger.error(f"Error processing message: {e} , Session_ID={session_ID}, QUERY={query}")
         send_to_rabbitmq("对不起，请求失败，请稍后重试", session_ID)
     finally:
         ch.basic_ack(delivery_tag=method.delivery_tag)
+        signal.alarm(0)
 
 
 # 发送消息到 RabbitMQ

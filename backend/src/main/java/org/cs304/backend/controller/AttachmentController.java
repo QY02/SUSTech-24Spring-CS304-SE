@@ -30,6 +30,14 @@ public class AttachmentController {
         return Result.success(response, attachmentService.getById(userType, id));
     }
 
+    @PostMapping("/getBatchByIds")
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, content = @Content(examples = @ExampleObject("{\"idList\": [1, 2, 3]}")))
+    public Result getBatchByIds(HttpServletResponse response, HttpServletRequest request, @RequestBody JSONObject requestBody) {
+        int userType = (int) request.getAttribute("loginUserType");
+        List<Integer> idList = requestBody.getList("idList", Integer.class);
+        return Result.success(response, attachmentService.getBatchByIds(userType, idList));
+    }
+
     @PostMapping("/uploadStart")
     @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, content = @Content(examples = @ExampleObject("{\"fileDir\": \"test\"}")))
     public Result uploadStart(HttpServletResponse response, HttpServletRequest request, @RequestBody JSONObject requestBody) {

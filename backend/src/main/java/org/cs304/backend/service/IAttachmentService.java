@@ -11,6 +11,8 @@ public interface IAttachmentService extends IService<Attachment> {
 
     Attachment getById(int userType, Integer id);
 
+    List<Attachment> getBatchByIds(int userType, List<Integer> idList);
+
     @Transactional(rollbackFor = {Exception.class})
     void deleteById(int userType, Integer id);
 
