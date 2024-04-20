@@ -68,7 +68,7 @@
 </template>
 
 <script setup>
-import {inject, reactive} from 'vue';
+import {getCurrentInstance, inject, reactive, ref} from 'vue';
 import {MessagePlugin} from 'tdesign-vue-next';
 import {DesktopIcon, LockOnIcon} from 'tdesign-icons-vue-next';
 import axios from "axios";
@@ -101,7 +101,7 @@ const rules = {
   }],
 };
 
-// const appConfig = ref(getCurrentInstance().appContext.config.globalProperties).value;
+const appConfig = ref(getCurrentInstance().appContext.config.globalProperties).value;
 // 获取全局变量 $apiBaseUrl
 // alert(apiUrl)
 axios.defaults.baseURL = apiUrl;

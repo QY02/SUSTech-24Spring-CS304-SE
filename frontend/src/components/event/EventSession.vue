@@ -65,13 +65,17 @@
             <t-switch v-model="newData.registration_required" :label="['是', '否']"></t-switch>
           </t-form-item>
           <t-form-item label="报名开始时间-报名结束时间" name="registration_time_range">
-            <t-date-range-picker enable-time-picker:true allow-input:true clearable:true
+            <t-date-range-picker enable-time-picker=true allow-input=true clearable=true
                                  v-model="newData.registration_time_range"
-                                 :disabled="!newData.registration_required"/>
+                                 :disabled="!newData.registration_required"
+                                 :presets="presets"
+            />
           </t-form-item>
           <t-form-item label="开始时间-结束时间" name="event_time_range">
-            <t-date-range-picker enable-time-picker:true allow-input:true clearable:true
-                                 v-model="newData.event_time_range"/>
+            <t-date-range-picker enable-time-picker=true allow-input=true clearable=true
+                                 v-model="newData.event_time_range"
+                                 :presets="presets"
+            />
           </t-form-item>
 
           <t-form-item label="人数" name="count_range_of_people">
@@ -105,6 +109,7 @@ import {computed, ref, watch} from 'vue';
 import {DateRangePicker, Input, MessagePlugin, RangeInput, Switch} from 'tdesign-vue-next';
 import {AddIcon} from "tdesign-icons-vue-next";
 import {useVModel} from "@vueuse/core";
+import dayjs from "dayjs";
 const props = defineProps({
   sessionData: Array
 })
@@ -117,13 +122,17 @@ watch(data,()=>{
     item.key = index + 1;
   });
 })
-
+const presets = ref({
+  最近7天: [dayjs().subtract(6, 'day').toDate(), dayjs().toDate()],
+  最近3天: [dayjs().subtract(2, 'day').toDate(), dayjs().toDate()],
+  今天: [dayjs().toDate(), dayjs().toDate()],
+});
 const newData = ref({
   key: String(data.value.length),
   registration_required: false,
   registration_time_range: [],
   event_time_range: [],
-  count_range_of_people: [],
+  count_range_of_people: [0,5],
   seat_map_id: '',
   venue: '',
   location: '',
@@ -206,7 +215,7 @@ const addData = ({validateResult, firstError}) => {
       registration_required: false,
       registration_time_range: [],
       event_time_range: [],
-      count_range_of_people: [],
+      count_range_of_people: [0,5],
       seat_map_id: '',
       venue: '',
       location: '',

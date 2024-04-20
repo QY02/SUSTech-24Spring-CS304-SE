@@ -1,14 +1,13 @@
 <script setup>
 import {computed, reactive, ref} from 'vue';
 import {Input, MessagePlugin} from 'tdesign-vue-next';
-import {useVModel} from "@vueuse/core";
 import {LockOnIcon} from "tdesign-icons-vue-next";
 const token='z';
-const props = defineProps({
-  visible: Boolean
-})
-const emit = defineEmits(['update:visible'])
-const visibleBody = useVModel(props,'visible',emit)
+// const props = defineProps({
+//   visible: Boolean
+// })
+// const emit = defineEmits(['update:visible'])
+// const visibleBody = useVModel(props,'visible',emit)
 
 const formData = reactive({
     email:'',
@@ -26,7 +25,6 @@ const changePsw = ({validateResult, firstError}) => {
       new_psw_1:'',
       new_psw_2:'',
     }
-    visibleBody.value = false;
     MessagePlugin.success('提交成功');
   } else {
     console.log('Validate Errors: ', firstError, validateResult);
@@ -76,17 +74,7 @@ const onReset = () => {
 </script>
 
 <template>
-  <t-dialog
-      v-model:visible="visibleBody"
-      attach="body"
-      header="修改密码"
-      destroy-on-close:true
-      width="40%"
-      :cancel-btn=null
-      :confirm-btn=null
-  >
-    <template #body>
-      <t-space direction="vertical">
+  <div>
         <t-form
             ref="form"
             id="form"
@@ -127,14 +115,12 @@ const onReset = () => {
 
           <t-form-item>
             <t-space size="small">
-              <t-button theme="primary" type="submit">提交</t-button>
-              <t-button theme="default" variant="base" type="reset">重置</t-button>
+              <t-button theme="success" type="submit">提交</t-button>
+              <t-button variant="outline" type="reset">重置</t-button>
             </t-space>
           </t-form-item>
         </t-form>
-      </t-space>
-    </template>
-  </t-dialog>
+  </div>
 </template>
 
 <style scoped>

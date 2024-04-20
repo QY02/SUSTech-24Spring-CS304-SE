@@ -18,9 +18,6 @@ const formData = ref({
 });
 
 
-
-
-
 const FORM_RULES = ref({
     old_email: [{ disabled: true }],
     new_email: [{ required: true, message: '格式必须为邮箱', type: 'warning' }],
