@@ -68,7 +68,7 @@
 </template>
 
 <script setup>
-import {getCurrentInstance, inject, reactive, ref} from 'vue';
+import {inject, reactive} from 'vue';
 import {MessagePlugin} from 'tdesign-vue-next';
 import {DesktopIcon, LockOnIcon} from 'tdesign-icons-vue-next';
 import axios from "axios";

@@ -98,7 +98,7 @@ const department = ref("");
 
 const showModalCode = ref(false)
 
-const appConfig = ref(getCurrentInstance().appContext.config.globalProperties).value;
+const appConfig = getCurrentInstance().appContext.config.globalProperties;
 axios.defaults.baseURL = appConfig.$apiBaseUrl;
 
 
