@@ -2,12 +2,24 @@
 
   <div id="event">
     <t-card
-        v-for="(item,index) in events"
+        v-for="(item,index) in curEvents"
         :key="index"
         :title="item['content']" :subtitle="item['eventPolicy']" :cover=cover :style="{ width: '400px' }" hover-shadow>
       <template #actions>
         <t-dropdown :options="options" :min-column-width="112" @click="clickHandler">
           <div class="tdesign-demo-dropdown-trigger">
+            <a v-if="item['type']===0">
+              <t-tag theme="success" variant="light" style="margin-right: 20px">表演</t-tag>
+            </a>
+            <a v-if="item['type']===1">
+              <t-tag theme="primary" variant="light" style="margin-right: 20px">讲座</t-tag>
+            </a>
+            <a v-if="item['type']===2">
+              <t-tag theme="danger" variant="light" style="margin-right: 20px">比赛</t-tag>
+            </a>
+            <a v-if="item['type']===3">
+              <t-tag variant="light" style="margin-right: 20px">其他</t-tag>
+            </a>
             <t-button variant="text" shape="square">
               <more-icon/>
             </t-button>
@@ -42,17 +54,18 @@
 
 </template>
 
-
 <script setup>
 
 import {ThumbUpIcon, ChatIcon, ShareIcon, MoreIcon} from 'tdesign-icons-vue-next';
 import {MessagePlugin} from 'tdesign-vue-next';
 import axios from "axios";
-import {defineComponent, inject, ref} from "vue";
+import {computed, defineComponent, getCurrentInstance, inject, ref, watch} from "vue";
 import router from "@/routers/index.js";
 
 const cover = 'https://tdesign.gtimg.com/site/source/card-demo.png';
 const events = ref([]);
+const tmpEvents = ref([]);
+const curEvents = ref([]);
 const options = [
   {
     content: '操作一',
@@ -68,10 +81,36 @@ const clickHandler = (data) => {
   MessagePlugin.success(`选中【${data.content}】`);
 };
 
-const apiUrl = inject('$API_URL');
+// const eventType = inject('eventType')
+const eventType = ref(sessionStorage.getItem('eventType'))
 
+const typeValue = ref([]);  // Initialize with a default value
+
+// Function to handle incoming messages from other tabs
+window.addEventListener('setItem', () => {
+  typeValue.value = sessionStorage.getItem('eventType');
+  curEvents.value = events.value.filter(events => typeValue.value.includes(events['type'] + 1));
+  tmpEvents.value = events.value.filter(events => typeValue.value.includes(events['type'] + 1));
+  // alert(JSON.stringify(tmpEvents.value))
+  // events.value=[]
+  // alert(typeValue.value)
+})
+
+function getSearchNew(message) {
+  // alert(JSON.stringify(tmpEvents.value))
+
+  // curEvents.value =event.content.includes(searchText.value) || event.title.includes(searchText.value)
+  // alert(message)
+  curEvents.value = tmpEvents.value.filter(events => events['content'].includes(message) || events['eventPolicy'].includes(message));
+  // curEvents.value = tmpEvents.value.filter(tmpEvents => tmpEvents['content'].includes(message) || tmpEvents['eventPolicy'].includes(message));
+}
+
+defineExpose({getSearchNew});
 // 获取全局变量 $apiBaseUrl
-axios.defaults.baseURL = apiUrl;
+const globalProperties = getCurrentInstance().appContext.config.globalProperties;
+const apiBaseUrl = globalProperties.$apiBaseUrl;
+// alert(apiBaseUrl)
+axios.defaults.baseURL = apiBaseUrl;
 axios.post(`/event/getAllEvents`, {}, {
   params: {},
   headers: {
@@ -81,9 +120,9 @@ axios.post(`/event/getAllEvents`, {}, {
     .then((response) => {
       // alert(response)
       events.value = response.data.data
-      // MessagePlugin.warning(JSON.stringify(events));
-
-      // alert(JSON.stringify(events))
+      curEvents.value = response.data.data
+      tmpEvents.value = response.data.data
+      // alert(JSON.stringify(events.value))
 
     })
     .catch((error) => {

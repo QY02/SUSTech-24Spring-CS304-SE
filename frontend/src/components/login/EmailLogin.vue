@@ -76,7 +76,7 @@
 
 <script setup>
 
-import {inject, reactive} from 'vue';
+import {getCurrentInstance, inject, reactive} from 'vue';
 import {MessagePlugin} from 'tdesign-vue-next';
 import {DesktopIcon, LockOnIcon} from 'tdesign-icons-vue-next';
 import axios from "axios";
@@ -92,7 +92,7 @@ const onReset = () => {
 };
 
 
-const apiUrl = inject('$API_URL');
+
 // const {isValid, validate} = useForm('formRef')
 // const {init} = useToast();
 
@@ -121,7 +121,10 @@ const rules = {
 // const email = ref("");
 // const appConfig = ref(getCurrentInstance().appContext.config.globalProperties).value;
 // 获取全局变量 $apiBaseUrl
-axios.defaults.baseURL = apiUrl;
+const globalProperties = getCurrentInstance().appContext.config.globalProperties;
+const apiBaseUrl = globalProperties.$apiBaseUrl;
+// alert(apiBaseUrl)
+axios.defaults.baseURL = apiBaseUrl;
 const handleSubmit = ({validateResult}) => {
   if (validateResult === true) {
     axios.post("/loginWithEmail", {
