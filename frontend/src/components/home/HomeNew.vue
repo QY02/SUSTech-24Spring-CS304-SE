@@ -4,7 +4,8 @@
     <t-card
         v-for="(item,index) in curEvents"
         :key="index"
-        :title="item['content']" :subtitle="item['eventPolicy']" :cover=cover :style="{ width: '400px' }" hover-shadow>
+        :title="item['name']" :subtitle="item['content']" :cover=cover :style="{ width: '400px' }" hover-shadow
+    @click="clickEvent(item['id'])">
       <template #actions>
         <t-dropdown :options="options" :min-column-width="112" @click="clickHandler">
           <div class="tdesign-demo-dropdown-trigger">
@@ -78,9 +79,32 @@ const options = [
 ];
 
 const clickHandler = (data) => {
-  MessagePlugin.success(`选中【${data.content}】`);
+  MessagePlugin.success(`选中【${data.content}】 `);
 };
+const clickEvent = (eventId) => {
+  MessagePlugin.success(`${sessionStorage.getItem('uid')} 选中【${eventId}】`);
+  axios.post(`/history/add`, {
+    "eventId": eventId,
+    "userId": sessionStorage.getItem('uid')
+  }, {
+    params: {},
+    headers: {
+      token: sessionStorage.getItem('token')
+    }
+  })
+      .then((response) => {
 
+      })
+      .catch((error) => {
+        if (error.response) {
+          // 请求已发出，但服务器响应的状态码不在 2xx 范围内
+          MessagePlugin.warning(error.response.data.msg);
+        } else {
+          // 一些错误是在设置请求的时候触发
+          MessagePlugin.warning(error.message);
+        }
+      });
+};
 // const eventType = inject('eventType')
 const eventType = ref(sessionStorage.getItem('eventType'))
 
@@ -101,7 +125,7 @@ function getSearchNew(message) {
 
   // curEvents.value =event.content.includes(searchText.value) || event.title.includes(searchText.value)
   // alert(message)
-  curEvents.value = tmpEvents.value.filter(events => events['content'].includes(message) || events['eventPolicy'].includes(message));
+  curEvents.value = tmpEvents.value.filter(events => events['content'].includes(message) || events['name'].includes(message));
   // curEvents.value = tmpEvents.value.filter(tmpEvents => tmpEvents['content'].includes(message) || tmpEvents['eventPolicy'].includes(message));
 }
 
