@@ -49,11 +49,11 @@ import {
   toNextStep,
   fetchSessionInformationStatus
 } from '@/components/book/Steps.vue';
-import AMapLoader from "@amap/amap-jsapi-loader";
-import {onMounted, onUnmounted, ref} from "vue";
+import {AMap} from "@/main";
+import {onUnmounted, ref} from "vue";
 import {MapInformation2Icon} from "tdesign-icons-vue-next";
+import {NotifyPlugin} from "tdesign-vue-next";
 
-let AMap = null;
 let map = null;
 let mapScale = null;
 let mapControlBar = null;
@@ -93,75 +93,68 @@ const getChooseButtonStatus = (index: number) => {
   }
 }
 
-onMounted(() => {
-  AMapLoader.load({
-    key: "76ed3d07815c638a64f5678ed9c833d3",
-    version: "2.0",
-    plugins: ["AMap.Scale", "AMap.ToolBar", "AMap.ControlBar", "AMap.MapType"],
-  }).then((AMapInstance) => {
-    AMap = AMapInstance;
-  }).catch((e) => {
-    console.log(e);
-  });
-});
-
 onUnmounted(() => {
   map?.destroy();
 });
 
 const showMap = (index: number) => {
-  mapDialogHeader.value = sessionInformation[index].venue;
-  mapDialogVisible.value = true;
-  if (map === null) {
-    map = new AMap.Map("mapContainer", {
-      viewMode: "3D",
-      zoom: 17,
-      center: sessionInformation[index].location,
-    });
-    mapScale = new AMap.Scale();
-    mapToolBar = new AMap.ToolBar({
-      position: {
-        top: '110px',
-        right: '40px'
-      }
-    });
-    mapControlBar = new AMap.ControlBar({
-      position: {
-        top: '10px',
-        right: '10px',
-      }
-    });
-    mapType = new AMap.MapType({
-      defaultType: 0,
-      position: {
-        top: '10px',
-        left: '100px',
-      }
-    });
-    map.addControl(mapScale);
-    map.addControl(mapToolBar);
-    map.addControl(mapControlBar);
-    map.addControl(mapType);
-    mapMarker = new AMap.Marker({
-      icon: "https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-default.png",
-      position: sessionInformation[index].location,
-      offset: new AMap.Pixel(-13, -30),
-      clickable: false
-    });
-    map.on('complete', function () {
-      map.add(mapMarker);
-      mapMarker.setLabel({
-        content: sessionInformation[index].venue,
-        direction: "top",
-        offset: new AMap.Pixel(-13, -8)
+  if (AMap.value !== null) {
+    mapDialogHeader.value = sessionInformation[index].venue;
+    mapDialogVisible.value = true;
+    if (map === null) {
+      map = new AMap.value.Map("mapContainer", {
+        viewMode: "3D",
+        zoom: 17,
+        center: sessionInformation[index].location,
       });
-    });
-  } else {
-    map.setCenter(sessionInformation[index].location);
-    mapMarker.setPosition(sessionInformation[index].location);
-    mapMarker.setLabel({
-      content: sessionInformation[index].venue
-    });
+      mapScale = new AMap.value.Scale();
+      mapToolBar = new AMap.value.ToolBar({
+        position: {
+          top: '110px',
+          right: '40px'
+        }
+      });
+      mapControlBar = new AMap.value.ControlBar({
+        position: {
+          top: '10px',
+          right: '10px',
+        }
+      });
+      mapType = new AMap.value.MapType({
+        defaultType: 0,
+        position: {
+          top: '10px',
+          left: '100px',
+        }
+      });
+      map.addControl(mapScale);
+      map.addControl(mapToolBar);
+      map.addControl(mapControlBar);
+      map.addControl(mapType);
+      mapMarker = new AMap.value.Marker({
+        icon: "https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-default.png",
+        position: sessionInformation[index].location,
+        offset: new AMap.value.Pixel(-11, -35),
+        clickable: false
+      });
+      map.on('complete', function () {
+        map.add(mapMarker);
+        mapMarker.setLabel({
+          content: sessionInformation[index].venue,
+          direction: "top",
+          offset: new AMap.value.Pixel(-13, -8)
+        });
+      });
+    } else {
+      map.setCenter(sessionInformation[index].location);
+      mapMarker.setPosition(sessionInformation[index].location);
+      mapMarker.setLabel({
+        content: sessionInformation[index].venue
+      });
+    }
+  }
+  else {
+    NotifyPlugin.info({ title: "地图模块加载中，请稍后" })
   }
 }
 </script>

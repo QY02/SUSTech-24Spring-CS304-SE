@@ -41,9 +41,9 @@
   </div>
   <t-dialog
       v-model:visible="visibleBody"
-      attach="body"
       header="请填写场次信息"
       destroy-on-close:true
+      placement="center"
       width="45%"
       :cancel-btn=null
       :confirm-btn=null
@@ -81,7 +81,12 @@
             <t-input v-model="newData.venue">地址</t-input>
           </t-form-item>
           <t-form-item label="地图" name="location">
-            <t-input v-model="newData.location">地图</t-input>
+            <t-button @click="showChooseLocationDialog">
+              <template #icon>
+                <MapInformation2Icon/>
+              </template>
+              {{ newData.location === null ? "选择位置" : `${newData.location[0]}, ${newData.location[1]}` }}
+            </t-button>
           </t-form-item>
           <t-form-item label="是否可见" name="visible">
             <t-switch v-model="newData.visible" :label="['是', '否']"></t-switch>
@@ -98,20 +103,162 @@
 
     </template>
   </t-dialog>
+  <t-dialog v-model:visible="chooseLocationDialogVisible" placement="center" width="50vw" header="选择位置"
+            :onConfirm="handleChooseLocationConfirm" :onClose="handleChooseLocationCancel">
+    <div id="mapContainer" class="choose-location-map-div">
+      <div class="search-place-div">
+        <input class="search-place-input" v-model="searchPlaceInputValue" placeholder="搜索地点" id="searchPlaceInput"></input>
+        <div class="search-place-result-div" id="searchPlaceResultDiv"></div>
+      </div>
+    </div>
+  </t-dialog>
 </template>
 
 <script setup>
-import {computed, ref, watch} from 'vue';
-import {DateRangePicker, Input, MessagePlugin, RangeInput, Switch} from 'tdesign-vue-next';
-import {AddIcon} from "tdesign-icons-vue-next";
+import {computed, onUnmounted, ref, watch} from 'vue';
+import {DateRangePicker, Input, MessagePlugin, NotifyPlugin, RangeInput, Switch} from 'tdesign-vue-next';
+import {AddIcon, MapInformation2Icon} from "tdesign-icons-vue-next";
 import {useVModel} from "@vueuse/core";
+import {AMap} from "@/main";
+
+const chooseLocationDialogVisible = ref(false);
+let map = null;
+let mapScale = null;
+let mapToolBar = null;
+let mapControlBar = null;
+let mapType = null;
+let mapMarker = null;
+const searchPlaceInputValue = ref("");
+let mapAutoComplete = null;
+let mapPlaceSearch = null;
+
+const showChooseLocationDialog = () => {
+  if (AMap.value !== null) {
+    chooseLocationDialogVisible.value = true;
+    if (map === null) {
+      map = new AMap.value.Map("mapContainer", {
+        viewMode: "3D",
+        zoom: 17,
+        center: newData.value.location === null ? [113.997, 22.596] : newData.value.location,
+      });
+      mapScale = new AMap.value.Scale();
+      mapToolBar = new AMap.value.ToolBar({
+        position: {
+          top: '110px',
+          right: '40px'
+        }
+      });
+      mapControlBar = new AMap.value.ControlBar({
+        position: {
+          top: '10px',
+          right: '10px',
+        }
+      });
+      mapType = new AMap.value.MapType({
+        defaultType: 0,
+        position: {
+          bottom: '110px',
+          right: '10px',
+        }
+      });
+      map.addControl(mapScale);
+      map.addControl(mapToolBar);
+      map.addControl(mapControlBar);
+      map.addControl(mapType);
+      mapMarker = new AMap.value.Marker({
+        icon: "https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-default.png",
+        position: map.getCenter(),
+        offset: new AMap.value.Pixel(-11, -35),
+        clickable: false,
+        draggable: true
+      });
+      mapMarker.on("dragend", function () {
+        setMapMarkerPosition();
+      });
+      mapAutoComplete = new AMap.value.AutoComplete({
+        input: "searchPlaceInput",
+        output: "searchPlaceResultDiv"
+      });
+      mapPlaceSearch = new AMap.value.PlaceSearch({
+        map: map
+      });
+      mapPlaceSearch.on("markerClick", function (e) {
+        setMapMarkerPosition(e.marker.getPosition());
+      });
+      mapAutoComplete.on("select", function (e) {
+        mapPlaceSearch.setCity(e.poi.adcode);
+        mapPlaceSearch.search(e.poi.name);
+      });
+      map.on('complete', function () {
+        map.add(mapMarker);
+        mapMarker.setLabel({
+          content: `${mapMarker.getPosition().getLng()}, ${mapMarker.getPosition().getLat()}`,
+          direction: "top",
+          offset: new AMap.value.Pixel(-13, -8)
+        });
+        map.on('click', function (e) {
+          setMapMarkerPosition(e.lnglat);
+        });
+        map.on('moveend', () => {
+          mapMarker.setLabel({
+            direction: "top",
+            offset: new AMap.value.Pixel(-13, -8)
+          });
+        });
+      });
+    } else {
+      map.setZoomAndCenter(17, newData.value.location === null ? [113.997, 22.596] : newData.value.location);
+      mapMarker.setPosition(newData.value.location === null ? [113.997, 22.596] : newData.value.location);
+      mapMarker.setLabel({
+        content: `${mapMarker.getPosition().getLng()}, ${mapMarker.getPosition().getLat()}`
+      });
+    }
+  } else {
+    NotifyPlugin.info({title: "地图模块加载中，请稍后"})
+  }
+}
+
+const setMapMarkerPosition = (position) => {
+  if (position) {
+    mapMarker.setPosition(position);
+  }
+  mapMarker.setLabel({
+    content: `${mapMarker.getPosition().getLng()}, ${mapMarker.getPosition().getLat()}`,
+  });
+  setTimeout(() => {
+    mapMarker.setLabel({
+      direction: "top",
+      offset: new AMap.value.Pixel(-13, -8)
+    });
+  }, 0);
+}
+
+onUnmounted(() => {
+  map?.destroy();
+});
+
+const handleChooseLocationConfirm = () => {
+  const currentMarkerPosition = mapMarker.getPosition();
+  if (currentMarkerPosition !== null) {
+    newData.value.location = currentMarkerPosition.toArray();
+  }
+  chooseLocationDialogVisible.value = false;
+  mapPlaceSearch.clear();
+  searchPlaceInputValue.value = "";
+}
+
+const handleChooseLocationCancel = () => {
+  mapPlaceSearch.clear();
+  searchPlaceInputValue.value = "";
+}
+
 const props = defineProps({
   sessionData: Array
 })
 const emit = defineEmits(['update:sessionData'])
 
-const data = useVModel(props,'sessionData',emit)
-watch(data,()=>{
+const data = useVModel(props, 'sessionData', emit)
+watch(data, () => {
   data.value.forEach((item, index) => {
     // 将每个元素的 key 属性设置为当前索引加一
     item.key = index + 1;
@@ -126,7 +273,7 @@ const newData = ref({
   count_range_of_people: [],
   seat_map_id: '',
   venue: '',
-  location: '',
+  location: null,
   visible: false,
 });
 
@@ -209,7 +356,7 @@ const addData = ({validateResult, firstError}) => {
       count_range_of_people: [],
       seat_map_id: '',
       venue: '',
-      location: '',
+      location: null,
       visible: false,
     }
     visibleBody.value = false;
@@ -393,6 +540,7 @@ const FORM_RULES = ref({
 
 });
 const onReset = () => {
+  newData.value.location = null;
   MessagePlugin.success('重置成功');
 };
 
@@ -402,5 +550,52 @@ const onReset = () => {
   display: flex;
   //justify-content: space-around;
   gap: 10px;
+}
+
+.choose-location-map-div {
+  display: flex;
+  height: 50vh;
+}
+
+.search-place-div {
+  position: relative;
+  top: 10px;
+  left: 10px;
+  z-index: 99999;
+}
+
+.search-place-input {
+  width: 150px;
+  height: 32px;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 3px;
+  border-color: rgba(255, 255, 255, 0);
+  box-shadow: 0 0 4px 1px rgba(0, 0, 0, .2);
+  padding: 0 8px;
+  background-color: #fff;
+  outline: none;
+  color: rgba(0, 0, 0, 0.9);
+  font: 14px / 22px PingFang SC, Microsoft YaHei, Arial Regula;
+  box-sizing: border-box;
+  transition: border cubic-bezier(0.38, 0, 0.24, 1) 0.2s, box-shadow cubic-bezier(0.38, 0, 0.24, 1) 0.2s;
+}
+
+.search-place-input:hover {
+  border-color: #0052d9;
+}
+
+.search-place-input:focus {
+  z-index: 1;
+  border-color: #0052d9;
+  box-shadow: 0 0 0 2px #d9e1ff;
+}
+
+.search-place-result-div {
+  position: relative;
+  top: 3px;
+  background-color: #fff;
+  border-radius: 3px;
+  box-shadow: 0 0 4px 1px rgba(0, 0, 0, .2);
 }
 </style>

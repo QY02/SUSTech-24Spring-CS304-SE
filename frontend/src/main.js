@@ -1,4 +1,4 @@
-import {createApp, reactive} from 'vue';
+import {createApp, reactive, ref} from 'vue';
 import App from './App.vue';
 import router from './routers';
 import TDesign, {MessagePlugin} from 'tdesign-vue-next';
@@ -8,7 +8,8 @@ import ElementPlus from 'element-plus';
 import 'element-plus/dist/index.css';
 import VueDraggableResizable from 'vue-draggable-resizable';
 import "vue-draggable-resizable/style.css";
-import axios from 'axios'; // 导入axios
+import axios from 'axios';
+import AMapLoader from "@amap/amap-jsapi-loader";
 
 const app = createApp(App);
 app.use(ElementPlus);
@@ -24,6 +25,18 @@ axios.interceptors.response.use(function (response) {
         router.push('/login');
     }
     return Promise.reject(error);
+});
+
+export const AMap = ref(null);
+
+AMapLoader.load({
+    key: "76ed3d07815c638a64f5678ed9c833d3",
+    version: "2.0",
+    plugins: ["AMap.Scale", "AMap.ToolBar", "AMap.ControlBar", "AMap.MapType", "AMap.PlaceSearch", "AMap.AutoComplete"],
+}).then((AMapInstance) => {
+    AMap.value = AMapInstance;
+}).catch((e) => {
+    console.log(e);
 });
 
 app.use(router);
