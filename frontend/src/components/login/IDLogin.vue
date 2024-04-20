@@ -68,7 +68,7 @@
 </template>
 
 <script setup>
-import {inject, reactive} from 'vue';
+import {getCurrentInstance, inject, reactive, ref} from 'vue';
 import {MessagePlugin} from 'tdesign-vue-next';
 import {DesktopIcon, LockOnIcon} from 'tdesign-icons-vue-next';
 import axios from "axios";
@@ -84,8 +84,12 @@ const onReset = () => {
   MessagePlugin.success('重置成功');
 };
 
+const globalProperties = getCurrentInstance().appContext.config.globalProperties;
+const apiBaseUrl = globalProperties.$apiBaseUrl;
+// alert(apiBaseUrl)
+axios.defaults.baseURL = apiBaseUrl;
 
-const apiUrl = inject('$API_URL');
+// const apiUrl = inject('$API_URL');
 // const {isValid, validate} = useForm('formRef')
 // const {init} = useToast();
 
@@ -101,10 +105,6 @@ const rules = {
   }],
 };
 
-// const appConfig = ref(getCurrentInstance().appContext.config.globalProperties).value;
-// 获取全局变量 $apiBaseUrl
-// alert(apiUrl)
-axios.defaults.baseURL = apiUrl;
 const handleSubmit = ({validateResult}) => {
   if (validateResult === true) {
     axios.post("/login", {

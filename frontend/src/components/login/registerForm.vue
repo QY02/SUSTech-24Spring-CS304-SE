@@ -194,13 +194,17 @@
 // import NavBarWithOnlyTitle from "@/components/layouts/NavBarWithOnlyTitle.vue";
 // // import {useForm, useToast} from "vuestic-ui";
 
-import {inject, reactive, ref} from "vue";
+import {getCurrentInstance, inject, reactive, ref} from "vue";
 import {LockOnIcon} from "tdesign-icons-vue-next";
 import axios from "axios";
 import {MessagePlugin} from "tdesign-vue-next";
 import router from "@/routers";
 
-const apiUrl = inject('$API_URL');
+// const apiUrl = inject('$API_URL');
+const globalProperties = getCurrentInstance().appContext.config.globalProperties;
+const apiBaseUrl = globalProperties.$apiBaseUrl;
+// alert(apiBaseUrl)
+axios.defaults.baseURL = apiBaseUrl;
 
 
 const rules = {
@@ -227,7 +231,6 @@ const rules1 = {
 const onReset = () => {
   MessagePlugin.success('重置成功');
 };
-axios.defaults.baseURL = apiUrl;
 
 // const code = ref("");
 const formData = reactive({

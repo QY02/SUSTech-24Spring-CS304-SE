@@ -71,7 +71,6 @@
   <a v-if="currentTab.title==='最新'">
     <HomeNew ref="childRef"/>
   </a>
-
   <a v-else-if="currentTab.title==='热搜'">
     <HomeHot ref="childRef"/>
   </a>
@@ -86,7 +85,7 @@
 
 <script setup>
 import axios from "axios";
-import {computed, inject, reactive, ref, provide} from "vue";
+import {computed, inject, reactive, ref, provide, getCurrentInstance} from "vue";
 // import router from "@/routers";
 import {AddIcon, SearchIcon} from "tdesign-icons-vue-next";
 // import {getSearchNew} from "@/components/home/HomeNew.vue";
@@ -102,10 +101,12 @@ const title = '标题';
 // const {colors} = useColors();
 // colors.primary = sessionStorage.getItem('primary-color')
 // alert(colors.primary)
-const apiUrl = inject('$API_URL');
 
 // 获取全局变量 $apiBaseUrl
-axios.defaults.baseURL = apiUrl;
+const globalProperties = getCurrentInstance().appContext.config.globalProperties;
+const apiBaseUrl = globalProperties.$apiBaseUrl;
+// alert(apiBaseUrl)
+axios.defaults.baseURL = apiBaseUrl;
 const formData = reactive({
   search: '',
 });
@@ -261,9 +262,9 @@ const onInputChange = (val, context) => {
 
 .custom_select {
   position: absolute;
-  width: 300px;
+  width: 350px;
   top: 15px;
-  right: 350px;
+  right: 340px;
   z-index: 2;
 }
 

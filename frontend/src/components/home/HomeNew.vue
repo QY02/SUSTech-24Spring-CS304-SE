@@ -59,11 +59,12 @@
 import {ThumbUpIcon, ChatIcon, ShareIcon, MoreIcon} from 'tdesign-icons-vue-next';
 import {MessagePlugin} from 'tdesign-vue-next';
 import axios from "axios";
-import {computed, defineComponent, inject, ref, watch} from "vue";
+import {computed, defineComponent, getCurrentInstance, inject, ref, watch} from "vue";
 import router from "@/routers/index.js";
 
 const cover = 'https://tdesign.gtimg.com/site/source/card-demo.png';
 const events = ref([]);
+const tmpEvents = ref([]);
 const curEvents = ref([]);
 const options = [
   {
@@ -80,7 +81,6 @@ const clickHandler = (data) => {
   MessagePlugin.success(`选中【${data.content}】`);
 };
 
-const apiUrl = inject('$API_URL');
 // const eventType = inject('eventType')
 const eventType = ref(sessionStorage.getItem('eventType'))
 
@@ -90,19 +90,27 @@ const typeValue = ref([]);  // Initialize with a default value
 window.addEventListener('setItem', () => {
   typeValue.value = sessionStorage.getItem('eventType');
   curEvents.value = events.value.filter(events => typeValue.value.includes(events['type'] + 1));
+  tmpEvents.value = events.value.filter(events => typeValue.value.includes(events['type'] + 1));
+  // alert(JSON.stringify(tmpEvents.value))
   // events.value=[]
   // alert(typeValue.value)
 })
 
 function getSearchNew(message) {
+  // alert(JSON.stringify(tmpEvents.value))
+
   // curEvents.value =event.content.includes(searchText.value) || event.title.includes(searchText.value)
   // alert(message)
-  curEvents.value = events.value.filter(events => events['content'].includes(message) || events['eventPolicy'].includes(message));
+  curEvents.value = tmpEvents.value.filter(events => events['content'].includes(message) || events['eventPolicy'].includes(message));
+  // curEvents.value = tmpEvents.value.filter(tmpEvents => tmpEvents['content'].includes(message) || tmpEvents['eventPolicy'].includes(message));
 }
 
 defineExpose({getSearchNew});
 // 获取全局变量 $apiBaseUrl
-axios.defaults.baseURL = apiUrl;
+const globalProperties = getCurrentInstance().appContext.config.globalProperties;
+const apiBaseUrl = globalProperties.$apiBaseUrl;
+// alert(apiBaseUrl)
+axios.defaults.baseURL = apiBaseUrl;
 axios.post(`/event/getAllEvents`, {}, {
   params: {},
   headers: {
@@ -113,6 +121,7 @@ axios.post(`/event/getAllEvents`, {}, {
       // alert(response)
       events.value = response.data.data
       curEvents.value = response.data.data
+      tmpEvents.value = response.data.data
       // alert(JSON.stringify(events.value))
 
     })

@@ -49,7 +49,7 @@
 import {ThumbUpIcon, ChatIcon, ShareIcon, MoreIcon} from 'tdesign-icons-vue-next';
 import {MessagePlugin} from 'tdesign-vue-next';
 import axios from "axios";
-import {inject} from "vue";
+import {getCurrentInstance, inject} from "vue";
 
 const title = '标题';
 
@@ -134,10 +134,10 @@ const clickHandler = (data) => {
 // const {colors} = useColors();
 // colors.primary = sessionStorage.getItem('primary-color')
 // alert(colors.primary)
-const apiUrl = inject('$API_URL');
-
-// 获取全局变量 $apiBaseUrl
-axios.defaults.baseURL = apiUrl;
+const globalProperties = getCurrentInstance().appContext.config.globalProperties;
+const apiBaseUrl = globalProperties.$apiBaseUrl;
+// alert(apiBaseUrl)
+axios.defaults.baseURL = apiBaseUrl;
 
 </script>
 <style scoped>
