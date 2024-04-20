@@ -1,7 +1,7 @@
 <script setup>
-import {getCurrentInstance, ref} from 'vue';
-import {Input, MessagePlugin} from 'tdesign-vue-next';
-import {LockOnIcon} from "tdesign-icons-vue-next";
+import { getCurrentInstance, ref } from 'vue';
+import { Input, MessagePlugin } from 'tdesign-vue-next';
+import { LockOnIcon } from "tdesign-icons-vue-next";
 import axios from "axios";
 
 const globalProperties = getCurrentInstance().appContext.config.globalProperties;
@@ -11,13 +11,13 @@ const uid = sessionStorage.getItem('uid')
 axios.defaults.baseURL = apiBaseUrl;
 
 const formData = ref({
-    old_psw:'',
-    new_psw_1:'',
-    new_psw_2:'',
+  old_psw: '',
+  new_psw_1: '',
+  new_psw_2: '',
 });
 
 
-const changePsw = ({validateResult, firstError}) => {
+const changePsw = ({ validateResult, firstError }) => {
   if (validateResult === true) {
     axios.put("/user/update/pass", {
       "id": uid,
@@ -27,20 +27,10 @@ const changePsw = ({validateResult, firstError}) => {
       headers: {
         token: token,
       },
+    }).then((response) => {
+      MessagePlugin.success('修改成功');
+      location.reload()
     })
-        .then(() => {
-          MessagePlugin.success('修改成功');
-          location.reload()
-        })
-        .catch((error) => {
-          if (error.response) {
-            // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-            MessagePlugin.error(error.response.data.msg)
-          } else {
-            // 一些错误是在设置请求的时候触发
-            MessagePlugin.error(error.message)
-          }
-        });
     // formData.value = {
     //   old_psw:'',
     //   new_psw_1:'',
@@ -55,12 +45,12 @@ const changePsw = ({validateResult, firstError}) => {
 
 
 const rePassword = (val) =>
-    new Promise((resolve) => {
-      const timer = setTimeout(() => {
-        resolve(formData.value.new_psw_1 === val);
-        clearTimeout(timer);
-      });
+  new Promise((resolve) => {
+    const timer = setTimeout(() => {
+      resolve(formData.value.new_psw_1 === val);
+      clearTimeout(timer);
     });
+  });
 const passwordValidator = (val) => {
   if (val.length > 0 && val.length <= 4) {
     return { result: false, message: '太简单了！再开动一下你的小脑筋吧！', type: 'error' };
@@ -71,14 +61,14 @@ const passwordValidator = (val) => {
   return { result: true, message: '太强了，你确定自己记得住吗！', type: 'success' };
 };
 const FORM_RULES = ref({
-  old_psw: [{required: true, message: '旧密码必填'}],
+  old_psw: [{ required: true, message: '旧密码必填' }],
   new_psw_1: [
-      {required: true, message: '新密码必填'},
+    { required: true, message: '新密码必填' },
     { validator: passwordValidator }
   ],
   new_psw_2: [
-      {required: true, message: '新密码必填'},
-      { validator: rePassword, message: '两次密码不一致' }
+    { required: true, message: '新密码必填' },
+    { validator: rePassword, message: '两次密码不一致' }
   ]
 });
 const onReset = () => {
@@ -89,49 +79,38 @@ const onReset = () => {
 
 <template>
   <div>
-        <t-form
-            ref="form"
-            id="form"
-            :data="formData"
-            reset-type="initial"
-            @reset="onReset"
-            @submit="changePsw"
-            :rules="FORM_RULES"
-            label-width="100px"
-            label-align="right"
-        >
-          <t-form-item name="old_psw" label="旧密码">
-            <t-input v-model="formData.old_psw" type="password" clearable:true placeholder="请输入密码">
-              <template #prefix-icon>
-                <lock-on-icon />
-              </template>
-            </t-input>
-          </t-form-item>
-          <t-form-item name="new_psw_1" label="新密码">
-            <t-input v-model="formData.new_psw_1" type="password" clearable:true placeholder="请输入密码">
-              <template #prefix-icon>
-                <lock-on-icon />
-              </template>
-            </t-input>
-          </t-form-item>
-          <t-form-item name="new_psw_2" label="确认新密码">
-          <t-input v-model="formData.new_psw_2" type="password" clearable:true placeholder="请输入密码">
-            <template #prefix-icon>
-              <lock-on-icon />
-            </template>
-          </t-input>
-        </t-form-item>
+    <t-form ref="form" id="form" :data="formData" reset-type="initial" @reset="onReset" @submit="changePsw"
+      :rules="FORM_RULES" label-width="100px" label-align="right">
+      <t-form-item name="old_psw" label="旧密码">
+        <t-input v-model="formData.old_psw" type="password" clearable:true placeholder="请输入密码">
+          <template #prefix-icon>
+            <lock-on-icon />
+          </template>
+        </t-input>
+      </t-form-item>
+      <t-form-item name="new_psw_1" label="新密码">
+        <t-input v-model="formData.new_psw_1" type="password" clearable:true placeholder="请输入密码">
+          <template #prefix-icon>
+            <lock-on-icon />
+          </template>
+        </t-input>
+      </t-form-item>
+      <t-form-item name="new_psw_2" label="确认新密码">
+        <t-input v-model="formData.new_psw_2" type="password" clearable:true placeholder="请输入密码">
+          <template #prefix-icon>
+            <lock-on-icon />
+          </template>
+        </t-input>
+      </t-form-item>
 
-          <t-form-item>
-            <t-space size="small">
-              <t-button theme="success" type="submit">提交</t-button>
-              <t-button variant="outline" type="reset">重置</t-button>
-            </t-space>
-          </t-form-item>
-        </t-form>
+      <t-form-item>
+        <t-space size="small">
+          <t-button theme="success" type="submit">提交</t-button>
+          <t-button variant="outline" type="reset">重置</t-button>
+        </t-space>
+      </t-form-item>
+    </t-form>
   </div>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

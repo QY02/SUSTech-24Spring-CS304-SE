@@ -18,10 +18,16 @@ app.use(TDesign);
 axios.interceptors.response.use(function (response) {
     return response;
 }, function (error) {
+    console.log("有进来！！")
+    console.log(error)
     // 响应错误
-    if (error.response.status === 401) {
-        MessagePlugin.error('登录状态失效，请重新登录');
-        router.push('/login');
+    if (error.response) {
+        MessagePlugin.error(error)
+        MessagePlugin.error(error)
+        MessagePlugin.error(error.response.data.msg)
+    }
+    else{
+        MessagePlugin.error(error.message)
     }
     return Promise.reject(error);
 });
