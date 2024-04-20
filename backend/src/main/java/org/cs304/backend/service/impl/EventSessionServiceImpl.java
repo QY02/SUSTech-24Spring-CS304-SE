@@ -51,7 +51,7 @@ public class EventSessionServiceImpl extends ServiceImpl<EventSessionMapper, Eve
         session.setMinSize(minSize);
         session.setMaxSize(maxSize);
 
-        session.setCurrentSize(sessionData.getInteger("current_size"));
+        session.setCurrentSize(0);
         session.setSeatMapId(sessionData.getInteger("seat_map_id"));
         session.setVenue(sessionData.getString("venue"));
         session.setLocation(sessionData.getString("location"));

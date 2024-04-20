@@ -1,8 +1,15 @@
 <script setup>
-import {computed, reactive, ref} from 'vue';
+import {computed, getCurrentInstance, reactive, ref} from 'vue';
 import {Input, MessagePlugin} from 'tdesign-vue-next';
 import {LockOnIcon} from "tdesign-icons-vue-next";
-const token='z';
+import axios from "axios";
+
+const globalProperties = getCurrentInstance().appContext.config.globalProperties;
+const apiBaseUrl = globalProperties.$apiBaseUrl;
+const token = sessionStorage.getItem('token')
+const uid = sessionStorage.getItem('uid')
+axios.defaults.baseURL = apiBaseUrl;
+
 // const props = defineProps({
 //   visible: Boolean
 // })
@@ -16,16 +23,52 @@ const formData = reactive({
     new_psw_2:'',
 });
 
-
+const sendCode = () => {
+  if (formData.email !=='') {
+    axios.put("/user/forgetPass", {
+      email: formData.email
+    }, {
+      headers: {
+        token: token
+      }
+    }).then(() => {
+          MessagePlugin.info("验证码已发送");
+        }
+    ).catch((error) => {
+      if (error.response) {
+        // 请求已发出，但服务器响应的状态码不在 2xx 范围内
+        MessagePlugin.error(error.response.data.msg)
+      } else {
+        // 一些错误是在设置请求的时候触发
+        MessagePlugin.error(error.message)
+      }
+    });
+  }else {
+  MessagePlugin.warning("邮箱不能为空");
+}
+}
 const changePsw = ({validateResult, firstError}) => {
   if (validateResult === true) {
-    formData.value = {
-      email:'',
-      code:'',
-      new_psw_1:'',
-      new_psw_2:'',
-    }
-    MessagePlugin.success('提交成功');
+    axios.put("/user/forgetPass/emailVerify", {
+      password: formData.new_psw_1,
+      email:formData.email,
+      code: formData.code
+    }, {
+      headers: {
+        token: token
+      },
+    }).then(() => {
+          MessagePlugin.success("修改成功");
+          location.reload();
+        }).catch((error) => {
+      if (error.response) {
+        // 请求已发出，但服务器响应的状态码不在 2xx 范围内
+        MessagePlugin.error(error.response.data.msg)
+      } else {
+        // 一些错误是在设置请求的时候触发
+        MessagePlugin.error(error.message)
+      }
+    });
   } else {
     console.log('Validate Errors: ', firstError, validateResult);
     MessagePlugin.warning(firstError);
@@ -36,7 +79,7 @@ const changePsw = ({validateResult, firstError}) => {
 const rePassword = (val) =>
     new Promise((resolve) => {
       const timer = setTimeout(() => {
-        resolve(formData.value.new_psw_1 === val);
+        resolve(formData.new_psw_1 === val);
         clearTimeout(timer);
       });
     });
@@ -70,7 +113,6 @@ const emailOptions = computed(() => {
 const onReset = () => {
   MessagePlugin.success('重置成功');
 };
-
 </script>
 
 <template>
@@ -92,11 +134,11 @@ const onReset = () => {
 
           <t-form-item name="code" label="验证码">
             <t-input v-model="formData.code" clearable:true placeholder="请输入验证码">
-              <template #prefix-icon>
-                <lock-on-icon />
-              </template>
             </t-input>
-            <t-button theme="default" variant="base">验证码</t-button>
+            <t-button :disabled="formData.email===''"
+                      theme="default" variant="base"
+                      @click="sendCode"
+            >验证码</t-button>
           </t-form-item>
           <t-form-item name="new_psw_1" label="新密码">
             <t-input v-model="formData.new_psw_1" type="password" clearable:true placeholder="请输入密码">

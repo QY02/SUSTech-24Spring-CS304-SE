@@ -58,7 +58,7 @@
   </t-space>
 </template>
 <script setup>
-import {ref, inject, getCurrentInstance} from 'vue';
+import {ref,getCurrentInstance} from 'vue';
 import { MessagePlugin } from 'tdesign-vue-next';
 import axios from "axios";
 import EventSession from "@/components/event/EventSession.vue";
@@ -88,7 +88,6 @@ const session=new Array(8).fill(null).map(() => ({
   venue: '12345ljkdq',
   location: 'ahgsjkd',
   visible: false,
-  current_size:"20",
   additional_information_required:[
       {"name": "手机号", "nameEng": "phoneNumber", "required": true, "rules": [{"telnumber": true ,"message": "请输入正确的手机号码"}], "value": ""},
     {"name": "书院", "nameEng": "college", "required": true, "rules": null, "value": ""}],
@@ -117,7 +116,7 @@ const onSubmit = ({ validateResult, firstError }) => {
       "sessions":eventSessionData.value
     },{
       headers: {
-        token: sessionStorage.getItem('token')
+        token: token
       }
     }
     ).then(
@@ -126,9 +125,15 @@ const onSubmit = ({ validateResult, firstError }) => {
         MessagePlugin.success('提交成功');
         router.push("/HomePage");
       }
-    ).catch(error => {
-      MessagePlugin.error(error.message)
-    })
+    ).catch((error) => {
+      if (error.response) {
+        // 请求已发出，但服务器响应的状态码不在 2xx 范围内
+        MessagePlugin.error(error.response.data.msg)
+      } else {
+        // 一些错误是在设置请求的时候触发
+        MessagePlugin.error(error.message)
+      }
+    });
   } else {
     console.log('Errors: ', validateResult);
     MessagePlugin.warning(firstError);

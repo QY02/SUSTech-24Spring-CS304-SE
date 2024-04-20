@@ -1,13 +1,14 @@
 <script setup>
-import {ref} from 'vue';
+import {getCurrentInstance, ref} from 'vue';
 import {Input, MessagePlugin} from 'tdesign-vue-next';
 import {LockOnIcon} from "tdesign-icons-vue-next";
-const token='z';
-// const props = defineProps({
-//   visible: Boolean
-// })
-// const emit = defineEmits(['update:visible'])
-// const visibleBody = useVModel(props,'visible',emit)
+import axios from "axios";
+
+const globalProperties = getCurrentInstance().appContext.config.globalProperties;
+const apiBaseUrl = globalProperties.$apiBaseUrl;
+const token = sessionStorage.getItem('token')
+const uid = sessionStorage.getItem('uid')
+axios.defaults.baseURL = apiBaseUrl;
 
 const formData = ref({
     old_psw:'',
@@ -18,12 +19,34 @@ const formData = ref({
 
 const changePsw = ({validateResult, firstError}) => {
   if (validateResult === true) {
-    formData.value = {
-      old_psw:'',
-      new_psw_1:'',
-      new_psw_2:'',
-    }
-    MessagePlugin.success('提交成功');
+    axios.put("/user/update/pass", {
+      "id": uid,
+      "old_password": formData.value.old_psw,
+      "new_password": formData.value.new_psw_2,
+    }, {
+      headers: {
+        token: token,
+      },
+    })
+        .then(() => {
+          MessagePlugin.success('修改成功');
+          location.reload()
+        })
+        .catch((error) => {
+          if (error.response) {
+            // 请求已发出，但服务器响应的状态码不在 2xx 范围内
+            MessagePlugin.error(error.response.data.msg)
+          } else {
+            // 一些错误是在设置请求的时候触发
+            MessagePlugin.error(error.message)
+          }
+        });
+    // formData.value = {
+    //   old_psw:'',
+    //   new_psw_1:'',
+    //   new_psw_2:'',
+    // }
+    // MessagePlugin.success('提交成功');
   } else {
     console.log('Validate Errors: ', firstError, validateResult);
     MessagePlugin.warning(firstError);
