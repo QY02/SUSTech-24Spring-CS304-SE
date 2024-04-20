@@ -53,10 +53,7 @@ public class LoginController {
                 log.error("Invalid Input");
                 return Result.error(response, "400", "Invalid Input");
             }
-            System.out.println(user.getId()+"  "+user.getPassword());
-//            user = userService.login(user);
-            user.setPassword(null);
-//            System.out.println(response);
+            user = userService.login(user);
         } catch (Exception e) {
             log.error(e.getMessage());
             return Result.error(response, "401", "Invalid username or password");
