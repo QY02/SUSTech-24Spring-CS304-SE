@@ -40,7 +40,7 @@ const notifications = [
   { type: 0, content: 'start' },
   { type: 1, content: 'cancel' },
   { type: 2, content: 'modify' },
-  { type: 3, content: 'join' },
+  { type: 3, content: 'reserve' },
 ];
 
 // 当前展开的折叠面板名称
@@ -48,8 +48,8 @@ const activeNames = ref([]);
 const HEADERS = [
   '开始通知',
    '取消通知',
+   '活动修改通知',
   '参加成功通知',
-   '活动修改通知'
 ];
 // 根据通知类型获取对应的标题
 const getHeaderByType = (type) => {
