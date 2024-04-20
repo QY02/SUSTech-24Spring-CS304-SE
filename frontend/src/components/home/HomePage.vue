@@ -71,6 +71,7 @@
   <a v-if="currentTab.title==='最新'">
     <HomeNew ref="childRef"/>
   </a>
+
   <a v-else-if="currentTab.title==='热搜'">
     <HomeHot ref="childRef"/>
   </a>
