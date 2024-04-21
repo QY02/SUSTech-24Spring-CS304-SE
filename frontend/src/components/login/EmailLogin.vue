@@ -121,10 +121,7 @@ const rules = {
 // const email = ref("");
 // const appConfig = ref(getCurrentInstance().appContext.config.globalProperties).value;
 // 获取全局变量 $apiBaseUrl
-const globalProperties = getCurrentInstance().appContext.config.globalProperties;
-const apiBaseUrl = globalProperties.$apiBaseUrl;
-// alert(apiBaseUrl)
-axios.defaults.baseURL = apiBaseUrl;
+
 const handleSubmit = ({validateResult}) => {
   if (validateResult === true) {
     axios.post("/loginWithEmail", {
@@ -150,13 +147,6 @@ const handleSubmit = ({validateResult}) => {
 
         })
         .catch((error) => {
-          if (error.response) {
-            // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-            MessagePlugin.warning(error.response.data.msg);
-          } else {
-            // 一些错误是在设置请求的时候触发
-            MessagePlugin.warning(error.message);
-          }
         });
   } else {
     MessagePlugin.warning("Please make sure the input format is correct!")
@@ -170,13 +160,6 @@ if(rules.email[1].validator(formData.email)) {
         MessagePlugin.info("Already send the code, please check and enter.");
       })
       .catch((error) => {
-        if (error.response) {
-          // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-          MessagePlugin.error(error.response.data.msg);
-        } else {
-          // 一些错误是在设置请求的时候触发
-          MessagePlugin.error(error.message);
-        }
       });
 
 }else{

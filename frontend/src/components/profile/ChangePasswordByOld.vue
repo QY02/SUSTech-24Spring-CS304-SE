@@ -4,12 +4,10 @@ import { Input, MessagePlugin } from 'tdesign-vue-next';
 import { LockOnIcon } from "tdesign-icons-vue-next";
 import axios from "axios";
 
-const globalProperties = getCurrentInstance().appContext.config.globalProperties;
-const apiBaseUrl = globalProperties.$apiBaseUrl;
+// const globalProperties = getCurrentInstance().appContext.config.globalProperties;
+// const apiBaseUrl = globalProperties.$apiBaseUrl;
 const token = sessionStorage.getItem('token')
 const uid = sessionStorage.getItem('uid')
-axios.defaults.baseURL = apiBaseUrl;
-
 const formData = ref({
   old_psw: '',
   new_psw_1: '',
@@ -27,7 +25,7 @@ const changePsw = ({ validateResult, firstError }) => {
       headers: {
         token: token,
       },
-    }).then((response) => {
+    }).then(() => {
       MessagePlugin.success('修改成功');
       location.reload()
     })

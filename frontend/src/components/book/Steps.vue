@@ -72,7 +72,6 @@ const removeClickableOnFinishStepItem = () => {
   }
 }
 
-axios.defaults.baseURL = globalProperties.apiBaseUrl;
 const route = useRoute();
 bookingInformation.eventId = Number(route.query.eventId);
 const fetchSessionInformation = async () => {
@@ -96,13 +95,14 @@ const fetchSessionInformation = async () => {
       session.registered = !!registeredEventSessionIdArray.includes(session.eventSessionId);
     })
     fetchSessionInformationStatus.value = 1;
-  } catch (error) {
+  } 
+  catch (error) {
     fetchSessionInformationStatus.value = -1;
-    if (error.response) {
-      await NotifyPlugin.error({title: error.response.data.msg});
-    } else {
-      await NotifyPlugin.error({title: error.message});
-    }
+    // if (error.response) {
+    //   await NotifyPlugin.error({title: error.response.data.msg});
+    // } else {
+    //   await NotifyPlugin.error({title: error.message});
+    // }
   }
 }
 
@@ -234,10 +234,25 @@ export let sessionInformation: Session[] = reactive([{
     location: '',
     additionalInformationRequired: '[{"name": "手机号", "nameEng": "phoneNumber", "required": true, "rules": [{"telnumber": true ,"message": "请输入正确的手机号码"}], "value": ""}, {"name": "书院", "nameEng": "college", "required": true, "rules": null, "value": ""}]',
     registered: true
+  },
+  {
+    eventSessionId: 4,
+    startTime: new Date(2024, 3, 2, 8),
+    endTime: new Date(2024, 3, 2, 10),
+    registrationRequired: true,
+    registrationStartTime: new Date(2024, 2, 26, 10),
+    registrationEndTime: new Date(2024, 12, 28, 0),
+    minSize: 20,
+    maxSize: 80,
+    currentSize: 60,
+    seatMapId: 1,
+    venue: '一教111',
+    location: '',
+    additionalInformationRequired: '[{"name": "手机号", "nameEng": "phoneNumber", "required": true, "rules": [{"telnumber": true ,"message": "请输入正确的手机号码"}], "value": ""}, {"name": "书院", "nameEng": "college", "required": true, "rules": null, "value": ""}]',
+    registered: false
   }])
 
 export const submitData = async () => {
-  axios.defaults.baseURL = globalProperties.apiBaseUrl;
   axios.post("/event/submitBookingData", {
     eventId: bookingInformation.eventId,
     eventSessionId: sessionInformation[bookingInformation.chosenSession].eventSessionId,
@@ -250,13 +265,8 @@ export const submitData = async () => {
   }, {headers: {token: sessionStorage.getItem('token')}} as AxiosRequestConfig).then(() => {
     MessagePlugin.success('提交成功');
     currentStep.value++;
-  }).catch(error => {
-    if (error.response) {
-      NotifyPlugin.error({title: error.response.data.msg});
-    } else {
-      NotifyPlugin.error({title: error.message});
-    }
   })
+  .catch(error => {})
 }
 
 </script>

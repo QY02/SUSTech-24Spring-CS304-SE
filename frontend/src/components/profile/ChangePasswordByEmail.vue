@@ -4,11 +4,10 @@ import {Input, MessagePlugin} from 'tdesign-vue-next';
 import {LockOnIcon} from "tdesign-icons-vue-next";
 import axios from "axios";
 
-const globalProperties = getCurrentInstance().appContext.config.globalProperties;
-const apiBaseUrl = globalProperties.$apiBaseUrl;
+// const globalProperties = getCurrentInstance().appContext.config.globalProperties;
+// const apiBaseUrl = globalProperties.$apiBaseUrl;
 const token = sessionStorage.getItem('token')
 const uid = sessionStorage.getItem('uid')
-axios.defaults.baseURL = apiBaseUrl;
 
 // const props = defineProps({
 //   visible: Boolean
@@ -34,15 +33,7 @@ const sendCode = () => {
     }).then(() => {
           MessagePlugin.info("验证码已发送");
         }
-    ).catch((error) => {
-      if (error.response) {
-        // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-        MessagePlugin.error(error.response.data.msg)
-      } else {
-        // 一些错误是在设置请求的时候触发
-        MessagePlugin.error(error.message)
-      }
-    });
+    )
   }else {
   MessagePlugin.warning("邮箱不能为空");
 }
@@ -60,15 +51,7 @@ const changePsw = ({validateResult, firstError}) => {
     }).then(() => {
           MessagePlugin.success("修改成功");
           location.reload();
-        }).catch((error) => {
-      if (error.response) {
-        // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-        MessagePlugin.error(error.response.data.msg)
-      } else {
-        // 一些错误是在设置请求的时候触发
-        MessagePlugin.error(error.message)
-      }
-    });
+        })
   } else {
     console.log('Validate Errors: ', firstError, validateResult);
     MessagePlugin.warning(firstError);

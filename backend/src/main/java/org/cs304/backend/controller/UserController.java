@@ -229,10 +229,10 @@ public class UserController {
                 log.error("You can only change your own information");
                 return Result.error(response, "403", "You can only change your own information");
             }
-            if (userService.getOne(new QueryWrapper<User>().eq("id", user.getId()).eq("password",Encryption.encrypt(user.getPassword())))==null) {
-                log.error("Password error");
-                return Result.error(response, "401", "Password error");
-            }
+//            if (userService.getOne(new QueryWrapper<User>().eq("id", user.getId()).eq("password",Encryption.encrypt(user.getPassword())))==null) {
+//                log.error("Password error");
+//                return Result.error(response, "401", "Password error");
+//            }
             if (user.getEmail()==null){
                 log.error("Email cannot be empty");
                 return Result.error(response, "401", "Email cannot be empty");

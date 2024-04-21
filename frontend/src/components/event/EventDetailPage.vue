@@ -223,42 +223,6 @@ const navigateToTab = (tabName) => {
 };
 
 
-
-const fix = ref('false')
-// 监听页面滚动事件
-const handleScroll = () => {
-    if (stickyElement.value) {
-        const distanceFromTop = stickyElement.value.getBoundingClientRect().top;
-        if (distanceFromTop <= 0) {
-            fix.value = true
-            alert("in")
-        } else {
-            fix.value = false
-        }
-    }
-};
-const scrolled = ref(window.scrollY);
-onMounted(() => {
-    window.addEventListener('scroll', () => {
-        handleScroll
-        console.log('触发滚动事件'); // 检查是否触发了滚动事件
-        scrolled.value = window.scrollY;
-    });
-});
-onUnmounted(() => {
-    window.removeEventListener('touchmove', handleTouchMove);
-});
-window.addEventListener('scroll', () => {
-    scrolled.value = window.scrollY;
-    init('页面已滚动距离：', scrolled);
-    NotifyPlugin({ title: scrolled, content: '用户表示普通操作信息提示' });
-});
-watch(scrolled, (newValue, oldValue) => {
-    NotifyPlugin({ title: newValue, content: '用户表示普通操作信息提示' });
-});
-
-
-
 defineExpose({ navigateToTab });
 
 
