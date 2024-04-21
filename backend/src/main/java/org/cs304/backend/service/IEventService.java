@@ -23,4 +23,6 @@ public interface IEventService extends IService<Event> {
 //    Event getEventByEventId(int userType, Integer eventId);
 
     void submitBookingData(int userType, String userId, OrderRecord orderRecord);
+
+    void changeAudit(Integer eventId, Integer status, String reason);
 }

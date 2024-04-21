@@ -1,5 +1,6 @@
 package org.cs304.backend.controller;
 
+import com.alibaba.fastjson2.JSONObject;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
@@ -52,5 +53,32 @@ public class AdminController {
             throw new ServiceException("403","Only admin can alter");
         }
         return Result.success(response,eventService.getAuditList(eventStatus));
+    }
+
+
+    @PostMapping("/changeAudit")
+    @Operation(summary = "修改审核状态",
+            description = """
+            ### 参数 ###
+            eventId(Integer): 事件ID
+            status(Integer): 审核状态，0表示未审核，1表示审核通过，2表示审核未通过
+            ### 返回值 ###
+            {
+                "code": "200",
+                "msg": "Request Success"
+            }
+            ### 注意事项 ###
+            无
+            """)
+    public Result changeAudit(@NotNull HttpServletRequest request,HttpServletResponse response,@RequestBody JSONObject requestBody) {
+        int userType = (int) request.getAttribute("loginUserType");
+        if (userType != 0) {
+            throw new ServiceException("403","Only admin can alter");
+        }
+        Integer eventId = requestBody.getInteger("eventId");
+        Integer status = requestBody.getInteger("status");
+        String reason = requestBody.getString("reason");
+        eventService.changeAudit(eventId,status,reason);
+        return Result.success(response);
     }
 }

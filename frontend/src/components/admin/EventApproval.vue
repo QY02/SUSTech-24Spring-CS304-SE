@@ -44,7 +44,7 @@
       </t-collapse-panel>
     </t-collapse>
     <div class="spacing"></div>
-    <t-space direction="vertical" class="centered">
+    <t-space v-loading="loading" direction="vertical" class="centered">
       <div v-if="listData.length === 0" class="centered">
         结果为空
       </div>
@@ -63,10 +63,10 @@
             <t-button variant="text" shape="square" @click="viewDetail">
               <icon name="task-1" />
             </t-button>
-            <t-button variant="text" shape="square" @click="onSuccess">
+            <t-button variant="text" shape="square" @click="onSuccess(item.id)">
               <icon name="check" color="green" />
             </t-button>
-            <t-button variant="text" shape="square" @click="onDelete">
+            <t-button variant="text" shape="square" @click="onDelete(item.id)">
               <icon name="close" color="red" />
             </t-button>
           </template>
@@ -151,6 +151,7 @@
 <script setup>
 import {ref, onMounted, getCurrentInstance, nextTick} from 'vue';
 import { Icon } from 'tdesign-icons-vue-next';
+import {MessagePlugin} from 'tdesign-vue-next';
 import axios from 'axios';
 import { SearchIcon,MoneyIcon } from 'tdesign-icons-vue-next';
 const appConfig = ref(getCurrentInstance().appContext.config.globalProperties).value;
@@ -206,36 +207,34 @@ const mapEventType = (type) => {
 // ###### 数据 结束 ######
 
 // ###### 获取数据 开始 ######
+const loading = ref(true);
 axios.defaults.baseURL = appConfig.$apiBaseUrl;
 onMounted(() => {
+  loading.value = true;
   axios.get(`/admin/getAuditList/0`,{
     headers: {
       token: sessionStorage.getItem('token'),
     }
   })
       .then(response => {
-        audit_list_data.value = response.data.data.map(item => ({
-          id: item.id,
-          title: item.name,
-          description: item.content,
-          date: item.startTime,
-          location: item.location,
-          price: item.lowestPrice,
-          type: mapEventType(item.type),
-          status: item.status,
-          publisherId: item.publisherId,
-          publishDate: item.publishDate
-        }));
-        filter_list_data.value = audit_list_data.value;
-        listData.value = filter_list_data.value.slice(0, pageSize.value);
-      })
-      .catch(error => {
-        if (error.response) {
-          console.error(error.response.data.msg);
-        } else {
-          console.error(error.message);
-        }
-      });
+            audit_list_data.value = response.data.data.map(item => ({
+              id: item.id,
+              title: item.name,
+              description: item.content,
+              date: item.startTime,
+              location: item.location,
+              price: item.lowestPrice,
+              type: mapEventType(item.type),
+              status: item.status,
+              publisherId: item.publisherId,
+              publishDate: item.publishDate
+            }));
+            filter_list_data.value = audit_list_data.value;
+            listData.value = filter_list_data.value.slice(0, pageSize.value);
+            loading.value = false;
+          }
+      )
+      .catch();
 });
 // ###### 获取数据 结束 ######
 
@@ -382,34 +381,60 @@ const deleteVisible = ref(false);
 const successVisible = ref(false);
 const detailVisible = ref(false);
 const deleteTips = ref('请输入拒绝原因');
-
+let currentEventId = ref(null);
+let deleteReason = ref('');
 
 const onDeleteChange = (value) => {
   deleteTips.value = value ? '' : '请输入拒绝原因';
+  deleteReason = value;
 };
 
-const onDelete = () => {
+const onDelete = (eventId) => {
   deleteVisible.value = true;
+  currentEventId.value = eventId;
 };
 
 const viewDetail = () => {
   detailVisible.value = true;
 };
 
-const onSuccess = () => {
+const onSuccess = (eventId) => {
   successVisible.value = true;
+  currentEventId.value = eventId;
 };
+
+const confirm = async () => {
+      try {
+        const status = deleteReason === "" ? 1 : 2;
+        await axios.post('/admin/changeAudit', {
+          eventId: currentEventId.value,
+          status: status,
+          reason: deleteReason,
+        }, {
+          headers: {
+            token: sessionStorage.getItem('token'),
+          }
+        });
+        MessagePlugin.success('操作成功');
+      } catch (error) {
+      }
+    };
+
 
 const onClickConfirm = () => {
   if (deleteTips.value==='请输入拒绝原因') {
     return;
   }
+  confirm();
   deleteVisible.value = false;
-  console.log('删除原因：', deleteTips.value);
+  location.reload();
 };
 
 const onSuccessClickConfirm = () => {
+  deleteReason = "";
+  confirm();
   successVisible.value = false;
+  location.reload();
 };
 
 const closeSuccess = () => {

@@ -196,5 +196,20 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
         }
         return result;
     }
-
+    @Override
+    public void changeAudit(Integer eventId, Integer status, String reason) {
+        Event event = baseMapper.selectById(eventId);
+        if (event == null) {
+            throw new ServiceException("400", "Event not exist");
+        }
+        if (status == constant_EventStatus.PASSED) {
+            event.setStatus(constant_EventStatus.PASSED);
+        } else if (status == constant_EventStatus.REJECTED) {
+            event.setStatus(constant_EventStatus.REJECTED);
+            event.setAuditRecord(reason);
+        } else {
+            throw new ServiceException("400", "Invalid status");
+        }
+        baseMapper.updateById(event);
+    }
 }
