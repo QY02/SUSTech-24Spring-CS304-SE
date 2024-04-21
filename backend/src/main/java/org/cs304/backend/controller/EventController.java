@@ -107,7 +107,8 @@ public class EventController {
 
 
     @GetMapping("/getEventDetail/{eventId}")
-    public Result getEventDetail(HttpServletResponse response, @PathVariable("eventId")int eventId) {
+    public Result getEventDetail(@NotNull HttpServletRequest request, HttpServletResponse response, @PathVariable("eventId")int eventId, @RequestHeader("token") String token) {
+        int userType = (int) request.getAttribute("loginUserType");
         QueryWrapper<Event> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("id", eventId);
         if (!eventService.exists(queryWrapper)) {
@@ -115,6 +116,7 @@ public class EventController {
         }
         return Result.success(response,eventService.getById(eventId));
     }
+
 
     @PostMapping("/getSeatPriceByEventId/{eventId}")
     @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, content = @Content(examples = @ExampleObject("{\"seatMapId\": 1}")))

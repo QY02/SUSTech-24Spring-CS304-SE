@@ -84,11 +84,6 @@ const onReset = () => {
   MessagePlugin.success('重置成功');
 };
 
-const globalProperties = getCurrentInstance().appContext.config.globalProperties;
-const apiBaseUrl = globalProperties.$apiBaseUrl;
-// alert(apiBaseUrl)
-axios.defaults.baseURL = apiBaseUrl;
-
 // const apiUrl = inject('$API_URL');
 // const {isValid, validate} = useForm('formRef')
 // const {init} = useToast();

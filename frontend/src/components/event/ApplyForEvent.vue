@@ -64,12 +64,9 @@ import axios from "axios";
 import EventSession from "@/components/event/EventSession.vue";
 import router from "@/routers/index.js";
 
-const globalProperties = getCurrentInstance().appContext.config.globalProperties;
-const apiBaseUrl = globalProperties.$apiBaseUrl;
+
 const token = sessionStorage.getItem('token')
 const uid = sessionStorage.getItem('uid')
-axios.defaults.baseURL = apiBaseUrl;
-
 const FORM_RULES = {
   name: [{ required: true, message: '标题必填' }],
   content: [{ required: true, message: '简介必填' }],
@@ -125,15 +122,7 @@ const onSubmit = ({ validateResult, firstError }) => {
         MessagePlugin.success('提交成功');
         router.push("/HomePage");
       }
-    ).catch((error) => {
-      if (error.response) {
-        // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-        MessagePlugin.error(error.response.data.msg)
-      } else {
-        // 一些错误是在设置请求的时候触发
-        MessagePlugin.error(error.message)
-      }
-    });
+    ).catch((error) => {});
   } else {
     console.log('Errors: ', validateResult);
     MessagePlugin.warning(firstError);

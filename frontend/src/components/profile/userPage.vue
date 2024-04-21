@@ -100,7 +100,6 @@ const department = ref("");
 const showModalCode = ref(false)
 
 const appConfig = getCurrentInstance().appContext.config.globalProperties;
-axios.defaults.baseURL = appConfig.$apiBaseUrl;
 
 
 
@@ -152,7 +151,7 @@ const userTypeText = computed(() => {
     return userTypeMap[info.value.type] || '';
 });
 
-const baseURL = appConfig.$apiBaseUrl;
+
 const handleGithub = () => {
     const token = sessionStorage.getItem('token'); // 替换为你的实际 token
     window.location.href = `${baseURL}/connectToGithub?token=` + token;

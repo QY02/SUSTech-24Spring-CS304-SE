@@ -201,10 +201,9 @@ import {MessagePlugin} from "tdesign-vue-next";
 import router from "@/routers";
 
 // const apiUrl = inject('$API_URL');
-const globalProperties = getCurrentInstance().appContext.config.globalProperties;
-const apiBaseUrl = globalProperties.$apiBaseUrl;
-// alert(apiBaseUrl)
-axios.defaults.baseURL = apiBaseUrl;
+// const globalProperties = getCurrentInstance().appContext.config.globalProperties;
+// const apiBaseUrl = globalProperties.$apiBaseUrl;
+// axios.defaults.baseURL = apiBaseUrl;
 
 
 const rules = {
@@ -272,8 +271,7 @@ const close = () => {
 //
 //   const showModal = ref(false)
 //
-//   const appConfig = ref(getCurrentInstance().appContext.config.globalProperties).value;
-// 获取全局变量 $apiBaseUrl
+
 
 const handleSubmit = ({validateResult}) => {
   if (validateResult === true) {
@@ -294,17 +292,8 @@ const handleSubmit = ({validateResult}) => {
           MessagePlugin.info("Already send the code, please check and enter.");
           visible.value = true;
         })
-        // .catch(error => {
-        //   if (error.response) {
-        //     // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-        //     MessagePlugin.error(error.response.data.msg);
-
-        //   } else {
-        //     // 一些错误是在设置请求的时候触发
-        //     MessagePlugin.error(error.message);
-
-        //   }
-        // });
+        .catch(error => {
+        });
   } else {
     MessagePlugin.warning("Please make sure the input format is correct!")
     // alert('lll')
@@ -323,17 +312,8 @@ const handleOK = ({validateResult}) => {
           visible.value = !visible.value
           router.push("/login");
         })
-        // .catch((error) => {
-        //   if (error.response) {
-        //     // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-        //     MessagePlugin.error(error.response.data.msg);
-
-        //   } else {
-        //     // 一些错误是在设置请求的时候触发
-        //     MessagePlugin.error(error.message);
-
-        //   }
-        // });
+        .catch((error) => {
+        });
   } else {
     MessagePlugin.warning("Please make sure the input format is correct!")
 

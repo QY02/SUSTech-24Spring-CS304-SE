@@ -72,7 +72,6 @@ const removeClickableOnFinishStepItem = () => {
   }
 }
 
-axios.defaults.baseURL = globalProperties.apiBaseUrl;
 const route = useRoute();
 bookingInformation.eventId = Number(route.query.eventId);
 const fetchSessionInformation = async () => {
@@ -254,7 +253,6 @@ export let sessionInformation: Session[] = reactive([{
   }])
 
 export const submitData = async () => {
-  axios.defaults.baseURL = globalProperties.apiBaseUrl;
   axios.post("/event/submitBookingData", {
     eventId: bookingInformation.eventId,
     eventSessionId: sessionInformation[bookingInformation.chosenSession].eventSessionId,
@@ -268,13 +266,7 @@ export const submitData = async () => {
     MessagePlugin.success('提交成功');
     currentStep.value++;
   })
-  // .catch(error => {
-  //   if (error.response) {
-  //     NotifyPlugin.error({title: error.response.data.msg});
-  //   } else {
-  //     NotifyPlugin.error({title: error.message});
-  //   }
-  // })
+  .catch(error => {})
 }
 
 </script>

@@ -102,11 +102,7 @@ const title = '标题';
 // colors.primary = sessionStorage.getItem('primary-color')
 // alert(colors.primary)
 
-// 获取全局变量 $apiBaseUrl
-const globalProperties = getCurrentInstance().appContext.config.globalProperties;
-const apiBaseUrl = globalProperties.$apiBaseUrl;
-// alert(apiBaseUrl)
-axios.defaults.baseURL = apiBaseUrl;
+
 const formData = reactive({
   search: '',
 });

@@ -134,11 +134,6 @@ const clickHandler = (data) => {
 // const {colors} = useColors();
 // colors.primary = sessionStorage.getItem('primary-color')
 // alert(colors.primary)
-const globalProperties = getCurrentInstance().appContext.config.globalProperties;
-const apiBaseUrl = globalProperties.$apiBaseUrl;
-// alert(apiBaseUrl)
-axios.defaults.baseURL = apiBaseUrl;
-
 </script>
 <style scoped>
 #event {

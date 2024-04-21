@@ -267,6 +267,7 @@ import { HeartIcon, HeartFilledIcon, ListIcon, TableIcon, StarFilledIcon, Discou
 import { MessagePlugin } from 'tdesign-vue-next';
 import { NotifyPlugin, Link } from 'tdesign-vue-next';
 import { computed, getCurrentInstance, ref,onMounted,onUnmounted } from 'vue';
+import axios from "axios";
 import get from 'lodash/get';
 import { defineExpose,watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
@@ -313,6 +314,18 @@ const pushRouter = (value)=>{
   }
 }
 
+
+const token = sessionStorage.getItem('token')
+const uid = sessionStorage.getItem('uid')
+const eventId = 1
+
+axios.get(`/event/getEventDetail/${eventId}`, {
+  headers: {
+    token: sessionStorage.getItem('token')
+  }
+}).then((response) => {
+  console.log(response)
+}).catch(()=>{})
 
 
 

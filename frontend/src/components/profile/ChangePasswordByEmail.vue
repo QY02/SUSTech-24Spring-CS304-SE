@@ -4,11 +4,10 @@ import {Input, MessagePlugin} from 'tdesign-vue-next';
 import {LockOnIcon} from "tdesign-icons-vue-next";
 import axios from "axios";
 
-const globalProperties = getCurrentInstance().appContext.config.globalProperties;
-const apiBaseUrl = globalProperties.$apiBaseUrl;
+// const globalProperties = getCurrentInstance().appContext.config.globalProperties;
+// const apiBaseUrl = globalProperties.$apiBaseUrl;
 const token = sessionStorage.getItem('token')
 const uid = sessionStorage.getItem('uid')
-axios.defaults.baseURL = apiBaseUrl;
 
 // const props = defineProps({
 //   visible: Boolean
