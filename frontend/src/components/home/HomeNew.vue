@@ -80,6 +80,8 @@ const clickHandler = (data) => {
 };
 const clickEvent = (eventId) => {
   MessagePlugin.success(`${sessionStorage.getItem('uid')} 选中【${eventId}】`);
+  sessionStorage.setItem('eventId',eventId)
+  router.push('/event');
   axios.post(`/history/add`, {
     "eventId": eventId,
     "userId": sessionStorage.getItem('uid')
@@ -90,7 +92,8 @@ const clickEvent = (eventId) => {
     }
   })
     .then((response) => {
-
+      sessionStorage.setItem(eventId)
+      router.push('/event');
     })
   .catch((error) => {});
 };

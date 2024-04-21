@@ -1,5 +1,5 @@
 <template>
-
+<div v-if="eventDetail.length!==0">
 <div class="card">
   <div class="card-1">
     <t-image
@@ -11,11 +11,10 @@
   </div>
   <div class="right">
     <div class="card-2">
-      <h2>标题</h2>
+      <h2>{{eventDetail.name}}</h2>
     </div>
     <div class="card-3">
-      it's me hi
-      {{ infoMessage }}
+      {{ eventDetail.type }}
     </div>
     <div class="bottom">
     <div class="card-4">
@@ -51,8 +50,10 @@
             <t-tab-panel value="reviews" label="REVIEWS"></t-tab-panel>
     </t-tabs>
   </el-affix>
-  <div :id="`${path}#events`" style="height: 60px;"></div>
 
+
+    <!-- event part -->
+  <div :id="`${path}#events`" style="height: 60px;"></div>
   <t-space style="display: flex; width: 100%; margin-left: 24px;">
       <div>
         <div class="title">EVENTS</div>
@@ -108,6 +109,10 @@
     </div>
   </el-card>
   <div style="height: 20px;"></div>
+
+
+
+    <!-- about part -->
   <div :id="`${path}#about`" style="height: 36px;"></div>
   <div class="card" style="flex-direction: column;">
     <t-space style="display: flex; width: 100%;">
@@ -117,23 +122,13 @@
         </div>
     </t-space>
     <div style="margin-left: 25px;margin-right: 25px; margin-bottom: 40px;">
-      介绍部分
-      Taylor Swift in Concert
-        
-        She is, quite simply, a global superstar.
-          
-        Taylor Swift is a seven-time GRAMMY winner, and the youngest recipient in history of the music industry’s highest honor, the GRAMMY Award for Album of the Year. She is the only female artist in music history (and just the fourth artist ever) to twice have an album hit the 1 million first-week sales figure (2010’s Speak Now and 2012’s RED). She’s a household name whose insanely catchy yet deeply personal self-penned songs transcend music genres, and a savvy businesswoman who has built a childhood dream into an empire.
-          
-        But the numbers don’t tell Taylor's story half as well as she could. After all, it’s the intangibles that elevate Swift into the stratosphere of our pop culture planet, allowing the 24-year old singer-songwriter to orbit in a more rarified air. Her large-scale charitable contributions are one thing, but it’s in the small gestures – the notes of compassion she posts on the Instagram photos of lovelorn fans, the genuine hugs she distributes without discretion – where Swift proves time and time again that platinum-selling, record-setting success has not changed her inherent nature. She is awkwardly honest and powerfully empathetic; a brazen superfan, loyal friend, fierce protector of hearts; and one of the world’s greatest ambassadors for the power of just being yourself.
-          
-        Granted, for Taylor, “being herself” tends towards shimmering, gossamer perfection – but that’s an image regularly blown whenever she dons fake braces and a tri-pony to clown around on late night TV. She’s the first artist since the Beatles (and the only female artist in history) to log six or more weeks at #1 with three consecutive studio albums, and while she’s been named one of Time magazine’s 100 Most Influential People in the World, she’s probably the only person on that list who uses social media to post notes to her best friends and videos of her cats. 
-          
-        As Billboard’s only artist to receive this nod twice and youngest-ever Woman of the Year prepares to release her fifth album, 1989, she finds herself, as always, in the glare of a blinding spotlight of expectation – but if you think that scares her, you haven’t been paying attention. She calls 1989 her most sonically cohesive collection, and armed with a multiple-week international No. 1 debut single, “Shake It Off,” she’s ready to blaze into the next phase of her still-young career, where she’ll continue to dance like no one’s watching, write like she stole our collective diary, and inevitably soar to ever-greater heights. All that’s left to wonder is how many more lives she’ll lift in the process.
-        
+      {{ eventDetail.content }}
     </div>
   </div>
 
 
+
+  <!-- price part -->
   <div :id="`${path}#price`" style="height: 60px;"></div>
   <t-space style="display: flex; width: 100%; margin-left: 24px;">
       <div>
@@ -156,21 +151,15 @@
         STANDARD
       </p>
       <p style="  margin-top: 0.4rem; line-height: 1.625; color: rgb(70, 73, 79);;">
-        CAT1: ¥888
-        <br>
-        CAT2: ¥688
-        <br>
-        CAT3: ¥488
-        <br>
-        CAT4: ¥388
-        <br>
-        CAT5: ¥288
-        <br>
+        门票价格：¥{{ eventDetail.lowestPrice }} - ¥{{ eventDetail.highestPrice }}
       </p>
   </div>
   <div style="height: 20px;"></div>
   <div style="height: 20px;"></div>
 
+
+
+  <!-- policy part -->
   <div :id="`${path}#policy`" style="height: 36px;"></div>
   <div class="card" style="flex-direction: column;">
     <t-space style="display: flex; width: 100%;">
@@ -181,20 +170,18 @@
     </t-space>
     <div class="ticket_card" style="margin-left: 55px; margin-top: -10px;">
         <p style="  margin-top: 0.4rem; color: rgb(70, 73, 79);font-weight: 600;">
-          Admission Rules:
+          Rules
         </p>
         <p style="  margin-top: 0.4rem; line-height: 1.625;color: rgb(70, 73, 79);;">
-          1. 不允许携带食物或饮料进场
-          <br>
-          2. 不允许开闪光灯拍照
-          <br>
-          3. 演出48h前不予退款
-          <br>
+          {{ eventDetail.eventPolicy }}
         </p>
     </div>
     <div style="height: 40px;"></div>
   </div>
   
+
+
+  <!-- gallery part -->
   <div :id="`${path}#gallery`" style="height: 60px;"></div>
   <t-space style="display: flex; width: 100%; margin-left: 24px;">
       <div>
@@ -256,22 +243,19 @@
     </div>
     <div style="height: 40px;"></div>
   </div>
-
+</div>
 </template>
 
 
 
 <script setup>
-import {sessionInformation, bookingInformation, toNextStep} from '@/components/book/Steps.vue';
+import {sessionInformation} from '@/components/book/Steps.vue';
 import { HeartIcon, HeartFilledIcon, ListIcon, TableIcon, StarFilledIcon, DiscountIcon } from 'tdesign-icons-vue-next';
-import { MessagePlugin } from 'tdesign-vue-next';
-import { NotifyPlugin, Link } from 'tdesign-vue-next';
-import { computed, getCurrentInstance, ref,onMounted,onUnmounted } from 'vue';
+import { computed, getCurrentInstance, ref } from 'vue';
 import axios from "axios";
 import get from 'lodash/get';
-import { defineExpose,watch } from 'vue';
+import { defineExpose } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import EventTicketTable from './EventTicketTable.vue';
 import EventTicketCalender from './EventTicketCalender.vue';
 import ChooseSession from '../book/ChooseSession.vue';
 import router from '@/routers';
@@ -316,17 +300,16 @@ const pushRouter = (value)=>{
 
 
 const token = sessionStorage.getItem('token')
-const uid = sessionStorage.getItem('uid')
-const eventId = 1
-
+const eventId = sessionStorage.getItem('eventId')
+const eventDetail = ref([])
 axios.get(`/event/getEventDetail/${eventId}`, {
   headers: {
-    token: sessionStorage.getItem('token')
+    token: token
   }
 }).then((response) => {
-  console.log(response)
+  eventDetail.value = response.data.data
+  console.log(eventDetail.value.name)
 }).catch(()=>{})
-
 
 
 defineExpose({ navigateToTab });
