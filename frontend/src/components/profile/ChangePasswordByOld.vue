@@ -6,10 +6,8 @@ import axios from "axios";
 
 // const globalProperties = getCurrentInstance().appContext.config.globalProperties;
 // const apiBaseUrl = globalProperties.$apiBaseUrl;
-// const token = sessionStorage.getItem('token')
+const token = sessionStorage.getItem('token')
 const uid = sessionStorage.getItem('uid')
-axios.defaults.baseURL = apiBaseUrl;
-
 const formData = ref({
   old_psw: '',
   new_psw_1: '',

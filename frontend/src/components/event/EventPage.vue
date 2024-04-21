@@ -14,7 +14,7 @@
       <h2>{{eventDetail.name}}</h2>
     </div>
     <div class="card-3">
-      {{ eventDetail.type }}
+      <t-tag size="large">{{ titleDict[eventDetail.type] }}</t-tag>
     </div>
     <div class="bottom">
     <div class="card-4">
@@ -27,11 +27,8 @@
       </t-button>
     </t-space>
       </div>
-      <div class="card-4">
-        <t-button  theme="primary">
-            <template #icon><StarFilledIcon /></template>
-            4.5
-          </t-button>
+      <div class="card-4" style="margin-left: 30px ">
+        <t-tag size="large" theme="primary"><template #icon><StarFilledIcon /></template>4.5</t-tag>
       </div>
     </div>
   </div>
@@ -277,6 +274,12 @@ const navigateToTab = (tabName) => {
   window.scrollTo(0, window.scrollY + 55);
 };
 
+const titleDict = {
+  '0': '表演',
+  '1': '讲座',
+  '2': '比赛',
+  '3': '其他',
+};
 
 const dateToString = (date) => {
   const dayNameArray = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
@@ -308,7 +311,6 @@ axios.get(`/event/getEventDetail/${eventId}`, {
   }
 }).then((response) => {
   eventDetail.value = response.data.data
-  console.log(eventDetail.value.name)
 }).catch(()=>{})
 
 
@@ -319,12 +321,6 @@ defineExpose({ navigateToTab });
 const { appContext } = getCurrentInstance();
 const path = computed(() => get(appContext, '$route.path', ''));
 
-
-const url =
-  'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'
-const title = '标题';
-const description = '描述';
-const infoMessage = `卡片内容，以描述性为主，可以是文字、图片或图文组合的形式。按业务需求进行自定义组合。`;
 
 const commentsData = [
   {
