@@ -27,7 +27,7 @@ const changePsw = ({ validateResult, firstError }) => {
       headers: {
         token: token,
       },
-    }).then((response) => {
+    }).then(() => {
       MessagePlugin.success('修改成功');
       location.reload()
     })

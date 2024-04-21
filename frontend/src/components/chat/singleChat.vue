@@ -68,9 +68,9 @@ const getHistoryMessage = async () => {
             }
           }
         })
-        .catch(() => {
-          // Handle error here
-        });
+        // .catch(() => {
+        //   // Handle error here
+        // });
   } catch (error) {
     console.error(error);
   }

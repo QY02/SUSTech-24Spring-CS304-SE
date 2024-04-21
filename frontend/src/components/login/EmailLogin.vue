@@ -149,15 +149,15 @@ const handleSubmit = ({validateResult}) => {
           MessagePlugin.success("Welcome! " + rd);
 
         })
-        .catch((error) => {
-          if (error.response) {
-            // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-            MessagePlugin.warning(error.response.data.msg);
-          } else {
-            // 一些错误是在设置请求的时候触发
-            MessagePlugin.warning(error.message);
-          }
-        });
+        // .catch((error) => {
+        //   if (error.response) {
+        //     // 请求已发出，但服务器响应的状态码不在 2xx 范围内
+        //     MessagePlugin.warning(error.response.data.msg);
+        //   } else {
+        //     // 一些错误是在设置请求的时候触发
+        //     MessagePlugin.warning(error.message);
+        //   }
+        // });
   } else {
     MessagePlugin.warning("Please make sure the input format is correct!")
 
@@ -169,15 +169,15 @@ if(rules.email[1].validator(formData.email)) {
       .then(() => {
         MessagePlugin.info("Already send the code, please check and enter.");
       })
-      .catch((error) => {
-        if (error.response) {
-          // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-          MessagePlugin.error(error.response.data.msg);
-        } else {
-          // 一些错误是在设置请求的时候触发
-          MessagePlugin.error(error.message);
-        }
-      });
+      // .catch((error) => {
+      //   if (error.response) {
+      //     // 请求已发出，但服务器响应的状态码不在 2xx 范围内
+      //     MessagePlugin.error(error.response.data.msg);
+      //   } else {
+      //     // 一些错误是在设置请求的时候触发
+      //     MessagePlugin.error(error.message);
+      //   }
+      // });
 
 }else{
   MessagePlugin.warning("Please input correct email!");

@@ -22,8 +22,6 @@ axios.interceptors.response.use(function (response) {
     console.log(error)
     // 响应错误
     if (error.response) {
-        MessagePlugin.error(error)
-        MessagePlugin.error(error)
         MessagePlugin.error(error.response.data.msg)
     }
     else{

@@ -294,17 +294,17 @@ const handleSubmit = ({validateResult}) => {
           MessagePlugin.info("Already send the code, please check and enter.");
           visible.value = true;
         })
-        .catch(error => {
-          if (error.response) {
-            // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-            MessagePlugin.error(error.response.data.msg);
+        // .catch(error => {
+        //   if (error.response) {
+        //     // 请求已发出，但服务器响应的状态码不在 2xx 范围内
+        //     MessagePlugin.error(error.response.data.msg);
 
-          } else {
-            // 一些错误是在设置请求的时候触发
-            MessagePlugin.error(error.message);
+        //   } else {
+        //     // 一些错误是在设置请求的时候触发
+        //     MessagePlugin.error(error.message);
 
-          }
-        });
+        //   }
+        // });
   } else {
     MessagePlugin.warning("Please make sure the input format is correct!")
     // alert('lll')
@@ -323,17 +323,17 @@ const handleOK = ({validateResult}) => {
           visible.value = !visible.value
           router.push("/login");
         })
-        .catch((error) => {
-          if (error.response) {
-            // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-            MessagePlugin.error(error.response.data.msg);
+        // .catch((error) => {
+        //   if (error.response) {
+        //     // 请求已发出，但服务器响应的状态码不在 2xx 范围内
+        //     MessagePlugin.error(error.response.data.msg);
 
-          } else {
-            // 一些错误是在设置请求的时候触发
-            MessagePlugin.error(error.message);
+        //   } else {
+        //     // 一些错误是在设置请求的时候触发
+        //     MessagePlugin.error(error.message);
 
-          }
-        });
+        //   }
+        // });
   } else {
     MessagePlugin.warning("Please make sure the input format is correct!")
 

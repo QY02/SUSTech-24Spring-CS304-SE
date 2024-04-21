@@ -135,7 +135,8 @@ const onSubmit = ({validateResult, firstError}) => {
         response => {
           console.log(response)
         }
-    ).catch(error => alert(error))
+    )
+    // .catch(error => alert(error))
     MessagePlugin.success('提交成功');
   } else {
     console.log('Errors: ', validateResult);

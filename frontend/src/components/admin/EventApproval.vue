@@ -229,13 +229,13 @@ onMounted(() => {
         filter_list_data.value = audit_list_data.value;
         listData.value = filter_list_data.value.slice(0, pageSize.value);
       })
-      .catch(error => {
-        if (error.response) {
-          console.error(error.response.data.msg);
-        } else {
-          console.error(error.message);
-        }
-      });
+      // .catch(error => {
+      //   if (error.response) {
+      //     console.error(error.response.data.msg);
+      //   } else {
+      //     console.error(error.message);
+      //   }
+      // });
 });
 // ###### 获取数据 结束 ######
 

@@ -30,6 +30,7 @@
     <el-card :bordered="false" shadow v-else
         style=" align-items: center; justify-content: center; height: 80%; margin: 30px;">
         <br>
+        <br>
         <t-form ref="form" :data="formData" reset-type="initial" colon @reset="onReset" @submit="onSubmit"
             style="width: 80%; margin-left: 10%;">
             <t-form-item label="姓名" name="name">
@@ -58,7 +59,7 @@
 
             <t-form-item>
                 <t-space :size="20">
-                    <t-button theme="primary" type="submit">提交</t-button>
+                    <t-button theme="success" type="submit">提交</t-button>
                     <t-button theme="default" variant="base" type="reset">重置</t-button>
                     <t-button theme="default" variant="base" @click="() => {
                         editYes = !editYes;
@@ -115,7 +116,7 @@ const onButtonClick = async () => {
 
         if (result) {
             if (email.value === emailOriginal.value) {//邮箱没有改动
-                init({ message: "Submitting...", color: "success" });
+                MessagePlugin.info("提交中");
                 axios.put("/user/update", {
                     "id": info.value.id,
                     "name": name.value,
@@ -128,18 +129,9 @@ const onButtonClick = async () => {
                     }
                 )
                     .then(() => {
-                        init({ message: "Successfully updated!!!", color: "success" });
+                        MessagePlugin.success("修改成功");
                         location.reload()
                     })
-                    .catch((error) => {
-                        if (error.response) {
-                            // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-                            init({ message: error.response.data.msg, color: "danger" })
-                        } else {
-                            // 一些错误是在设置请求的时候触发
-                            init({ message: error.message, color: "danger" })
-                        }
-                    });
             } else {
                 showModalCode.value = !showModalCode.value
             }
@@ -221,16 +213,6 @@ onMounted(
                         phoneNumber.value = info.value.phoneNumber;
                         department.value = info.value.department;
                     })
-                    .catch((error) => {
-                        if (error.response) {
-                            // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-                            init({ message: error.response.data.msg, color: "danger" })
-                            // init({message: error.message, color: "danger"})
-                        } else {
-                            // 一些错误是在设置请求的时候触发
-                            init({ message: error.message, color: "danger" })
-                        }
-                    });
             });
 
 
