@@ -25,7 +25,7 @@
         </t-form-item>
 
         <t-form-item>
-          <t-button theme="primary" block @click="handleVeri" style="width: 50px; margin-left: 10px">code</t-button>
+          <t-button theme="primary" block @click="handleVeri" style="width: 50px; margin-left: 10px">验证码</t-button>
         </t-form-item>
       </div>
       <t-form-item>

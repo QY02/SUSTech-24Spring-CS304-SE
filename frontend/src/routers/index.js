@@ -44,6 +44,10 @@ const routes = [
                 component: () => import('@/components/event/ApplyForEvent.vue')
             },
             {
+                path: '/historyEvents',
+                component: () => import('@/components/home/UserHistory.vue')
+            },
+            {
                 path: '/approval',
                 component: () => import('@/components/admin/EventApproval.vue')
             },

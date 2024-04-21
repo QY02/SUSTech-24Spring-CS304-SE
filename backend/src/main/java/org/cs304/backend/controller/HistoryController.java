@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.cs304.backend.entity.OrderRecord;
 import org.cs304.backend.service.IHistoryService;
 import org.cs304.backend.utils.Result;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,5 +40,19 @@ public class HistoryController {
         historyService.addEventHistory(userId,eventId);
         return Result.success(response);
     }
+    @PostMapping("/getByUserId")
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, content = @Content(examples = @ExampleObject("""
+            {
+              "userId": "12110141"
+            }""")))
+    public Result getAllHistory(@NotNull HttpServletRequest request, HttpServletResponse response, @RequestBody JSONObject requestBody) {
+        int userType = (int) request.getAttribute("loginUserType");
+        String userId = requestBody.getString("userId");
 
+//        System.out.println(userType+"666666666666666666");
+//        if (userType == -1) {
+//            throw new ServiceException("403", "Permission denied");
+//        }
+        return Result.success(response, historyService.getAllHistory(userId));
+    }
 }

@@ -7,6 +7,15 @@
   >
     修改密码
   </t-button>
+
+  <t-button
+      class="btn"
+      theme="default"
+      variant="base"
+      @click="router.push('/historyEvents');"
+  >
+    历史记录
+  </t-button>
 <t-dialog
     v-model:visible="visibleBody"
     attach="body"
@@ -32,7 +41,8 @@
 import {computed, ref,} from "vue";
 import ChangePasswordByOld from "./ChangePasswordByOld.vue"
 import ChangePasswordByEmail from "./ChangePasswordByEmail.vue"
-
+import {createRouter, createWebHistory} from "vue-router";
+import router from "@/routers/index.js";
 const visibleBody = ref(false)
 
 const TABS = [

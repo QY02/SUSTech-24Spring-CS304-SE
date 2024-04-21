@@ -120,8 +120,8 @@
           <!--        </t-button>-->
         </t-form>
         <p class="sign-up-label">
-          Already have an account?
-          <router-link to="Login"><span class="sign-up-link">Log in</span></router-link>
+          已经有账户了？
+          <router-link to="Login"><span class="sign-up-link">登录</span></router-link>
         </p>
       </div>
     </div>

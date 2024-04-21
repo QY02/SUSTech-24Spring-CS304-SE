@@ -29,8 +29,8 @@
           <template class="va-card-content">
             <component :is="currentTab.component"></component>
             <p class="sign-up-label">
-              Don't have an account?
-              <router-link to="/register"><span class="sign-up-link">Sign up</span></router-link>
+              还没有账户？
+              <router-link to="/register"><span class="sign-up-link">注册</span></router-link>
             </p>
           </template>
         </t-card>
