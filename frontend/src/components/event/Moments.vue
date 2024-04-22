@@ -30,6 +30,10 @@
     </t-aside>
 
     <t-content>
+      <t-radio-group class="card-with-margin" variant="default-filled" default-value="1">
+        <t-radio-button value="1">动态</t-radio-button>
+        <t-radio-button value="2">我的发布</t-radio-button>
+      </t-radio-group>
       <t-card class="card-with-margin" hoverShadow >
         <div class="spacing"></div>
         <t-comment :avatar="commentsData[0].avatar" :author="commentsData[0].author" :datetime="commentsData[0].datetime" :content="commentsData[0].content">
@@ -63,11 +67,22 @@
       </t-card>
     </t-content>
   </t-layout>
+  <t-popup content="发布动态">
+    <t-button shape="circle" theme="primary" size="large" style="z-index:100;position: fixed;right: 30px;bottom: 40px"
+              @click="router.push('/applyEvent');">
+      <template #icon>
+        <add-icon/>
+      </template>
+
+    </t-button>
+  </t-popup>
 </template>
 
 <script setup lang="jsx">
 import { Tag } from 'tdesign-vue-next';
+import { AddIcon} from "tdesign-icons-vue-next";
 import { ref } from 'vue';
+import router from "@/routers/index.js";
 
 const commentsData = [
   {
