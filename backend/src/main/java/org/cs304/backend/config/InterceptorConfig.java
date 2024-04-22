@@ -15,7 +15,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
                 .excludePathPatterns("/swagger-ui*/**", "/v3/api-docs/**",
                         "/login", "/register", "/registerEmailVerify",
                         "/user/forgetPass/emailVerify", "/loginWithEmail",
-                        "/sendEmail/**","/user/forgetPass");
+                        "/sendEmail/**","/user/forgetPass", "/_AMapService/**");
     }
 
     @Bean

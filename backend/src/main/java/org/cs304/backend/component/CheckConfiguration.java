@@ -21,6 +21,9 @@ public class CheckConfiguration {
     @Value("${user-token.file-server:}")
     private String fileServerUserToken;
 
+    @Value("${amap-security-js-code:}")
+    private String amapSecurityJsCode;
+
     @PostConstruct
     public void checkConfiguration() {
         if (fileServerHost.isBlank()) {
@@ -34,6 +37,9 @@ public class CheckConfiguration {
         }
         if (fileServerUserToken.isBlank()) {
             log.warn("Token for file server user not set, some features related to file management will be disabled");
+        }
+        if (amapSecurityJsCode.isBlank()) {
+            log.warn("AMap security js code not set, some features related to AMap will not work properly");
         }
     }
 }
