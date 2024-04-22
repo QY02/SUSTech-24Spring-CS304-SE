@@ -1,8 +1,7 @@
 <template>
   <t-layout>
     <t-aside>
-      <t-space direction="vertical" class="card-with-margin">
-        <t-space :break-line="true" align="center"  :style="{height: '100vh', 'overflow-y': 'scroll' }">
+        <t-space :break-line="true" class="card-with-margin" align="center"  :style="{height: 'calc(100vh - 96px)', 'overflow-y': 'scroll' }">
           <t-image
               v-for="item in list"
               :key="item"
@@ -19,23 +18,32 @@
                   shape="mark"
                   theme="primary"
                   variant="light"
-                  :style="{ position: 'absolute', right: '8px', bottom: '8px', borderRadius: '3px' }"
+                  :style="{ position: 'absolute', right: '8px', bottom: '8px', borderRadius: '4px' }"
               >
                 @雷军
               </Tag>
             </template>
           </t-image>
         </t-space>
-      </t-space>
     </t-aside>
 
     <t-content>
-      <t-radio-group class="card-with-margin" variant="default-filled" default-value="1">
+      <t-radio-group class="card-with-margin" variant="default-filled" default-value="1" @change="onTypeChange">
         <t-radio-button value="1">动态</t-radio-button>
         <t-radio-button value="2">我的发布</t-radio-button>
       </t-radio-group>
       <t-card class="card-with-margin" hoverShadow >
-        <t-button variant="outline" theme="success">点击跳转相关活动：南方科技大学10次升旗仪式</t-button>
+        <t-space>
+          <t-button variant="outline" theme="success">点击跳转相关活动：南方科技大学10次升旗仪式</t-button>
+          <t-button v-if="radioGroupValue === '2'" @click="editPost">
+            <template #icon><edit-icon /></template>
+              编辑
+          </t-button>
+          <t-button v-if="radioGroupValue === '2'" @click="deletePost" theme="danger">
+            <template #icon><delete-icon /></template>
+              删除
+          </t-button>
+        </t-space>
         <div class="spacing"></div>
         <t-comment :avatar="momentData.avatar" :author="momentData.author" :datetime="momentData.datetime" :content="momentData.content">
           <template #actions>
@@ -74,11 +82,10 @@
   </t-layout>
   <t-popup content="发布动态">
     <t-button shape="circle" theme="primary" size="large" style="z-index:100;position: fixed;right: 30px;bottom: 40px"
-              @click="router.push('/applyEvent');">
+              @click="router.push('/newMoment');">
       <template #icon>
         <add-icon/>
       </template>
-
     </t-button>
   </t-popup>
   <t-drawer v-model:visible="commentVisible" header="评论区" :confirm-btn="null" :cancel-btn="null" size="42vw">
@@ -106,7 +113,7 @@
 
 <script setup lang="jsx">
 import { Tag } from 'tdesign-vue-next';
-import {AddIcon} from "tdesign-icons-vue-next";
+import {AddIcon, DeleteIcon, EditIcon} from "tdesign-icons-vue-next";
 import { ref } from 'vue';
 import router from "@/routers/index.js";
 
@@ -123,6 +130,20 @@ const list = ref(Array.from({ length: 24 }).map((_, index) => index));
 // 当前选中的动态
 let selectedItem = ref(null);
 
+let radioGroupValue = ref('1');// 1: 动态 2: 我的发布
+const onTypeChange = (checkedValues) => {
+  radioGroupValue.value = checkedValues;
+};
+
+const editPost = () => {
+  console.log('Edit post');
+};
+
+const deletePost = () => {
+  console.log('Delete post');
+};
+
+
 // ###### 评论区 开始 ######
 // 评论区是否可见
 const commentVisible = ref(false);
@@ -132,111 +153,6 @@ const viewComment = () => {
 };
 
 const commentsData = [
-  {
-    id: 'A',
-    avatar: 'https://tdesign.gtimg.com/site/avatar.jpg',
-    author: '评论作者名A',
-    datetime: '今天16:38',
-    content: '评论作者名A写的评论内容。',
-  },
-  {
-    id: 'B',
-    avatar: 'https://tdesign.gtimg.com/site/avatar.jpg',
-    author: '评论作者名B',
-    datetime: '今天16:38',
-    content: '评论作者名B写的评论内容。',
-  },
-  {
-    id: 'C',
-    avatar: 'https://tdesign.gtimg.com/site/avatar.jpg',
-    author: '评论作者名C',
-    datetime: '今天16:38',
-    content: '评论作者名C写的评论内容。',
-  },
-  {
-    id: 'A',
-    avatar: 'https://tdesign.gtimg.com/site/avatar.jpg',
-    author: '评论作者名A',
-    datetime: '今天16:38',
-    content: '评论作者名A写的评论内容。',
-  },
-  {
-    id: 'B',
-    avatar: 'https://tdesign.gtimg.com/site/avatar.jpg',
-    author: '评论作者名B',
-    datetime: '今天16:38',
-    content: '评论作者名B写的评论内容。',
-  },
-  {
-    id: 'C',
-    avatar: 'https://tdesign.gtimg.com/site/avatar.jpg',
-    author: '评论作者名C',
-    datetime: '今天16:38',
-    content: '评论作者名C写的评论内容。',
-  },
-  {
-    id: 'A',
-    avatar: 'https://tdesign.gtimg.com/site/avatar.jpg',
-    author: '评论作者名A',
-    datetime: '今天16:38',
-    content: '评论作者名A写的评论内容。',
-  },
-  {
-    id: 'B',
-    avatar: 'https://tdesign.gtimg.com/site/avatar.jpg',
-    author: '评论作者名B',
-    datetime: '今天16:38',
-    content: '评论作者名B写的评论内容。',
-  },
-  {
-    id: 'C',
-    avatar: 'https://tdesign.gtimg.com/site/avatar.jpg',
-    author: '评论作者名C',
-    datetime: '今天16:38',
-    content: '评论作者名C写的评论内容。',
-  },
-  {
-    id: 'A',
-    avatar: 'https://tdesign.gtimg.com/site/avatar.jpg',
-    author: '评论作者名A',
-    datetime: '今天16:38',
-    content: '评论作者名A写的评论内容。',
-  },
-  {
-    id: 'B',
-    avatar: 'https://tdesign.gtimg.com/site/avatar.jpg',
-    author: '评论作者名B',
-    datetime: '今天16:38',
-    content: '评论作者名B写的评论内容。',
-  },
-  {
-    id: 'C',
-    avatar: 'https://tdesign.gtimg.com/site/avatar.jpg',
-    author: '评论作者名C',
-    datetime: '今天16:38',
-    content: '评论作者名C写的评论内容。',
-  },
-  {
-    id: 'A',
-    avatar: 'https://tdesign.gtimg.com/site/avatar.jpg',
-    author: '评论作者名A',
-    datetime: '今天16:38',
-    content: '评论作者名A写的评论内容。',
-  },
-  {
-    id: 'B',
-    avatar: 'https://tdesign.gtimg.com/site/avatar.jpg',
-    author: '评论作者名B',
-    datetime: '今天16:38',
-    content: '评论作者名B写的评论内容。',
-  },
-  {
-    id: 'C',
-    avatar: 'https://tdesign.gtimg.com/site/avatar.jpg',
-    author: '评论作者名C',
-    datetime: '今天16:38',
-    content: '评论作者名C写的评论内容。',
-  },
   {
     id: 'A',
     avatar: 'https://tdesign.gtimg.com/site/avatar.jpg',
@@ -291,12 +207,12 @@ const submitReply = () => {
 }
 
 .image-shadow {
-  box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
   transition: box-shadow 0.3s ease;
 }
 
 .image-shadow:hover {
-  box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
 }
 
 .form-container {

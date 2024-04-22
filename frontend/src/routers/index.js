@@ -90,6 +90,11 @@ const routes = [
                 name: 'adminHomePage',
                 path: '/admin/homepage',
                 component: () => import('@/components/admin/homePage.vue')
+            },
+            {
+                name: 'newMoment',
+                path: '/newMoment',
+                component: () => import('@/components/moment/createMoment/index.vue')
             }
         ]
     },
