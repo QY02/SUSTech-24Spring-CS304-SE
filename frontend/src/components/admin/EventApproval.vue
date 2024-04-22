@@ -6,45 +6,45 @@
     <t-collapse borderless="true" expand-mutex>
       <t-collapse-panel value="0" header="筛选" >
         <t-space direction="vertical">
-        <t-space direction="horizontal">
-          <t-input placeholder="活动名称" v-model:value="filterData.eventName" clearable>
-            <template #suffixIcon>
-              <search-icon :style="{ cursor: 'pointer' }" />
-            </template><t-button class="button-right" theme="default" size="small" variant="base" @click="viewHistory">审核历史</t-button>
-          </t-input>
-          <t-range-input v-model:value="filterData.priceRange" placeholder="请输入价格"
-                         clearable
-                         :tips="errorPriceTips"
-                         :status="errorPriceTips ? 'error' : ''"
-                         @change="onPriceChange">
-            <template #suffixIcon>
-              <money-icon :style="{ cursor: 'pointer' }" />
-            </template>
-          </t-range-input>
+          <t-space direction="horizontal">
+            <t-input placeholder="活动名称" v-model:value="filterData.eventName" clearable>
+              <template #suffixIcon>
+                <search-icon :style="{ cursor: 'pointer' }" />
+              </template><t-button class="button-right" theme="default" size="small" variant="base" @click="viewHistory">审核历史</t-button>
+            </t-input>
+            <t-range-input v-model:value="filterData.priceRange" placeholder="请输入价格"
+                           clearable
+                           :tips="errorPriceTips"
+                           :status="errorPriceTips ? 'error' : ''"
+                           @change="onPriceChange">
+              <template #suffixIcon>
+                <money-icon :style="{ cursor: 'pointer' }" />
+              </template>
+            </t-range-input>
+          </t-space>
+          <t-space direction="horizontal">
+            <t-input placeholder="地点" v-model:value="filterData.location" clearable>
+              <template #suffixIcon>
+                <search-icon :style="{ cursor: 'pointer' }" />
+              </template>
+            </t-input>
+            <t-date-range-picker enable-time-picker allow-input clearable v-model:value="filterData.dateRange" />
+          </t-space>
+          <t-select
+              :options="eventType"
+              placeholder="请选择活动类型"
+              v-model:value="filterData.eventType"
+              multiple
+          />
+          <t-space direction="horizontal">
+            <t-button @click="onResetFilter">重置</t-button>
+            <t-button @click="onSubmitFilter">提交</t-button>
+          </t-space>
         </t-space>
-        <t-space direction="horizontal">
-          <t-input placeholder="地点" v-model:value="filterData.location" clearable>
-            <template #suffixIcon>
-              <search-icon :style="{ cursor: 'pointer' }" />
-            </template>
-          </t-input>
-          <t-date-range-picker enable-time-picker allow-input clearable v-model:value="filterData.dateRange" />
-        </t-space>
-        <t-select
-            :options="eventType"
-            placeholder="请选择活动类型"
-            v-model:value="filterData.eventType"
-            multiple
-        />
-        <t-space direction="horizontal">
-          <t-button @click="onResetFilter">重置</t-button>
-          <t-button @click="onSubmitFilter">提交</t-button>
-        </t-space>
-      </t-space>
       </t-collapse-panel>
     </t-collapse>
     <div class="spacing"></div>
-    <t-space direction="vertical" class="centered">
+    <t-space v-loading="loading" direction="vertical" class="centered">
       <div v-if="listData.length === 0" class="centered">
         结果为空
       </div>
@@ -63,10 +63,10 @@
             <t-button variant="text" shape="square" @click="viewDetail">
               <icon name="task-1" />
             </t-button>
-            <t-button variant="text" shape="square" @click="onSuccess">
+            <t-button variant="text" shape="square" @click="onSuccess(item.id)">
               <icon name="check" color="green" />
             </t-button>
-            <t-button variant="text" shape="square" @click="onDelete">
+            <t-button variant="text" shape="square" @click="onDelete(item.id)">
               <icon name="close" color="red" />
             </t-button>
           </template>
@@ -150,9 +150,12 @@
 
 <script setup>
 import {ref, onMounted, getCurrentInstance, nextTick} from 'vue';
-import { Icon } from 'tdesign-icons-vue-next';
+import {Icon} from 'tdesign-icons-vue-next';
+import {MessagePlugin} from 'tdesign-vue-next';
 import axios from 'axios';
-import { SearchIcon,MoneyIcon } from 'tdesign-icons-vue-next';
+import {SearchIcon, MoneyIcon} from 'tdesign-icons-vue-next';
+
+const appConfig = ref(getCurrentInstance().appContext.config.globalProperties).value;
 
 // ###### 数据 开始 ######
 // 审核列表数据
@@ -164,20 +167,20 @@ const listData = ref([]);
 // 分页
 const pageSize = ref(8);
 const eventType = [
-  { label: '全选', checkAll: true },
-  { label: '讲座', value: 0 },
-  { label: '工作坊', value: 1 },
-  { label: '比赛', value: 2 },
-  { label: '表演', value: 3 },
-  { label: '展览', value: 4 },
-  { label: '论坛', value: 5 },
-  { label: '体育', value: 6 },
-  { label: '志愿', value: 7 },
-  { label: '学院', value: 8 },
-  { label: '沙龙', value: 9 },
-  { label: '培训', value: 10 },
-  { label: '社团', value: 11 },
-  { label: '其他', value: 12 },
+  {label: '全选', checkAll: true},
+  {label: '讲座', value: 0},
+  {label: '工作坊', value: 1},
+  {label: '比赛', value: 2},
+  {label: '表演', value: 3},
+  {label: '展览', value: 4},
+  {label: '论坛', value: 5},
+  {label: '体育', value: 6},
+  {label: '志愿', value: 7},
+  {label: '学院', value: 8},
+  {label: '沙龙', value: 9},
+  {label: '培训', value: 10},
+  {label: '社团', value: 11},
+  {label: '其他', value: 12},
 ];
 const eventTypeMapping = {
   0: '讲座',
@@ -208,7 +211,7 @@ const mapEventType = (type) => {
 const loading = ref(true);
 onMounted(() => {
   loading.value = true;
-  axios.get(`/admin/getAuditList/0`,{
+  axios.get(`/admin/getAuditList/0`, {
     headers: {
       token: sessionStorage.getItem('token'),
     }
@@ -244,9 +247,9 @@ const size = ref('small');
 const showHeader = ref(true);
 
 const statusNameListMap = {
-  0: { label: '等待审批', theme: 'warning' },
-  1: { label: '审批通过', theme: 'success' },
-  2: { label: '审批失败', theme: 'danger' },
+  0: {label: '等待审批', theme: 'warning'},
+  1: {label: '审批通过', theme: 'success'},
+  2: {label: '审批失败', theme: 'danger'},
 };
 
 const historyVisible = ref(false);
@@ -278,13 +281,13 @@ const viewHistory = async () => {
 
 
 const historyColumns = ref([
-  { colKey: 'name', title: '活动名称' },
-  { colKey: 'status', title: '申请状态',},
-  { colKey: 'publishDate', title: '申请时间' },
-  { colKey: 'publisherId', title: '申请人ID' },
-  { colKey: 'type', title: '活动类型' },
-  { colKey: 'startTime', title: '活动时间' },
-  { colKey: 'location', title: '活动地点' },
+  {colKey: 'name', title: '活动名称'},
+  {colKey: 'status', title: '申请状态',},
+  {colKey: 'publishDate', title: '申请时间'},
+  {colKey: 'publisherId', title: '申请人ID'},
+  {colKey: 'type', title: '活动类型'},
+  {colKey: 'startTime', title: '活动时间'},
+  {colKey: 'location', title: '活动地点'},
 ]);
 
 let historyPagination = ref({
@@ -307,9 +310,9 @@ const filterData = ref({
 // 价格验证
 const errorPriceTips = ref('');
 const onPriceChange = (value) => {
-  if (isNaN(value[0])&& value[0]!==undefined || isNaN(value[1])&& value[1]!==undefined) {
+  if (isNaN(value[0]) && value[0] !== undefined || isNaN(value[1]) && value[1] !== undefined) {
     errorPriceTips.value = '输入必须是数字';
-  } else if (value[0] > value[1]&&value[0]!==undefined&&value[1]!==undefined &&value[0]!==""&&value[1]!=="" ||value[0]<0||value[1]<0) {
+  } else if (value[0] > value[1] && value[0] !== undefined && value[1] !== undefined && value[0] !== "" && value[1] !== "" || value[0] < 0 || value[1] < 0) {
     errorPriceTips.value = '价格范围不合法';
   } else {
     errorPriceTips.value = '';
@@ -332,8 +335,8 @@ const onResetFilter = () => {
 
 
 const onSubmitFilter = () => {
-const { eventName, priceRange, location, eventType, dateRange } = filterData.value;
-console.log('eventType', eventType);
+  const {eventName, priceRange, location, eventType, dateRange} = filterData.value;
+  console.log('eventType', eventType);
   filter_list_data.value = audit_list_data.value.filter(item => {
     if (eventName && !item.title.includes(eventName)) {
       return false;
@@ -378,34 +381,60 @@ const deleteVisible = ref(false);
 const successVisible = ref(false);
 const detailVisible = ref(false);
 const deleteTips = ref('请输入拒绝原因');
-
+let currentEventId = ref(null);
+let deleteReason = ref('');
 
 const onDeleteChange = (value) => {
   deleteTips.value = value ? '' : '请输入拒绝原因';
+  deleteReason = value;
 };
 
-const onDelete = () => {
+const onDelete = (eventId) => {
   deleteVisible.value = true;
+  currentEventId.value = eventId;
 };
 
 const viewDetail = () => {
   detailVisible.value = true;
 };
 
-const onSuccess = () => {
+const onSuccess = (eventId) => {
   successVisible.value = true;
+  currentEventId.value = eventId;
 };
 
+const confirm = async () => {
+  try {
+    const status = deleteReason === "" ? 1 : 2;
+    await axios.post('/admin/changeAudit', {
+      eventId: currentEventId.value,
+      status: status,
+      reason: deleteReason,
+    }, {
+      headers: {
+        token: sessionStorage.getItem('token'),
+      }
+    });
+    MessagePlugin.success('操作成功');
+  } catch (error) {
+  }
+};
+
+
 const onClickConfirm = () => {
-  if (deleteTips.value==='请输入拒绝原因') {
+  if (deleteTips.value === '请输入拒绝原因') {
     return;
   }
+  confirm();
   deleteVisible.value = false;
-  console.log('删除原因：', deleteTips.value);
+  location.reload();
 };
 
 const onSuccessClickConfirm = () => {
+  deleteReason = "";
+  confirm();
   successVisible.value = false;
+  location.reload();
 };
 
 const closeSuccess = () => {
