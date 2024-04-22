@@ -104,6 +104,19 @@ create table if not exists history
     visit_time datetime   not null
 );
 
+create table if not exists notification
+(
+    id                      int primary key auto_increment,
+    status                  tinyint     not null,
+    notified_user_id        varchar(8)  not null,
+    publisher_id            varchar(8)  not null,
+    event_session_id        int,
+    create_time             datetime    not null,
+    notify_time             datetime    not null,
+    title                   varchar(1024)   not null,
+    content                 text    not null
+    );
+
 create table if not exists favorite
 (
     user_id  varchar(8) not null,
