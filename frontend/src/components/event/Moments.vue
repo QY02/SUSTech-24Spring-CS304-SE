@@ -2,16 +2,29 @@
   <t-layout>
     <t-aside>
       <t-space direction="vertical" class="card-with-margin">
-        <t-space :break-line="true" align="center"  :style="{ height: '750px', 'overflow-y': 'scroll' }">
+        <t-space :break-line="true" align="center"  :style="{height: '100vh', 'overflow-y': 'scroll' }">
           <t-image
               v-for="item in list"
               :key="item"
               src="https://tdesign.gtimg.com/demo/demo-image-1.png"
-              :style="{ width: '200px', height: '200px' }"
+              :style="{ width: '120px', height: '120px' }"
               fit="cover"
               shape="round"
               :lazy="true"
-          />
+              class="image-shadow image-with-margin"
+              @click="selectedItem = item"
+          >
+            <template #overlayContent>
+              <Tag
+                  shape="mark"
+                  theme="primary"
+                  variant="light"
+                  :style="{ position: 'absolute', right: '8px', bottom: '8px', borderRadius: '3px' }"
+              >
+                @雷军
+              </Tag>
+            </template>
+          </t-image>
         </t-space>
       </t-space>
     </t-aside>
@@ -53,6 +66,9 @@
 </template>
 
 <script setup lang="jsx">
+import { Tag } from 'tdesign-vue-next';
+import { ref } from 'vue';
+
 const commentsData = [
   {
     id: 'A',
@@ -63,41 +79,41 @@ const commentsData = [
   }
 ];
 
-import { ref } from 'vue';
 const list = ref(Array.from({ length: 24 }).map((_, index) => index));
 
-import { PrintIcon } from 'tdesign-icons-vue-next';
-import { Tag } from 'tdesign-vue-next';
+// 当前选中的动态
+let selectedItem = ref(null);
 
-const renderButton = () => (
-    <Tag
-        shape="mark"
-        theme="primary"
-        variant="light"
-        style={{
-          position: 'absolute',
-          right: '8px',
-          bottom: '8px',
-          borderRadius: '3px',
-        }}
-    >
-      <PrintIcon size="16" /> 高清
-    </Tag>
-);
+
+
 </script>
 
 
 <style scoped>
 
 .card-with-margin {
-  margin:  15px 15px 15px 15px;
+  margin:  20px;
   height: max-content;
   display: flex;
 }
 
+.image-with-margin {
+  margin:  5px 10px;
+  height: max-content;
+  display: flex;
+}
 
 .spacing {
   height: 30px; /* 调整这个值以改变间距大小 */
+}
+
+.image-shadow {
+  box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.5);
+  transition: box-shadow 0.3s ease;
+}
+
+.image-shadow:hover {
+  box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.8);
 }
 
 </style>

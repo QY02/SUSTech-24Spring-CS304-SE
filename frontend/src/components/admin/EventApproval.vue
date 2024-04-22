@@ -153,7 +153,6 @@ import {ref, onMounted, getCurrentInstance, nextTick} from 'vue';
 import { Icon } from 'tdesign-icons-vue-next';
 import axios from 'axios';
 import { SearchIcon,MoneyIcon } from 'tdesign-icons-vue-next';
-const appConfig = ref(getCurrentInstance().appContext.config.globalProperties).value;
 
 // ###### 数据 开始 ######
 // 审核列表数据
