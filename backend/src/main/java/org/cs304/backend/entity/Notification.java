@@ -6,6 +6,7 @@ package org.cs304.backend.entity;
  * @description
  **/
 import java.time.LocalDateTime;
+import java.util.Date;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -22,11 +23,17 @@ public class Notification {
     @TableId(type = IdType.AUTO)
     private Integer id;
 
-    private Integer type;
+    private Integer status;
 
-    private String userId;
+    private String notifiedUserId;
 
-    private LocalDateTime notifyTime;
+    private String publisherId;
+
+    private Integer eventSessionId;
+
+    private Date createTime;
+
+    private Date notifyTime;
 
     private String title;
 
