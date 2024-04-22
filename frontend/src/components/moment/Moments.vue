@@ -1,30 +1,31 @@
 <template>
   <t-layout>
     <t-aside>
-        <t-space :break-line="true" class="card-with-margin" align="center"  :style="{height: 'calc(100vh - 96px)', 'overflow-y': 'scroll' }">
-          <t-image
-              v-for="item in list"
-              :key="item"
-              src="https://tdesign.gtimg.com/demo/demo-image-1.png"
-              :style="{ width: '120px', height: '120px' }"
-              fit="cover"
-              shape="round"
-              :lazy="true"
-              class="image-shadow image-with-margin"
-              @click="selectedItem = item"
-          >
-            <template #overlayContent>
-              <Tag
-                  shape="mark"
-                  theme="primary"
-                  variant="light"
-                  :style="{ position: 'absolute', right: '8px', bottom: '8px', borderRadius: '4px' }"
-              >
-                @雷军
-              </Tag>
-            </template>
-          </t-image>
-        </t-space>
+      <t-space :break-line="true" class="card-with-margin" align="center"
+               :style="{height: 'calc(100vh - 96px)', 'overflow-y': 'scroll' }">
+        <t-image
+            v-for="item in list"
+            :key="item.id"
+            :src="item.img"
+            :style="{ width: '120px', height: '120px' }"
+            fit="cover"
+            shape="round"
+            :lazy="true"
+            class="image-shadow image-with-margin"
+            @click="selectMoment(item)"
+        >
+          <template #overlayContent>
+            <Tag
+                shape="mark"
+                theme="primary"
+                variant="light"
+                :style="{ position: 'absolute', right: '8px', bottom: '8px', borderRadius: '4px' }"
+            >
+              @雷军
+            </Tag>
+          </template>
+        </t-image>
+      </t-space>
     </t-aside>
 
     <t-content>
@@ -32,20 +33,25 @@
         <t-radio-button value="1">动态</t-radio-button>
         <t-radio-button value="2">我的发布</t-radio-button>
       </t-radio-group>
-      <t-card class="card-with-margin" hoverShadow >
+      <t-card class="card-with-margin" hoverShadow>
         <t-space>
           <t-button variant="outline" theme="success">点击跳转相关活动：南方科技大学10次升旗仪式</t-button>
           <t-button v-if="radioGroupValue === '2'" @click="editPost">
-            <template #icon><edit-icon /></template>
-              编辑
+            <template #icon>
+              <edit-icon/>
+            </template>
+            编辑
           </t-button>
           <t-button v-if="radioGroupValue === '2'" @click="deletePost" theme="danger">
-            <template #icon><delete-icon /></template>
-              删除
+            <template #icon>
+              <delete-icon/>
+            </template>
+            删除
           </t-button>
         </t-space>
         <div class="spacing"></div>
-        <t-comment :avatar="momentData.avatar" :author="momentData.author" :datetime="momentData.datetime" :content="momentData.content">
+        <t-comment :avatar="momentData.avatar" :author="momentData.author" :datetime="momentData.datetime"
+                   :content="momentData.content">
           <template #actions>
             <t-space key="thumbUp" :size="10">
               <t-icon name="thumb-up"/>
@@ -92,17 +98,18 @@
     <t-list :split="true">
       <t-list-item v-for="(item, index) in commentsData" :key="index">
         <template #content>
-          <t-comment style="margin-bottom: 5px" :avatar="item.avatar" :author="item.author" :datetime="item.datetime" :content="item.content">
+          <t-comment style="margin-bottom: 5px" :avatar="item.avatar" :author="item.author" :datetime="item.datetime"
+                     :content="item.content">
           </t-comment>
         </template>
       </t-list-item>
     </t-list>
-    <div style="background-color: #ffffff ;position: fixed;bottom:0;width: 40vw ;height: auto" >
+    <div style="background-color: #ffffff ;position: fixed;bottom:0;width: 40vw ;height: auto">
       <t-divider/>
       <t-comment avatar="https://tdesign.gtimg.com/site/avatar.jpg">
         <template #content>
           <div class="form-container">
-            <t-textarea v-model="replyData" placeholder="请输入内容" />
+            <t-textarea v-model="replyData" placeholder="请输入内容"/>
             <t-button class="form-submit" @click="submitReply">回复</t-button>
           </div>
         </template>
@@ -112,23 +119,48 @@
 </template>
 
 <script setup lang="jsx">
-import { Tag } from 'tdesign-vue-next';
+import {Tag} from 'tdesign-vue-next';
 import {AddIcon, DeleteIcon, EditIcon} from "tdesign-icons-vue-next";
-import { ref } from 'vue';
+import {onMounted, ref} from 'vue';
 import router from "@/routers/index.js";
+import axios from "axios";
 
-const momentData = {
-    id: 'A',
-    avatar: 'https://tdesign.gtimg.com/site/avatar.jpg',
-    author: '评论作者名A',
-    datetime: '今天16:38',
-    content: '评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。',
-  };
+const momentData = ref({
+  id: 'A',
+  avatar: 'https://tdesign.gtimg.com/site/avatar.jpg',
+  author: '评论作者名A',
+  datetime: '今天16:38',
+  content: '评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。',
+});
 
-const list = ref(Array.from({ length: 24 }).map((_, index) => index));
+const list = ref([]);// 左侧动态列表
+
+onMounted(() => {
+  for (let i = 0; i < 10; i++) {
+    list.value.push({
+      id: i,
+      img: 'https://tdesign.gtimg.com/demo/demo-image-1.png',
+    });
+  }
+});
 
 // 当前选中的动态
 let selectedItem = ref(null);
+
+const selectMoment = async (item) => {
+  selectedItem.value = item;
+  try {
+    const response = await axios.get('/', {
+      headers: {
+        token: sessionStorage.getItem('token'),
+      }
+    });
+    momentData.value = response.data.data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 
 let radioGroupValue = ref('1');// 1: 动态 2: 我的发布
 const onTypeChange = (checkedValues) => {
@@ -191,13 +223,13 @@ const submitReply = () => {
 <style scoped>
 
 .card-with-margin {
-  margin:  20px;
+  margin: 20px;
   height: max-content;
   display: flex;
 }
 
 .image-with-margin {
-  margin:  5px 10px;
+  margin: 5px 10px;
   height: max-content;
   display: flex;
 }
@@ -220,6 +252,7 @@ const submitReply = () => {
   flex-direction: column;
   align-items: flex-end;
   margin-bottom: 20px;
+
   .form-submit {
     margin-top: 8px;
   }

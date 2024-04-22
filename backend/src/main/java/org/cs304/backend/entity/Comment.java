@@ -31,5 +31,5 @@ public class Comment {
 
     private Double score;//活动评论的评星
 
-    private Integer commentType;
+    private Integer type;
 }

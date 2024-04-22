@@ -35,8 +35,4 @@ public class CommentController {
     public Result deleteComment(HttpServletResponse response, @PathVariable("commentId")int commentId) {
         return Result.success(response,commentService.removeById(commentId));
     }
-
-
-
-
 }
