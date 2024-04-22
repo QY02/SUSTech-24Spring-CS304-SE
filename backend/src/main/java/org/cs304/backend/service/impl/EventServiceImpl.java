@@ -9,10 +9,7 @@ import jakarta.annotation.Resource;
 import org.cs304.backend.constant.constant_EventStatus;
 import org.cs304.backend.constant.constant_OrderRecordStatus;
 import org.cs304.backend.constant.constant_User;
-import org.cs304.backend.entity.Event;
-import org.cs304.backend.entity.EventSession;
-import org.cs304.backend.entity.OrderRecord;
-import org.cs304.backend.entity.Seat;
+import org.cs304.backend.entity.*;
 import org.cs304.backend.exception.ServiceException;
 import org.cs304.backend.mapper.EventMapper;
 import org.cs304.backend.mapper.EventSessionMapper;
@@ -23,6 +20,7 @@ import org.cs304.backend.service.IEventSessionService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -75,8 +73,8 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
 
 
     @Override
-    public void insertEventAndSessions(JSONObject data){
-        JSONObject eventData=data.getJSONObject("event");
+    public void insertEventAndSessions(JSONObject data) {
+        JSONObject eventData = data.getJSONObject("event");
         JSONArray eventSessionData = data.getJSONArray("sessions");
 
         Event event = new Event();
@@ -93,22 +91,21 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
 //        System.out.println("Event Object: " + event);
         eventMapper.insert(event);
 
-        insertSessions(event.getId(),eventSessionData);
+        insertSessions(event.getId(), eventSessionData);
 
     }
-    private void insertSessions(int id,JSONArray eventSessionData) {
+
+    private void insertSessions(int id, JSONArray eventSessionData) {
         if (eventSessionData != null && !eventSessionData.isEmpty()) {
-                    int dataSize = eventSessionData.size();
-                    for (int i = 0; i < dataSize; i++) {
-                        JSONObject sessionData = eventSessionData.getJSONObject(i);
-                        eventSessionService.insertEventSession(id, sessionData);
-                    }
-                } else {
-                    System.out.println("eventSessionData is null or empty.");
-                }
+            int dataSize = eventSessionData.size();
+            for (int i = 0; i < dataSize; i++) {
+                JSONObject sessionData = eventSessionData.getJSONObject(i);
+                eventSessionService.insertEventSession(id, sessionData);
             }
-
-
+        } else {
+            System.out.println("eventSessionData is null or empty.");
+        }
+    }
 
 
     @Override
@@ -125,6 +122,16 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
         }
         return eventSessionMapper.selectList(new QueryWrapper<EventSession>().eq("event_id", eventId)).stream().filter(eventSession -> (userType == constant_User.ADMIN) || (eventSession.getVisible())).collect(Collectors.toList());
     }
+
+//    @Override
+//    public Event getEventByEventId(int userType, Integer eventId) {
+//        if (eventId == null) {
+//            throw new ServiceException("400", "Invalid event id");
+//        }
+//        Event event = baseMapper.selectById(eventId);
+//
+//        return event;
+//    }
 
     @Override
     public void submitBookingData(int userType, String userId, OrderRecord orderRecord) {
@@ -162,8 +169,9 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
         orderRecord.setPaymentTime(null);
         orderRecordMapper.insert(orderRecord);
     }
+
     @Override
-    public JSONArray getAllEvents(){//开始时间从大到小排序返回
+    public JSONArray getAllEvents() {//开始时间从大到小排序返回
         QueryWrapper<Event> queryWrapper = new QueryWrapper<Event>();
         queryWrapper.orderByDesc("publish_date");
         List<Event> list = list(queryWrapper);
@@ -173,6 +181,20 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
             return jsonArray;
         }
         return new JSONArray();
+    }
+
+    @Override
+    public List<Event> getBatchByIds(int userType, List<Integer> idList) {
+        List<Event> result = new ArrayList<>();
+        for (Integer id : idList) {
+            try {
+                result.add(getById(id));
+            } catch (ServiceException e) {
+                e.setCauseObject(id);
+                throw e;
+            }
+        }
+        return result;
     }
 
 }

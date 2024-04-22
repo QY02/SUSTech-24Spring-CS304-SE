@@ -149,12 +149,10 @@
 
 
 <script setup>
-import {ref, onMounted, getCurrentInstance, nextTick} from 'vue';
+import {ref, onMounted, nextTick} from 'vue';
 import { Icon } from 'tdesign-icons-vue-next';
 import axios from 'axios';
 import { SearchIcon,MoneyIcon } from 'tdesign-icons-vue-next';
-const appConfig = ref(getCurrentInstance().appContext.config.globalProperties).value;
-
 // ###### 数据 开始 ######
 // 审核列表数据
 const audit_list_data = ref(null);
@@ -206,7 +204,6 @@ const mapEventType = (type) => {
 // ###### 数据 结束 ######
 
 // ###### 获取数据 开始 ######
-axios.defaults.baseURL = appConfig.$apiBaseUrl;
 onMounted(() => {
   axios.get(`/admin/getAuditList/0`,{
     headers: {
@@ -229,13 +226,7 @@ onMounted(() => {
         filter_list_data.value = audit_list_data.value;
         listData.value = filter_list_data.value.slice(0, pageSize.value);
       })
-      .catch(error => {
-        if (error.response) {
-          console.error(error.response.data.msg);
-        } else {
-          console.error(error.message);
-        }
-      });
+      .catch(error => {});
 });
 // ###### 获取数据 结束 ######
 

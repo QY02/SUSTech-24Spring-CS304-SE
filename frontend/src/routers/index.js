@@ -6,7 +6,6 @@ const routes = [
         name:'login',
         path: '/login',
         component: () => import('@/components/login/loginIn.vue')
-        // component: () => import('@/components/login/loginIn.vue')
     },
     {
         path: '/register',
@@ -45,6 +44,10 @@ const routes = [
                 component: () => import('@/components/event/ApplyForEvent.vue')
             },
             {
+                path: '/historyEvents',
+                component: () => import('@/components/home/UserHistory.vue')
+            },
+            {
                 path: '/approval',
                 component: () => import('@/components/admin/EventApproval.vue')
             },
@@ -69,11 +72,6 @@ const routes = [
                 component: () => import('@/components/event/Moments.vue')
             },
             {
-                name: 'test',
-                path: '/test',
-                // component: () => import('@/components/Event/test.vue')
-            },
-            {
                 name: 'user',
                 path: '/user',
                 component: () => import('@/components/profile/userPage.vue')
@@ -82,6 +80,11 @@ const routes = [
                 name: 'chatWithEvent',
                 path: '/chatWithEvent',
                 component: () => import('@/components/chat/chatWithEvent.vue')
+            },
+            {
+                name: 'chat',
+                path: '/chat',
+                component: () => import('@/components/chat/singleChat.vue')
             }
         ]
     },

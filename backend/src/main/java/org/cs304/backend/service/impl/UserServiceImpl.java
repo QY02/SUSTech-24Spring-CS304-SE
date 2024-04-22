@@ -1,24 +1,22 @@
 package org.cs304.backend.service.impl;
 
+import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson2.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.cs304.backend.entity.User;
 import org.cs304.backend.exception.ServiceException;
 import org.cs304.backend.mapper.UserMapper;
 import org.cs304.backend.service.IUserService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.cs304.backend.utils.Encryption;
 import org.cs304.backend.utils.RedisUtil;
-import org.springframework.stereotype.Service;
-
-import cn.hutool.core.util.RandomUtil;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-
-import jakarta.annotation.Resource;
-//import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.stereotype.Service;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -54,7 +52,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         if (dbuser == null) {
             throw new ServiceException("Invalid username or password");
         }
-        System.out.println(redisUtil.generateToken(dbuser));
         return redisUtil.generateToken(dbuser);
     }
 

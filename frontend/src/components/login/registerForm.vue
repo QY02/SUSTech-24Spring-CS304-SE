@@ -120,8 +120,8 @@
           <!--        </t-button>-->
         </t-form>
         <p class="sign-up-label">
-          Already have an account?
-          <router-link to="Login"><span class="sign-up-link">Log in</span></router-link>
+          已经有账户了？
+          <router-link to="Login"><span class="sign-up-link">登录</span></router-link>
         </p>
       </div>
     </div>
@@ -194,13 +194,16 @@
 // import NavBarWithOnlyTitle from "@/components/layouts/NavBarWithOnlyTitle.vue";
 // // import {useForm, useToast} from "vuestic-ui";
 
-import {inject, reactive, ref} from "vue";
+import {getCurrentInstance, inject, reactive, ref} from "vue";
 import {LockOnIcon} from "tdesign-icons-vue-next";
 import axios from "axios";
 import {MessagePlugin} from "tdesign-vue-next";
 import router from "@/routers";
 
-const apiUrl = inject('$API_URL');
+// const apiUrl = inject('$API_URL');
+// const globalProperties = getCurrentInstance().appContext.config.globalProperties;
+// const apiBaseUrl = globalProperties.$apiBaseUrl;
+// axios.defaults.baseURL = apiBaseUrl;
 
 
 const rules = {
@@ -227,7 +230,6 @@ const rules1 = {
 const onReset = () => {
   MessagePlugin.success('重置成功');
 };
-axios.defaults.baseURL = apiUrl;
 
 // const code = ref("");
 const formData = reactive({
@@ -269,8 +271,7 @@ const close = () => {
 //
 //   const showModal = ref(false)
 //
-//   const appConfig = ref(getCurrentInstance().appContext.config.globalProperties).value;
-// 获取全局变量 $apiBaseUrl
+
 
 const handleSubmit = ({validateResult}) => {
   if (validateResult === true) {
@@ -292,15 +293,6 @@ const handleSubmit = ({validateResult}) => {
           visible.value = true;
         })
         .catch(error => {
-          if (error.response) {
-            // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-            MessagePlugin.error(error.response.data.msg);
-
-          } else {
-            // 一些错误是在设置请求的时候触发
-            MessagePlugin.error(error.message);
-
-          }
         });
   } else {
     MessagePlugin.warning("Please make sure the input format is correct!")
@@ -321,15 +313,6 @@ const handleOK = ({validateResult}) => {
           router.push("/login");
         })
         .catch((error) => {
-          if (error.response) {
-            // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-            MessagePlugin.error(error.response.data.msg);
-
-          } else {
-            // 一些错误是在设置请求的时候触发
-            MessagePlugin.error(error.message);
-
-          }
         });
   } else {
     MessagePlugin.warning("Please make sure the input format is correct!")

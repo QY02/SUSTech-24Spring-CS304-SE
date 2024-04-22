@@ -3,7 +3,7 @@ package org.cs304.backend.service.impl;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.conditions.query.QueryChainWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import org.cs304.backend.constant.constant_EventStatus;
 import org.cs304.backend.constant.constant_User;
@@ -17,7 +17,6 @@ import org.cs304.backend.mapper.EventSessionMapper;
 import org.cs304.backend.mapper.SeatMapMapper;
 import org.cs304.backend.mapper.SeatMapper;
 import org.cs304.backend.service.ISeatMapService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

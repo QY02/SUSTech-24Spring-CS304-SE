@@ -1,13 +1,12 @@
 package org.cs304.backend.service.impl;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import jakarta.validation.constraints.NotNull;
 import org.cs304.backend.entity.Favorite;
 import org.cs304.backend.exception.ServiceException;
 import org.cs304.backend.mapper.FavoriteMapper;
 import org.cs304.backend.service.IFavoriteService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.springframework.aop.framework.AopContext;
 import org.springframework.stereotype.Service;
 
 @Service

@@ -4,6 +4,7 @@ import com.alibaba.fastjson2.*;
 import org.cs304.backend.constant.constant_User;
 import org.cs304.backend.entity.User;
 import org.cs304.backend.exception.ServiceException;
+import org.cs304.backend.mapper.UserMapper;
 import org.cs304.backend.service.IUserService;
 import org.cs304.backend.utils.Encryption;
 import org.cs304.backend.utils.RedisUtil;
@@ -34,6 +35,9 @@ public class LoginController {
     private IUserService userService;
 
     @Resource
+    private UserMapper userMapper;
+
+    @Resource
     private RedisUtil redisUtil;
 
     /**
@@ -49,10 +53,7 @@ public class LoginController {
                 log.error("Invalid Input");
                 return Result.error(response, "400", "Invalid Input");
             }
-            System.out.println(user.getId()+"  "+user.getPassword());
             user = userService.login(user);
-//            user.setPassword(null);
-//            System.out.println(response);
         } catch (Exception e) {
             log.error(e.getMessage());
             return Result.error(response, "401", "Invalid username or password");
@@ -69,7 +70,7 @@ public class LoginController {
      */
     @PostMapping("/twoFactorAuthentication")
     public Result twoFactorAuthentication(@NotNull HttpServletResponse response,@RequestBody User user) {
-        user = userService.getById(user.getId());
+        user = userMapper.selectById(user.getId());
         if (user.getTwoFactorAuthentication()){
             return Result.success(response,true);
         }else return Result.success(response,false);
@@ -129,7 +130,7 @@ public class LoginController {
             user = JSON.parseObject(redisUtil.get(emailVerify.getString("email"), false, true), User.class);
             user.setType(constant_User.USER);
             user.setPassword(Encryption.encrypt(user.getPassword()));
-            userService.save(user);
+            userMapper.insert(user);
             user.setPassword(null);
             return Result.success(response, user);
         } catch (Exception e) {

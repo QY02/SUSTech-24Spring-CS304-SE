@@ -133,3 +133,12 @@ create table if not exists reply
     up_vote      int        not null,
     down_vote    int        not null
 );
+
+create table if not exists chat_message
+(
+    id int primary key auto_increment,
+    sender_id varchar(8),
+    receiver_id varchar(8),
+    content varchar(5000),
+    send_time datetime
+);

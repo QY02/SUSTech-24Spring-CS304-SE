@@ -2,11 +2,11 @@ package org.cs304.backend.service.impl;
 
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import org.cs304.backend.entity.EventSession;
 import org.cs304.backend.mapper.EventSessionMapper;
 import org.cs304.backend.service.IEventSessionService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -51,7 +51,7 @@ public class EventSessionServiceImpl extends ServiceImpl<EventSessionMapper, Eve
         session.setMinSize(minSize);
         session.setMaxSize(maxSize);
 
-        session.setCurrentSize(sessionData.getInteger("current_size"));
+        session.setCurrentSize(0);
         session.setSeatMapId(sessionData.getInteger("seat_map_id"));
         session.setVenue(sessionData.getString("venue"));
         session.setLocation(sessionData.getString("location"));
