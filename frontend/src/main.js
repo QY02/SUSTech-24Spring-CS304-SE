@@ -27,6 +27,10 @@ axios.interceptors.response.use(function (response) {
     return Promise.reject(error);
 });
 
+window._AMapSecurityConfig = {
+    serviceHost: "http://localhost:8083/_AMapService",
+};
+
 export const AMap = ref(null);
 
 AMapLoader.load({
