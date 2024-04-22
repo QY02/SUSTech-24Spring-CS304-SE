@@ -69,7 +69,7 @@ const routes = [
             {
                 name: 'moments',
                 path: '/moments',
-                component: () => import('@/components/event/Moments.vue')
+                component: () => import('@/components/moment/Moments.vue')
             },
             {
                 name: 'user',
