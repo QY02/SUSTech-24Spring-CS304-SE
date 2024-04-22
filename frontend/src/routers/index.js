@@ -85,6 +85,11 @@ const routes = [
                 name: 'chat',
                 path: '/chat',
                 component: () => import('@/components/chat/singleChat.vue')
+            },
+            {
+                name: 'adminHomePage',
+                path: '/admin/homepage',
+                component: () => import('@/components/admin/homePage.vue')
             }
         ]
     },

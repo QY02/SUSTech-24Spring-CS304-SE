@@ -1,68 +1,31 @@
 <template>
-  <t-card theme="poster2" :bordered="false">
+  <t-card hoverShadow :style="{ backgroundColor: getBackgroundColor(product.type) }"  theme="poster2" >
     <template #avatar>
       <t-avatar size="56px">
         <template #icon>
-          <shop-icon v-if="product.type === 1" />
+          <user-avatar-icon v-if="product.type === 1" />
           <calendar-icon v-if="product.type === 2" />
-          <service-icon v-if="product.type === 3" />
-          <user-avatar-icon v-if="product.type === 4" />
-          <laptop-icon v-if="product.type === 5" />
+          <list-icon v-if="product.type === 3" />
+          <chat-bubble-error-icon v-if="product.type === 4" />
+          <money-icon v-if="product.type === 5" />
+          <cpu-icon v-if="product.type === 6" />
         </template>
       </t-avatar>
-    </template>
-    <template #status>
-      <t-tag :theme="product.isSetup ? 'success' : 'default'" :disabled="!product.isSetup">{{
-        product.isSetup ? $t('components.isSetup.on') : $t('components.isSetup.off')
-      }}</t-tag>
     </template>
     <template #content>
       <p class="list-card-item_detail--name">{{ product.name }}</p>
       <p class="list-card-item_detail--desc">{{ product.description }}</p>
     </template>
-    <template #footer>
-      <t-avatar-group cascading="left-up" :max="2">
-        <t-avatar>{{ typeMap[product.type - 1] }}</t-avatar>
-        <t-avatar
-          ><template #icon>
-            <add-icon />
-          </template>
-        </t-avatar>
-      </t-avatar-group>
-    </template>
-    <template #actions>
-      <t-dropdown
-        :disabled="!product.isSetup"
-        trigger="click"
-        :options="[
-          {
-            content: $t('components.manage'),
-            value: 'manage',
-            onClick: () => handleClickManage(product),
-          },
-          {
-            content: $t('components.delete'),
-            value: 'delete',
-            onClick: () => handleClickDelete(product),
-          },
-        ]"
-      >
-        <t-button theme="default" :disabled="!product.isSetup" shape="square" variant="text">
-          <more-icon />
-        </t-button>
-      </t-dropdown>
-    </template>
   </t-card>
 </template>
 <script setup lang="ts">
 import {
-  AddIcon,
   CalendarIcon,
-  LaptopIcon,
-  MoreIcon,
-  ServiceIcon,
-  ShopIcon,
+  MoneyIcon,
+  ChatBubbleErrorIcon,
+  ListIcon,
   UserAvatarIcon,
+  CpuIcon,
 } from 'tdesign-icons-vue-next';
 import type { PropType } from 'vue';
 
@@ -74,23 +37,31 @@ export interface CardProductType {
 }
 
 // eslint-disable-next-line
-const props = defineProps({
+defineProps({
   product: {
     type: Object as PropType<CardProductType>,
   },
 });
 
-const emit = defineEmits(['manage-product', 'delete-item']);
-
-const typeMap = ['A', 'B', 'C', 'D', 'E'];
-
-const handleClickManage = (product: CardProductType) => {
-  emit('manage-product', product);
+const getBackgroundColor = (type: number) => {
+  switch (type) {
+    case 1:
+      return '#edbdbd';
+    case 2:
+      return '#f8dead';
+    case 3:
+      return '#f4e9a0';
+    case 4:
+      return '#d5e8c6';
+    case 5:
+      return '#c7e8de';
+    case 6:
+      return '#cfc7e8';
+    default:
+      return '#ffffff'; // 默认为白色
+  }
 };
 
-const handleClickDelete = (product: CardProductType) => {
-  emit('delete-item', product);
-};
 </script>
 
 <style lang="less" scoped>
@@ -104,13 +75,13 @@ const handleClickDelete = (product: CardProductType) => {
 
     &--name {
       margin-bottom: var(--td-comp-margin-s);
-      font: var(--td-font-title-medium);
+      font: var(--td-font-title-large);
       color: var(--td-text-color-primary);
     }
 
     &--desc {
       color: var(--td-text-color-secondary);
-      font: var(--td-font-body-small);
+      font: var(--td-font-body-medium);
       overflow: hidden;
       text-overflow: ellipsis;
       display: -webkit-box;
