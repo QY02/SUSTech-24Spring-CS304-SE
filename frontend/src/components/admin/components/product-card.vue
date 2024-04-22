@@ -1,5 +1,5 @@
 <template>
-  <t-card hoverShadow :style="{ backgroundColor: getBackgroundColor(product.type) }"  theme="poster2" >
+  <t-card hoverShadow theme="poster2" >
     <template #avatar>
       <t-avatar size="56px">
         <template #icon>
@@ -42,25 +42,6 @@ defineProps({
     type: Object as PropType<CardProductType>,
   },
 });
-
-const getBackgroundColor = (type: number) => {
-  switch (type) {
-    case 1:
-      return '#edbdbd';
-    case 2:
-      return '#f8dead';
-    case 3:
-      return '#f4e9a0';
-    case 4:
-      return '#d5e8c6';
-    case 5:
-      return '#c7e8de';
-    case 6:
-      return '#cfc7e8';
-    default:
-      return '#ffffff'; // 默认为白色
-  }
-};
 
 </script>
 

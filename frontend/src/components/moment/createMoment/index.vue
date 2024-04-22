@@ -1,0 +1,243 @@
+<template>
+  <t-form
+      v-loading="loading"
+    ref="form"
+    class="base-form"
+    :data="formData"
+    :rules="FORM_RULES"
+    label-align="top"
+    :label-width="100"
+    @reset="onReset"
+    @submit="onSubmit"
+  >
+    <div class="form-basic-container">
+      <div class="form-basic-item">
+        <div class="form-basic-container-title"> 新建动态 </div>
+            <t-form-item label="标题" name="name" @keydown.enter.prevent >
+              <t-input v-model="formData.name"  placeholder="请输入内容"/>
+            </t-form-item>
+          <t-form-item label="内容" name="comment">
+            <t-textarea v-model="formData.comment" :height="200" placeholder="请输入内容" />
+          </t-form-item>
+        <t-form-item label="相关活动" name="event" @keydown.enter.prevent>
+          <t-select-input
+              :value="selectValue"
+              :popup-visible="popupVisible"
+              :popup-props="{ overlayInnerStyle: { padding: '6px' } }"
+              placeholder="请选择活动"
+              clearable
+              allow-input
+              @popup-visible-change="onPopupVisibleChange"
+              @clear="onClear"
+              @input-change="onInputChange"
+          ><template #panel>
+            <ul class="tdesign-demo__select-input-ul-single">
+              <li v-for="item in events" :key="item.value" @click="() => onOptionClick(item)">
+                {{ item.label }}
+              </li>
+            </ul>
+          </template>
+            <template #suffixIcon>
+              <chevron-down-icon />
+            </template>
+          </t-select-input>
+        </t-form-item>
+          <t-form-item label="媒体类型" name="type">
+            <t-radio-group default-value="1" @change="changeType">
+              <t-radio-button value="1">图片</t-radio-button>
+              <t-radio-button value="2">视频</t-radio-button>
+            </t-radio-group>
+          </t-form-item>
+          <t-upload
+              v-if="mediaType===1"
+              v-model="files"
+              placeholder="支持批量上传图片文件"
+              theme="image-flow"
+              accept="image/*"
+              multiple
+              :request-method="requestMethod1"
+              :auto-upload="autoUpload"
+              :show-image-file-name="showImageFileName"
+              :max="8"
+              :abridge-name="[6, 6]"
+              :upload-button="showUploadButton ? undefined : null"
+              :cancel-upload-button="showUploadButton ? { theme: 'default', content: '取消上传' } : null"
+          ></t-upload>
+        <t-upload
+            v-if="mediaType===2"
+            v-model="files"
+            :auto-upload="autoUpload"
+            :theme="display"
+            :data="{ extra_data: 123, file_name: 'certificate' }"
+            :abridge-name="[10, 8]"
+            :format-response="formatResponse"
+            draggable
+            action="https://service-bv448zsw-1257786608.gz.apigw.tencentcs.com/api/upload-demo"
+        />
+      </div>
+    </div>
+
+    <div class="form-submit-container">
+      <div class="form-submit-sub">
+        <div class="form-submit-left">
+          <t-button theme="primary" style="margin: 5px" type="submit">
+            确认提交
+          </t-button>
+          <t-button type="reset" style="margin: 5px"  theme="default" variant="base">
+            取消
+          </t-button>
+        </div>
+      </div>
+    </div>
+  </t-form>
+</template>
+
+
+<script setup lang="ts">
+import {MessagePlugin, SubmitContext, UploadProps, CheckboxProps,SelectInputProps } from 'tdesign-vue-next';
+import {onMounted, ref} from 'vue';
+import { FORM_RULES, INITIAL_DATA} from './constants';
+import router from "@/routers/index.js";
+import { ChevronDownIcon } from 'tdesign-icons-vue-next';
+import axios from "axios";
+
+// ###### 表单整体行为 开始 ######
+const formData = ref({ ...INITIAL_DATA });
+const mediaType = ref(1);// 1: 图片 2: 视频
+
+const changeType = (value: string) => {
+  mediaType.value = Number(value);
+};
+
+const onReset = () => {
+  router.push('/moments');
+};
+
+const onSubmit = (ctx: SubmitContext) => {
+  if (!allEvents.some(event => event.value === formData.value.event.value)) {
+    MessagePlugin.error('请选择一个有效的活动');
+    return;
+  }
+  if (ctx.validateResult === true) {
+    MessagePlugin.success('新建成功');
+  }
+};
+
+// ###### 表单整体行为 结束 ######
+
+// ###### 上传文件 开始 ######
+const autoUpload = ref(true);
+const showImageFileName = ref(true);
+const showUploadButton = ref<CheckboxProps['value']>(true);
+
+const display = ref<UploadProps['theme']>('file');
+
+// 示例代码：自定义上传方法，一个请求上传一个文件
+// eslint-disable-next-line
+const requestMethod1: UploadProps['requestMethod'] = () => {
+  return new Promise((resolve) => {
+    resolve({
+      status: 'success',
+      response: {
+        url: 'https://tdesign.gtimg.com/site/avatar.jpg',
+      },
+    });
+  });
+};
+
+// 示例代码：自定义上传方法，一个请求上传多个文件
+// eslint-disable-next-line
+// const requestMethod2 = () => {
+//   return new Promise((resolve) => {
+//     resolve({
+//       status: 'success',
+//       response: {
+//         files: [
+//           { name: 'avatar1.jpg', url: 'https://tdesign.gtimg.com/site/avatar.jpg' },
+//           { name: 'avatar2.jpg', url: 'https://avatars.githubusercontent.com/u/11605702?v=4' },
+//         ],
+//       },
+//     });
+//   });
+// };
+
+function getCurrentDate(needTime = false) {
+  const d = new Date();
+  let month = d.getMonth() + 1;
+  month = month < 10 ? Number(`0${month}`) : month;
+  const date = `${d.getFullYear()}-${month}-${d.getDate()}`;
+  const time = `${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}`;
+  if (needTime) return [date, time].join(' ');
+  return date;
+}
+const files = ref<UploadProps['value']>([]);
+
+// res.url 图片地址；res.uploadTime 文件上传时间；res.error 上传失败的原因
+function formatResponse(res: any) {
+  // 响应结果添加上传时间字段，用于 UI 显示
+  res.uploadTime = getCurrentDate();
+  return res;
+}
+
+// ###### 上传文件 结束 ######
+
+
+// ###### 选择活动 开始 ######
+
+let loading = ref(false);
+const allEvents = [];
+let events = ref([]);
+
+onMounted(() => {
+  loading.value = true;
+  axios.post(`/event/getAllEvents`, {},{
+    headers: {
+      token: sessionStorage.getItem('token'),
+    }
+  })
+      .then(response => {
+        allEvents.push(...response.data.data.map((item: any) => ({
+                label: item.name,
+                value: item.id,
+              })));
+        loading.value = false;
+      })
+      .catch();
+});
+
+const selectValue = ref<{
+  label: string;
+  value: number;
+}>();
+
+const popupVisible = ref(false);
+const onOptionClick = (item: { label: string; value: number }) => {
+  selectValue.value = item;
+  formData.value.event = item;
+  // 选中后立即关闭浮层
+  popupVisible.value = false;
+};
+const onClear: SelectInputProps['onClear'] = () => {
+  selectValue.value = undefined;
+  formData.value.event = undefined;
+};
+const onPopupVisibleChange: SelectInputProps['onPopupVisibleChange'] = (val, context) => {
+  popupVisible.value = val;
+};
+const onInputChange: SelectInputProps['onInputChange'] = (val, context) => {
+  if (!val) {
+  events.value = [];
+    return;
+  }
+  events.value = allEvents.filter(event => event.label.includes(val));
+};
+
+// ###### 选择活动 结束 ######
+
+
+
+</script>
+
+<style lang="less" scoped>
+@import './index.less';
+</style>

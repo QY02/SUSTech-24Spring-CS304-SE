@@ -69,7 +69,7 @@ const routes = [
             {
                 name: 'moments',
                 path: '/moments',
-                component: () => import('@/components/event/Moments.vue')
+                component: () => import('@/components/moment/Moments.vue')
             },
             {
                 name: 'user',
@@ -90,6 +90,11 @@ const routes = [
                 name: 'adminHomePage',
                 path: '/admin/homepage',
                 component: () => import('@/components/admin/homePage.vue')
+            },
+            {
+                name: 'newMoment',
+                path: '/newMoment',
+                component: () => import('@/components/moment/createMoment/index.vue')
             }
         ]
     },
