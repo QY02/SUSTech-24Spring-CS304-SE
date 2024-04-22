@@ -149,10 +149,12 @@
 
 
 <script setup>
-import {ref, onMounted, nextTick} from 'vue';
+import {ref, onMounted, getCurrentInstance, nextTick} from 'vue';
 import { Icon } from 'tdesign-icons-vue-next';
 import axios from 'axios';
 import { SearchIcon,MoneyIcon } from 'tdesign-icons-vue-next';
+const appConfig = ref(getCurrentInstance().appContext.config.globalProperties).value;
+
 // ###### 数据 开始 ######
 // 审核列表数据
 const audit_list_data = ref(null);
@@ -204,29 +206,33 @@ const mapEventType = (type) => {
 // ###### 数据 结束 ######
 
 // ###### 获取数据 开始 ######
+const loading = ref(true);
 onMounted(() => {
+  loading.value = true;
   axios.get(`/admin/getAuditList/0`,{
     headers: {
       token: sessionStorage.getItem('token'),
     }
   })
       .then(response => {
-        audit_list_data.value = response.data.data.map(item => ({
-          id: item.id,
-          title: item.name,
-          description: item.content,
-          date: item.startTime,
-          location: item.location,
-          price: item.lowestPrice,
-          type: mapEventType(item.type),
-          status: item.status,
-          publisherId: item.publisherId,
-          publishDate: item.publishDate
-        }));
-        filter_list_data.value = audit_list_data.value;
-        listData.value = filter_list_data.value.slice(0, pageSize.value);
-      })
-      .catch(error => {});
+            audit_list_data.value = response.data.data.map(item => ({
+              id: item.id,
+              title: item.name,
+              description: item.content,
+              date: item.startTime,
+              location: item.location,
+              price: item.lowestPrice,
+              type: mapEventType(item.type),
+              status: item.status,
+              publisherId: item.publisherId,
+              publishDate: item.publishDate
+            }));
+            filter_list_data.value = audit_list_data.value;
+            listData.value = filter_list_data.value.slice(0, pageSize.value);
+            loading.value = false;
+          }
+      )
+      .catch();
 });
 // ###### 获取数据 结束 ######
 
