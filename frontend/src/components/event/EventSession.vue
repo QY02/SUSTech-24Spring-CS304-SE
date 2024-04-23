@@ -85,7 +85,7 @@
             <t-input v-model="newData.venue">地址</t-input>
           </t-form-item>
           <t-form-item label="地图" name="location">
-            <t-button @click="showChooseLocationDialog">
+            <t-button @click="chooseLocationDialogVisible = true">
               <template #icon>
                 <MapInformation2Icon/>
               </template>
@@ -108,7 +108,7 @@
     </template>
   </t-dialog>
   <t-dialog v-model:visible="chooseLocationDialogVisible" placement="center" width="50vw" header="选择位置"
-            :onConfirm="handleChooseLocationConfirm" :onClose="handleChooseLocationCancel">
+            :onConfirm="handleChooseLocationConfirm" :onClose="handleChooseLocationCancel" @opened="showMap">
     <div id="mapContainer" class="choose-location-map-div">
       <div class="search-place-div">
         <input class="search-place-input" v-model="searchPlaceInputValue" placeholder="搜索地点" id="searchPlaceInput"></input>
@@ -137,9 +137,8 @@ const searchPlaceInputValue = ref("");
 let mapAutoComplete = null;
 let mapPlaceSearch = null;
 
-const showChooseLocationDialog = () => {
+const showMap = () => {
   if (AMap.value !== null) {
-    chooseLocationDialogVisible.value = true;
     if (map === null) {
       map = new AMap.value.Map("mapContainer", {
         viewMode: "3D",
@@ -159,6 +158,9 @@ const showChooseLocationDialog = () => {
           right: '10px',
         }
       });
+      map.addControl(mapScale);
+      map.addControl(mapToolBar);
+      map.addControl(mapControlBar);
       mapType = new AMap.value.MapType({
         defaultType: 0,
         position: {
@@ -166,10 +168,6 @@ const showChooseLocationDialog = () => {
           right: '10px',
         }
       });
-      map.addControl(mapScale);
-      map.addControl(mapToolBar);
-      map.addControl(mapControlBar);
-      map.addControl(mapType);
       mapMarker = new AMap.value.Marker({
         icon: "https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-default.png",
         position: map.getCenter(),
@@ -195,6 +193,7 @@ const showChooseLocationDialog = () => {
         mapPlaceSearch.search(e.poi.name);
       });
       map.on('complete', function () {
+        map.addControl(mapType);
         map.add(mapMarker);
         mapMarker.setLabel({
           content: `${mapMarker.getPosition().getLng()}, ${mapMarker.getPosition().getLat()}`,
