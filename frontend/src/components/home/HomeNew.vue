@@ -146,9 +146,9 @@ axios.post(`/event/getAllEvents`, {}, {
 })
     .then((response) => {
       // alert(response)
-      events.value = response.data.data
-      curEvents.value = response.data.data
-      tmpEvents.value = response.data.data
+      events.value = response.data.data.filter(events => events['status']===1)
+      curEvents.value = events.value
+      tmpEvents.value = events.value
       // alert(JSON.stringify(events.value))
 
     })
