@@ -126,6 +126,9 @@ const showMap = () => {
           right: '10px',
         }
       });
+      map.addControl(mapScale);
+      map.addControl(mapToolBar);
+      map.addControl(mapControlBar);
       mapType = new AMap.value.MapType({
         defaultType: 0,
         position: {
@@ -133,10 +136,6 @@ const showMap = () => {
           left: '100px',
         }
       });
-      map.addControl(mapScale);
-      map.addControl(mapToolBar);
-      map.addControl(mapControlBar);
-      map.addControl(mapType);
       mapMarker = new AMap.value.Marker({
         icon: "https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-default.png",
         position: sessionInformation[currentSessionIndexShownInMap].location,
@@ -144,6 +143,7 @@ const showMap = () => {
         clickable: false
       });
       map.on('complete', function () {
+        map.addControl(mapType);
         map.add(mapMarker);
         mapMarker.setLabel({
           content: sessionInformation[currentSessionIndexShownInMap].venue,
