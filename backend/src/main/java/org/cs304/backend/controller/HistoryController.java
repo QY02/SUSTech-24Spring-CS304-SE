@@ -31,9 +31,6 @@ public class HistoryController {
               "userId": "12110141"
             }""")))
     public Result addEventHistory(HttpServletResponse response,  @RequestBody JSONObject requestBody) {
-//        System.out.println("hhhhhhhhhhhhhhhh");
-//        int userType = (int) request.getAttribute("loginUserType");
-
         String userId = requestBody.getString("userId");
         Integer eventId = requestBody.getInteger("eventId");
 //        LocalDateTime visitTime=requestBody.getObject("visit_time");
@@ -48,11 +45,6 @@ public class HistoryController {
     public Result getAllHistory(@NotNull HttpServletRequest request, HttpServletResponse response, @RequestBody JSONObject requestBody) {
         int userType = (int) request.getAttribute("loginUserType");
         String userId = requestBody.getString("userId");
-
-//        System.out.println(userType+"666666666666666666");
-//        if (userType == -1) {
-//            throw new ServiceException("403", "Permission denied");
-//        }
         return Result.success(response, historyService.getAllHistory(userId));
     }
 }

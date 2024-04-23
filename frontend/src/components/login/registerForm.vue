@@ -72,6 +72,10 @@
               </template>
             </t-input>
           </t-form-item>
+          <t-form-item label="感兴趣的活动类型" name="favType" :label-width="140">
+            <t-checkbox-group v-model="formData.favType" :options="courseOptions"></t-checkbox-group>
+          </t-form-item>
+          <!--          <t-checkbox-group v-model="checked" :options="['选项一', '选项二', '选项三']" name="city"></t-checkbox-group>-->
           <!--        <t-value v-slot="isPasswordVisible" :default-value="false">-->
           <!--          <t-input-->
           <!--              v-model="formData.password"-->
@@ -223,6 +227,12 @@ const rules = {
     validator: (v) => v === formData.password,
     message: 'Different from the last password'
   }],
+  favType: [{required: true},
+    {
+      validator: (v) => v.length <= 3,
+      message: '请选择1-3个感兴趣的活动类型',
+      type: 'warning'
+    }],
 };
 const rules1 = {
   code: [{required: true}, {validator: (v) => /^[0-9]{6}$/.test(v), message: 'Code must be a six-digit number'}]
@@ -241,7 +251,14 @@ const formData = reactive({
   email: '',
   phoneNumber: '',
   code: '',
+  favType: [],
 });
+const courseOptions = [
+  {label: '表演', value: 0},
+  {label: '讲座', value: 1},
+  {label: '比赛', value: 2},
+  {label: '其他', value: 3},
+];
 const formData1 = reactive({
   code: '',
 });
@@ -274,6 +291,7 @@ const close = () => {
 
 
 const handleSubmit = ({validateResult}) => {
+  // alert(formData.favType)
   if (validateResult === true) {
     const data = {
       "id": formData.id,
@@ -282,12 +300,16 @@ const handleSubmit = ({validateResult}) => {
       "password": formData.password,
       "email": formData.email,
       "phoneNumber": formData.phoneNumber,
-
+      "twoFactorAuthentication": false,
+      // "favType": formData.favType,
       // "githubUserId": sessionStorage.getItem('git-id'),
       // "githubUserName": sessionStorage.getItem('git-name'),
     }
-
-    axios.post("/register", data)
+    alert(formData.favType)
+    axios.post("/register", {
+      "user": data,
+      "favType": formData.favType,
+    })
         .then(() => {
           MessagePlugin.info("Already send the code, please check and enter.");
           visible.value = true;
@@ -369,13 +391,7 @@ const handleOK = ({validateResult}) => {
 }
 
 #building {
-  //background: url("@/assets/login.jpg");
-  background-image: linear-gradient(rgba(0,0,0, 0.1), rgba(0,0,0, 0.1)), url("@/assets/login.jpg");
-
-  width: 100%;
-  height: 100%;
-  position: fixed;
-  background-size: 100% 100%;
+//background: url("@/assets/login.jpg"); background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)), url("@/assets/login.jpg"); width: 100%; height: 100%; position: fixed; background-size: 100% 100%;
 }
 
 .sign-up-label {
