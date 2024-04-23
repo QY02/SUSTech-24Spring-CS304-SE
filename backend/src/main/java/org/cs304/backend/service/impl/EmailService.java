@@ -42,7 +42,6 @@ public class EmailService {
         message.setTo(to);
         try {
             mailSender.send(message);
-            System.out.println(date);
         } catch (Exception e) {
             throw new ServiceException("Email sending failed");
         }

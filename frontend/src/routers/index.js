@@ -72,6 +72,11 @@ const routes = [
                 component: () => import('@/components/moment/Moments.vue')
             },
             {
+                name: 'notification',
+                path: '/notification',
+                component: () => import('@/components/notification/NoticeAll.vue')
+            },
+            {
                 name: 'user',
                 path: '/user',
                 component: () => import('@/components/profile/userPage.vue')

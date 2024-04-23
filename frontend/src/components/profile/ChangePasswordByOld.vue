@@ -1,11 +1,9 @@
 <script setup>
-import { getCurrentInstance, ref } from 'vue';
+import { ref } from 'vue';
 import { Input, MessagePlugin } from 'tdesign-vue-next';
 import { LockOnIcon } from "tdesign-icons-vue-next";
 import axios from "axios";
 
-// const globalProperties = getCurrentInstance().appContext.config.globalProperties;
-// const apiBaseUrl = globalProperties.$apiBaseUrl;
 const token = sessionStorage.getItem('token')
 const uid = sessionStorage.getItem('uid')
 const formData = ref({
@@ -28,13 +26,7 @@ const changePsw = ({ validateResult, firstError }) => {
     }).then(() => {
       MessagePlugin.success('修改成功');
       location.reload()
-    })
-    // formData.value = {
-    //   old_psw:'',
-    //   new_psw_1:'',
-    //   new_psw_2:'',
-    // }
-    // MessagePlugin.success('提交成功');
+    }).catch()
   } else {
     console.log('Validate Errors: ', firstError, validateResult);
     MessagePlugin.warning(firstError);

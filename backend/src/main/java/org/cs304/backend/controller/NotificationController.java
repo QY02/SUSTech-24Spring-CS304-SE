@@ -100,4 +100,31 @@ public class NotificationController {
         notificationService.updateReadStatus(notificationId);
         return Result.success(response);
     }
+
+    @GetMapping("/all/{userId}")
+    @Operation(summary = "返回指定用户的所有通知", description = "传入userId")
+    public Result getAllNotificationsOfOneUser(HttpServletResponse response, @PathVariable String userId) {
+        return Result.success(response, notificationService.getAllNotificationsOfOneUser(userId));
+    }
+
+    @GetMapping("/all")
+    @Operation(summary = "返回我的所有通知")
+    public Result getAllMyNotifications(HttpServletResponse response, HttpServletRequest request) {
+        String userId = (String) request.getAttribute("loginUserId");
+        return Result.success(response, notificationService.getAllNotificationsOfOneUser(userId));
+    }
+
+    @GetMapping("/page")
+    @Operation(summary = "分页返回我的所有通知")
+    public Result getMyNotificationsByPage(HttpServletResponse response, HttpServletRequest request, @RequestParam int pageNum, @RequestParam int pageSize) {
+        if (pageNum < 0) {
+            return Result.error(response, "pageNum不能为负数");
+        } else if (pageSize <= 0) {
+            return Result.error(response, "pageSize应该为正数");
+        } else {
+            String userId = (String) request.getAttribute("loginUserId");
+            return Result.success(response, notificationService.getNotificationsOfOneUserByPage(userId, pageNum, pageSize));
+        }
+
+    }
 }

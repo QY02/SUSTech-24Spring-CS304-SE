@@ -57,7 +57,6 @@
 <!--        {{formData}}-->
 <!--        {{eventSessionData}}-->
 <!--      </div>-->
-      <!--    改密码-->
 
 
       <div style="display: flex; justify-content: center; align-items: center;">
@@ -204,7 +203,7 @@ const onSubmit = ({ validateResult, firstError }) => {
         MessagePlugin.success('提交成功');
         router.push("/HomePage");
       }
-    ).catch((error) => {});
+    ).catch();
   } else {
     console.log('Errors: ', validateResult);
     MessagePlugin.warning(firstError);
