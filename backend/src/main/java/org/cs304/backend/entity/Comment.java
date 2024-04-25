@@ -32,4 +32,8 @@ public class Comment {
     private Double score;//活动评论的评星
 
     private Integer type;
+
+    private String title;
+
+    private Boolean mediaType;//false: pic true: video
 }

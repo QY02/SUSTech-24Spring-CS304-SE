@@ -156,3 +156,11 @@ create table if not exists chat_message
     content varchar(5000),
     send_time datetime
 );
+
+create table if not exists user_blog_interaction
+(
+    user_id    varchar(8) null,
+    comment_id int        null,
+    vote_type  tinyint(1) null
+);
+

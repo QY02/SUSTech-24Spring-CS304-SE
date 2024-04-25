@@ -5,14 +5,15 @@ import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
+import org.cs304.backend.entity.Attachment;
 import org.cs304.backend.entity.Comment;
 import org.cs304.backend.entity.EntityAttachmentRelation;
 import org.cs304.backend.mapper.CommentMapper;
+import org.cs304.backend.mapper.EntityAttachmentRelationMapper;
 import org.cs304.backend.mapper.EventMapper;
 import org.cs304.backend.mapper.UserMapper;
 import org.cs304.backend.service.IAttachmentService;
 import org.cs304.backend.service.ICommentService;
-import org.cs304.backend.service.IEntityAttachmentRelationService;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     private IAttachmentService attachmentService;
 
     @Resource
-    private IEntityAttachmentRelationService entityAttachmentRelationService;
+    private EntityAttachmentRelationMapper entityAttachmentRelationMapper;
 
     @Resource
     private UserMapper userMapper;
@@ -54,7 +55,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         List<Integer> ids = commentList.stream().map(Comment::getId).toList();
         List<Integer> attachmentIds = new ArrayList<>();
         for (Integer id : ids) {
-            attachmentIds.add(entityAttachmentRelationService.getOne(new QueryWrapper<EntityAttachmentRelation>().eq("entity_id",id).eq("entity_type",COMMENT)).getAttachmentId());
+            attachmentIds.add(entityAttachmentRelationMapper.selectOne(new QueryWrapper<EntityAttachmentRelation>().eq("entity_id",id).eq("entity_type",COMMENT)).getAttachmentId());
         }
         Map<Integer, Comment> attachmentIdToCommentMap = new HashMap<>();
         for (int i = 0; i < attachmentIds.size(); i++) {
@@ -78,6 +79,9 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         JSONObject jsonObject = (JSONObject) JSON.toJSON(comment);
         jsonObject.put("userName",username);
         jsonObject.put("relatedEvent",eventName);
+        List<Integer> attachmentIds = entityAttachmentRelationMapper.selectList(new QueryWrapper<EntityAttachmentRelation>().eq("entity_id",commentId).eq("entity_type",COMMENT)).stream().map(EntityAttachmentRelation::getAttachmentId).toList();
+        List<String> attachmentPaths = attachmentService.getBatchByIds(ADMIN,attachmentIds).stream().map(Attachment::getFilePath).toList();
+        jsonObject.put("mediaUrl",attachmentPaths);
         return jsonObject;
     }
 }

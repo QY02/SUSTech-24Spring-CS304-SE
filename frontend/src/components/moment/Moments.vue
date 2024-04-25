@@ -36,9 +36,9 @@
         <t-radio-button value="1">动态</t-radio-button>
         <t-radio-button value="2">我的发布</t-radio-button>
       </t-radio-group>
-      <t-card class="card-with-margin" hoverShadow v-loading="asideLoading" >
+      <t-card class="card-with-margin" hoverShadow v-loading="contentLoading" >
         <t-space>
-          <t-button variant="outline" theme="success">点击跳转相关活动：{{momentData.relatedEvent}}</t-button>
+          <t-button variant="outline" theme="success" @click="showEvent">点击跳转相关活动：{{momentData.relatedEvent}}</t-button>
           <t-button v-if="radioGroupValue === '2'" @click="editPost">
             <template #icon>
               <edit-icon/>
@@ -52,16 +52,18 @@
             删除
           </t-button>
         </t-space>
-        <div class="spacing"></div>
+        <h1>
+        {{momentData.title}}
+        </h1>
         <t-comment :avatar="momentData.avatar" :author="momentData.userName" :datetime="momentData.publishDate"
                    :content="momentData.content">
           <template #actions>
-            <t-space key="thumbUp" :size="10">
-              <t-icon name="thumb-up"/>
+            <t-space key="thumbUp" :size="10" @click="thumbUp">
+              <t-icon name="thumb-up" :color="thumbUpColor"/>
               <span>{{momentData.upVote}}</span>
             </t-space>
-            <t-space key="thumbDown" :size="10">
-              <t-icon name="thumb-down"/>
+            <t-space key="thumbDown" :size="10" @click="thumbDown">
+              <t-icon name="thumb-down" :color="thumbDownColor"/>
               <span>{{momentData.downVote}}</span>
             </t-space>
             <t-space key="chat" :size="10" @click="viewComment">
@@ -73,17 +75,18 @@
         <div class="spacing"></div>
         <t-swiper
             class="tdesign-demo-block--swiper"
-            direction="vertical"
-            :navigation="{ showSlideBtn: 'never' }"
-            :height="480"
             :autoplay="false"
         >
-          <t-swiper-item v-for="item in 6" :key="item">
-            <t-image
-                src="https://tdesign.gtimg.com/demo/demo-image-1.png"
+          <t-swiper-item v-for="item in photoList" :key="item" >
+            <t-image-viewer :key="item" v-model:visible="photoPreviewVisible" :default-index="0" :images="photoUrlList">
+              <template #trigger>
+            <t-image @click="photoPreviewVisible = true"
+                :src=item
                 fit="cover"
                 shape="round"
             />
+              </template>
+            </t-image-viewer>
           </t-swiper-item>
         </t-swiper>
       </t-card>
@@ -129,16 +132,20 @@ import router from "@/routers/index.js";
 import axios from "axios";
 import { fileServerAxios } from "@/main.js"
 
+const user = sessionStorage.getItem("uid") ? sessionStorage.getItem("uid") : '';//当前用户
+
 // ###### 动态列表 开始 ######
 
 const list = ref([]);// 左侧动态列表
 const lastId = ref(-1);// 上一次请求的最后一个动态的id
 const noMoreImage = ref(false);// 是否还有更多图片
 const asideLoading = ref(false);
+const contentLoading = ref(false);
 
 const getMomentBatch = async (id) => {
   try {
     asideLoading.value = true;
+    contentLoading.value = true;
     const response = await axios.get(`/comment/getMomentBatch/${id}`, {
       headers: {
         token: sessionStorage.getItem('token'),
@@ -148,7 +155,6 @@ const getMomentBatch = async (id) => {
       noMoreImage.value = true;
     }
     for (let i = 0; i < response.data.data.length; i++) {
-      console.log(response.data.data[i].attachment)
       const fileServerResponse = await fileServerAxios.get(`/file/download`, {
         responseType: 'blob',
         headers: {
@@ -164,6 +170,7 @@ const getMomentBatch = async (id) => {
     }
     lastId.value = response.data.data[response.data.data.length - 1].comment_id;
     asideLoading.value = false;
+    contentLoading.value = false;
   } catch (error) {
   }
 };
@@ -184,26 +191,57 @@ const loadMore = async () => {
 const momentData = ref({
   id: 'A',
   avatar: 'https://tdesign.gtimg.com/site/avatar.jpg',
+  title: '示例标题',
   userName: '示例评论作者',
   publishDate: '示例时间',
   content: '示例评论内容。',
   relatedEvent: '示例活动名称',
   eventId: '示例活动ID',
-  upVote: 6,
-  downVote: 1,
+  upVote: 0,
+  downVote: 0,
+  mediaType: 0,
+  mediaUrl: [],
 });
 
+const photoList = ref([]);
+const photoUrlList = ref([]);
+const photoPreviewVisible = ref(false);
+
+const showEvent = () => {
+  sessionStorage.setItem('eventId',momentData.value.eventId);
+  router.push('/event');
+};
 
 const selectMoment = async (item) => {
   try {
+    contentLoading.value = true;
     const response = await axios.get(`/comment/getMomentById?commentId=${item.id}`, {
       headers: {
         token: sessionStorage.getItem('token')
       }
     });
     momentData.value = response.data.data;
+    const response2 = await axios.get(`/blog/get/${item.id}`, {
+      headers: {
+        token: sessionStorage.getItem('token')
+      }
+    });
+    momentData.value.avatar = 'https://tdesign.gtimg.com/site/avatar.jpg';
+    thumbUpColor.value = response2.data.data.voteType === 1 ? 'red' : 'grey';
+    thumbDownColor.value = response2.data.data.voteType === -1 ? 'blue' : 'grey';
+    for (let i = 0; i < momentData.value.mediaUrl.length; i++) {
+      const fileServerResponse = await fileServerAxios.get(`/file/download`, {
+        responseType: 'blob',
+        headers: {
+          token: momentData.value.mediaUrl[i],
+        }
+      });
+      const image = fileServerResponse.data;
+      photoList.value.push(image);
+      photoUrlList.value.push(URL.createObjectURL(image));
+    }
+    contentLoading.value = false;
   } catch (error) {
-    console.error(error);
   }
 };
 
@@ -221,6 +259,71 @@ const deletePost = () => {
 };
 
 // ###### 动态详情 结束 ######
+
+// ###### 点赞 开始 ######
+
+const thumbUpColor = ref('grey');
+const thumbDownColor = ref('grey');
+
+const thumbUp = async () => {
+  try {
+    contentLoading.value = true;
+  if (thumbUpColor.value === 'grey') {
+    thumbUpColor.value = 'red';
+    await axios.get(`/blog/change/${momentData.value.id}/${user}/1`, {
+      headers: {
+        token: sessionStorage.getItem('token'),
+      }
+    });
+    if (thumbDownColor.value === 'blue') {
+      thumbDownColor.value = 'grey';
+      momentData.value.downVote--;
+    }
+    momentData.value.upVote++;
+  } else {
+    thumbUpColor.value = 'grey';
+    await axios.get(`/blog/change/${momentData.value.id}/${user}/0`, {
+      headers: {
+        token: sessionStorage.getItem('token'),
+      }
+    });
+    momentData.value.upVote--;
+  }
+    contentLoading.value = false;
+  } catch (error) {
+  }
+};
+
+const thumbDown = async () => {
+  try {
+    contentLoading.value = true;
+    if (thumbDownColor.value === 'grey') {
+      thumbDownColor.value = 'blue';
+      await axios.get(`/blog/change/${momentData.value.id}/${user}/-1`, {
+        headers: {
+          token: sessionStorage.getItem('token'),
+        }
+      });
+      if (thumbUpColor.value === 'red') {
+        thumbUpColor.value = 'grey';
+        momentData.value.upVote--;
+      }
+      momentData.value.downVote++;
+    } else {
+      thumbDownColor.value = 'grey';
+      await axios.get(`/blog/change/${momentData.value.id}/${user}/0`, {
+        headers: {
+          token: sessionStorage.getItem('token'),
+        }
+      });
+      momentData.value.downVote--;
+    }
+    contentLoading.value = false;
+  } catch (error) {
+  }
+};
+
+// ###### 点赞 结束 ######
 
 // ###### 评论区 开始 ######
 // 评论区是否可见
@@ -302,6 +405,11 @@ const submitReply = () => {
   .form-submit {
     margin-top: 8px;
   }
+}
+
+h1 {
+  font-size: 24px;
+  font-weight: bold;
 }
 
 </style>
