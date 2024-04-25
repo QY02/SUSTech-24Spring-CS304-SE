@@ -127,6 +127,7 @@ import {AddIcon, DeleteIcon, EditIcon} from "tdesign-icons-vue-next";
 import {onMounted, ref} from 'vue';
 import router from "@/routers/index.js";
 import axios from "axios";
+import { fileServerAxios } from "@/main.js"
 
 // ###### 动态列表 开始 ######
 
@@ -147,9 +148,17 @@ const getMomentBatch = async (id) => {
       noMoreImage.value = true;
     }
     for (let i = 0; i < response.data.data.length; i++) {
+      console.log(response.data.data[i].attachment)
+      const fileServerResponse = await fileServerAxios.get(`/file/download`, {
+        responseType: 'blob',
+        headers: {
+          token: response.data.data[i].attachment,
+        }
+      });
+      const image = fileServerResponse.data;
         list.value.push({
           id: response.data.data[i].comment_id,
-          img: "http://47.107.113.54:25572/file/download?token=" + response.data.data[i].attachment,
+          img: image,
           name: response.data.data[i].publisher_id,
         });
     }
