@@ -108,6 +108,7 @@ create table if not exists notification
 (
     id                      int primary key auto_increment,
     status                  tinyint     not null,
+    type                    int     not null,
     notified_user_id        varchar(8)  not null,
     publisher_id            varchar(8)  not null,
     event_session_id        int,

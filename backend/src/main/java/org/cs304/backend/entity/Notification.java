@@ -25,6 +25,8 @@ public class Notification {
 
     private Integer status;
 
+    private Integer type;
+
     private String notifiedUserId;
 
     private String publisherId;

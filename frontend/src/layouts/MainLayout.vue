@@ -44,23 +44,22 @@
             <template #logo>
               <div class="header-operate-left">
                 <t-button theme="default" shape="square" variant="text" @click="changeCollapsed">
-                  <ViewListIcon />
+                  <ViewListIcon/>
                 </t-button>
               </div>
             </template>
             <template #operations>
               <div class="operations-container">
+                <t-tooltip placement="bottom" content="通知">
+                  <notice></notice>
+                </t-tooltip>
+
                 <t-tooltip placement="bottom" content="用户信息">
                   <t-button theme="default" shape="square" variant="text" @click="handleNav('user')">
                     <UserCircleIcon class="header-menu-icon"/>
                   </t-button>
                 </t-tooltip>
-                <t-tooltip placement="bottom" content="通知">
-                  <t-button theme="default" shape="square" variant="text"
-                            @click="showNotification">
-                    <NotificationIcon class="header-menu-icon"/>
-                  </t-button>
-                </t-tooltip>
+
                 <t-tooltip placement="bottom" content="设置">
                   <t-button theme="default" shape="square" variant="text">
                     <SettingIcon class="header-menu-icon"/>
@@ -70,10 +69,9 @@
             </template>
           </t-head-menu>
         </t-header>
-        <t-content >
-          <t-layout class="content-layout" >
+        <t-content>
+          <t-layout class="content-layout">
             <t-content>
-              <sys-notification v-model:visible="visibleNotification"></sys-notification>
               <router-view></router-view>
             </t-content>
           </t-layout>
@@ -85,7 +83,6 @@
 
 <script setup lang="ts">
 import {
-  NotificationIcon,
   UserCircleIcon,
   SettingIcon,
   HomeIcon,
@@ -94,15 +91,12 @@ import {
 import config from '@/config/style.js';
 import {onMounted, onBeforeUnmount, ref} from "vue";
 import router from '@/routers';
-import SysNotification from "@/components/notification/SysNotification.vue";
+import Notice from "@/components/notification/Notice.vue";
+
 const highlightItem = ref('home')
 let isSidebarCollapsed = ref(config.isSidebarCollapsed);
 const sidebarElement = ref(null);
 const contentElement = ref(null);
-const visibleNotification=ref(false)
-const showNotification = () => {
-  visibleNotification.value=!visibleNotification.value
-}
 const updateWidth = () => {
   if (sidebarElement.value && contentElement.value) {
     const sidebarElementWidth = sidebarElement.value.offsetWidth;
@@ -159,3 +153,5 @@ const handleNav = (value: string) => {
 <style scoped>
 
 </style>
+<script setup>
+</script>

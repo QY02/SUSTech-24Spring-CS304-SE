@@ -1,10 +1,8 @@
 package org.cs304.backend.service;
 
-import com.alibaba.fastjson2.JSONObject;
+import com.alibaba.fastjson2.JSONArray;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.cs304.backend.entity.Notification;
-
-import java.util.Date;
 
 /**
  * @author zyp
@@ -25,5 +23,11 @@ public interface INotificationService extends IService<Notification> {
 
     void insertEventCancelNotification(String userId, int eventId, String comment);
 
-    void updateReadStatus(int notificationId);
+    void updateReadStatus(int notificationId, Boolean read);
+
+    JSONArray getAllNotificationsOfOneUser(String userId);
+
+    JSONArray getNotificationsOfOneUserByPage(String userId, int pageNum, int pageSize);
+
+    void deleteNotification(String notificationId);
 }
