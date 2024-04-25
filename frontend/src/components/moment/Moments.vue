@@ -215,6 +215,9 @@ const showEvent = () => {
 const selectMoment = async (item) => {
   try {
     contentLoading.value = true;
+    photoList.value = [];
+    photoUrlList.value = [];
+    photoPreviewVisible.value = false;
     const response = await axios.get(`/comment/getMomentById?commentId=${item.id}`, {
       headers: {
         token: sessionStorage.getItem('token')

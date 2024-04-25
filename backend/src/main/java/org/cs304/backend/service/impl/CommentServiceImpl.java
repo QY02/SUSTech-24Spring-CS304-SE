@@ -55,7 +55,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         List<Integer> ids = commentList.stream().map(Comment::getId).toList();
         List<Integer> attachmentIds = new ArrayList<>();
         for (Integer id : ids) {
-            attachmentIds.add(entityAttachmentRelationMapper.selectOne(new QueryWrapper<EntityAttachmentRelation>().eq("entity_id",id).eq("entity_type",COMMENT)).getAttachmentId());
+            attachmentIds.add(entityAttachmentRelationMapper.selectList(new QueryWrapper<EntityAttachmentRelation>().eq("entity_id",id).eq("entity_type",COMMENT)).get(0).getAttachmentId());
         }
         Map<Integer, Comment> attachmentIdToCommentMap = new HashMap<>();
         for (int i = 0; i < attachmentIds.size(); i++) {
