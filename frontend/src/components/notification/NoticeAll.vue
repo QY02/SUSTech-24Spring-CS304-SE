@@ -21,20 +21,20 @@
                       :content="item.status===0 ? '设为已读' : '设为未读'"
                   >
                     <span class="msg-action-icon" @click="setReadStatus(item)">
-                      <t-icon v-if="item.status===0" name="queue" size="16px"/>
-                      <t-icon v-else name="chat"/>
+                      <t-icon v-if="item.status===0" name="check-circle" size="16px" style="color: green"/>
+                      <t-icon v-else name="close-rectangle" style="color: darkorange" />
                     </span>
                   </t-tooltip>
                   <t-tooltip content="删除" :overlay-style="{ margin: '6px' }">
                     <span @click="handleClickDeleteBtn(item)">
-                      <t-icon name="delete" size="16px"/>
+                      <t-icon name="delete" size="16px" style="color: red"/>
                     </span>
                   </t-tooltip>
                 </div>
               </template>
             </t-list-item>
           </t-list>
-          <div v-else class="__empty-list" >
+          <div v-else class="__empty-list">
             <img src="https://tdesign.gtimg.com/pro-template/personal/nothing.png" alt="空"/>
             <p>{{ '空' }}</p>
           </div>
@@ -129,25 +129,46 @@ const handleClickDeleteBtn = (item) => {
 };
 
 const setReadStatus = (item) => {
-  const changeMsg = msgData.value;
-  changeMsg.forEach((e) => {
-    if (e.id === item.id) {
-      e.status = (e.status + 1) % 2;
+  axios.put(`/notification/changeStatus`, {}, {
+    headers: {
+      token: token
+    },
+    params: {
+      "notificationId": item.id,
+      "read": item.status === 0
     }
-  });
-  msgData.value = changeMsg;
+  }).then(() => {
+    // alert(item.status === 0)
+    location.reload()
+  }).catch();
+  // const changeMsg = msgData.value;
+  // changeMsg.forEach((e) => {
+  //   if (e.id === item.id) {
+  //     e.status = (e.status + 1) % 2;
+  //   }
+  // });
+  // msgData.value = changeMsg;
 };
 
 const deleteMsg = () => {
   const item = selectedItem.value;
-  const changeMsg = msgData.value;
-  changeMsg.forEach((e, index) => {
-    if (e.id === item.id) {
-      changeMsg.splice(index, 1);
-    }
-  });
-  visible.value = false;
-  msgData.value = changeMsg;
+  // alert(item.id)
+  axios.delete(`/notification/delete/${item.id}`, {
+    headers: {
+      token: token
+    },
+  }).then(() => {
+    // const changeMsg = msgData.value;
+    // changeMsg.forEach((e, index) => {
+    //   if (e.id === item.id) {
+    //     changeMsg.splice(index, 1);
+    //   }
+    // });
+    // visible.value = false;
+    // msgData.value = changeMsg;
+    location.reload()
+  }).catch();
+
 };
 </script>
 
@@ -222,6 +243,7 @@ const deleteMsg = () => {
     }
   }
 }
+
 .__empty-list {
   min-height: 70vh;
   width: 100%;

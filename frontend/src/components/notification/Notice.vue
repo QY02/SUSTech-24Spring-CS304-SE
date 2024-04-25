@@ -13,15 +13,17 @@
           >{{ '全部设为已读' }}
           </t-button>
         </div>
-        <t-list v-if="unreadMsg.length > 0" class="narrow-scrollbar" :split="false">
-          <t-list-item v-for="(item, index) in unreadMsg" :key="index">
+        <t-list  v-if="unreadMsg.length > 0" class="narrow-scrollbar" :split="false" style="height: 300px" :scroll="{ type: 'virtual' }" >
+          <t-list-item v-for="(item, index) in unreadMsg" :key="index" >
             <div>
               <p class="msg-content">{{ item.content }}</p>
-              <p class="msg-type">{{ statusMapping[item.type] }}</p>
+              <t-tag size="medium" :theme="NOTIFICATION_TYPES[item.type]" variant="light">
+                {{ statusMapping[item.type] }}
+              </t-tag>
             </div>
             <p class="msg-time">{{ item.notifyTime }}</p>
             <template #action>
-              <t-button size="small" variant="outline" @click="setRead('radio', item)">
+              <t-button size="small" theme="success" variant="outline" @click="setRead('radio', item)">
                 {{ '设为已读' }}
               </t-button>
             </template>
@@ -63,6 +65,14 @@ const statusMapping = {
   3: '成功参加活动',
   4: '活动修改',
   5: '活动取消'
+};
+const NOTIFICATION_TYPES = {
+  0: 'default',
+  1: 'success',
+  2: 'danger',
+  3: 'primary',
+  4: 'warning',
+  5: 'danger'
 };
 const msgData = ref([]);
 const getNotice = () => {
@@ -161,7 +171,7 @@ onMounted(() => {
 
   .t-list-item {
     overflow: hidden;
-    width: 100%;
+    width: 90%;
     padding: var(--td-comp-paddingTB-l) var(--td-comp-paddingLR-l);
     border-radius: var(--td-radius-default);
     font: var(--td-font-body-medium);
