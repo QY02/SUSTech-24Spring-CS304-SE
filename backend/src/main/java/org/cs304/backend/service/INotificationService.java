@@ -23,9 +23,11 @@ public interface INotificationService extends IService<Notification> {
 
     void insertEventCancelNotification(String userId, int eventId, String comment);
 
-    void updateReadStatus(int notificationId);
+    void updateReadStatus(int notificationId, Boolean read);
 
     JSONArray getAllNotificationsOfOneUser(String userId);
 
     JSONArray getNotificationsOfOneUserByPage(String userId, int pageNum, int pageSize);
+
+    void deleteNotification(String notificationId);
 }

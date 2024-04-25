@@ -56,11 +56,11 @@ public class NotificationServiceImpl extends ServiceImpl<NotificationMapper, Not
         return dateTime.format(formatter);
     }
 
-    private void insertImmediateNotification(String publisherId, String notifiedUserId, String title, String content,int type) {
-        insertNotification(publisherId, notifiedUserId, title, content, new Date(),type);
+    private void insertImmediateNotification(String publisherId, String notifiedUserId, String title, String content, int type) {
+        insertNotification(publisherId, notifiedUserId, title, content, new Date(), type);
     }
 
-    private void insertNotification(String publisherId, String notifiedUserId, String title, String content, Date date,int type) {
+    private void insertNotification(String publisherId, String notifiedUserId, String title, String content, Date date, int type) {
         User user = userMapper.selectById(notifiedUserId);
         if (user == null) {
             throw new ServiceException("User not found");
@@ -80,6 +80,7 @@ public class NotificationServiceImpl extends ServiceImpl<NotificationMapper, Not
             emailService.sendEmail(toEmail, title, content, date);
         }
     }
+
     private JSONArray convertNotificationListToJsonArray(List<Notification> notificationList) {
         if (notificationList != null && !notificationList.isEmpty()) {
             // 将查询到的数据列表转换为 JSONArray
@@ -114,7 +115,7 @@ public class NotificationServiceImpl extends ServiceImpl<NotificationMapper, Not
             String eventTitle = event.getName();
             String title = "活动申请未通过";
             String content = String.format("您好！\n很遗憾地通知您：您申请的活动'%s'申请未通过。\n\n审核意见如下：\n%s", eventTitle, comment);
-            insertImmediateNotification(publisherId, notifiedUserId, title, content,constant_NotificationType.NOTPASS);
+            insertImmediateNotification(publisherId, notifiedUserId, title, content, constant_NotificationType.NOTPASS);
         }
     }
 
@@ -135,14 +136,14 @@ public class NotificationServiceImpl extends ServiceImpl<NotificationMapper, Not
                 LocalDateTime endTime = eventSession.getEndTime();
                 String title = "成功参加活动";
                 String content = String.format("您好！\n您已成功参加活动'%s'的'%s ~ %s'场次。", eventTitle, formatDateTime(startTime), formatDateTime(endTime));
-                insertImmediateNotification(publisherId, notifiedUserId, title, content,constant_NotificationType.RESERVE);
+                insertImmediateNotification(publisherId, notifiedUserId, title, content, constant_NotificationType.RESERVE);
             }
         }
     }
 
     @Override
     public void insertAdminNotification(String publishId, String notifiedUserId, String title, String content) {
-        insertImmediateNotification(publishId, notifiedUserId, title, content,constant_NotificationType.OTHER);
+        insertImmediateNotification(publishId, notifiedUserId, title, content, constant_NotificationType.OTHER);
     }
 
     @Override
@@ -155,7 +156,7 @@ public class NotificationServiceImpl extends ServiceImpl<NotificationMapper, Not
             String eventTitle = event.getName();
             String title = "活动修改通知";
             String content = String.format("您好！\n您参加的活动'%s'信息发生了改变！", eventTitle);
-            insertImmediateNotification(publisherId, notifiedUserId, title, content,constant_NotificationType.MODIFY);
+            insertImmediateNotification(publisherId, notifiedUserId, title, content, constant_NotificationType.MODIFY);
         }
     }
 
@@ -177,31 +178,22 @@ public class NotificationServiceImpl extends ServiceImpl<NotificationMapper, Not
                 String title = "活动取消通知";
                 String content = String.format("您好！\n遗憾地通知您：您参加的活动'%s'的‘%s ~ %s'场次取消。\n\n具体原因如下：\n%s",
                         eventTitle, formatDateTime(startTime), formatDateTime(endTime), comment);
-                insertImmediateNotification(publisherId, userId, title, content,constant_NotificationType.CANCEL);
+                insertImmediateNotification(publisherId, userId, title, content, constant_NotificationType.CANCEL);
             }
         }
     }
 
     @Override
-    public void updateReadStatus(int notificationId) {
+    public void updateReadStatus(int notificationId, Boolean read) {
         Notification notification = notificationMapper.selectById(notificationId);
         if (notification == null) {
             throw new ServiceException("Notification not found.");
         } else {
-//            // 构造更新条件，这里假设按照通知的ID进行更新
-//            UpdateWrapper<Notification> updateWrapper = new UpdateWrapper<>();
-//            updateWrapper.eq("id", notificationId);
-//
-//            // 设置要更新的字段和值，这里更新状态为已读
-//            Notification updateEntity = new Notification();
-//            updateEntity.setStatus(constant_NotificationStatus.READ);
-//
-//            // 执行更新操作，只更新指定字段
-//            int rowsAffected = notificationMapper.update(updateEntity, updateWrapper);
-//            if (rowsAffected <= 0) {
-//                throw new ServiceException("Failed to update notification status.");
-//            }
-            notification.setStatus(constant_NotificationStatus.UNREAD);
+            int status = constant_NotificationStatus.UNREAD;
+            if (read) {
+                status = constant_NotificationStatus.READ;
+            }
+            notification.setStatus(status);
             notificationMapper.updateById(notification);
         }
     }
@@ -233,5 +225,10 @@ public class NotificationServiceImpl extends ServiceImpl<NotificationMapper, Not
         List<Notification> notificationList = notificationPage.getRecords();
 
         return convertNotificationListToJsonArray(notificationList);
+    }
+
+    @Override
+    public void deleteNotification(String notificationId) {
+        notificationMapper.deleteById(notificationId);
     }
 }

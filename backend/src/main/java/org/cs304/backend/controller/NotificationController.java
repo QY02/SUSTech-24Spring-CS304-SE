@@ -8,9 +8,15 @@ import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.cs304.backend.constant.constant_User;
+import org.cs304.backend.entity.Notification;
+import org.cs304.backend.exception.ServiceException;
+import org.cs304.backend.mapper.NotificationMapper;
 import org.cs304.backend.service.INotificationService;
 import org.cs304.backend.utils.Result;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Objects;
 
 /**
  * @author zyp
@@ -23,6 +29,8 @@ import org.springframework.web.bind.annotation.*;
 public class NotificationController {
     @Resource
     private INotificationService notificationService;
+    @Resource
+    private NotificationMapper notificationMapper;
 
     @PostMapping("/eventPass/{eventId}")
     @Operation(summary = "发送申请活动成功通知", description = "传入eventId")
@@ -80,10 +88,10 @@ public class NotificationController {
 
 
     @PostMapping("/admin/{notifiedUserId}")
-    @Operation(summary = "管理员发送通知", description = "(1)传入notifiedUserId\n;(2)传入包含title和content的RequestBody")
+    @Operation(summary = "管理员发送通知", description = "(1)传入notifiedUserId;\n(2)传入包含title和content的RequestBody")
     @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, content = @Content(examples = @ExampleObject("""
             {
-              "title":”标题“,
+              "title":"标题",
               "content":"内容"
             }""")))
     public Result postAdminNotification(HttpServletResponse response, HttpServletRequest request, @PathVariable String notifiedUserId, @RequestBody JSONObject data) {
@@ -94,16 +102,51 @@ public class NotificationController {
         return Result.success(response);
     }
 
-    @PutMapping("/read/{notificationId}")
-    @Operation(summary = "将通知状态改为已读", description = "传入notificationId")
-    public Result updateReadStatus(HttpServletResponse response, @PathVariable int notificationId) {
-        notificationService.updateReadStatus(notificationId);
+    @DeleteMapping("/delete/{notificationId}")
+    @Operation(summary = "删除指定通知", description = "传入notifiedUserId,管理员可以删除任意人的通知，普通用户只能删除自己的通知")
+    public Result deleteMyNotification(HttpServletResponse response, HttpServletRequest request, @PathVariable String notificationId) {
+        String uid = (String) request.getAttribute("loginUserId");
+        int userType = (int) request.getAttribute("loginUserType");
+        Notification notification = notificationMapper.selectById(notificationId);
+        if (notification == null) {
+            log.error("Notification not exist");
+            return Result.error(response, "401", "Notification not exist");
+        }
+        if (userType != constant_User.ADMIN && !Objects.equals(uid, notification.getNotifiedUserId())) {
+            log.error(uid + " is trying to delete others' notification");
+            return Result.error(response, "403", "You can only delete your own notification");
+        }
+        notificationService.deleteNotification(notificationId);
+        return Result.success(response);
+    }
+
+    @PutMapping("/changeStatus")
+    @Operation(summary = "修改通知状态", description = "传入notificationId和是否read")
+    public Result updateReadStatus(HttpServletResponse response,HttpServletRequest request, @RequestParam int notificationId, @RequestParam Boolean read) {
+        String uid = (String) request.getAttribute("loginUserId");
+        int userType = (int) request.getAttribute("loginUserType");
+        Notification notification = notificationMapper.selectById(notificationId);
+        if (notification == null) {
+            log.error("Notification not exist");
+            return Result.error(response, "401", "Notification not exist");
+        }
+        if (userType != constant_User.ADMIN && !Objects.equals(uid, notification.getNotifiedUserId())) {
+            log.error(uid + " is trying to change others' notification's status");
+            return Result.error(response, "403", "You can only change your own notification's status");
+        }
+        notificationService.updateReadStatus(notificationId, read);
         return Result.success(response);
     }
 
     @GetMapping("/all/{userId}")
     @Operation(summary = "返回指定用户的所有通知", description = "传入userId")
-    public Result getAllNotificationsOfOneUser(HttpServletResponse response, @PathVariable String userId) {
+    public Result getAllNotificationsOfOneUser(HttpServletResponse response,HttpServletRequest request,  @PathVariable String userId) {
+        String uid = (String) request.getAttribute("loginUserId");
+        int userType = (int) request.getAttribute("loginUserType");
+        if (userType != constant_User.ADMIN ) {
+            log.error(uid + " is trying to get others' notifications");
+            return Result.error(response, "403", "Only admin can get others' notifications");
+        }
         return Result.success(response, notificationService.getAllNotificationsOfOneUser(userId));
     }
 

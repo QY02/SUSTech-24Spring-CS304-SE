@@ -5,11 +5,12 @@
         <t-tab-panel v-for="(tab, tabIndex) in TAB_LIST" :key="tabIndex" :value="tab.value" :label="tab.label">
           <t-list v-if="msgDataList.length > 0" class="secondary-msg-list" :split="true">
             <t-list-item v-for="(item, index) in msgDataList" :key="index">
-              <p :class="['content', { unread: item.status===0 }]" @click="setReadStatus(item)">
+              <p :class="['content', { unread: item.status===0 }]" @click="setReadStatus(item)"
+                 style="margin-left: 30px">
                 <t-tag size="medium" :theme="NOTIFICATION_TYPES[item.type]" variant="light">
                   {{ statusMapping[item.type] }}
                 </t-tag>
-                {{ item.content }}
+                <t-list-item-meta :title="item.title" :description="item.content" style="margin-top: 20px"/>
               </p>
               <template #action>
                 <span class="msg-date">{{ item.notifyTime }}</span>
@@ -33,7 +34,7 @@
               </template>
             </t-list-item>
           </t-list>
-          <div v-else class="secondary-msg-list__empty-list">
+          <div v-else class="__empty-list" >
             <img src="https://tdesign.gtimg.com/pro-template/personal/nothing.png" alt="空"/>
             <p>{{ '空' }}</p>
           </div>
@@ -52,6 +53,7 @@
 <script setup>
 import {computed, onMounted, ref} from 'vue';
 import axios from "axios";
+
 const token = sessionStorage.getItem('token')
 
 const statusMapping = {
@@ -130,7 +132,7 @@ const setReadStatus = (item) => {
   const changeMsg = msgData.value;
   changeMsg.forEach((e) => {
     if (e.id === item.id) {
-      e.status = 1;
+      e.status = (e.status + 1) % 2;
     }
   });
   msgData.value = changeMsg;
@@ -219,13 +221,16 @@ const deleteMsg = () => {
       margin-right: var(--td-comp-margin-l);
     }
   }
-
-  &__empty-list {
-    min-height: 443px;
-    padding-top: 170px;
-    text-align: center;
-    color: var(--td-text-color-primary);
-  }
+}
+.__empty-list {
+  min-height: 70vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* 水平居中 */
+  align-items: center; /* 垂直居中 */
+  text-align: center;
+  color: var(--td-text-color-primary);
 }
 
 </style>
