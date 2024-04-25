@@ -53,6 +53,9 @@ file-server:
 user-token:
   file-server: 51cc09f300354fdba303d98322ef1698
 
+amap-security-js-code:
+  358452be7b918daed666bc8444a4608d
+
 logging:
   file:
     name: ./logs/EventsCenter.log

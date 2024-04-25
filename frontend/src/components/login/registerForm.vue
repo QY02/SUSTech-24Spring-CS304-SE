@@ -72,6 +72,10 @@
               </template>
             </t-input>
           </t-form-item>
+          <t-form-item label="感兴趣的活动类型" name="favType" :label-width="140">
+            <t-checkbox-group v-model="formData.favType" :options="courseOptions"></t-checkbox-group>
+          </t-form-item>
+          <!--          <t-checkbox-group v-model="checked" :options="['选项一', '选项二', '选项三']" name="city"></t-checkbox-group>-->
           <!--        <t-value v-slot="isPasswordVisible" :default-value="false">-->
           <!--          <t-input-->
           <!--              v-model="formData.password"-->
@@ -120,8 +124,8 @@
           <!--        </t-button>-->
         </t-form>
         <p class="sign-up-label">
-          Already have an account?
-          <router-link to="Login"><span class="sign-up-link">Log in</span></router-link>
+          已经有账户了？
+          <router-link to="Login"><span class="sign-up-link">登录</span></router-link>
         </p>
       </div>
     </div>
@@ -194,13 +198,16 @@
 // import NavBarWithOnlyTitle from "@/components/layouts/NavBarWithOnlyTitle.vue";
 // // import {useForm, useToast} from "vuestic-ui";
 
-import {inject, reactive, ref} from "vue";
+import {getCurrentInstance, inject, reactive, ref} from "vue";
 import {LockOnIcon} from "tdesign-icons-vue-next";
 import axios from "axios";
 import {MessagePlugin} from "tdesign-vue-next";
 import router from "@/routers";
 
-const apiUrl = inject('$API_URL');
+// const apiUrl = inject('$API_URL');
+// const globalProperties = getCurrentInstance().appContext.config.globalProperties;
+// const apiBaseUrl = globalProperties.$apiBaseUrl;
+// axios.defaults.baseURL = apiBaseUrl;
 
 
 const rules = {
@@ -220,6 +227,12 @@ const rules = {
     validator: (v) => v === formData.password,
     message: 'Different from the last password'
   }],
+  favType: [{required: true},
+    {
+      validator: (v) => v.length <= 3,
+      message: '请选择1-3个感兴趣的活动类型',
+      type: 'warning'
+    }],
 };
 const rules1 = {
   code: [{required: true}, {validator: (v) => /^[0-9]{6}$/.test(v), message: 'Code must be a six-digit number'}]
@@ -227,7 +240,6 @@ const rules1 = {
 const onReset = () => {
   MessagePlugin.success('重置成功');
 };
-axios.defaults.baseURL = apiUrl;
 
 // const code = ref("");
 const formData = reactive({
@@ -239,7 +251,14 @@ const formData = reactive({
   email: '',
   phoneNumber: '',
   code: '',
+  favType: [],
 });
+const courseOptions = [
+  {label: '表演', value: 0},
+  {label: '讲座', value: 1},
+  {label: '比赛', value: 2},
+  {label: '其他', value: 3},
+];
 const formData1 = reactive({
   code: '',
 });
@@ -269,10 +288,10 @@ const close = () => {
 //
 //   const showModal = ref(false)
 //
-//   const appConfig = ref(getCurrentInstance().appContext.config.globalProperties).value;
-// 获取全局变量 $apiBaseUrl
+
 
 const handleSubmit = ({validateResult}) => {
+  // alert(formData.favType)
   if (validateResult === true) {
     const data = {
       "id": formData.id,
@@ -281,26 +300,21 @@ const handleSubmit = ({validateResult}) => {
       "password": formData.password,
       "email": formData.email,
       "phoneNumber": formData.phoneNumber,
-
+      "twoFactorAuthentication": false,
+      // "favType": formData.favType,
       // "githubUserId": sessionStorage.getItem('git-id'),
       // "githubUserName": sessionStorage.getItem('git-name'),
     }
-
-    axios.post("/register", data)
+    alert(formData.favType)
+    axios.post("/register", {
+      "user": data,
+      "favType": formData.favType,
+    })
         .then(() => {
           MessagePlugin.info("Already send the code, please check and enter.");
           visible.value = true;
         })
         .catch(error => {
-          if (error.response) {
-            // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-            MessagePlugin.error(error.response.data.msg);
-
-          } else {
-            // 一些错误是在设置请求的时候触发
-            MessagePlugin.error(error.message);
-
-          }
         });
   } else {
     MessagePlugin.warning("Please make sure the input format is correct!")
@@ -321,15 +335,6 @@ const handleOK = ({validateResult}) => {
           router.push("/login");
         })
         .catch((error) => {
-          if (error.response) {
-            // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-            MessagePlugin.error(error.response.data.msg);
-
-          } else {
-            // 一些错误是在设置请求的时候触发
-            MessagePlugin.error(error.message);
-
-          }
         });
   } else {
     MessagePlugin.warning("Please make sure the input format is correct!")
@@ -386,13 +391,7 @@ const handleOK = ({validateResult}) => {
 }
 
 #building {
-  //background: url("@/assets/login.jpg");
-  background-image: linear-gradient(rgba(0,0,0, 0.1), rgba(0,0,0, 0.1)), url("@/assets/login.jpg");
-
-  width: 100%;
-  height: 100%;
-  position: fixed;
-  background-size: 100% 100%;
+//background: url("@/assets/login.jpg"); background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)), url("@/assets/login.jpg"); width: 100%; height: 100%; position: fixed; background-size: 100% 100%;
 }
 
 .sign-up-label {

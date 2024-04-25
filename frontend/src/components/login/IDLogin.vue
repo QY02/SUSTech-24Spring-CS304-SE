@@ -68,7 +68,7 @@
 </template>
 
 <script setup>
-import {inject, reactive} from 'vue';
+import {getCurrentInstance, inject, reactive} from 'vue';
 import {MessagePlugin} from 'tdesign-vue-next';
 import {DesktopIcon, LockOnIcon} from 'tdesign-icons-vue-next';
 import axios from "axios";
@@ -84,8 +84,7 @@ const onReset = () => {
   MessagePlugin.success('重置成功');
 };
 
-
-const apiUrl = inject('$API_URL');
+// const apiUrl = inject('$API_URL');
 // const {isValid, validate} = useForm('formRef')
 // const {init} = useToast();
 
@@ -101,10 +100,6 @@ const rules = {
   }],
 };
 
-// const appConfig = ref(getCurrentInstance().appContext.config.globalProperties).value;
-// 获取全局变量 $apiBaseUrl
-// alert(apiUrl)
-axios.defaults.baseURL = apiUrl;
 const handleSubmit = ({validateResult}) => {
   if (validateResult === true) {
     axios.post("/login", {
@@ -131,21 +126,7 @@ const handleSubmit = ({validateResult}) => {
           } else {//正常用户
             router.push("/HomePage");
           }
-
-          // alert(appConfig.$userId)
-          // alert(appConfig.$token)
         })
-        .catch((error) => {
-          if (error.response) {
-            // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-            MessagePlugin.error(error.response.data.msg);
-            // init({message: error.response.data.msg, color: "danger"})
-          } else {
-            // 一些错误是在设置请求的时候触发
-            MessagePlugin.error(error.message);
-            // init({message: error.message, color: "danger"})
-          }
-        });
   } else {
     MessagePlugin.warning("Please make sure the input format is correct!")
     // alert('lll')

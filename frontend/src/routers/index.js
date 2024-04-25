@@ -44,6 +44,10 @@ const routes = [
                 component: () => import('@/components/event/ApplyForEvent.vue')
             },
             {
+                path: '/historyEvents',
+                component: () => import('@/components/home/UserHistory.vue')
+            },
+            {
                 path: '/approval',
                 component: () => import('@/components/admin/EventApproval.vue')
             },
@@ -65,7 +69,12 @@ const routes = [
             {
                 name: 'moments',
                 path: '/moments',
-                component: () => import('@/components/event/Moments.vue')
+                component: () => import('@/components/moment/Moments.vue')
+            },
+            {
+                name: 'notification',
+                path: '/notification',
+                component: () => import('@/components/notification/NoticeAll.vue')
             },
             {
                 name: 'user',
@@ -81,6 +90,16 @@ const routes = [
                 name: 'chat',
                 path: '/chat',
                 component: () => import('@/components/chat/singleChat.vue')
+            },
+            {
+                name: 'adminHomePage',
+                path: '/admin/homepage',
+                component: () => import('@/components/admin/homePage.vue')
+            },
+            {
+                name: 'newMoment',
+                path: '/newMoment',
+                component: () => import('@/components/moment/createMoment/index.vue')
             }
         ]
     },

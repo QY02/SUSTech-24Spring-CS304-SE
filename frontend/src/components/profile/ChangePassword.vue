@@ -1,34 +1,80 @@
-<script setup>
-import {ref} from 'vue';
-import ChangePasswordByOld from "@/components/profile/ChangePasswordByOld.vue";
-import ChangePasswordByEmail from "@/components/profile/ChangePasswordByEmail.vue";
-
-const visibleOld=ref(false)
-const visibleEmail=ref(false)
-</script>
 <template>
-  <div class="part">
-    <div class="inform">
-      <t-button
-          class="btn"
-          @click="()=>visibleOld=true"
-      >
-        通过旧密码
-      </t-button>
-      <t-button
-          class="btn"
-          @click="()=>visibleEmail=true"
-      >
-        通过邮箱
-      </t-button>
-    </div>
-  <change-password-by-old v-model:visible="visibleOld"></change-password-by-old>
-    <change-password-by-email v-model:visible="visibleEmail"></change-password-by-email>
-  </div>
+  <t-button
+      class="btn"
+      theme="default"
+      variant="base"
+      @click="()=>visibleBody=true"
+  >
+    修改密码
+  </t-button>
 
+  <t-button
+      class="btn"
+      theme="default"
+      variant="base"
+      @click="router.push('/historyEvents');"
+  >
+    历史记录
+  </t-button>
+<t-dialog
+    v-model:visible="visibleBody"
+    attach="body"
+    header="修改密码"
+    destroy-on-close:true
+    width="500px"
+    :cancel-btn=null
+    :confirm-btn=null
+>
+<template #body>
+        <t-tabs :default-value="TABS[0].title" @change="handlerChange" size="medium">
+          <t-tab-panel v-for="tab in TABS" :key="tab.title" :value="tab.title" :label="tab.title">
+          </t-tab-panel>
+        </t-tabs>
+          <div class="va-card-content">
+            <component :is="currentTab.component"></component>
+          </div>
 </template>
-<style>
+</t-dialog>
+</template>
+
+<script setup>
+import {computed, ref,} from "vue";
+import ChangePasswordByOld from "./ChangePasswordByOld.vue"
+import ChangePasswordByEmail from "./ChangePasswordByEmail.vue"
+import {createRouter, createWebHistory} from "vue-router";
+import router from "@/routers/index.js";
+const visibleBody = ref(false)
+
+const TABS = [
+  {
+    title: "通过旧密码",
+    component: ChangePasswordByOld
+
+  },
+  {
+    title: "通过邮箱",
+    component: ChangePasswordByEmail
+  },
+];
+
+const value = ref(TABS[0].title);
+
+const currentTab = computed(() => {
+      return TABS.find((tab) => tab.title === value.value);
+});
+const handlerChange = (newValue) => {
+      value.value = newValue;
+};
+</script>
+
+<style scoped>
+
+.va-card-content {
+  display: flex;
+  flex-direction: column;
+  margin: 30px;
+}
 .btn{
-  margin-right: 10px;
+  margin-left: 20px;
 }
 </style>

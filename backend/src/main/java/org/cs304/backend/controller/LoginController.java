@@ -1,9 +1,12 @@
 package org.cs304.backend.controller;
 
 import com.alibaba.fastjson2.*;
+import org.cs304.backend.constant.constant_EventStatus;
 import org.cs304.backend.constant.constant_User;
 import org.cs304.backend.entity.User;
+import org.cs304.backend.entity.UserFavoriteType;
 import org.cs304.backend.exception.ServiceException;
+import org.cs304.backend.mapper.UserFavoriteTypeMapper;
 import org.cs304.backend.mapper.UserMapper;
 import org.cs304.backend.service.IUserService;
 import org.cs304.backend.utils.Encryption;
@@ -18,7 +21,8 @@ import org.springframework.web.bind.annotation.*;
 import cn.hutool.core.util.StrUtil;
 
 
-
+import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Objects;
 
 
@@ -38,6 +42,9 @@ public class LoginController {
     private UserMapper userMapper;
 
     @Resource
+    private UserFavoriteTypeMapper userFavoriteTypeMapper;
+
+    @Resource
     private RedisUtil redisUtil;
 
     /**
@@ -53,40 +60,51 @@ public class LoginController {
                 log.error("Invalid Input");
                 return Result.error(response, "400", "Invalid Input");
             }
-            System.out.println(user.getId()+"  "+user.getPassword());
-//            user = userService.login(user);
-            user.setPassword(null);
-//            System.out.println(response);
+            user = userService.login(user);
         } catch (Exception e) {
             log.error(e.getMessage());
             return Result.error(response, "401", "Invalid username or password");
         }
-        if (user.getTwoFactorAuthentication()){
+        if (user.getTwoFactorAuthentication()) {
             return Result.success(response);
-        }else return Result.success(response, user);
+        } else return Result.success(response, user);
     }
 
     /**
      * 二次验证
+     *
      * @param user 用户信息(包含id)
      * @return 是否开启二次验证
      */
     @PostMapping("/twoFactorAuthentication")
-    public Result twoFactorAuthentication(@NotNull HttpServletResponse response,@RequestBody User user) {
+    public Result twoFactorAuthentication(@NotNull HttpServletResponse response, @RequestBody User user) {
         user = userMapper.selectById(user.getId());
-        if (user.getTwoFactorAuthentication()){
-            return Result.success(response,true);
-        }else return Result.success(response,false);
+        if (user.getTwoFactorAuthentication()) {
+            return Result.success(response, true);
+        } else return Result.success(response, false);
     }
 
     /**
      * 注册
      *
-     * @param user 用户信息
+     * @param data 用户信息
      * @return 成功
      */
     @PostMapping("/register")
-    public Result register(@NotNull HttpServletResponse response, @RequestBody User user) {
+    public Result register(@NotNull HttpServletResponse response, @RequestBody JSONObject data) {
+        JSONObject userData = data.getJSONObject("user");
+//        String favType = data.getString("favType");
+//        System.out.println("FAVTYPE:"+favType);
+
+        User user = new User();
+        user.setId(userData.getString("id"));
+        user.setName(userData.getString("name"));
+        user.setEmail(userData.getString("email"));
+        user.setPassword(userData.getString("password"));
+        user.setPhoneNumber(userData.getString("phoneNumber"));
+        user.setDepartment(userData.getString("department"));
+        user.setTwoFactorAuthentication(userData.getBoolean("twoFactorAuthentication"));
+
         if (StrUtil.isBlank(user.getId()) || StrUtil.isBlank(user.getPassword())) {
             log.error("Invalid Input");
             return Result.error(response, "400", "Invalid Input");
@@ -100,7 +118,7 @@ public class LoginController {
         try {
             userService.sendEmail(user.getEmail());
             user.setTwoFactorAuthentication(false);//暂且设置成false
-            redisUtil.add(user.getEmail(), JSON.toJSONString(JSON.toJSON(user)), 300);
+            redisUtil.add(user.getEmail(), String.valueOf(data), 300);
         } catch (ServiceException e) {
             log.error(e.getMessage());
             return Result.error(response, "500", e.getMessage());
@@ -126,15 +144,33 @@ public class LoginController {
                 return Result.error(response, "401", "Verification error, please try again");
             }
             if (!Objects.equals(redisUtil.get(emailVerify.getString("code"), false, true), emailVerify.getString("email"))) {
+//                System.out.println("seee  " + redisUtil.get(emailVerify.getString("email"), false, true));
+//                System.out.println("seee  "+String.valueOf(JSON.parseObject(redisUtil.get(emailVerify.getString("email"), false, true)).get("user")));
                 log.error("Verification error, please try again");
                 return Result.error(response, "401", "Verification error, please try again");
             }
             User user;
-            user = JSON.parseObject(redisUtil.get(emailVerify.getString("email"), false, true), User.class);
+            user = JSON.parseObject(String.valueOf(JSON.parseObject(redisUtil.get(emailVerify.getString("email"), false, false)).get("user")), User.class);
+//            System.out.println(user);
             user.setType(constant_User.USER);
             user.setPassword(Encryption.encrypt(user.getPassword()));
             userMapper.insert(user);
             user.setPassword(null);
+
+            String favType = String.valueOf(JSON.parseObject(redisUtil.get(emailVerify.getString("email"), false, true)).get("favType"));
+            favType = favType.substring(1, favType.length() - 1);
+            // 分割字符串
+            String[] strArray = favType.split(",");
+            // 创建一个整型数组，长度与字符串数组相同
+            for (int i = 0; i < strArray.length; i++) {
+                UserFavoriteType userFavoriteType = new UserFavoriteType();
+                userFavoriteType.setUserId(user.getId());
+                userFavoriteType.setEventType(Integer.parseInt(strArray[i].trim()));
+//                System.out.println(userFavoriteType);
+                userFavoriteTypeMapper.insert(userFavoriteType);
+//                intArray[i] = Integer.parseInt(strArray[i].trim()); // trim()移除可能的空白字符
+            }
+
             return Result.success(response, user);
         } catch (Exception e) {
             log.error(e.getMessage());

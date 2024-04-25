@@ -25,7 +25,7 @@
         </t-form-item>
 
         <t-form-item>
-          <t-button theme="primary" block @click="handleVeri" style="width: 50px; margin-left: 10px">code</t-button>
+          <t-button theme="primary" block @click="handleVeri" style="width: 50px; margin-left: 10px">验证码</t-button>
         </t-form-item>
       </div>
       <t-form-item>
@@ -76,7 +76,7 @@
 
 <script setup>
 
-import {inject, reactive} from 'vue';
+import {getCurrentInstance, inject, reactive} from 'vue';
 import {MessagePlugin} from 'tdesign-vue-next';
 import {DesktopIcon, LockOnIcon} from 'tdesign-icons-vue-next';
 import axios from "axios";
@@ -92,7 +92,7 @@ const onReset = () => {
 };
 
 
-const apiUrl = inject('$API_URL');
+
 // const {isValid, validate} = useForm('formRef')
 // const {init} = useToast();
 
@@ -121,7 +121,7 @@ const rules = {
 // const email = ref("");
 // const appConfig = ref(getCurrentInstance().appContext.config.globalProperties).value;
 // 获取全局变量 $apiBaseUrl
-axios.defaults.baseURL = apiUrl;
+
 const handleSubmit = ({validateResult}) => {
   if (validateResult === true) {
     axios.post("/loginWithEmail", {
@@ -147,13 +147,6 @@ const handleSubmit = ({validateResult}) => {
 
         })
         .catch((error) => {
-          if (error.response) {
-            // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-            MessagePlugin.warning(error.response.data.msg);
-          } else {
-            // 一些错误是在设置请求的时候触发
-            MessagePlugin.warning(error.message);
-          }
         });
   } else {
     MessagePlugin.warning("Please make sure the input format is correct!")
@@ -167,13 +160,6 @@ if(rules.email[1].validator(formData.email)) {
         MessagePlugin.info("Already send the code, please check and enter.");
       })
       .catch((error) => {
-        if (error.response) {
-          // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-          MessagePlugin.error(error.response.data.msg);
-        } else {
-          // 一些错误是在设置请求的时候触发
-          MessagePlugin.error(error.message);
-        }
       });
 
 }else{

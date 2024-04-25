@@ -109,7 +109,7 @@
 
 <script setup lang="ts">
 import {currentStep, submitData} from '@/components/book/Steps.vue';
-import {getCurrentInstance, onMounted, reactive, Ref, ref, watch} from "vue";
+import {onMounted, reactive, Ref, ref, watch} from "vue";
 import {sessionInformation, bookingInformation} from '@/components/book/Steps.vue';
 import {MessagePlugin, NotifyPlugin} from "tdesign-vue-next";
 import {checkForm} from '@/components/book/InputInformation.vue';
@@ -325,12 +325,6 @@ const handleSubmit = async () => {
 }
 
 let fetchSeatMapStatus = ref(0);
-
-const instance = getCurrentInstance();
-const globalProperties = instance.appContext.config.globalProperties;
-const apiBaseUrl = globalProperties.$apiBaseUrl;
-const token = globalProperties.$token;
-axios.defaults.baseURL = apiBaseUrl;
 
 const fetchSessionInformation = async () => {
   fetchSeatMapStatus.value = 0;

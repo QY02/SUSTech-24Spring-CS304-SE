@@ -29,5 +29,7 @@ public class Comment {
 
     private Integer downVote;
 
-    private Double score;
+    private Double score;//活动评论的评星
+
+    private Integer type;
 }

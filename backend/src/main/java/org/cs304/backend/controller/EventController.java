@@ -98,16 +98,28 @@ public class EventController {
             """)))
     public Result getAllEvents(@NotNull HttpServletRequest request, HttpServletResponse response) {
         int userType = (int) request.getAttribute("loginUserType");
-        System.out.println(userType+"666666666666666666");
+//        System.out.println(userType+"666666666666666666");
 //        if (userType == -1) {
 //            throw new ServiceException("403", "Permission denied");
 //        }
         return Result.success(response, eventService.getAllEvents());
     }
 
+    //通过多个eventId返回多个活动
+    @PostMapping("/getBatchEventsByIds")
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, content = @Content(examples = @ExampleObject("""
+            {
+              "eventIdList": [0,1,2]
+            }""")))
+    public Result getEventsByIds(HttpServletRequest request, HttpServletResponse response, @RequestBody JSONObject requestBody) {
+        int userType = (int) request.getAttribute("loginUserType");
+        List<Integer> idList = requestBody.getList("eventIdList", Integer.class);
+        return Result.success(response, eventService.getBatchByIds(userType,idList));
+    }
 
     @GetMapping("/getEventDetail/{eventId}")
-    public Result getEventDetail(HttpServletResponse response, @PathVariable("eventId")int eventId) {
+    public Result getEventDetail(@NotNull HttpServletRequest request, HttpServletResponse response, @PathVariable("eventId")int eventId, @RequestHeader("token") String token) {
+        int userType = (int) request.getAttribute("loginUserType");
         QueryWrapper<Event> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("id", eventId);
         if (!eventService.exists(queryWrapper)) {
@@ -115,6 +127,7 @@ public class EventController {
         }
         return Result.success(response,eventService.getById(eventId));
     }
+
 
     @PostMapping("/getSeatPriceByEventId/{eventId}")
     @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, content = @Content(examples = @ExampleObject("{\"seatMapId\": 1}")))
@@ -127,5 +140,4 @@ public class EventController {
 //        return Result.success(response, seatMapService.getSeatMapWithSeatsById(userType, seatMapId));
         return Result.success(response);
     }
-
 }

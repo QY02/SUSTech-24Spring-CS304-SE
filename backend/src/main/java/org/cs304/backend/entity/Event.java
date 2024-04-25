@@ -36,4 +36,6 @@ public class Event {
     private String eventPolicy;
 
     private Boolean visible;
+
+    private String auditRecord;
 }
