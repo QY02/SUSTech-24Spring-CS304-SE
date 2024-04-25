@@ -8,5 +8,7 @@ import java.util.List;
 
 public interface ICommentService extends IService<Comment> {
 
-    List<JSONObject> getAllMoment();
+    List<JSONObject> getAllMoment(Integer momentId);
+
+    JSONObject getMomentById(Integer commentId);
 }

@@ -1,7 +1,7 @@
 <template>
   <t-layout>
     <t-aside>
-      <t-space :break-line="true" class="card-with-margin" align="center"
+      <t-space v-loading="asideLoading" :break-line="true" class="card-with-margin scroll-container" align="center"
                :style="{height: 'calc(100vh - 96px)', 'overflow-y': 'scroll' }">
         <t-image
             v-for="item in list"
@@ -21,10 +21,13 @@
                 variant="light"
                 :style="{ position: 'absolute', right: '8px', bottom: '8px', borderRadius: '4px' }"
             >
-              @雷军
+              @{{ item.name }}
             </Tag>
           </template>
         </t-image>
+        <t-button shape="round" variant="outline" :disabled="noMoreImage" class="image-with-margin" @click="loadMore">
+          点击加载更多
+        </t-button>
       </t-space>
     </t-aside>
 
@@ -33,9 +36,9 @@
         <t-radio-button value="1">动态</t-radio-button>
         <t-radio-button value="2">我的发布</t-radio-button>
       </t-radio-group>
-      <t-card class="card-with-margin" hoverShadow>
+      <t-card class="card-with-margin" hoverShadow v-loading="asideLoading" >
         <t-space>
-          <t-button variant="outline" theme="success">点击跳转相关活动：南方科技大学10次升旗仪式</t-button>
+          <t-button variant="outline" theme="success">点击跳转相关活动：{{momentData.relatedEvent}}</t-button>
           <t-button v-if="radioGroupValue === '2'" @click="editPost">
             <template #icon>
               <edit-icon/>
@@ -50,16 +53,16 @@
           </t-button>
         </t-space>
         <div class="spacing"></div>
-        <t-comment :avatar="momentData.avatar" :author="momentData.author" :datetime="momentData.datetime"
+        <t-comment :avatar="momentData.avatar" :author="momentData.userName" :datetime="momentData.publishDate"
                    :content="momentData.content">
           <template #actions>
             <t-space key="thumbUp" :size="10">
               <t-icon name="thumb-up"/>
-              <span>6</span>
+              <span>{{momentData.upVote}}</span>
             </t-space>
             <t-space key="thumbDown" :size="10">
               <t-icon name="thumb-down"/>
-              <span>1</span>
+              <span>{{momentData.downVote}}</span>
             </t-space>
             <t-space key="chat" :size="10" @click="viewComment">
               <t-icon name="chat"/>
@@ -125,34 +128,68 @@ import {onMounted, ref} from 'vue';
 import router from "@/routers/index.js";
 import axios from "axios";
 
+// ###### 动态列表 开始 ######
+
+const list = ref([]);// 左侧动态列表
+const lastId = ref(-1);// 上一次请求的最后一个动态的id
+const noMoreImage = ref(false);// 是否还有更多图片
+const asideLoading = ref(false);
+
+const getMomentBatch = async (id) => {
+  try {
+    asideLoading.value = true;
+    const response = await axios.get(`/comment/getMomentBatch/${id}`, {
+      headers: {
+        token: sessionStorage.getItem('token'),
+      }
+    });
+    if (response.data.data.length < 20) {
+      noMoreImage.value = true;
+    }
+    for (let i = 0; i < response.data.data.length; i++) {
+        list.value.push({
+          id: response.data.data[i].comment_id,
+          img: "http://47.107.113.54:25572/file/download?token=" + response.data.data[i].attachment,
+          name: response.data.data[i].publisher_id,
+        });
+    }
+    lastId.value = response.data.data[response.data.data.length - 1].comment_id;
+    asideLoading.value = false;
+  } catch (error) {
+  }
+};
+
+onMounted(async() => {
+  await getMomentBatch(-1);
+  await selectMoment(list.value[0]);
+});
+
+const loadMore = async () => {
+  await getMomentBatch(lastId.value);
+};
+
+// ###### 动态列表 结束 ######
+
+// ###### 动态详情 开始 ######
+
 const momentData = ref({
   id: 'A',
   avatar: 'https://tdesign.gtimg.com/site/avatar.jpg',
-  author: '评论作者名A',
-  datetime: '今天16:38',
-  content: '评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。评论作者名A写的评论内容。',
+  userName: '示例评论作者',
+  publishDate: '示例时间',
+  content: '示例评论内容。',
+  relatedEvent: '示例活动名称',
+  eventId: '示例活动ID',
+  upVote: 6,
+  downVote: 1,
 });
 
-const list = ref([]);// 左侧动态列表
-
-onMounted(() => {
-  for (let i = 0; i < 10; i++) {
-    list.value.push({
-      id: i,
-      img: 'https://tdesign.gtimg.com/demo/demo-image-1.png',
-    });
-  }
-});
-
-// 当前选中的动态
-let selectedItem = ref(null);
 
 const selectMoment = async (item) => {
-  selectedItem.value = item;
   try {
-    const response = await axios.get('/', {
+    const response = await axios.get(`/comment/getMomentById?commentId=${item.id}`, {
       headers: {
-        token: sessionStorage.getItem('token'),
+        token: sessionStorage.getItem('token')
       }
     });
     momentData.value = response.data.data;
@@ -160,7 +197,6 @@ const selectMoment = async (item) => {
     console.error(error);
   }
 };
-
 
 let radioGroupValue = ref('1');// 1: 动态 2: 我的发布
 const onTypeChange = (checkedValues) => {
@@ -175,6 +211,7 @@ const deletePost = () => {
   console.log('Delete post');
 };
 
+// ###### 动态详情 结束 ######
 
 // ###### 评论区 开始 ######
 // 评论区是否可见

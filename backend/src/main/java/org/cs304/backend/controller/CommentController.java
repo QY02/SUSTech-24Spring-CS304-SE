@@ -44,16 +44,29 @@ public class CommentController {
         return Result.success(response,commentMapper.selectList(new QueryWrapper<Comment>().eq("event_id",eventId).eq("type",type)));
     }
 
+    @GetMapping("/getById")
+    @Operation(summary = "获取一个评论",description = "传入commentId")
+    public Result getCommentById(HttpServletResponse response, @RequestParam Integer commentId) {
+        return Result.success(response,commentMapper.selectById(commentId));
+    }
+
+    @GetMapping("/getMomentById")
+    @Operation(summary = "获取一个动态",description = "传入commentId")
+    public Result getMomentById(HttpServletResponse response, @RequestParam Integer commentId) {
+        JSONObject moment = commentService.getMomentById(commentId);
+        return Result.success(response,moment);
+    }
+
     @GetMapping("/delete/{commentId}")
     @Operation(summary = "删除一个评论",description = "传入path的eventId，不判断是否有delete按钮 所以要在前端控制")
     public Result deleteComment(HttpServletResponse response, @PathVariable("commentId")Integer commentId) {
         return Result.success(response,commentMapper.deleteById(commentId));
     }
 
-    @GetMapping("/getAllMoment")
-    @Operation(summary = "获取所有动态",description = "无需传入参数")
-    public Result getAllMoment(HttpServletResponse response) {
-        List<JSONObject> momentList = commentService.getAllMoment();
+    @GetMapping("/getMomentBatch/{momentId}")
+    @Operation(summary = "获取所有动态",description = "传入path的momentId，为之前传递的最后一个momentId，返回20个；第一次传-1")
+    public Result getAllMoment(HttpServletResponse response, @PathVariable("momentId")Integer momentId) {
+        List<JSONObject> momentList = commentService.getAllMoment(momentId);
         return Result.success(response,momentList);
     }
 }

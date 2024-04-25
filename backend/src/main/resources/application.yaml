@@ -46,8 +46,8 @@ spring:
     virtual-host: test
 
 file-server:
-  host: localhost
-  port: 8084
+  host: 47.107.113.54
+  port: 25572
   admin-token: ca20856d238e4b8e83ac91132456b796
 
 user-token:
