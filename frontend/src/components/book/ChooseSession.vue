@@ -22,7 +22,7 @@
                 <p class="choose-session-detail-text">{{ `人数限制: ${session.minSize} - ${session.maxSize}` }}</p>
                 <p class="choose-session-detail-text">{{ `当前人数: ${session.currentSize}` }}</p>
               </div>
-              <t-button @click="showMap(index)">
+              <t-button @click="showMapDialog(index)">
                 <template #icon>
                   <MapInformation2Icon/>
                 </template>
@@ -37,7 +37,7 @@
   </div>
   <t-dialog v-model:visible="mapDialogVisible" placement="center" width="50vw" :header="mapDialogHeader"
             :confirm-btn="null"
-            :cancel-btn="{content: '关闭', theme: 'primary'}">
+            :cancel-btn="{content: '关闭', theme: 'primary'}" @opened="showMap">
     <div id="mapContainer" class="choose-session-map-div"></div>
   </t-dialog>
 </template>
@@ -97,15 +97,21 @@ onUnmounted(() => {
   map?.destroy();
 });
 
-const showMap = (index: number) => {
+let currentSessionIndexShownInMap: number = null;
+
+const showMapDialog = (index: number) => {
+  currentSessionIndexShownInMap = index;
+  mapDialogVisible.value = true;
+}
+
+const showMap = () => {
   if (AMap.value !== null) {
-    mapDialogHeader.value = sessionInformation[index].venue;
-    mapDialogVisible.value = true;
+    mapDialogHeader.value = sessionInformation[currentSessionIndexShownInMap].venue;
     if (map === null) {
       map = new AMap.value.Map("mapContainer", {
         viewMode: "3D",
         zoom: 17,
-        center: sessionInformation[index].location,
+        center: sessionInformation[currentSessionIndexShownInMap].location,
       });
       mapScale = new AMap.value.Scale();
       mapToolBar = new AMap.value.ToolBar({
@@ -120,6 +126,9 @@ const showMap = (index: number) => {
           right: '10px',
         }
       });
+      map.addControl(mapScale);
+      map.addControl(mapToolBar);
+      map.addControl(mapControlBar);
       mapType = new AMap.value.MapType({
         defaultType: 0,
         position: {
@@ -127,29 +136,26 @@ const showMap = (index: number) => {
           left: '100px',
         }
       });
-      map.addControl(mapScale);
-      map.addControl(mapToolBar);
-      map.addControl(mapControlBar);
-      map.addControl(mapType);
       mapMarker = new AMap.value.Marker({
         icon: "https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-default.png",
-        position: sessionInformation[index].location,
+        position: sessionInformation[currentSessionIndexShownInMap].location,
         offset: new AMap.value.Pixel(-11, -35),
         clickable: false
       });
       map.on('complete', function () {
+        map.addControl(mapType);
         map.add(mapMarker);
         mapMarker.setLabel({
-          content: sessionInformation[index].venue,
+          content: sessionInformation[currentSessionIndexShownInMap].venue,
           direction: "top",
           offset: new AMap.value.Pixel(-13, -8)
         });
       });
     } else {
-      map.setCenter(sessionInformation[index].location);
-      mapMarker.setPosition(sessionInformation[index].location);
+      map.setCenter(sessionInformation[currentSessionIndexShownInMap].location);
+      mapMarker.setPosition(sessionInformation[currentSessionIndexShownInMap].location);
       mapMarker.setLabel({
-        content: sessionInformation[index].venue
+        content: sessionInformation[currentSessionIndexShownInMap].venue
       });
     }
   }
