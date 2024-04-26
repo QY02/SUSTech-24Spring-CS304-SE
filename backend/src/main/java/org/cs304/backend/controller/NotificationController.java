@@ -142,6 +142,13 @@ public class NotificationController {
         notificationService.updateReadStatus(notificationId, read);
         return Result.success(response);
     }
+    @PutMapping("/readAll")
+    @Operation(summary = "修改自己全部未读通知为已读", description = "")
+    public Result readAll(HttpServletResponse response,HttpServletRequest request) {
+        String uid = (String) request.getAttribute("loginUserId");
+        notificationService.readAll(uid);
+        return Result.success(response);
+    }
 
     @GetMapping("/all/{userId}")
     @Operation(summary = "返回指定用户的所有通知", description = "传入userId")

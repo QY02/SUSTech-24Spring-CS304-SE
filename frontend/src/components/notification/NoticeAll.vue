@@ -5,12 +5,11 @@
         <t-tab-panel v-for="(tab, tabIndex) in TAB_LIST" :key="tabIndex" :value="tab.value" :label="tab.label">
           <t-list v-if="msgDataList.length > 0" class="secondary-msg-list" :split="true">
             <t-list-item v-for="(item, index) in msgDataList" :key="index">
-              <p :class="['content', { unread: item.status===0 }]" @click="setReadStatus(item)"
-                 style="margin-left: 30px">
+              <p :class="['content', { unread: (item.status===0) }]" style="display: flex;margin-left: 7px">
                 <t-tag size="medium" :theme="NOTIFICATION_TYPES[item.type]" variant="light">
                   {{ statusMapping[item.type] }}
                 </t-tag>
-                <t-list-item-meta :title="item.title" :description="item.content" style="margin-top: 20px"/>
+                <t-list-item-meta :title="item.title" :description="item.content" style="margin-left: 20px;"/>
               </p>
               <template #action>
                 <span class="msg-date">{{ item.notifyTime }}</span>
@@ -22,7 +21,7 @@
                   >
                     <span class="msg-action-icon" @click="setReadStatus(item)">
                       <t-icon v-if="item.status===0" name="check-circle" size="16px" style="color: green"/>
-                      <t-icon v-else name="close-rectangle" style="color: darkorange" />
+                      <t-icon v-else name="close-rectangle" style="color: darkorange"/>
                     </span>
                   </t-tooltip>
                   <t-tooltip content="删除" :overlay-style="{ margin: '6px' }">
@@ -139,15 +138,16 @@ const setReadStatus = (item) => {
     }
   }).then(() => {
     // alert(item.status === 0)
-    location.reload()
+    const changeMsg = msgData.value;
+    changeMsg.forEach((e) => {
+      if (e.id === item.id) {
+        e.status = (e.status + 1) % 2;
+      }
+    });
+    msgData.value = changeMsg;
+    // location.reload()
   }).catch();
-  // const changeMsg = msgData.value;
-  // changeMsg.forEach((e) => {
-  //   if (e.id === item.id) {
-  //     e.status = (e.status + 1) % 2;
-  //   }
-  // });
-  // msgData.value = changeMsg;
+
 };
 
 const deleteMsg = () => {
@@ -158,22 +158,21 @@ const deleteMsg = () => {
       token: token
     },
   }).then(() => {
-    // const changeMsg = msgData.value;
-    // changeMsg.forEach((e, index) => {
-    //   if (e.id === item.id) {
-    //     changeMsg.splice(index, 1);
-    //   }
-    // });
-    // visible.value = false;
-    // msgData.value = changeMsg;
-    location.reload()
+    const changeMsg = msgData.value;
+    changeMsg.forEach((e, index) => {
+      if (e.id === item.id) {
+        changeMsg.splice(index, 1);
+      }
+    });
+    visible.value = false;
+    msgData.value = changeMsg;
+    // location.reload()
   }).catch();
 
 };
 </script>
 
-<style scoped>
-
+<style lang="less" scoped>
 .secondary-notification {
   background-color: var(--td-bg-color-container);
   border-radius: var(--td-radius-medium);
@@ -226,7 +225,8 @@ const deleteMsg = () => {
     text-align: left;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;
+    white-space: pre-line;
+    word-wrap: anywhere;
   }
 
   .unread {
@@ -242,17 +242,14 @@ const deleteMsg = () => {
       margin-right: var(--td-comp-margin-l);
     }
   }
+
+  &__empty-list {
+    min-height: 443px;
+    padding-top: 170px;
+    text-align: center;
+    color: var(--td-text-color-primary);
+  }
 }
 
-.__empty-list {
-  min-height: 70vh;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center; /* 水平居中 */
-  align-items: center; /* 垂直居中 */
-  text-align: center;
-  color: var(--td-text-color-primary);
-}
 
 </style>

@@ -231,4 +231,17 @@ public class NotificationServiceImpl extends ServiceImpl<NotificationMapper, Not
     public void deleteNotification(String notificationId) {
         notificationMapper.deleteById(notificationId);
     }
+
+    @Override
+    public void readAll(String uid) {
+        List<Notification> notificationList=notificationMapper.selectList(new QueryWrapper<Notification>().eq("notified_user_id",uid));
+        if (!notificationList.isEmpty()){
+            for (Notification notification :notificationList){
+                if (notification.getStatus()==constant_NotificationStatus.UNREAD){
+                    notification.setStatus(constant_NotificationStatus.READ);
+                    notificationMapper.updateById(notification);
+                }
+            }
+        }
+    }
 }

@@ -13,10 +13,11 @@
           >{{ '全部设为已读' }}
           </t-button>
         </div>
-        <t-list  v-if="unreadMsg.length > 0" class="narrow-scrollbar" :split="false" style="height: 300px" :scroll="{ type: 'virtual' }" >
-          <t-list-item v-for="(item, index) in unreadMsg" :key="index" >
+        <t-list v-if="unreadMsg.length > 0" class="narrow-scrollbar" :split="false" style="height: 300px"
+                :scroll="{ type: 'virtual' }">
+          <t-list-item v-for="(item, index) in unreadMsg" :key="index">
             <div>
-              <p class="msg-content">{{ item.content }}</p>
+              <p class="msg-content">{{ item.title }}</p>
               <t-tag size="medium" :theme="NOTIFICATION_TYPES[item.type]" variant="light">
                 {{ statusMapping[item.type] }}
               </t-tag>
@@ -35,7 +36,7 @@
           <p>{{ '没有未读通知' }}</p>
         </div>
 
-        <div v-if="unreadMsg.length > 0" class="header-msg-bottom">
+        <div class="header-msg-bottom">
           <t-button class="header-msg-bottom-link" variant="text" theme="default" block @click="goDetail">
             {{ '查看全部' }}
           </t-button>
@@ -79,7 +80,7 @@ const getNotice = () => {
   axios.get(`/notification/all`, {
     headers: {
       token: token
-    },
+    }
   }).then(response => {
     console.log(response)
     msgData.value = response.data.data
@@ -91,17 +92,36 @@ let unreadMsg = computed(() => msgData.value.filter(item => item.status === 0));
 const setRead = (type, item) => {
   const changeMsg = msgData.value;
   if (type === 'all') {
-    changeMsg.forEach(e => {
-      e.status = 1;
-    });
+    axios.put(`/notification/readAll`, {}, {
+      headers: {
+        token: token
+      },
+    }).then(() => {
+      changeMsg.forEach(e => {
+        e.status = 1;
+      });
+      // location.reload()
+    }).catch();
+
   } else {
-    const targetMsg = changeMsg.find(e => e.id === item.id);
-    if (targetMsg) {
-      targetMsg.status = 1;
-    }
+    axios.put(`/notification/changeStatus`, {}, {
+      headers: {
+        token: token
+      },
+      params: {
+        "notificationId": item.id,
+        "read": true
+      }
+    }).then(() => {
+      const targetMsg = changeMsg.find(e => e.id === item.id);
+      if (targetMsg) {
+        targetMsg.status = 1;
+      }
+      msgData.value = changeMsg;
+      // location.reload()
+    }).catch();
   }
-  msgData.value = changeMsg;
-};
+}
 
 const goDetail = () => {
   router.push('/notification');
@@ -184,6 +204,7 @@ onMounted(() => {
 
       .msg-content {
         color: var(--td-brand-color);
+        margin-bottom: 10px;
       }
 
       .t-list-item__action {
