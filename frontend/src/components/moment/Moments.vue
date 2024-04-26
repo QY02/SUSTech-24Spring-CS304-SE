@@ -101,11 +101,17 @@
     </t-button>
   </t-popup>
   <t-drawer v-model:visible="commentVisible" header="评论区" :confirm-btn="null" :cancel-btn="null" size="42vw">
-    <t-list :split="true">
+    <t-list :split="true" v-loading="commentLoading">
       <t-list-item v-for="(item, index) in commentsData" :key="index">
         <template #content>
-          <t-comment style="margin-bottom: 5px" :avatar="item.avatar" :author="item.author" :datetime="item.datetime"
+          <t-comment style="margin-bottom: 5px" :avatar="item.avatar" :author="item.author" :datetime="item.publishDate"
                      :content="item.content">
+            <template #actions>
+              <t-space v-if="item.publisherId===user" key="delete" :size="6" @click="deleteComment(item)">
+                <t-icon name="delete" />
+                <span>删除</span>
+              </t-space>
+            </template>
           </t-comment>
         </template>
       </t-list-item>
@@ -122,6 +128,13 @@
       </t-comment>
     </div>
   </t-drawer>
+  <t-dialog
+      v-model:visible="deleteVisible"
+      theme="danger"
+      header="确认删除动态"
+      :on-close="closeDelete"
+      @confirm="onDeleteClickConfirm"
+  />
 </template>
 
 <script setup lang="jsx">
@@ -131,6 +144,7 @@ import {onMounted, ref} from 'vue';
 import router from "@/routers/index.js";
 import axios from "axios";
 import { fileServerAxios } from "@/main.js"
+import {MessagePlugin} from "tdesign-vue-next";
 
 const user = sessionStorage.getItem("uid") ? sessionStorage.getItem("uid") : '';//当前用户
 
@@ -146,7 +160,7 @@ const getMomentBatch = async (id) => {
   try {
     asideLoading.value = true;
     contentLoading.value = true;
-    const response = await axios.get(`/comment/getMomentBatch/${id}`, {
+    const response = await axios.get(`/comment/getMomentBatch/${id}/${radioGroupValue.value}`, {
       headers: {
         token: sessionStorage.getItem('token'),
       }
@@ -249,16 +263,45 @@ const selectMoment = async (item) => {
 };
 
 let radioGroupValue = ref('1');// 1: 动态 2: 我的发布
-const onTypeChange = (checkedValues) => {
+const onTypeChange = async (checkedValues) => {
   radioGroupValue.value = checkedValues;
+  list.value = [];
+  lastId.value = -1;
+  noMoreImage.value = false;
+  await getMomentBatch(-1);
+  await selectMoment(list.value[0]);
 };
 
 const editPost = () => {
   console.log('Edit post');
 };
 
+const deleteVisible = ref(false);
+
+const onDeleteClickConfirm = async () => {
+  try {
+    contentLoading.value = true;
+    asideLoading.value = true;
+    await axios.delete(`/blog/deleteMoment/${momentData.value.id}`, {
+      headers: {
+        token: sessionStorage.getItem('token'),
+      }
+    });
+    await getMomentBatch(-1);
+    await selectMoment(list.value[0]);
+    contentLoading.value = false;
+    asideLoading.value = false;
+    await MessagePlugin.success('删除成功');
+  } catch (error) {
+  }
+};
+
 const deletePost = () => {
-  console.log('Delete post');
+  deleteVisible.value = true;
+};
+
+const closeDelete = () => {
+  deleteVisible.value = false;
 };
 
 // ###### 动态详情 结束 ######
@@ -331,40 +374,73 @@ const thumbDown = async () => {
 // ###### 评论区 开始 ######
 // 评论区是否可见
 const commentVisible = ref(false);
+const commentLoading = ref(false);
 
-const viewComment = () => {
-  commentVisible.value = true;
+const viewComment = async () => {
+  try {
+    const response = await axios.get(`/reply/getByComment/${momentData.value.id}`, {
+      headers: {
+        token: sessionStorage.getItem('token'),
+      }
+    });
+    commentsData.value = response.data.data;
+    for (let i = 0; i < commentsData.value.length; i++) {
+      commentsData.value[i].avatar = 'https://tdesign.gtimg.com/site/avatar.jpg';
+    }
+    commentVisible.value = true;
+  } catch (error) {
+  }
 };
 
-const commentsData = [
+const deleteComment = async (item) => {
+  try {
+    commentLoading.value = true;
+    await axios.delete(`/reply/delete/${item.id}`, {
+      headers: {
+        token: sessionStorage.getItem('token'),
+      }
+    });
+    await viewComment();
+    commentLoading.value = false;
+    MessagePlugin.success('删除成功');
+  } catch (error) {
+  }
+};
+
+const commentsData = ref([
   {
     id: 'A',
     avatar: 'https://tdesign.gtimg.com/site/avatar.jpg',
+    publisherId: '评论作者ID',
     author: '评论作者名A',
-    datetime: '今天16:38',
+    publishDate: '今天16:38',
     content: '评论作者名A写的评论内容。',
   },
-  {
-    id: 'B',
-    avatar: 'https://tdesign.gtimg.com/site/avatar.jpg',
-    author: '评论作者名B',
-    datetime: '今天16:38',
-    content: '评论作者名B写的评论内容。',
-  },
-  {
-    id: 'C',
-    avatar: 'https://tdesign.gtimg.com/site/avatar.jpg',
-    author: '评论作者名C',
-    datetime: '今天16:38',
-    content: '评论作者名C写的评论内容。',
-  },
-];
+]);
 
 
 const replyData = ref('');
-const submitReply = () => {
-  console.log('回复内容：', replyData.value);
+const submitReply = async () => {
+  if (replyData.value === '') {
+    MessagePlugin.error('请输入内容');
+    return;
+  }
+  commentLoading.value = true;
+  await axios.post(`/reply/add`, {
+    commentId: momentData.value.id,
+    publisherId: user,
+    content: replyData.value,
+    publishDate: new Date(),
+    upVote: 0,
+    downVote: 0,
+  }, {
+    headers: {
+      token: sessionStorage.getItem('token'),
+    }
+  }).catch();
   replyData.value = '';
+  await viewComment();
+  commentLoading.value = false;
 };
 
 // ###### 评论区 结束 ######
