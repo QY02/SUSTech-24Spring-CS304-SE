@@ -100,6 +100,11 @@ const routes = [
                 name: 'newMoment',
                 path: '/newMoment',
                 component: () => import('@/components/moment/createMoment/index.vue')
+            },
+            {
+                name: 'momentAudit',
+                path: '/momentAudit',
+                component: () => import('@/components/admin/adminMoments.vue')
             }
         ]
     },

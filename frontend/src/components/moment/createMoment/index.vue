@@ -49,25 +49,27 @@
             </t-radio-group>
           </t-form-item>
           <t-upload
+              ref="uploadRef"
               v-if="mediaType===1"
               v-model="files"
               placeholder="支持批量上传图片文件"
               theme="image-flow"
               accept="image/*"
               multiple
-              :request-method="requestMethod1"
-              :auto-upload="autoUpload"
-              :show-image-file-name="showImageFileName"
+              :request-method="requestMethod"
+              :auto-upload="false"
+              :show-image-file-name="true"
               :max="8"
               :abridge-name="[6, 6]"
-              :upload-button="showUploadButton ? undefined : null"
-              :cancel-upload-button="showUploadButton ? { theme: 'default', content: '取消上传' } : null"
-          ></t-upload>
+              :upload-button="null"
+              :cancel-upload-button="null"
+          >
+          </t-upload>
         <t-upload
             v-if="mediaType===2"
-            v-model="files"
-            :auto-upload="autoUpload"
-            :theme="display"
+            v-model="formData.files"
+            :auto-upload="false"
+            theme="file"
             :data="{ extra_data: 123, file_name: 'certificate' }"
             :abridge-name="[10, 8]"
             :format-response="formatResponse"
@@ -94,12 +96,12 @@
 
 
 <script setup lang="ts">
-import {MessagePlugin, SubmitContext, UploadProps, CheckboxProps,SelectInputProps } from 'tdesign-vue-next';
+import {MessagePlugin, SubmitContext, UploadProps,SelectInputProps } from 'tdesign-vue-next';
 import {onMounted, ref} from 'vue';
 import { FORM_RULES, INITIAL_DATA} from './constants';
 import router from "@/routers/index.js";
 import { ChevronDownIcon } from 'tdesign-icons-vue-next';
-import axios from "axios";
+import axios, {AxiosRequestConfig} from "axios";
 
 // ###### 表单整体行为 开始 ######
 const formData = ref({ ...INITIAL_DATA });
@@ -121,45 +123,38 @@ const onSubmit = (ctx: SubmitContext) => {
   if (ctx.validateResult === true) {
     MessagePlugin.success('新建成功');
   }
+  alert(JSON.stringify(formData.value));
+  alert(JSON.stringify(files.value));
+  uploadFiles();
 };
 
 // ###### 表单整体行为 结束 ######
 
 // ###### 上传文件 开始 ######
-const autoUpload = ref(true);
-const showImageFileName = ref(true);
-const showUploadButton = ref<CheckboxProps['value']>(true);
 
-const display = ref<UploadProps['theme']>('file');
+const uploadRef = ref();
+const files = ref<UploadProps['value']>([]);
 
-// 示例代码：自定义上传方法，一个请求上传一个文件
+const uploadFiles = () => {
+  uploadRef.value.uploadFiles();
+};
+
+
+// 示例代码：自定义上传方法，一个请求上传多个文件
 // eslint-disable-next-line
-const requestMethod1: UploadProps['requestMethod'] = () => {
+const requestMethod = () => {
   return new Promise((resolve) => {
     resolve({
       status: 'success',
       response: {
-        url: 'https://tdesign.gtimg.com/site/avatar.jpg',
+        files: [
+          { name: 'avatar1.jpg', url: 'https://tdesign.gtimg.com/site/avatar.jpg' },
+          { name: 'avatar2.jpg', url: 'https://avatars.githubusercontent.com/u/11605702?v=4' },
+        ],
       },
     });
   });
 };
-
-// 示例代码：自定义上传方法，一个请求上传多个文件
-// eslint-disable-next-line
-// const requestMethod2 = () => {
-//   return new Promise((resolve) => {
-//     resolve({
-//       status: 'success',
-//       response: {
-//         files: [
-//           { name: 'avatar1.jpg', url: 'https://tdesign.gtimg.com/site/avatar.jpg' },
-//           { name: 'avatar2.jpg', url: 'https://avatars.githubusercontent.com/u/11605702?v=4' },
-//         ],
-//       },
-//     });
-//   });
-// };
 
 function getCurrentDate(needTime = false) {
   const d = new Date();
@@ -170,7 +165,6 @@ function getCurrentDate(needTime = false) {
   if (needTime) return [date, time].join(' ');
   return date;
 }
-const files = ref<UploadProps['value']>([]);
 
 // res.url 图片地址；res.uploadTime 文件上传时间；res.error 上传失败的原因
 function formatResponse(res: any) {
@@ -194,7 +188,7 @@ onMounted(() => {
     headers: {
       token: sessionStorage.getItem('token'),
     }
-  })
+  } as AxiosRequestConfig)
       .then(response => {
         allEvents.push(...response.data.data.map((item: any) => ({
                 label: item.name,

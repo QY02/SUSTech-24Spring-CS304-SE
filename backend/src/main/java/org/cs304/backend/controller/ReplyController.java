@@ -57,7 +57,9 @@ public class ReplyController {
 
     @PostMapping("/deleteByAdmin")
     @Operation(summary = "管理员删除一个回复",description = "传入replyId")
-    public Result deleteReplyByAdmin(HttpServletRequest request,HttpServletResponse response, @RequestParam Integer replyId, @RequestParam String deleteReason) {
+    public Result deleteReplyByAdmin(HttpServletRequest request,HttpServletResponse response, @RequestBody JSONObject jsonObject) {
+        Integer replyId = jsonObject.getInteger("replyId");
+        String deleteReason = jsonObject.getString("deleteReason");
         int userType = (int) request.getAttribute("loginUserType");
         if (userType != constant_User.ADMIN) {
             return Result.error(response, "403", "Only admin can alter");
@@ -65,7 +67,7 @@ public class ReplyController {
         Reply reply = replyMapper.selectById(replyId);
         String adminId = request.getAttribute("loginUserId").toString();
         String title = "您的回复被管理员删除";
-        String content = "您的回复 \""+reply+"\" 被管理员删除，原因：" + deleteReason;
+        String content = "您的回复 \""+reply.getContent()+"\" 被管理员删除，原因：" + deleteReason;
         notificationService.insertAdminNotification(adminId, reply.getPublisherId(), title, content);
         replyMapper.deleteById(replyId);
         return Result.success(response);

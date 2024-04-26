@@ -21,6 +21,7 @@
     "tdesign-vue-next": "^1.9.0",
     "vue": "^3.4.21",
     "vue-draggable-resizable": "^3.0.0",
+    "vue-infinite-scroll": "^2.0.2",
     "vue-router": "^4.3.0",
     "vuestic-ui": "^1.9.6"
   },

@@ -85,9 +85,11 @@ public class CommentController {
         return Result.success(response);
     }
 
-    @DeleteMapping("/deleteMomentByAdmin")
+    @PostMapping("/deleteMomentByAdmin")
     @Operation(summary = "管理员删除一个动态",description = "传入momentId")
-    public Result deleteReplyByAdmin(HttpServletRequest request,HttpServletResponse response, @RequestParam Integer momentId, @RequestParam String deleteReason) {
+    public Result deleteReplyByAdmin(HttpServletRequest request,HttpServletResponse response, @RequestBody JSONObject jsonObject) {
+        Integer momentId = jsonObject.getInteger("momentId");
+        String deleteReason = jsonObject.getString("deleteReason");
         int userType = (int) request.getAttribute("loginUserType");
         if (userType != constant_User.ADMIN) {
             return Result.error(response, "403", "Only admin can alter");
