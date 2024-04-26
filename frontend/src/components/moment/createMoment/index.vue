@@ -51,11 +51,12 @@
           <t-upload
               ref="uploadRef"
               v-if="mediaType===1"
-              v-model="files"
+              v-model="formData.files"
               placeholder="支持批量上传图片文件"
               theme="image-flow"
               accept="image/*"
               multiple
+              @success="onSuccessUpload"
               :request-method="requestMethod"
               :auto-upload="false"
               :show-image-file-name="true"
@@ -102,6 +103,7 @@ import { FORM_RULES, INITIAL_DATA} from './constants';
 import router from "@/routers/index.js";
 import { ChevronDownIcon } from 'tdesign-icons-vue-next';
 import axios, {AxiosRequestConfig} from "axios";
+import { fileServerAxios } from "@/main.js"
 
 // ###### 表单整体行为 开始 ######
 const formData = ref({ ...INITIAL_DATA });
@@ -115,17 +117,45 @@ const onReset = () => {
   router.push('/moments');
 };
 
-const onSubmit = (ctx: SubmitContext) => {
+const fileUrl = ref('');
+const commentId = ref(0);
+
+const onSubmit =  async (ctx: SubmitContext) => {
   if (!allEvents.some(event => event.value === formData.value.event.value)) {
-    MessagePlugin.error('请选择一个有效的活动');
+    await MessagePlugin.error('请选择一个有效的活动');
+    return;
+  }
+  if (formData.value.files.length === 0) {
+    await MessagePlugin.error('请上传文件');
     return;
   }
   if (ctx.validateResult === true) {
-    MessagePlugin.success('新建成功');
+    loading.value = true;
+    await sendEvent();
+    uploadFiles();
+    // loading.value = false;
+    // await MessagePlugin.success('提交成功');
+    // router.push('/moments');
   }
-  alert(JSON.stringify(formData.value));
-  alert(JSON.stringify(files.value));
-  uploadFiles();
+};
+
+const sendEvent = async () => {
+  await axios.post(`/comment/createMoment`, {
+    title: formData.value.name,
+    content: formData.value.comment,
+    eventId: formData.value.event.value,
+    files: formData.value.files.map(file => file.name),
+    type: mediaType.value,
+  },{
+    headers: {
+      token: sessionStorage.getItem('token'),
+    }
+  } as AxiosRequestConfig)
+      .then(response => {
+        fileUrl.value = response.data.data.fileToken;
+        commentId.value = response.data.data.commentId;
+      })
+      .catch();
 };
 
 // ###### 表单整体行为 结束 ######
@@ -133,27 +163,30 @@ const onSubmit = (ctx: SubmitContext) => {
 // ###### 上传文件 开始 ######
 
 const uploadRef = ref();
-const files = ref<UploadProps['value']>([]);
 
 const uploadFiles = () => {
   uploadRef.value.uploadFiles();
 };
 
 
-// 示例代码：自定义上传方法，一个请求上传多个文件
-// eslint-disable-next-line
-const requestMethod = () => {
-  return new Promise((resolve) => {
-    resolve({
-      status: 'success',
-      response: {
-        files: [
-          { name: 'avatar1.jpg', url: 'https://tdesign.gtimg.com/site/avatar.jpg' },
-          { name: 'avatar2.jpg', url: 'https://avatars.githubusercontent.com/u/11605702?v=4' },
-        ],
-      },
-    });
-  });
+const requestMethod = async () => {
+  let formData0 = new FormData();
+  formData0.append('file', formData.value.files as any);
+  await fileServerAxios.post(`/file/uploadBatch?file=${formData.value.files}`, {
+    headers: {
+      token: fileUrl.value,
+    }
+  })
+      .then(response => {
+        console.log(JSON.stringify(response));
+      })
+      .catch(reason => {
+        alert(JSON.stringify(reason));
+      });
+};
+
+const onSuccessUpload = (res: any) => {
+  console.log(res);
 };
 
 function getCurrentDate(needTime = false) {
@@ -207,7 +240,7 @@ const selectValue = ref<{
 const popupVisible = ref(false);
 const onOptionClick = (item: { label: string; value: number }) => {
   selectValue.value = item;
-  formData.value.event = item;
+  formData.value.event  = item as any;
   // 选中后立即关闭浮层
   popupVisible.value = false;
 };

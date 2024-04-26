@@ -1,4 +1,6 @@
 import type { FormRule, UploadFile } from 'tdesign-vue-next';
+import {ref} from "vue";
+import {UploadProps} from "tdesign-vue-next";
 
 export const FORM_RULES: Record<string, FormRule[]> = {
   name: [{ required: true, message: '请输入标题', type: 'error' }],
@@ -14,5 +16,5 @@ export const INITIAL_DATA = {
     label: '',
     value: '',
   },
-  files: [] as Array<UploadFile>,
+  files: ref<UploadProps['value']>([]),
 };

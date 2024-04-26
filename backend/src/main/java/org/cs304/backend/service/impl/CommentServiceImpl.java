@@ -12,6 +12,7 @@ import org.cs304.backend.service.ICommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -99,5 +100,30 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         replyMapper.delete(new QueryWrapper<Reply>().eq("comment_id",momentId));
         entityAttachmentRelationMapper.delete(new QueryWrapper<EntityAttachmentRelation>().eq("entity_id",momentId).eq("entity_type",COMMENT));
         baseMapper.deleteById(momentId);
+    }
+
+    @Override
+    public JSONObject createMoment(JSONObject comment, String userId) {
+        Comment comment1 = new Comment();
+        comment1.setContent(comment.getString("content"));
+        comment1.setPublisherId(userId);
+        comment1.setEventId(comment.getInteger("eventId"));
+        comment1.setType(BLOG);
+        comment1.setPublishDate(LocalDateTime.now());
+        comment1.setTitle(comment.getString("title"));
+        comment1.setUpVote(0);
+        comment1.setDownVote(0);
+        Integer mediaType = comment.getInteger("type");
+        comment1.setMediaType(mediaType != 1);
+        baseMapper.insert(comment1);
+        Integer commentId = comment1.getId();
+        List<String> fileList = comment.getJSONArray("files").toJavaList(String.class);
+        List<String> fileDirList = new ArrayList<>();
+        for (String ignored : fileList) {
+            fileDirList.add("blog/" + commentId);
+        }
+        JSONObject token =  attachmentService.uploadBatchStart(ADMIN,fileDirList,fileList);
+        token.put("commentId",commentId);
+        return token;
     }
 }

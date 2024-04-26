@@ -37,6 +37,15 @@ public class CommentController {
         return Result.success(response);
     }
 
+    @PostMapping("/createMoment")
+    @Operation(summary = "创建动态",description = "传入comment结构内容，外加fileList，为图片的名称列表")
+    public Result createMoment(HttpServletRequest request, HttpServletResponse response, @RequestBody JSONObject comment) {
+        String userId = request.getAttribute("loginUserId").toString();
+        JSONObject fileUrl = commentService.createMoment(comment, userId);
+        return Result.success(response,fileUrl);
+    }
+
+
     @GetMapping("/getByEvent")
     @Operation(summary = "获取一个事件下的评论或动态",description = "传入eventId和type，type为0时获取评论，为1时获取动态")
     public Result getEventComment(HttpServletResponse response, @RequestParam JSONObject jsonObject) {
