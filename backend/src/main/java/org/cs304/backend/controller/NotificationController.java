@@ -95,6 +95,11 @@ public class NotificationController {
               "content":"内容"
             }""")))
     public Result postAdminNotification(HttpServletResponse response, HttpServletRequest request, @PathVariable String notifiedUserId, @RequestBody JSONObject data) {
+        int userType = (int) request.getAttribute("loginUserType");
+        if (userType != constant_User.ADMIN ) {
+            log.error("Only admin can send notification");
+            return Result.error(response, "403", "Only admin can send notification");
+        }
         String publishId = (String) request.getAttribute("loginUserId");
         String title = data.getString("title");
         String content = data.getString("content");
