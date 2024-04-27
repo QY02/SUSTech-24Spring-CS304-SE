@@ -11,7 +11,7 @@ public interface IFileService {
 
     void delete(String filePath);
 
-    Object upload(String fileDir, MultipartFile inputFile, boolean sendRequestToBackend);
+    Object upload(String requestInfo, MultipartFile inputFile, boolean mode);
 
     List<JSONObject> uploadBatch(String backendData, List<MultipartFile> fileList);
 

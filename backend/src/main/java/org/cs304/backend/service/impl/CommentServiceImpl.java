@@ -103,7 +103,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     }
 
     @Override
-    public JSONObject createMoment(JSONObject comment, String userId) {
+    public JSONObject createMomentStart(JSONObject comment, String userId) {
         Comment comment1 = new Comment();
         comment1.setContent(comment.getString("content"));
         comment1.setPublisherId(userId);
@@ -115,15 +115,24 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         comment1.setDownVote(0);
         Integer mediaType = comment.getInteger("type");
         comment1.setMediaType(mediaType != 1);
-        baseMapper.insert(comment1);
-        Integer commentId = comment1.getId();
+        JSONObject requestData = JSONObject.from(comment1);
+        requestData.put("serviceClassName", this.getClass().getName());
+        requestData.put("serviceMethodName", "createMomentFinish");
         List<String> fileList = comment.getJSONArray("files").toJavaList(String.class);
         List<String> fileDirList = new ArrayList<>();
         for (String ignored : fileList) {
-            fileDirList.add("blog/" + commentId);
+            fileDirList.add("blog/" + "uuid");
         }
-        JSONObject token =  attachmentService.uploadBatchStart(ADMIN,fileDirList,fileList);
-        token.put("commentId",commentId);
-        return token;
+        return attachmentService.uploadBatchStart(ADMIN,fileDirList,fileList, requestData);
+    }
+
+    @Override
+    public JSONObject createMomentFinish(JSONObject comment) {
+        Comment comment1 = comment.toJavaObject(Comment.class);
+        baseMapper.insert(comment1);
+        Integer commentId = comment1.getId();
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("commentId",commentId);
+        return jsonObject;
     }
 }

@@ -8,7 +8,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.cs304.backend.constant.constant_User;
 import org.cs304.backend.entity.Comment;
-import org.cs304.backend.entity.Reply;
 import org.cs304.backend.exception.ServiceException;
 import org.cs304.backend.mapper.CommentMapper;
 import org.cs304.backend.service.ICommentService;
@@ -41,7 +40,7 @@ public class CommentController {
     @Operation(summary = "创建动态",description = "传入comment结构内容，外加fileList，为图片的名称列表")
     public Result createMoment(HttpServletRequest request, HttpServletResponse response, @RequestBody JSONObject comment) {
         String userId = request.getAttribute("loginUserId").toString();
-        JSONObject fileUrl = commentService.createMoment(comment, userId);
+        JSONObject fileUrl = commentService.createMomentStart(comment, userId);
         return Result.success(response,fileUrl);
     }
 

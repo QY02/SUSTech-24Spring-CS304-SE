@@ -17,5 +17,8 @@ public interface ICommentService extends IService<Comment> {
     void deleteMoment(Integer momentId);
 
     @Transactional(rollbackFor = {Exception.class})
-    JSONObject createMoment(JSONObject comment, String userId);
+    JSONObject createMomentStart(JSONObject comment, String userId);
+
+    @Transactional(rollbackFor = {Exception.class})
+    JSONObject createMomentFinish(JSONObject comment);
 }

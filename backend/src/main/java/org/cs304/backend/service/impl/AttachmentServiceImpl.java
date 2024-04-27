@@ -18,7 +18,10 @@ import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.context.ApplicationContext;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -39,6 +42,9 @@ public class AttachmentServiceImpl extends ServiceImpl<AttachmentMapper, Attachm
 
     @Value("${file-server.port:}")
     private String fileServerPort;
+
+    @Resource
+    private ApplicationContext applicationContext;
 
     @Override
     public Attachment getById(int userType, Integer id) {
@@ -103,7 +109,7 @@ public class AttachmentServiceImpl extends ServiceImpl<AttachmentMapper, Attachm
     }
 
     @Override
-    public JSONObject uploadStart(int userType, String fileDir) {
+    public JSONObject uploadStart(int userType, String fileDir, JSONObject requestData) {
         if (fileDir == null) {
             throw new ServiceException("400", "Invalid file path");
         }
@@ -115,13 +121,18 @@ public class AttachmentServiceImpl extends ServiceImpl<AttachmentMapper, Attachm
         if (userType != constant_User.ADMIN) {
             throw new ServiceException("401", "Permission denied");
         }
+        JSONObject requestInfoJsonObject = new JSONObject();
+        requestInfoJsonObject.put("fileDir", fileDir);
+        if (requestData != null) {
+            requestInfoJsonObject.put("requestData", requestData);
+        }
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("fileToken", redisUtil.generateAndAddFileToken(fileDir));
+        jsonObject.put("fileToken", redisUtil.generateAndAddFileToken(requestInfoJsonObject.toJSONString()));
         return jsonObject;
     }
 
     @Override
-    public JSONObject uploadFinish(int userType, String filePath) {
+    public JSONObject uploadFinish(int userType, String filePath, JSONObject requestData) {
         if (filePath == null) {
             throw new ServiceException("400", "Invalid file path");
         }
@@ -137,12 +148,23 @@ public class AttachmentServiceImpl extends ServiceImpl<AttachmentMapper, Attachm
         attachment.setFilePath(filePath);
         baseMapper.insert(attachment);
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("id", attachment.getId());
+        jsonObject.put("attachmentId", attachment.getId());
+        if (requestData != null) {
+            try {
+                Object service = applicationContext.getBean(Class.forName((String) requestData.get("serviceClassName")));
+                Method method = service.getClass().getMethod((String) requestData.get("serviceMethodName"), JSONObject.class);
+                jsonObject.put("requestResult", JSONObject.from(method.invoke(service, requestData)));
+            } catch (NoSuchMethodException e) {
+                throw new ServiceException("500", "Cannot invoke the corresponding method");
+            } catch (InvocationTargetException | IllegalAccessException | ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
         return jsonObject;
     }
 
     @Override
-    public JSONObject uploadBatchStart(int userType, List<String> fileDirList, List<String> fileNameList) {
+    public JSONObject uploadBatchStart(int userType, List<String> fileDirList, List<String> fileNameList, JSONObject requestData) {
         if (userType != constant_User.ADMIN) {
             throw new ServiceException("401", "Permission denied");
         }
@@ -157,6 +179,7 @@ public class AttachmentServiceImpl extends ServiceImpl<AttachmentMapper, Attachm
         if (nullIndex != -1) {
             throw new ServiceException("400", "Invalid value in fileNameList at index " + nullIndex);
         }
+        JSONObject requestInfoJsonObject = new JSONObject();
         JSONObject fileInfoJsonObject = new JSONObject();
         for (int i = 0; i < fileDirList.size(); i++) {
             try {
@@ -166,23 +189,40 @@ public class AttachmentServiceImpl extends ServiceImpl<AttachmentMapper, Attachm
             }
             fileInfoJsonObject.put(fileNameList.get(i), fileDirList.get(i));
         }
+        requestInfoJsonObject.put("fileInfo", fileInfoJsonObject);
+        if (requestData != null) {
+            requestInfoJsonObject.put("requestData", requestData);
+        }
         JSONObject resultJsonObject = new JSONObject();
-        resultJsonObject.put("fileToken", redisUtil.generateAndAddFileToken(fileInfoJsonObject.toJSONString()));
+        resultJsonObject.put("fileToken", redisUtil.generateAndAddFileToken(requestInfoJsonObject.toJSONString()));
         return resultJsonObject;
     }
 
     @Override
-    public List<JSONObject> uploadBatchFinish(int userType, List<String> filePathList) {
+    public JSONObject uploadBatchFinish(int userType, List<String> filePathList, JSONObject requestData) {
         if (filePathList == null) {
             throw new ServiceException("400", "Invalid file path list");
         }
-        List<JSONObject> result = new ArrayList<>();
+        List<JSONObject> fileInfoList = new ArrayList<>();
         for (String filePath : filePathList) {
             try {
-                result.add(((IAttachmentService) AopContext.currentProxy()).uploadFinish(userType, filePath));
+                fileInfoList.add(((IAttachmentService) AopContext.currentProxy()).uploadFinish(userType, filePath, null));
             } catch (ServiceException e) {
                 e.setCauseObject(filePath);
                 throw e;
+            }
+        }
+        JSONObject result = new JSONObject();
+        result.put("fileInfoList", fileInfoList);
+        if (requestData != null) {
+            try {
+                Object service = applicationContext.getBean(Class.forName((String) requestData.get("serviceClassName")));
+                Method method = service.getClass().getMethod((String) requestData.get("serviceMethodName"), JSONObject.class);
+                result.put("requestResult", JSONObject.from(method.invoke(service, requestData)));
+            } catch (NoSuchMethodException e) {
+                throw new ServiceException("500", "Cannot invoke the corresponding method");
+            } catch (InvocationTargetException | IllegalAccessException | ClassNotFoundException e) {
+                throw new RuntimeException(e);
             }
         }
         return result;
