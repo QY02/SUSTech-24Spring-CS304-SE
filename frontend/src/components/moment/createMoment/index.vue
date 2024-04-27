@@ -57,7 +57,6 @@
               accept="image/*"
               multiple
               @success="onSuccessUpload"
-              :request-method="requestMethod"
               :auto-upload="false"
               :show-image-file-name="true"
               :max="8"
@@ -132,10 +131,25 @@ const onSubmit =  async (ctx: SubmitContext) => {
   if (ctx.validateResult === true) {
     loading.value = true;
     await sendEvent();
-    uploadFiles();
-    // loading.value = false;
-    // await MessagePlugin.success('提交成功');
-    // router.push('/moments');
+    const formDataUpload = new FormData();
+    formData.value.files.forEach((file) => {formDataUpload.append('file', file.raw)})
+    await fileServerAxios.post(`/file/uploadBatch`, formDataUpload,
+        {
+          headers: {
+            'token':
+            fileUrl.value,
+            'Content-Type': 'multipart/form-data'
+          },
+        })
+        .then(response => {
+          console.log(JSON.stringify(response));
+        })
+        .catch(reason => {
+          alert(JSON.stringify(reason));
+        });
+    loading.value = false;
+    await MessagePlugin.success('提交成功');
+    router.push('/moments');
   }
 };
 
@@ -163,27 +177,6 @@ const sendEvent = async () => {
 // ###### 上传文件 开始 ######
 
 const uploadRef = ref();
-
-const uploadFiles = () => {
-  uploadRef.value.uploadFiles();
-};
-
-
-const requestMethod = async () => {
-  let formData0 = new FormData();
-  formData0.append('file', formData.value.files as any);
-  await fileServerAxios.post(`/file/uploadBatch?file=${formData.value.files}`, {
-    headers: {
-      token: fileUrl.value,
-    }
-  })
-      .then(response => {
-        console.log(JSON.stringify(response));
-      })
-      .catch(reason => {
-        alert(JSON.stringify(reason));
-      });
-};
 
 const onSuccessUpload = (res: any) => {
   console.log(res);
