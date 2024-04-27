@@ -16,15 +16,15 @@ public interface IAttachmentService extends IService<Attachment> {
     @Transactional(rollbackFor = {Exception.class})
     void deleteById(int userType, Integer id);
 
-    JSONObject uploadStart(int userType, String fileDir);
+    JSONObject uploadStart(int userType, String fileDir, JSONObject requestData);
 
     @Transactional(rollbackFor = {Exception.class})
-    JSONObject uploadFinish(int userType, String filePath);
+    JSONObject uploadFinish(int userType, String filePath, JSONObject requestData);
 
-    JSONObject uploadBatchStart(int userType, List<String> fileDirList, List<String> fileNameList);
+    JSONObject uploadBatchStart(int userType, List<String> fileDirList, List<String> fileNameList, JSONObject requestData);
 
     @Transactional(rollbackFor = {Exception.class})
-    List<JSONObject> uploadBatchFinish(int userType, List<String> filePathList);
+    JSONObject uploadBatchFinish(int userType, List<String> filePathList, JSONObject requestData);
 
     @Transactional(rollbackFor = {Exception.class})
     void deleteBatchByIdList(int userType, List<Integer> idList);

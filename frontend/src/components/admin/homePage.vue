@@ -72,7 +72,7 @@ const handleClickProduct = (product: CardProductType) => {
   } else if (product.type === 3) {
     router.push('/approval');
   } else if (product.type === 4) {
-    router.push('/dynamic/audit');
+    router.push('/momentAudit');
   } else if (product.type === 5) {
     router.push('/payment');
   } else if (product.type === 6) {

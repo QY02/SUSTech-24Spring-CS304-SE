@@ -73,25 +73,50 @@ public class FileServiceImpl implements IFileService {
     }
 
     @Override
-    public Object upload(String fileDir, MultipartFile inputFile, boolean sendRequestToBackend) {
+    public Object upload(String requestInfo, MultipartFile inputFile, boolean mode) {
         if (backendHost.isBlank() || backendPort.isBlank() || backendApiToken.isBlank()) {
             throw new ServiceException("500", "This API is currently unavailable");
         }
-        if (fileDir == null) {
+        if (requestInfo == null) {
             throw new ServiceException("400", "This API can not be used with admin token");
         }
+        JSONObject requestInfoJsonObject = null;
+        String fileDir;
+        if (mode) {
+            requestInfoJsonObject = JSONObject.parseObject(requestInfo);
+            fileDir = requestInfoJsonObject.getString("fileDir");
+        }
+        else {
+            fileDir = requestInfo;
+        }
+        if (fileDir == null) {
+            throw new ServiceException("500", "Invalid file path");
+        }
+        String fileDirWithUUID = fileDir.replace("uuid", UUID.randomUUID().toString().replaceAll("-", ""));
+        if (!fileDirWithUUID.equals(fileDir)) {
+            File dir = Paths.get(GlobalData.FILE_DIRECTORY, fileDirWithUUID).toFile();
+            while (true) {
+                if (!dir.exists()) {
+                    break;
+                }
+                else {
+                    fileDirWithUUID = fileDir.replace("uuid", UUID.randomUUID().toString().replaceAll("-", ""));
+                    dir = Paths.get(GlobalData.FILE_DIRECTORY, fileDirWithUUID).toFile();
+                }
+            }
+        }
         String fileName = UUID.randomUUID().toString().replaceAll("-", "") + "-" + inputFile.getOriginalFilename();
-        File file = Paths.get(GlobalData.FILE_DIRECTORY, fileDir, fileName).toFile();
-        String filePathStringForDatabase = Paths.get(fileDir, fileName).toString();
+        File file = Paths.get(GlobalData.FILE_DIRECTORY, fileDirWithUUID, fileName).toFile();
         while (true) {
             if (!file.exists()) {
                 break;
             }
             else {
                 fileName = UUID.randomUUID().toString().replaceAll("-", "") + "-" + inputFile.getOriginalFilename();
-                file = Paths.get(GlobalData.FILE_DIRECTORY, fileDir, fileName).toFile();
+                file = Paths.get(GlobalData.FILE_DIRECTORY, fileDirWithUUID, fileName).toFile();
             }
         }
+        String filePathStringForDatabase = Paths.get(fileDirWithUUID, fileName).toString();
         boolean result = file.mkdirs();
         if (!result) {
             throw new ServiceException("500", "Unable to create the directory");
@@ -99,11 +124,12 @@ public class FileServiceImpl implements IFileService {
         else {
             try {
                 inputFile.transferTo(file);
-                if (sendRequestToBackend) {
+                if (mode) {
                     RestTemplate restTemplate = new RestTemplate();
                     HttpHeaders httpHeaders = new HttpHeaders();
                     JSONObject requestBody = new JSONObject();
                     requestBody.put("filePath", filePathStringForDatabase);
+                    requestBody.put("requestData", requestInfoJsonObject.getJSONObject("requestData"));
                     httpHeaders.set("token", backendApiToken);
                     try {
                         HttpEntity<JSONObject> httpEntity = new HttpEntity<>(requestBody, httpHeaders);
@@ -134,14 +160,15 @@ public class FileServiceImpl implements IFileService {
     }
 
     @Override
-    public List<JSONObject> uploadBatch(String fileInfoJsonString, List<MultipartFile> fileList) {
+    public List<JSONObject> uploadBatch(String requestInfoJsonString, List<MultipartFile> fileList) {
         if (backendHost.isBlank() || backendPort.isBlank() || backendApiToken.isBlank()) {
             throw new ServiceException("500", "This API is currently unavailable");
         }
-        if (fileInfoJsonString == null) {
+        if (requestInfoJsonString == null) {
             throw new ServiceException("400", "This API can not be used with admin token");
         }
-        Map<String, String> fileInfoMap = JSONObject.parseObject(fileInfoJsonString, new TypeReference<>() {});
+        JSONObject requestInfoJsonObject = JSONObject.parseObject(requestInfoJsonString);
+        Map<String, String> fileInfoMap = requestInfoJsonObject.getObject("fileInfo", new TypeReference<>() {});
         if (fileList.size() != fileInfoMap.size()) {
             throw new ServiceException("400", "Invalid file number");
         }
@@ -165,6 +192,7 @@ public class FileServiceImpl implements IFileService {
             HttpHeaders httpHeaders = new HttpHeaders();
             JSONObject requestBody = new JSONObject();
             requestBody.put("filePathList", new JSONArray(filePathStringForDatabaseList));
+            requestBody.put("requestData", requestInfoJsonObject.getJSONObject("requestData"));
             httpHeaders.set("token", backendApiToken);
             try {
                 HttpEntity<JSONObject> httpEntity = new HttpEntity<>(requestBody, httpHeaders);

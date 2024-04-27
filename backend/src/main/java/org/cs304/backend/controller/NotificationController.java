@@ -95,6 +95,11 @@ public class NotificationController {
               "content":"内容"
             }""")))
     public Result postAdminNotification(HttpServletResponse response, HttpServletRequest request, @PathVariable String notifiedUserId, @RequestBody JSONObject data) {
+        int userType = (int) request.getAttribute("loginUserType");
+        if (userType != constant_User.ADMIN ) {
+            log.error("Only admin can send notification");
+            return Result.error(response, "403", "Only admin can send notification");
+        }
         String publishId = (String) request.getAttribute("loginUserId");
         String title = data.getString("title");
         String content = data.getString("content");
@@ -135,6 +140,13 @@ public class NotificationController {
             return Result.error(response, "403", "You can only change your own notification's status");
         }
         notificationService.updateReadStatus(notificationId, read);
+        return Result.success(response);
+    }
+    @PutMapping("/readAll")
+    @Operation(summary = "修改自己全部未读通知为已读", description = "")
+    public Result readAll(HttpServletResponse response,HttpServletRequest request) {
+        String uid = (String) request.getAttribute("loginUserId");
+        notificationService.readAll(uid);
         return Result.success(response);
     }
 

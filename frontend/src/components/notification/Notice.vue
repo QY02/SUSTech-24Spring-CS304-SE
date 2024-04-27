@@ -13,15 +13,18 @@
           >{{ '全部设为已读' }}
           </t-button>
         </div>
-        <t-list v-if="unreadMsg.length > 0" class="narrow-scrollbar" :split="false">
+        <t-list v-if="unreadMsg.length > 0" class="narrow-scrollbar" :split="false" style="height: 300px"
+                :scroll="{ type: 'virtual' }">
           <t-list-item v-for="(item, index) in unreadMsg" :key="index">
             <div>
-              <p class="msg-content">{{ item.content }}</p>
-              <p class="msg-type">{{ statusMapping[item.type] }}</p>
+              <p class="msg-content">{{ item.title }}</p>
+              <t-tag size="medium" :theme="NOTIFICATION_TYPES[item.type]" variant="light">
+                {{ statusMapping[item.type] }}
+              </t-tag>
             </div>
             <p class="msg-time">{{ item.notifyTime }}</p>
             <template #action>
-              <t-button size="small" variant="outline" @click="setRead('radio', item)">
+              <t-button size="small" theme="success" variant="outline" @click="setRead('radio', item)">
                 {{ '设为已读' }}
               </t-button>
             </template>
@@ -33,7 +36,7 @@
           <p>{{ '没有未读通知' }}</p>
         </div>
 
-        <div v-if="unreadMsg.length > 0" class="header-msg-bottom">
+        <div class="header-msg-bottom">
           <t-button class="header-msg-bottom-link" variant="text" theme="default" block @click="goDetail">
             {{ '查看全部' }}
           </t-button>
@@ -64,12 +67,20 @@ const statusMapping = {
   4: '活动修改',
   5: '活动取消'
 };
+const NOTIFICATION_TYPES = {
+  0: 'default',
+  1: 'success',
+  2: 'danger',
+  3: 'primary',
+  4: 'warning',
+  5: 'danger'
+};
 const msgData = ref([]);
 const getNotice = () => {
   axios.get(`/notification/all`, {
     headers: {
       token: token
-    },
+    }
   }).then(response => {
     console.log(response)
     msgData.value = response.data.data
@@ -81,17 +92,36 @@ let unreadMsg = computed(() => msgData.value.filter(item => item.status === 0));
 const setRead = (type, item) => {
   const changeMsg = msgData.value;
   if (type === 'all') {
-    changeMsg.forEach(e => {
-      e.status = 1;
-    });
+    axios.put(`/notification/readAll`, {}, {
+      headers: {
+        token: token
+      },
+    }).then(() => {
+      changeMsg.forEach(e => {
+        e.status = 1;
+      });
+      // location.reload()
+    }).catch();
+
   } else {
-    const targetMsg = changeMsg.find(e => e.id === item.id);
-    if (targetMsg) {
-      targetMsg.status = 1;
-    }
+    axios.put(`/notification/changeStatus`, {}, {
+      headers: {
+        token: token
+      },
+      params: {
+        "notificationId": item.id,
+        "read": true
+      }
+    }).then(() => {
+      const targetMsg = changeMsg.find(e => e.id === item.id);
+      if (targetMsg) {
+        targetMsg.status = 1;
+      }
+      msgData.value = changeMsg;
+      // location.reload()
+    }).catch();
   }
-  msgData.value = changeMsg;
-};
+}
 
 const goDetail = () => {
   router.push('/notification');
@@ -161,7 +191,7 @@ onMounted(() => {
 
   .t-list-item {
     overflow: hidden;
-    width: 100%;
+    width: 90%;
     padding: var(--td-comp-paddingTB-l) var(--td-comp-paddingLR-l);
     border-radius: var(--td-radius-default);
     font: var(--td-font-body-medium);
@@ -174,6 +204,7 @@ onMounted(() => {
 
       .msg-content {
         color: var(--td-brand-color);
+        margin-bottom: 10px;
       }
 
       .t-list-item__action {

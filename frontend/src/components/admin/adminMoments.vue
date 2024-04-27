@@ -31,22 +31,12 @@
       </t-space>
     </t-aside>
 
-    <t-content v-loading="asideLoading">
-      <div :style="{height: 'calc(100vh - 56px)', 'overflow-y': 'scroll' }">
-      <t-radio-group class="card-with-margin" variant="default-filled" default-value="1" @change="onTypeChange">
-        <t-radio-button value="1">动态</t-radio-button>
-        <t-radio-button value="2">我的发布</t-radio-button>
-      </t-radio-group>
-      <t-card class="card-with-margin" hoverShadow >
+    <t-content>
+      <div :style="{height: 'calc( 100vh - 56px)', 'overflow-y': 'scroll' }">
+      <t-card class="card-with-margin" hoverShadow v-loading="asideLoading" >
         <t-space>
           <t-button variant="outline" theme="success" @click="showEvent">点击跳转相关活动：{{momentData.relatedEvent}}</t-button>
-          <t-button v-if="radioGroupValue === '2'" @click="editPost">
-            <template #icon>
-              <edit-icon/>
-            </template>
-            编辑
-          </t-button>
-          <t-button v-if="radioGroupValue === '2'" @click="deletePost" theme="danger">
+          <t-button @click="deletePost" theme="danger">
             <template #icon>
               <delete-icon/>
             </template>
@@ -64,12 +54,12 @@
             </t-popconfirm>
           </template>
           <template #actions>
-            <t-space key="thumbUp" :size="10" @click="thumbUp">
-              <t-icon name="thumb-up" :color="thumbUpColor"/>
+            <t-space key="thumbUp" :size="10">
+              <t-icon name="thumb-up" color="grey"/>
               <span>{{momentData.upVote}}</span>
             </t-space>
-            <t-space key="thumbDown" :size="10" @click="thumbDown">
-              <t-icon name="thumb-down" :color="thumbDownColor"/>
+            <t-space key="thumbDown" :size="10">
+              <t-icon name="thumb-down" color="grey"/>
               <span>{{momentData.downVote}}</span>
             </t-space>
             <t-space key="chat" :size="10" @click="viewComment">
@@ -99,14 +89,6 @@
       </div>
     </t-content>
   </t-layout>
-  <t-popup content="发布动态">
-    <t-button shape="circle" theme="primary" size="large" style="z-index:100;position: fixed;right: 30px;bottom: 40px"
-              @click="router.push('/newMoment');">
-      <template #icon>
-        <add-icon/>
-      </template>
-    </t-button>
-  </t-popup>
   <t-drawer v-model:visible="commentVisible" header="评论区" :confirm-btn="null" :cancel-btn="null" size="42vw">
     <t-list :split="true" v-loading="commentLoading">
       <t-list-item v-for="(item, index) in commentsData" :key="index">
@@ -114,7 +96,7 @@
           <t-comment style="margin-bottom: 5px" :avatar="item.avatar" :author="item.author" :datetime="item.publishDate"
                      :content="item.content">
             <template #actions>
-              <t-space v-if="item.publisherId===user" key="delete" :size="6" @click="deleteComment(item)">
+              <t-space key="delete" :size="6" @click="deleteComment(item)">
                 <t-icon name="delete" />
                 <span>删除</span>
               </t-space>
@@ -123,37 +105,55 @@
         </template>
       </t-list-item>
     </t-list>
-    <div style="background-color: #ffffff ;position: fixed;bottom:0;width: 40vw ;height: auto">
-      <t-divider/>
-      <t-comment avatar="https://tdesign.gtimg.com/site/avatar.jpg">
-        <template #content>
-          <div class="form-container">
-            <t-textarea v-model="replyData" placeholder="请输入内容"/>
-            <t-button class="form-submit" @click="submitReply">回复</t-button>
-          </div>
-        </template>
-      </t-comment>
-    </div>
   </t-drawer>
   <t-dialog
       v-model:visible="deleteVisible"
       theme="danger"
-      header="确认删除动态"
+      header="删除违规动态"
       :on-close="closeDelete"
+      :cancel-btn="null"
+      :confirm-btn="null"
       @confirm="onDeleteClickConfirm"
-  />
+  >
+    <t-input placeholder="请输入删除原因"
+             clearable
+             :tips="deleteTips"
+             :status="deleteTips ? 'error' : ''"
+             @change="onDeleteChange"/>
+    <template #footer>
+      <t-button theme="danger" @click="onDeleteClickConfirm">确定</t-button>
+      <t-button @click="closeDelete">取消</t-button>
+    </template>
+  </t-dialog>
+  <t-dialog
+      v-model:visible="commentDeleteVisible"
+      theme="danger"
+      header="删除违规评论"
+      :on-close="closeCommentDelete"
+      :cancel-btn="null"
+      :confirm-btn="null"
+      @confirm="onCommentDeleteClickConfirm"
+  >
+    <t-input placeholder="请输入删除原因"
+             clearable
+             :tips="commentDeleteTips"
+             :status="commentDeleteTips ? 'error' : ''"
+             @change="onCommentDeleteChange"/>
+    <template #footer>
+      <t-button theme="danger" @click="onCommentDeleteClickConfirm">确定</t-button>
+      <t-button @click="closeCommentDelete">取消</t-button>
+    </template>
+  </t-dialog>
 </template>
 
 <script setup lang="jsx">
 import {Tag} from 'tdesign-vue-next';
-import {AddIcon, DeleteIcon, EditIcon, TemplateIcon} from "tdesign-icons-vue-next";
+import {DeleteIcon} from "tdesign-icons-vue-next";
 import {onMounted, ref} from 'vue';
 import router from "@/routers/index.js";
 import axios from "axios";
 import { fileServerAxios } from "@/main.js"
 import {MessagePlugin} from "tdesign-vue-next";
-
-const user = sessionStorage.getItem("uid") ? sessionStorage.getItem("uid") : '';//当前用户
 
 // ###### 动态列表 开始 ######
 
@@ -165,7 +165,7 @@ const asideLoading = ref(false);
 const getMomentBatch = async (id) => {
   try {
     asideLoading.value = true;
-    const response = await axios.get(`/comment/getMomentBatch/${id}/${radioGroupValue.value}`, {
+    const response = await axios.get(`/comment/getMomentBatch/${id}/1`, {
       headers: {
         token: sessionStorage.getItem('token'),
       }
@@ -243,14 +243,7 @@ const selectMoment = async (item) => {
       }
     });
     momentData.value = response.data.data;
-    const response2 = await axios.get(`/blog/get/${item.id}`, {
-      headers: {
-        token: sessionStorage.getItem('token')
-      }
-    });
     momentData.value.avatar = 'https://tdesign.gtimg.com/site/avatar.jpg';
-    thumbUpColor.value = response2.data.data.voteType === 1 ? 'red' : 'grey';
-    thumbDownColor.value = response2.data.data.voteType === -1 ? 'blue' : 'grey';
     for (let i = 0; i < momentData.value.mediaUrl.length; i++) {
       const fileServerResponse = await fileServerAxios.get(`/file/download`, {
         responseType: 'blob',
@@ -267,26 +260,18 @@ const selectMoment = async (item) => {
   }
 };
 
-let radioGroupValue = ref('1');// 1: 动态 2: 我的发布
-const onTypeChange = async (checkedValues) => {
-  radioGroupValue.value = checkedValues;
-  list.value = [];
-  lastId.value = -1;
-  noMoreImage.value = false;
-  await getMomentBatch(-1);
-  await selectMoment(list.value[0]);
-};
-
-const editPost = () => {
-  console.log('Edit post');
-};
-
 const deleteVisible = ref(false);
 
 const onDeleteClickConfirm = async () => {
   try {
+    if (deleteTips.value === '请输入删除原因') {
+      return;
+    }
     asideLoading.value = true;
-    await axios.delete(`/blog/deleteMoment/${momentData.value.id}`, {
+    await axios.post(`/blog/deleteMomentByAdmin`, {
+      momentId: momentData.value.id,
+      deleteReason: deleteReason,
+    },{
       headers: {
         token: sessionStorage.getItem('token'),
       }
@@ -308,81 +293,61 @@ const closeDelete = () => {
   deleteVisible.value = false;
 };
 
+const deleteTips = ref('请输入删除原因');
+let deleteReason = ref('');
+
+const onDeleteChange = (value) => {
+  deleteTips.value = value ? '' : '请输入删除原因';
+  deleteReason = value;
+};
+
 const chat = (id) => {
   console.log('Chat with ' + id);
 };
 
 // ###### 动态详情 结束 ######
 
-// ###### 点赞 开始 ######
-
-const thumbUpColor = ref('grey');
-const thumbDownColor = ref('grey');
-
-const thumbUp = async () => {
-  try {
-    asideLoading.value = true;
-  if (thumbUpColor.value === 'grey') {
-    thumbUpColor.value = 'red';
-    await axios.get(`/blog/change/${momentData.value.id}/${user}/1`, {
-      headers: {
-        token: sessionStorage.getItem('token'),
-      }
-    });
-    if (thumbDownColor.value === 'blue') {
-      thumbDownColor.value = 'grey';
-      momentData.value.downVote--;
-    }
-    momentData.value.upVote++;
-  } else {
-    thumbUpColor.value = 'grey';
-    await axios.get(`/blog/change/${momentData.value.id}/${user}/0`, {
-      headers: {
-        token: sessionStorage.getItem('token'),
-      }
-    });
-    momentData.value.upVote--;
-  }
-    asideLoading.value = false;
-  } catch (error) {
-  }
-};
-
-const thumbDown = async () => {
-  try {
-    asideLoading.value = true;
-    if (thumbDownColor.value === 'grey') {
-      thumbDownColor.value = 'blue';
-      await axios.get(`/blog/change/${momentData.value.id}/${user}/-1`, {
-        headers: {
-          token: sessionStorage.getItem('token'),
-        }
-      });
-      if (thumbUpColor.value === 'red') {
-        thumbUpColor.value = 'grey';
-        momentData.value.upVote--;
-      }
-      momentData.value.downVote++;
-    } else {
-      thumbDownColor.value = 'grey';
-      await axios.get(`/blog/change/${momentData.value.id}/${user}/0`, {
-        headers: {
-          token: sessionStorage.getItem('token'),
-        }
-      });
-      momentData.value.downVote--;
-    }
-    asideLoading.value = false;
-  } catch (error) {
-  }
-};
-
-// ###### 点赞 结束 ######
-
 // ###### 评论区 开始 ######
 // 评论区是否可见
 const commentVisible = ref(false);
 const commentLoading = ref(false);
+
+const commentDeleteVisible = ref(false);
+const commentDeleteTips = ref('请输入删除原因');
+let commentDeleteReason = ref('');
+let deleteCommentId = ref('');
+
+const onCommentDeleteClickConfirm = async () => {
+  try {
+    if (commentDeleteTips.value === '请输入删除原因') {
+      return;
+    }
+    commentLoading.value = true;
+    await axios.post(`/reply/deleteByAdmin`, {
+      replyId: deleteCommentId.value,
+      deleteReason: commentDeleteReason,
+    },{
+      headers: {
+        token: sessionStorage.getItem('token'),
+      }
+    });
+    await viewComment();
+    commentLoading.value = false;
+    commentDeleteVisible.value = false;
+    deleteCommentId.value = '';
+    await MessagePlugin.success('删除成功');
+  } catch (error) {
+  }
+};
+
+const closeCommentDelete = () => {
+  commentDeleteVisible.value = false;
+};
+
+const onCommentDeleteChange = (value) => {
+  commentDeleteTips.value = value ? '' : '请输入删除原因';
+  commentDeleteReason = value;
+};
 
 const viewComment = async () => {
   try {
@@ -400,19 +365,10 @@ const viewComment = async () => {
   }
 };
 
+
 const deleteComment = async (item) => {
-  try {
-    commentLoading.value = true;
-    await axios.delete(`/reply/delete/${item.id}`, {
-      headers: {
-        token: sessionStorage.getItem('token'),
-      }
-    });
-    await viewComment();
-    commentLoading.value = false;
-    MessagePlugin.success('删除成功');
-  } catch (error) {
-  }
+  deleteCommentId.value = item.id;
+  commentDeleteVisible.value = true;
 };
 
 const commentsData = ref([
@@ -425,31 +381,6 @@ const commentsData = ref([
     content: '评论作者名A写的评论内容。',
   },
 ]);
-
-
-const replyData = ref('');
-const submitReply = async () => {
-  if (replyData.value === '') {
-    MessagePlugin.error('请输入内容');
-    return;
-  }
-  commentLoading.value = true;
-  await axios.post(`/reply/add`, {
-    commentId: momentData.value.id,
-    publisherId: user,
-    content: replyData.value,
-    publishDate: new Date(),
-    upVote: 0,
-    downVote: 0,
-  }, {
-    headers: {
-      token: sessionStorage.getItem('token'),
-    }
-  }).catch();
-  replyData.value = '';
-  await viewComment();
-  commentLoading.value = false;
-};
 
 // ###### 评论区 结束 ######
 
@@ -481,17 +412,6 @@ const submitReply = async () => {
 
 .image-shadow:hover {
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
-}
-
-.form-container {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  margin-bottom: 20px;
-
-  .form-submit {
-    margin-top: 8px;
-  }
 }
 
 h1 {

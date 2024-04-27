@@ -30,4 +30,6 @@ public interface INotificationService extends IService<Notification> {
     JSONArray getNotificationsOfOneUserByPage(String userId, int pageNum, int pageSize);
 
     void deleteNotification(String notificationId);
+
+    void readAll(String uid);
 }

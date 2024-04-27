@@ -43,15 +43,16 @@ public class AttachmentController {
     public Result uploadStart(HttpServletResponse response, HttpServletRequest request, @RequestBody JSONObject requestBody) {
         int userType = (int) request.getAttribute("loginUserType");
         String fileDir = requestBody.getString("fileDir");
-        return Result.success(response, attachmentService.uploadStart(userType, fileDir));
+        return Result.success(response, attachmentService.uploadStart(userType, fileDir, null));
     }
 
     @PostMapping("/uploadFinish")
-    @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, content = @Content(examples = @ExampleObject("{\"filePath\": \"test.txt\"}")))
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, content = @Content(examples = @ExampleObject("{\"filePath\": \"test.txt\", \"requestData\": {}}")))
     public Result uploadFinish(HttpServletResponse response, HttpServletRequest request, @RequestBody JSONObject requestBody) {
         int userType = (int) request.getAttribute("loginUserType");
         String filePath = requestBody.getString("filePath");
-        return Result.success(response, attachmentService.uploadFinish(userType, filePath));
+        JSONObject requestData = requestBody.getJSONObject("requestData");
+        return Result.success(response, attachmentService.uploadFinish(userType, filePath, requestData));
     }
 
     @PostMapping("/uploadBatchStart")
@@ -64,15 +65,16 @@ public class AttachmentController {
         int userType = (int) request.getAttribute("loginUserType");
         List<String> fileDirList = requestBody.getList("fileDirList", String.class);
         List<String> fileNameList = requestBody.getList("fileNameList", String.class);
-        return Result.success(response, attachmentService.uploadBatchStart(userType, fileDirList, fileNameList));
+        return Result.success(response, attachmentService.uploadBatchStart(userType, fileDirList, fileNameList, null));
     }
 
     @PostMapping("/uploadBatchFinish")
-    @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, content = @Content(examples = @ExampleObject("{\"filePathList\": [\"test/file.txt\", \"test1/file1.txt\", \"test2/file2.txt\"]}")))
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, content = @Content(examples = @ExampleObject("{\"filePathList\": [\"test/file.txt\", \"test1/file1.txt\", \"test2/file2.txt\"], \"requestData\": {}}")))
     public Result uploadBatchFinish(HttpServletResponse response, HttpServletRequest request, @RequestBody JSONObject requestBody) {
         int userType = (int) request.getAttribute("loginUserType");
         List<String> filePathList = requestBody.getList("filePathList", String.class);
-        return Result.success(response, attachmentService.uploadBatchFinish(userType, filePathList));
+        JSONObject requestData = requestBody.getJSONObject("requestData");
+        return Result.success(response, attachmentService.uploadBatchFinish(userType, filePathList, requestData));
     }
 
     @PostMapping("/deleteById")

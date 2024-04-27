@@ -66,7 +66,7 @@ const renderMarkdown = (text) => {
 };
 
 // const user = sessionStorage.getItem("uid") ? sessionStorage.getItem("uid") : '';//当前用户
-const user = sessionStorage.getItem("uid") ? sessionStorage.getItem("uid") : '12112003';//当前用户
+const user = sessionStorage.getItem("uid") ? sessionStorage.getItem("uid") : '';//当前用户
 const chatModel = ref('GPT3.5');//聊天对象
 const chatModels = ref([
   {value: 'GPT3.5', label: 'OpenAI GPT3.5 Turbo'},
