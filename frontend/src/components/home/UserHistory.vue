@@ -103,13 +103,6 @@ const clickEvent = (eventId) => {
 
       })
       .catch((error) => {
-        if (error.response) {
-          // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-          MessagePlugin.warning(error.response.data.msg);
-        } else {
-          // 一些错误是在设置请求的时候触发
-          MessagePlugin.warning(error.message);
-        }
       });
 };
 // const eventType = inject('eventType')
@@ -155,13 +148,6 @@ axios.post(`/history/getByUserId`, {
 
     })
     .catch((error) => {
-      if (error.response) {
-        // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-        MessagePlugin.warning(error.response.data.msg);
-      } else {
-        // 一些错误是在设置请求的时候触发
-        MessagePlugin.warning(error.message);
-      }
     });
 
 

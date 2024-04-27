@@ -24,7 +24,7 @@
         </t-form-item>
 
         <t-form-item>
-          <t-button theme="primary" shape="round" type="submit" block style="height: 40px; margin-bottom: 8px">登录
+          <t-button theme="primary" shape="round" type="submit" block style="height: 40px; margin-bottom: 8px" :loading="loadingg">登录
           </t-button>
         </t-form-item>
       </t-form>
@@ -68,7 +68,7 @@
 </template>
 
 <script setup>
-import {getCurrentInstance, inject, reactive} from 'vue';
+import {getCurrentInstance, inject, reactive, ref} from 'vue';
 import {MessagePlugin} from 'tdesign-vue-next';
 import {DesktopIcon, LockOnIcon} from 'tdesign-icons-vue-next';
 import axios from "axios";
@@ -83,6 +83,8 @@ const formData = reactive({
 const onReset = () => {
   MessagePlugin.success('重置成功');
 };
+
+const loadingg = ref(false);
 
 // const apiUrl = inject('$API_URL');
 // const {isValid, validate} = useForm('formRef')
@@ -102,11 +104,13 @@ const rules = {
 
 const handleSubmit = ({validateResult}) => {
   if (validateResult === true) {
+    loadingg.value=true
     axios.post("/login", {
       id: formData.account,
       password: formData.password
     })
         .then((response) => {
+          loadingg.value=false;
           // alert(JSON.stringify(response.data.data))
           const rd = response.data.data.id;
           const type = response.data.data.type
@@ -126,7 +130,7 @@ const handleSubmit = ({validateResult}) => {
           } else {//正常用户
             router.push("/HomePage");
           }
-        })
+        }).catch(()=>{loadingg.value=false;})
   } else {
     MessagePlugin.warning("Please make sure the input format is correct!")
     // alert('lll')
