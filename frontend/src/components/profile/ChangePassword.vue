@@ -16,6 +16,15 @@
   >
     历史记录
   </t-button>
+
+  <t-button
+      class="btn"
+      theme="default"
+      variant="base"
+      @click="router.push('/myPublishes');"
+  >
+    我的发布
+  </t-button>
 <t-dialog
     v-model:visible="visibleBody"
     attach="body"

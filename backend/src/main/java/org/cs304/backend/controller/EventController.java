@@ -117,6 +117,15 @@ public class EventController {
         return Result.success(response, eventService.getBatchByIds(userType,idList));
     }
 
+
+    //获得我发布的活动
+    @GetMapping("/getMyPost/{publisherId}")
+    public Result getMyPost(@NotNull HttpServletRequest request, HttpServletResponse response, @PathVariable("publisherId")int publisherId, @RequestHeader("token") String token) {
+//        System.out.println(publisherId+"hhhhhhhhh");
+        int userType = (int) request.getAttribute("loginUserType");
+        return Result.success(response,eventService.getEventByPublisher(userType,publisherId));
+    }
+
     @GetMapping("/getEventDetail/{eventId}")
     public Result getEventDetail(@NotNull HttpServletRequest request, HttpServletResponse response, @PathVariable("eventId")int eventId, @RequestHeader("token") String token) {
         int userType = (int) request.getAttribute("loginUserType");
