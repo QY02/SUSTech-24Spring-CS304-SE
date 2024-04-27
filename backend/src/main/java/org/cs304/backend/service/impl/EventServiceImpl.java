@@ -17,6 +17,7 @@ import org.cs304.backend.mapper.OrderRecordMapper;
 import org.cs304.backend.mapper.SeatMapper;
 import org.cs304.backend.service.IEventService;
 import org.cs304.backend.service.IEventSessionService;
+import org.cs304.backend.utils.Result;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -123,6 +124,8 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
         return eventSessionMapper.selectList(new QueryWrapper<EventSession>().eq("event_id", eventId)).stream().filter(eventSession -> (userType == constant_User.ADMIN) || (eventSession.getVisible())).collect(Collectors.toList());
     }
 
+
+
 //    @Override
 //    public Event getEventByEventId(int userType, Integer eventId) {
 //        if (eventId == null) {
@@ -182,7 +185,16 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
         }
         return new JSONArray();
     }
+    public List<Event> getEventByPublisher(int userType, Integer publisherId) {
+        if (publisherId == null) {
+            throw new ServiceException("400", "Invalid event id");
+        }
+        QueryWrapper<Event> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("publisher_id", publisherId);
+//        System.out.println(eventMapper.selectList(queryWrapper));
+        return eventMapper.selectList(queryWrapper);
 
+    }
     @Override
     public List<Event> getBatchByIds(int userType, List<Integer> idList) {
         List<Event> result = new ArrayList<>();

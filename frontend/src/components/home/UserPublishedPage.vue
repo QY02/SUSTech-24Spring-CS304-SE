@@ -1,31 +1,31 @@
 <template>
-
+  <h2 style="margin-left: 20px">我的发布</h2>
   <div id="event">
     <t-card
         v-for="(item,index) in curEvents"
         :key="index"
         :title="item['name']" :subtitle="item['content']" :cover=cover :style="{ width: '400px' }" hover-shadow
-    @click="clickEvent(item['id'])">
+        @click="clickEvent(item['id'])">
       <template #actions>
-<!--        <t-dropdown :options="options" :min-column-width="112" @click="clickHandler">-->
-<!--          <div class="tdesign-demo-dropdown-trigger">-->
-            <a v-if="item['type']===0">
-              <t-tag theme="success" variant="light" style="margin-right: 20px">表演</t-tag>
-            </a>
-            <a v-if="item['type']===1">
-              <t-tag theme="primary" variant="light" style="margin-right: 20px">讲座</t-tag>
-            </a>
-            <a v-if="item['type']===2">
-              <t-tag theme="danger" variant="light" style="margin-right: 20px">比赛</t-tag>
-            </a>
-            <a v-if="item['type']===3">
-              <t-tag variant="light" style="margin-right: 20px">其他</t-tag>
-            </a>
-<!--            <t-button variant="text" shape="square">-->
-<!--              <more-icon/>-->
-<!--            </t-button>-->
-<!--          </div>-->
-<!--        </t-dropdown>-->
+        <!--        <t-dropdown :options="options" :min-column-width="112" @click="clickHandler">-->
+        <!--          <div class="tdesign-demo-dropdown-trigger">-->
+        <a v-if="item['type']===0">
+          <t-tag theme="success" variant="light" style="margin-right: 20px">表演</t-tag>
+        </a>
+        <a v-if="item['type']===1">
+          <t-tag theme="primary" variant="light" style="margin-right: 20px">讲座</t-tag>
+        </a>
+        <a v-if="item['type']===2">
+          <t-tag theme="danger" variant="light" style="margin-right: 20px">比赛</t-tag>
+        </a>
+        <a v-if="item['type']===3">
+          <t-tag variant="light" style="margin-right: 20px">其他</t-tag>
+        </a>
+        <!--            <t-button variant="text" shape="square">-->
+        <!--              <more-icon/>-->
+        <!--            </t-button>-->
+        <!--          </div>-->
+        <!--        </t-dropdown>-->
       </template>
       <template #footer>
         <t-row :align="'middle'" justify="center" style="gap: 24px;">
@@ -138,7 +138,8 @@ const globalProperties = getCurrentInstance().appContext.config.globalProperties
 const apiBaseUrl = globalProperties.$apiBaseUrl;
 // alert(apiBaseUrl)
 axios.defaults.baseURL = apiBaseUrl;
-axios.post(`/event/getAllEvents`, {}, {
+const publisherId=sessionStorage.getItem('uid')
+axios.get(`/event/getMyPost/${publisherId}`, {
   params: {},
   headers: {
     token: sessionStorage.getItem('token')
@@ -146,7 +147,7 @@ axios.post(`/event/getAllEvents`, {}, {
 })
     .then((response) => {
       // alert(response)
-      events.value = response.data.data.filter(events => events['status']===1)
+      events.value = response.data.data
       curEvents.value = events.value
       tmpEvents.value = events.value
       // alert(JSON.stringify(events.value))

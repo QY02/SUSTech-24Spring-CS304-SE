@@ -5,10 +5,10 @@
         v-for="(item,index) in curEvents"
         :key="index"
         :title="item['name']" :subtitle="item['content']"  :style="{ width: '400px' }" hover-shadow
-        @click="clickEvent(item['id'])">
+        @click="clickEvent(item['eventId'])">
       <template #actions>
-        <t-dropdown :options="options" :min-column-width="112" @click="clickHandler">
-          <div class="tdesign-demo-dropdown-trigger">
+<!--        <t-dropdown :options="options" :min-column-width="112" @click="clickHandler">-->
+<!--          <div class="tdesign-demo-dropdown-trigger">-->
 
             <p v-if="item['type']===0">
               <t-tag theme="success" variant="light" style="margin-right: 20px">表演</t-tag>
@@ -23,11 +23,11 @@
               <t-tag variant="light" style="margin-right: 20px">其他</t-tag>
             </p>
             {{item['visitTime'].replace("T"," ")}}
-            <t-button variant="text" shape="square">
-              <more-icon/>
-            </t-button>
-          </div>
-        </t-dropdown>
+<!--            <t-button variant="text" shape="square">-->
+<!--              <more-icon/>-->
+<!--            </t-button>-->
+<!--          </div>-->
+<!--        </t-dropdown>-->
       </template>
       <template #footer>
         <t-row :align="'middle'" justify="center" style="gap: 24px;">
@@ -90,6 +90,8 @@ const clickHandler = (data) => {
 };
 const clickEvent = (eventId) => {
   MessagePlugin.success(`${sessionStorage.getItem('uid')} 选中【${eventId}】`);
+
+  // router.push('/event');
   axios.post(`/history/add`, {
     "eventId": eventId,
     "userId": sessionStorage.getItem('uid')
@@ -100,7 +102,8 @@ const clickEvent = (eventId) => {
     }
   })
       .then((response) => {
-
+        sessionStorage.setItem('eventId',eventId)
+        router.push('/event');
       })
       .catch((error) => {
         if (error.response) {
@@ -112,6 +115,7 @@ const clickEvent = (eventId) => {
         }
       });
 };
+
 // const eventType = inject('eventType')
 const eventType = ref(sessionStorage.getItem('eventType'))
 
@@ -151,7 +155,7 @@ axios.post(`/history/getByUserId`, {
       events.value = response.data.data
       curEvents.value = response.data.data
       // tmpEvents.value = response.data.data
-      // alert(JSON.stringify(events.value))
+      // alert(JSON.stringify(curEvents.value))
 
     })
     .catch((error) => {
