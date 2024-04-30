@@ -144,6 +144,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
                 entityAttachmentRelation.setAttachmentType(constant_AttachmentType.IMAGE);
             }
             entityAttachmentRelation.setAttachmentId(attachment.getId());
+            entityAttachmentRelationMapper.insert(entityAttachmentRelation);
         });
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("commentId",commentId);
