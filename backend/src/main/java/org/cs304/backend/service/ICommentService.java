@@ -20,5 +20,5 @@ public interface ICommentService extends IService<Comment> {
     JSONObject createMomentStart(JSONObject comment, String userId);
 
     @Transactional(rollbackFor = {Exception.class})
-    JSONObject createMomentFinish(JSONObject comment);
+    JSONObject createMomentFinish(JSONObject requestData);
 }

@@ -1,139 +1,143 @@
 <template>
-<div v-if="eventDetail.length!==0">
-<div class="card">
-  <div class="card-1">
-    <t-image
-      src="https://tdesign.gtimg.com/demo/demo-image-1.png"
-      fit="fill"
-      :style="{ width: '100%', height: '100%' }"
-      shape="round"
-    />
-  </div>
-  <div class="right">
-    <div class="card-2">
-      <h2>{{eventDetail.name}}</h2>
-    </div>
-    <div class="card-3">
-      <t-tag size="large">{{ titleDict[eventDetail.type] }}</t-tag>
-    </div>
-    <div class="bottom">
-    <div class="card-4">
-    <t-space size="24px">
-      <t-button shape="circle" theme="primary" @click="navigateToTab('review')">
-        <template #icon> <HeartIcon /></template>
-      </t-button>
-      <t-button shape="circle" theme="primary">
-        <template #icon> <HeartFilledIcon /></template>
-      </t-button>
-    </t-space>
+  <div v-if="!loading && eventDetail.length !== 0">
+    <div class="card">
+      <div class="card-1">
+        <t-image src="https://tdesign.gtimg.com/demo/demo-image-1.png" fit="fill"
+          :style="{ width: '100%', height: '100%' }" shape="round" />
       </div>
-      <div class="card-4" style="margin-left: 30px ">
-        <t-tag size="large" theme="primary"><template #icon><StarFilledIcon /></template>4.5</t-tag>
+      <div class="right">
+        <div class="card-2">
+          <h2>{{ eventDetail.name }}</h2>
+        </div>
+        <div class="card-3">
+          <t-tag size="large">{{ titleDict[eventDetail.type] }}</t-tag>
+        </div>
+        <div class="bottom">
+          <div class="card-4">
+            <t-space size="24px">
+              <t-button shape="circle" theme="primary" @click="navigateToTab('review')">
+                <template #icon>
+                  <HeartIcon />
+                </template>
+              </t-button>
+              <t-button shape="circle" theme="primary">
+                <template #icon>
+                  <HeartFilledIcon />
+                </template>
+              </t-button>
+            </t-space>
+          </div>
+          <div class="card-4" style="margin-left: 30px ">
+            <t-tag size="large" theme="primary"><template #icon>
+                <StarFilledIcon />
+              </template>4.5</t-tag>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
 
 
 
 
-  <el-affix :offset="55">
-    <t-tabs :value="value_lable" size="large" @change="onTabChange" :affix-props="{ offsetTop: 150 }">
-            <t-tab-panel value="events" label="EVENTS"></t-tab-panel>
-            <t-tab-panel value="about" label="EVENT DETAILS"></t-tab-panel>
-            <t-tab-panel value="price" label="TICKET PRICING"></t-tab-panel>
-            <t-tab-panel value="policy" label="ADMISSION POLICY"></t-tab-panel>
-            <t-tab-panel value="gallery" label="GALLERY"></t-tab-panel>
-            <t-tab-panel value="reviews" label="REVIEWS"></t-tab-panel>
-    </t-tabs>
-  </el-affix>
+    <el-affix :offset="55">
+      <t-tabs :value="value_lable" size="large" @change="onTabChange" :affix-props="{ offsetTop: 150 }">
+        <t-tab-panel value="events" label="EVENTS"></t-tab-panel>
+        <t-tab-panel value="about" label="EVENT DETAILS"></t-tab-panel>
+        <t-tab-panel value="price" label="TICKET PRICING"></t-tab-panel>
+        <t-tab-panel value="policy" label="ADMISSION POLICY"></t-tab-panel>
+        <t-tab-panel value="gallery" label="GALLERY"></t-tab-panel>
+        <t-tab-panel value="reviews" label="REVIEWS"></t-tab-panel>
+      </t-tabs>
+    </el-affix>
 
 
     <!-- event part -->
-  <div :id="`${path}#events`" style="height: 60px;"></div>
-  <t-space style="display: flex; width: 100%; margin-left: 24px;">
+    <div :id="`${path}#events`" style="height: 60px;"></div>
+    <t-space style="display: flex; width: 100%; margin-left: 24px;">
       <div>
         <div class="title">EVENTS</div>
         <div class="line"></div>
       </div>
       <div style="margin-top: 30px; display: flex; justify-content: flex-end; margin-right:79px ;">
-          <div v-if="show_event_type">
-            <t-space>
-              <t-button theme="primary" shape="square" variant="base" @click="onClickEventType(true)">
-                <list-icon slot="icon" />
-              </t-button>
-              <t-button shape="square" variant="outline" @click="onClickEventType(false)">
-                <table-icon slot="icon" />
-              </t-button>
-            </t-space>
-          </div>
-          <div v-else>
-            <t-space>
-              <t-button shape="square" variant="outline" @click="onClickEventType(true)">
-                <list-icon slot="icon" />
-              </t-button>
-              <t-button  theme="primary" shape="square" variant="base" @click="onClickEventType(false)">
-                <table-icon slot="icon" />
-              </t-button>
-            </t-space>
-          </div>
+        <div v-if="show_event_type">
+          <t-space>
+            <t-button theme="primary" shape="square" variant="base" @click="onClickEventType(true)">
+              <list-icon slot="icon" />
+            </t-button>
+            <t-button shape="square" variant="outline" @click="onClickEventType(false)">
+              <table-icon slot="icon" />
+            </t-button>
+          </t-space>
+        </div>
+        <div v-else>
+          <t-space>
+            <t-button shape="square" variant="outline" @click="onClickEventType(true)">
+              <list-icon slot="icon" />
+            </t-button>
+            <t-button theme="primary" shape="square" variant="base" @click="onClickEventType(false)">
+              <table-icon slot="icon" />
+            </t-button>
+          </t-space>
+        </div>
       </div>
-  </t-space>
-  <el-card style="height: auto; padding: 5px;  max-width: 100% ; margin-right: 30px; margin-left: 30px; margin-bottom: 40px;">
-    <div v-if="show_event_type" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
-      <t-space direction="vertical" style="margin-top: 20px; ">
-        <t-collapse style="width: 50vw">
-        <t-collapse-panel v-for="(session, index) in sessionInformation"
-                          :header="`${dateToString(session.startTime)} - ${dateToString(session.endTime)} ${session.venue}`">
-          <div class="choose-session-detail-div">
-            <p v-if="session.registrationRequired" class="choose-session-detail-text">
-              {{
-                `报名时间: ${dateToString(session.registrationStartTime)} - ${dateToString(session.registrationEndTime)}`
-              }}</p>
-            <p v-else class="choose-session-detail-text">无需报名</p>
-            <p class="choose-session-detail-text">{{ `人数限制: ${session.minSize} - ${session.maxSize}` }}</p>
-          </div>
-        </t-collapse-panel>
-      </t-collapse>
-      </t-space>
-      <br>
-      <t-button @click="pushRouter('book')">前往报名</t-button>
+    </t-space>
+    <el-card
+      style="height: auto; padding: 5px;  max-width: 100% ; margin-right: 30px; margin-left: 30px; margin-bottom: 40px;">
+      <div v-if="show_event_type"
+        style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+        <t-space direction="vertical" style="margin-top: 20px; ">
+          <t-collapse style="width: 50vw">
+            <t-collapse-panel v-for="(session, index) in sessionInformation"
+              :header="`${dateToString(session.startTime)} - ${dateToString(session.endTime)} ${session.venue}`">
+              <div class="choose-session-detail-div">
+                <p v-if="session.registrationRequired" class="choose-session-detail-text">
+                  {{
+                    `报名时间: ${dateToString(session.registrationStartTime)} - ${dateToString(session.registrationEndTime)}`
+                  }}</p>
+                <p v-else class="choose-session-detail-text">无需报名</p>
+                <p class="choose-session-detail-text">{{ `人数限制: ${session.minSize} - ${session.maxSize}` }}</p>
+              </div>
+            </t-collapse-panel>
+          </t-collapse>
+        </t-space>
+        <br>
+        <t-button @click="pushRouter('book')">前往报名</t-button>
 
-      <!-- <EventTicketTable></EventTicketTable> -->
-    </div>
-    <div v-else>
-      <EventTicketCalender></EventTicketCalender>
-    </div>
-  </el-card>
-  <div style="height: 20px;"></div>
+        <!-- <EventTicketTable></EventTicketTable> -->
+      </div>
+      <div v-else>
+        <EventTicketCalender></EventTicketCalender>
+      </div>
+    </el-card>
+    <div style="height: 20px;"></div>
 
 
 
     <!-- about part -->
-  <div :id="`${path}#about`" style="height: 36px;"></div>
-  <div class="card" style="flex-direction: column;">
-    <t-space style="display: flex; width: 100%;">
-      <div>
+    <div :id="`${path}#about`" style="height: 36px;"></div>
+    <div class="card" style="flex-direction: column;">
+      <t-space style="display: flex; width: 100%;">
+        <div>
           <div class="title">EVENT DETAILS</div>
           <div class="line"></div>
         </div>
-    </t-space>
-    <div style="margin-left: 25px;margin-right: 25px; margin-bottom: 40px;">
-      {{ eventDetail.content }}
+      </t-space>
+      <div style="margin-left: 25px;margin-right: 25px; margin-bottom: 40px;">
+        {{ eventDetail.content }}
+      </div>
     </div>
-  </div>
 
 
 
-  <!-- price part -->
-  <div :id="`${path}#price`" style="height: 60px;"></div>
-  <t-space style="display: flex; width: 100%; margin-left: 24px;">
+    <!-- price part -->
+    <div :id="`${path}#price`" style="height: 60px;"></div>
+    <t-space style="display: flex; width: 100%; margin-left: 24px;">
       <div>
         <div class="title">TICKET PRICING</div>
         <div class="line"></div>
       </div>
-  </t-space>
-  <div class="ticket_card" style="margin-left: 55px; margin-top: -10px;">
+    </t-space>
+    <div class="ticket_card" style="margin-left: 55px; margin-top: -10px;">
       <p style="  color: rgba(7, 63, 216, 1); font-size: 18px; font-weight: 700; letter-spacing: 1px;">
         GENERAL SALE
       </p>
@@ -150,115 +154,116 @@
       <p style="  margin-top: 0.4rem; line-height: 1.625; color: rgb(70, 73, 79);;">
         门票价格：¥{{ eventDetail.lowestPrice }} - ¥{{ eventDetail.highestPrice }}
       </p>
-  </div>
-  <div style="height: 20px;"></div>
-  <div style="height: 20px;"></div>
+    </div>
+    <div style="height: 20px;"></div>
+    <div style="height: 20px;"></div>
 
 
 
-  <!-- policy part -->
-  <div :id="`${path}#policy`" style="height: 36px;"></div>
-  <div class="card" style="flex-direction: column;">
-    <t-space style="display: flex; width: 100%;">
+    <!-- policy part -->
+    <div :id="`${path}#policy`" style="height: 36px;"></div>
+    <div class="card" style="flex-direction: column;">
+      <t-space style="display: flex; width: 100%;">
         <div>
           <div class="title">ADMISSION POLICY</div>
           <div class="line"></div>
         </div>
-    </t-space>
-    <div class="ticket_card" style="margin-left: 55px; margin-top: -10px;">
+      </t-space>
+      <div class="ticket_card" style="margin-left: 55px; margin-top: -10px;">
         <p style="  margin-top: 0.4rem; color: rgb(70, 73, 79);font-weight: 600;">
           Rules
         </p>
         <p style="  margin-top: 0.4rem; line-height: 1.625;color: rgb(70, 73, 79);;">
           {{ eventDetail.eventPolicy }}
         </p>
+      </div>
+      <div style="height: 40px;"></div>
     </div>
-    <div style="height: 40px;"></div>
-  </div>
-  
 
 
-  <!-- gallery part -->
-  <div :id="`${path}#gallery`" style="height: 60px;"></div>
-  <t-space style="display: flex; width: 100%; margin-left: 24px;">
+
+    <!-- gallery part -->
+    <div :id="`${path}#gallery`" style="height: 60px;"></div>
+    <t-space style="display: flex; width: 100%; margin-left: 24px;">
       <div>
         <div class="title">GALLERY</div>
         <div class="line"></div>
       </div>
-  </t-space>
-  <el-card style="padding: 5px; height: 390px ; max-width: 100% ; margin-right: 30px; margin-left: 30px; margin-bottom: 40px;">
-    <el-carousel :interval="4000" type="card" height="300px" width="100%" indicator-position="outside">
+    </t-space>
+    <el-card
+      style="padding: 5px; height: 390px ; max-width: 100% ; margin-right: 30px; margin-left: 30px; margin-bottom: 40px;">
+      <el-carousel :interval="4000" type="card" height="300px" width="100%" indicator-position="outside">
         <el-carousel-item v-for="item in 6" :key="item">
-          <h3 text="2xl" justify="center"><t-image
-          src="https://tdesign.gtimg.com/demo/demo-image-1.png"
-          fit="fill"
-          :style="{ width: '100%', height: '100%' }"
-          shape="round"
-        /></h3>
+          <h3 text="2xl" justify="center"><t-image src="https://tdesign.gtimg.com/demo/demo-image-1.png" fit="fill"
+              :style="{ width: '100%', height: '100%' }" shape="round" /></h3>
         </el-carousel-item>
       </el-carousel>
-    <div style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
-      <t-button @click="pushRouter('gallery')">前往画廊</t-button>
-    </div>
-  </el-card>
-  <div style="height: 40px;"></div>
+      <div style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+        <t-button @click="pushRouter('gallery')">前往画廊</t-button>
+      </div>
+    </el-card>
+    <div style="height: 40px;"></div>
 
 
-  <!-- review part -->
-  <div :id="`${path}#reviews`" style="height: 36px;"></div>
-  <div class="card" style="flex-direction: column;">
-    <t-space style="display: flex; width: 100%;">
+    <!-- review part -->
+    <div :id="`${path}#reviews`" style="height: 36px;"></div>
+    <div class="card" style="flex-direction: column;">
+      <t-space style="display: flex; width: 100%;">
+        <div>
+          <div class="title">REVIEWS</div>
+          <div class="line"></div>
+        </div>
+        <div style="margin-top: 30px; display: flex; justify-content: flex-end; margin-right:30px ;">
+          <t-button>评论</t-button>
+        </div>
+      </t-space>
       <div>
-        <div class="title">REVIEWS</div>
-        <div class="line"></div>
-      </div>
-      <div style="margin-top: 30px; display: flex; justify-content: flex-end; margin-right:30px ;">
-        <t-button>评论</t-button>
-      </div>
-    </t-space>
-    <div>
-      <t-list :split="true">
-        <t-list-item v-for="(item, index) in commentsData" :key="index">
-          <template #content>
-            <div class="comment_card">
-              <div class="stars"><t-rate :default-value="4.5" allow-half disabled size="16" /></div>
+        <t-list :split="true">
+          <t-list-item v-for="(item, index) in commentsData" :key="index">
+            <template #content>
+              <div class="comment_card">
+                <div class="stars"><t-rate :default-value="4.5" allow-half disabled size="16" /></div>
                 <div class="comment_infos">
                   <p class="date-time">
-                     {{item.datetime}}
+                    {{ item.datetime }}
                   </p>
                   <p class="description">
                     {{ item.content }}
                   </p>
+                </div>
+                <div class="author">
+                  — {{ item.author }}
+                </div>
               </div>
-              <div class="author">
-                — {{ item.author }}
-              </div>
-            </div>
-          </template>
-        </t-list-item>
-      </t-list>
+            </template>
+          </t-list-item>
+        </t-list>
+      </div>
+      <div style="height: 40px;"></div>
     </div>
-    <div style="height: 40px;"></div>
   </div>
-</div>
+  <div v-else>
+    <SkeletonPage></SkeletonPage>
+  </div>
 </template>
 
 
 
 <script setup>
-import {sessionInformation} from '@/components/book/Steps.vue';
+import { sessionInformation } from '@/components/book/Steps.vue';
 import { HeartIcon, HeartFilledIcon, ListIcon, TableIcon, StarFilledIcon, DiscountIcon } from 'tdesign-icons-vue-next';
 import { computed, getCurrentInstance, ref } from 'vue';
 import axios from "axios";
 import get from 'lodash/get';
-import { defineExpose } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
 import EventTicketCalender from './EventTicketCalender.vue';
 import ChooseSession from '../book/ChooseSession.vue';
 import router from '@/routers';
+import SkeletonPage from './SkeletonPage.vue';
 const value_lable = ref('events');
 
 const show_event_type = ref(true);
+
+const loading = ref(true);
 
 const onClickEventType = (value) => {
   show_event_type.value = value;
@@ -290,7 +295,7 @@ const dateToString = (date) => {
 }
 
 
-const pushRouter = (value)=>{
+const pushRouter = (value) => {
   switch (value) {
     case 'gallery':
       router.push('/gallery');
@@ -304,15 +309,78 @@ const pushRouter = (value)=>{
 
 const token = sessionStorage.getItem('token')
 const eventId = sessionStorage.getItem('eventId')
+const uid = sessionStorage.getItem('uid')
 const eventDetail = ref([])
-axios.get(`/event/getEventDetail/${eventId}`, {
-  headers: {
-    token: token
-  }
-}).then((response) => {
-  eventDetail.value = response.data.data
-}).catch(()=>{})
+const isFavorite = ret(false);
 
+const addHistory = () => {
+  axios.post(`/history/add`, {
+    "eventId": eventId,
+    "userId": uid
+  }, {
+    params: {},
+    headers: {
+      token: sessionStorage.getItem('token')
+    }
+  })
+    .then((response) => {})
+    .catch((error) => {
+    });
+}
+
+ const getEventDetail = () => {
+  loading.value = true;
+  axios.get(`/event/getEventDetail/${eventId}`, {
+    headers: {
+      token: token
+    }
+  }).then((response) => {
+    eventDetail.value = response.data.data
+    addHistory();
+    getFavorite();
+    loading.value = false;
+  }).catch(() => { })
+}
+
+const getFavorite = () => {
+  axios.post(`/favorite/isFavorite`, {
+    "eventId": eventId,
+    "userId": uid
+  }, {
+    headers: {
+      token: token
+    }
+  }).then((response) => {
+    isFavorite.value = response.data.data
+  }).catch(() => { })
+}
+
+const addFavorite = () => {
+  axios.post(`/favorite/add`, {
+    "eventId": eventId,
+    "userId": uid
+  }, {
+    headers: {
+      token: token
+    }
+  }).then((response) => {
+  }).catch(() => { })
+}
+
+const deleteFavorite = () => {
+  axios.delete(`/favorite/delete`, {
+    "eventId": eventId,
+    "userId": uid
+  }, {
+    headers: {
+      token: token
+    }
+  }).then((response) => {
+  }).catch(() => { })
+}
+
+
+getEventDetail();
 
 defineExpose({ navigateToTab });
 
@@ -329,63 +397,7 @@ const commentsData = [
     author: '评论作者名A',
     datetime: '今天16:38',
     content: '评论作者名A写的评论内容。',
-  },
-  {
-    id: 'B',
-    avatar: 'https://tdesign.gtimg.com/site/avatar.jpg',
-    author: '评论作者名B',
-    datetime: '今天16:38',
-    content: '评论作者名B写的评论内容。评论作者名B写的评论内容。评论作者名B写的评论内容。评论作者名B写的评论内容。评论作者名B写的评论内容。评论作者名B写的评论内容。评论作者名B写的评论内容。评论作者名B写的评论内容。评论作者名B写的评论内容。评论作者名B写的评论内容。评论作者名B写的评论内容。',
-  },
-  {
-    id: 'C',
-    avatar: 'https://tdesign.gtimg.com/site/avatar.jpg',
-    author: '评论作者名C',
-    datetime: '今天16:38',
-    content: '评论作者名C写的评论内容。',
-  },
-  {
-    id: 'A',
-    avatar: 'https://tdesign.gtimg.com/site/avatar.jpg',
-    author: '评论作者名A',
-    datetime: '今天16:38',
-    content: '评论作者名A写的评论内容。',
-  },
-  {
-    id: 'B',
-    avatar: 'https://tdesign.gtimg.com/site/avatar.jpg',
-    author: '评论作者名B',
-    datetime: '今天16:38',
-    content: '评论作者名B写的评论内容。',
-  },
-  {
-    id: 'C',
-    avatar: 'https://tdesign.gtimg.com/site/avatar.jpg',
-    author: '评论作者名C',
-    datetime: '今天16:38',
-    content: '评论作者名C写的评论内容。',
-  },
-  {
-    id: 'A',
-    avatar: 'https://tdesign.gtimg.com/site/avatar.jpg',
-    author: '评论作者名A',
-    datetime: '今天16:38',
-    content: '评论作者名A写的评论内容。',
-  },
-  {
-    id: 'B',
-    avatar: 'https://tdesign.gtimg.com/site/avatar.jpg',
-    author: '评论作者名B',
-    datetime: '今天16:38',
-    content: '评论作者名B写的评论内容。',
-  },
-  {
-    id: 'C',
-    avatar: 'https://tdesign.gtimg.com/site/avatar.jpg',
-    author: '评论作者名C',
-    datetime: '今天16:38',
-    content: '评论作者名C写的评论内容。',
-  },
+  }
 ];
 
 
@@ -394,17 +406,18 @@ const commentsData = [
 
 
 
-<style lang="css">
+<style lang="css" scoped>
 .anchor-demo {
   border: 1px solid transparent;
   padding: 20px;
   margin: -20px;
 }
+
 .anchor-demo:target {
   border-color: #1890ff;
 }
 
-.event{
+.event {
   margin-left: 25px;
   margin-right: 25px;
   display: flex;
@@ -480,7 +493,8 @@ const commentsData = [
 }
 
 .content {
-  height: 2000px; /* 用于模拟页面滚动 */
+  height: 2000px;
+  /* 用于模拟页面滚动 */
 }
 
 button#scrollButton {
@@ -507,16 +521,16 @@ button#scrollButton.fixed {
 }
 
 .line {
-    width: 70px;
-    height: 4px;
-    margin-top: -15px;
-    margin-bottom: 20px;
-    margin-left: 30px;
-    background-color: black;
-  }
+  width: 70px;
+  height: 4px;
+  margin-top: -15px;
+  margin-bottom: 20px;
+  margin-left: 30px;
+  background-color: black;
+}
 
 
-  .comment_card {
+.comment_card {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -562,7 +576,6 @@ button#scrollButton.fixed {
   line-height: 1.25rem;
   color: rgba(107, 114, 128, 1);
 }
-
 </style>
 <style scoped>
 .el-carousel__item h3 {

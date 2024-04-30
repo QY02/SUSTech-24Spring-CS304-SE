@@ -73,7 +73,9 @@ const removeClickableOnFinishStepItem = () => {
 }
 
 const route = useRoute();
-bookingInformation.eventId = Number(route.query.eventId);
+// bookingInformation.eventId = Number(route.query.eventId);
+
+bookingInformation.eventId = Number(sessionStorage.getItem('eventId'));
 const fetchSessionInformation = async () => {
   fetchSessionInformationStatus.value = 0;
   try {

@@ -5,6 +5,7 @@ import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
+import org.cs304.backend.constant.constant_AttachmentType;
 import org.cs304.backend.entity.*;
 import org.cs304.backend.mapper.*;
 import org.cs304.backend.service.IAttachmentService;
@@ -127,10 +128,23 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     }
 
     @Override
-    public JSONObject createMomentFinish(JSONObject comment) {
-        Comment comment1 = comment.toJavaObject(Comment.class);
+    public JSONObject createMomentFinish(JSONObject requestData) {
+        List<Attachment> attachmentList = requestData.getList("fileInfoList", Attachment.class);
+        Comment comment1 = requestData.toJavaObject(Comment.class);
         baseMapper.insert(comment1);
         Integer commentId = comment1.getId();
+        attachmentList.forEach(attachment -> {
+            EntityAttachmentRelation entityAttachmentRelation = new EntityAttachmentRelation();
+            entityAttachmentRelation.setEntityType(COMMENT);
+            entityAttachmentRelation.setEntityId(commentId);
+            if (attachment.getFilePath().toLowerCase().endsWith("mp4")) {
+                entityAttachmentRelation.setAttachmentType(constant_AttachmentType.VIDEO);
+            }
+            else {
+                entityAttachmentRelation.setAttachmentType(constant_AttachmentType.IMAGE);
+            }
+            entityAttachmentRelation.setAttachmentId(attachment.getId());
+        });
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("commentId",commentId);
         return jsonObject;

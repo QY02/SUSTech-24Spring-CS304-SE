@@ -19,7 +19,7 @@ public interface IAttachmentService extends IService<Attachment> {
     JSONObject uploadStart(int userType, String fileDir, JSONObject requestData);
 
     @Transactional(rollbackFor = {Exception.class})
-    JSONObject uploadFinish(int userType, String filePath, JSONObject requestData);
+    JSONObject uploadFinish(int userType, String filePath, JSONObject requestData, boolean completeFileInfo);
 
     JSONObject uploadBatchStart(int userType, List<String> fileDirList, List<String> fileNameList, JSONObject requestData);
 

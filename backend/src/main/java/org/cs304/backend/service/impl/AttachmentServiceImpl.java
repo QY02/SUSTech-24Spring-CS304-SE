@@ -132,7 +132,7 @@ public class AttachmentServiceImpl extends ServiceImpl<AttachmentMapper, Attachm
     }
 
     @Override
-    public JSONObject uploadFinish(int userType, String filePath, JSONObject requestData) {
+    public JSONObject uploadFinish(int userType, String filePath, JSONObject requestData, boolean completeFileInfo) {
         if (filePath == null) {
             throw new ServiceException("400", "Invalid file path");
         }
@@ -149,7 +149,11 @@ public class AttachmentServiceImpl extends ServiceImpl<AttachmentMapper, Attachm
         baseMapper.insert(attachment);
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("attachmentId", attachment.getId());
+        if (completeFileInfo) {
+            jsonObject.put("attachmentInfo", attachment);
+        }
         if (requestData != null) {
+            requestData.put("fileInfo", attachment);
             try {
                 Object service = applicationContext.getBean(Class.forName((String) requestData.get("serviceClassName")));
                 Method method = service.getClass().getMethod((String) requestData.get("serviceMethodName"), JSONObject.class);
@@ -206,15 +210,15 @@ public class AttachmentServiceImpl extends ServiceImpl<AttachmentMapper, Attachm
         List<JSONObject> fileInfoList = new ArrayList<>();
         for (String filePath : filePathList) {
             try {
-                fileInfoList.add(((IAttachmentService) AopContext.currentProxy()).uploadFinish(userType, filePath, null));
+                fileInfoList.add(((IAttachmentService) AopContext.currentProxy()).uploadFinish(userType, filePath, null, true));
             } catch (ServiceException e) {
                 e.setCauseObject(filePath);
                 throw e;
             }
         }
         JSONObject result = new JSONObject();
-        result.put("fileInfoList", fileInfoList);
         if (requestData != null) {
+            requestData.put("fileInfoList", fileInfoList.stream().map(jsonObject -> jsonObject.getObject("attachmentInfo", Attachment.class)).collect(Collectors.toList()));
             try {
                 Object service = applicationContext.getBean(Class.forName((String) requestData.get("serviceClassName")));
                 Method method = service.getClass().getMethod((String) requestData.get("serviceMethodName"), JSONObject.class);
@@ -225,6 +229,7 @@ public class AttachmentServiceImpl extends ServiceImpl<AttachmentMapper, Attachm
                 throw new RuntimeException(e);
             }
         }
+        result.put("fileInfoList", fileInfoList.stream().peek(jsonObject -> jsonObject.remove("attachmentInfo")).collect(Collectors.toList()));
         return result;
     }
 
