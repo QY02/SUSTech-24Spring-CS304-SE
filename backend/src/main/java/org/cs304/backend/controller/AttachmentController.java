@@ -52,7 +52,7 @@ public class AttachmentController {
         int userType = (int) request.getAttribute("loginUserType");
         String filePath = requestBody.getString("filePath");
         JSONObject requestData = requestBody.getJSONObject("requestData");
-        return Result.success(response, attachmentService.uploadFinish(userType, filePath, requestData));
+        return Result.success(response, attachmentService.uploadFinish(userType, filePath, requestData, false));
     }
 
     @PostMapping("/uploadBatchStart")
