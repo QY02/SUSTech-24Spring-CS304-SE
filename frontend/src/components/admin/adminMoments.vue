@@ -69,7 +69,8 @@
           </template>
         </t-comment>
         <div class="spacing"></div>
-        <t-swiper
+        <video v-if="momentData.mediaType===true" :src="video" controls :style="{ width: cardWidth - 60 + 'px' }"/>
+        <t-swiper v-if="momentData.mediaType===false"
             class="tdesign-demo-block--swiper"
             :autoplay="false"
         >
@@ -187,7 +188,9 @@ const getMomentBatch = async (id) => {
           name: response.data.data[i].publisher_id,
         });
     }
-    lastId.value = response.data.data[response.data.data.length - 1].comment_id;
+    if (list.value.length > 0) {
+      lastId.value = response.data.data[response.data.data.length - 1].comment_id;
+    }
     asideLoading.value = false;
   } catch (error) {
   }
@@ -196,6 +199,7 @@ const getMomentBatch = async (id) => {
 onMounted(async() => {
   await getMomentBatch(-1);
   await selectMoment(list.value[0]);
+  cardWidth.value = cardRef.value.$el.offsetWidth;
 });
 
 const loadMore = async () => {
@@ -205,6 +209,9 @@ const loadMore = async () => {
 // ###### 动态列表 结束 ######
 
 // ###### 动态详情 开始 ######
+
+const cardRef = ref(null);
+let cardWidth = ref(0);
 
 const momentData = ref({
   id: 'A',
@@ -222,6 +229,7 @@ const momentData = ref({
   mediaUrl: [],
 });
 
+const video = ref('');
 const photoList = ref([]);
 const photoUrlList = ref([]);
 const photoPreviewVisible = ref(false);
@@ -236,6 +244,7 @@ const selectMoment = async (item) => {
     asideLoading.value = true;
     photoList.value = [];
     photoUrlList.value = [];
+    video.value = '';
     photoPreviewVisible.value = false;
     const response = await axios.get(`/comment/getMomentById?commentId=${item.id}`, {
       headers: {
@@ -244,16 +253,26 @@ const selectMoment = async (item) => {
     });
     momentData.value = response.data.data;
     momentData.value.avatar = 'https://tdesign.gtimg.com/site/avatar.jpg';
-    for (let i = 0; i < momentData.value.mediaUrl.length; i++) {
+    if (momentData.value.mediaType === false) {
+      for (let i = 0; i < momentData.value.mediaUrl.length; i++) {
+        const fileServerResponse = await fileServerAxios.get(`/file/download`, {
+          responseType: 'blob',
+          headers: {
+            token: momentData.value.mediaUrl[i],
+          }
+        });
+        const image = fileServerResponse.data;
+        photoList.value.push(image);
+        photoUrlList.value.push(URL.createObjectURL(image));
+      }
+    }else {
       const fileServerResponse = await fileServerAxios.get(`/file/download`, {
         responseType: 'blob',
         headers: {
-          token: momentData.value.mediaUrl[i],
+          token: momentData.value.mediaUrl[0],
         }
       });
-      const image = fileServerResponse.data;
-      photoList.value.push(image);
-      photoUrlList.value.push(URL.createObjectURL(image));
+      video.value = URL.createObjectURL(fileServerResponse.data);
     }
     asideLoading.value = false;
   } catch (error) {

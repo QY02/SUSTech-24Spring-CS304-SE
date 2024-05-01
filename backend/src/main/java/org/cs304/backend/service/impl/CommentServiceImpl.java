@@ -19,6 +19,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.cs304.backend.constant.constant_AttachmentType.IMAGE;
+import static org.cs304.backend.constant.constant_AttachmentType.VIDEO;
 import static org.cs304.backend.constant.constant_CommentType.BLOG;
 import static org.cs304.backend.constant.constant_EntityType.COMMENT;
 import static org.cs304.backend.constant.constant_User.ADMIN;
@@ -63,7 +65,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         List<Integer> ids = commentList.stream().map(Comment::getId).toList();
         List<Integer> attachmentIds = new ArrayList<>();
         for (Integer id : ids) {
-            attachmentIds.add(entityAttachmentRelationMapper.selectList(new QueryWrapper<EntityAttachmentRelation>().eq("entity_id",id).eq("entity_type",COMMENT)).get(0).getAttachmentId());
+            attachmentIds.add(entityAttachmentRelationMapper.selectList(new QueryWrapper<EntityAttachmentRelation>().eq("entity_id",id).eq("entity_type",COMMENT).eq("attachment_type",IMAGE)).get(0).getAttachmentId());
         }
         Map<Integer, Comment> attachmentIdToCommentMap = new HashMap<>();
         for (int i = 0; i < attachmentIds.size(); i++) {
@@ -87,9 +89,15 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         JSONObject jsonObject = (JSONObject) JSON.toJSON(comment);
         jsonObject.put("userName",username);
         jsonObject.put("relatedEvent",eventName);
-        List<Integer> attachmentIds = entityAttachmentRelationMapper.selectList(new QueryWrapper<EntityAttachmentRelation>().eq("entity_id",commentId).eq("entity_type",COMMENT)).stream().map(EntityAttachmentRelation::getAttachmentId).toList();
-        List<String> attachmentPaths = attachmentService.getBatchByIds(ADMIN,attachmentIds).stream().map(Attachment::getFilePath).toList();
-        jsonObject.put("mediaUrl",attachmentPaths);
+        List<Integer> attachmentIds;
+        if (comment.getMediaType()) {//video
+            attachmentIds = entityAttachmentRelationMapper.selectList(new QueryWrapper<EntityAttachmentRelation>().eq("entity_id", commentId).eq("entity_type", COMMENT).eq("attachment_type",VIDEO)).stream().map(EntityAttachmentRelation::getAttachmentId).toList();
+        }else {//pic
+            attachmentIds = entityAttachmentRelationMapper.selectList(new QueryWrapper<EntityAttachmentRelation>().eq("entity_id", commentId).eq("entity_type", COMMENT)).stream().map(EntityAttachmentRelation::getAttachmentId).toList();
+        }
+        List<String> attachmentPaths = attachmentService.getBatchByIds(ADMIN, attachmentIds).stream().map(Attachment::getFilePath).toList();
+        jsonObject.put("mediaUrl", attachmentPaths);
+        jsonObject.put("attachmentIds",attachmentIds);
         return jsonObject;
     }
 

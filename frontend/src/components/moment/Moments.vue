@@ -1,6 +1,6 @@
 <template>
   <t-layout>
-    <t-aside>
+    <t-aside v-if="list.length>0">
       <t-space v-loading="asideLoading" :break-line="true" class="card-with-margin scroll-container" align="center"
                :style="{height: 'calc(100vh - 96px)', 'overflow-y': 'scroll' }">
         <t-image
@@ -37,7 +37,12 @@
         <t-radio-button value="1">动态</t-radio-button>
         <t-radio-button value="2">我的发布</t-radio-button>
       </t-radio-group>
-      <t-card class="card-with-margin" hoverShadow >
+            <t-alert v-if="list.length===0 && radioGroupValue==='2'" class="card-with-margin" theme="info" title="您还没有发送过动态" message="欢迎分享您的感受">
+              <template #operation>
+                <span @click="router.push('/newMoment');">新增动态</span>
+              </template>
+            </t-alert>
+        <t-card v-if="list.length>0" class="card-with-margin" hoverShadow ref="cardRef">
         <t-space>
           <t-button variant="outline" theme="success" @click="showEvent">点击跳转相关活动：{{momentData.relatedEvent}}</t-button>
           <t-button v-if="radioGroupValue === '2'" @click="editPost">
@@ -79,7 +84,8 @@
           </template>
         </t-comment>
         <div class="spacing"></div>
-        <t-swiper
+        <video v-if="momentData.mediaType===true" :src="video" controls :style="{ width: cardWidth - 60 + 'px' }"/>
+        <t-swiper v-if="momentData.mediaType===false"
             class="tdesign-demo-block--swiper"
             :autoplay="false"
         >
@@ -187,7 +193,9 @@ const getMomentBatch = async (id) => {
           name: response.data.data[i].publisher_id,
         });
     }
-    lastId.value = response.data.data[response.data.data.length - 1].comment_id;
+    if (list.value.length > 0) {
+      lastId.value = response.data.data[response.data.data.length - 1].comment_id;
+    }
     asideLoading.value = false;
   } catch (error) {
   }
@@ -196,6 +204,7 @@ const getMomentBatch = async (id) => {
 onMounted(async() => {
   await getMomentBatch(-1);
   await selectMoment(list.value[0]);
+  cardWidth.value = cardRef.value.$el.offsetWidth;
 });
 
 const loadMore = async () => {
@@ -205,6 +214,9 @@ const loadMore = async () => {
 // ###### 动态列表 结束 ######
 
 // ###### 动态详情 开始 ######
+
+const cardRef = ref(null);
+let cardWidth = ref(0);
 
 const momentData = ref({
   id: 'A',
@@ -222,6 +234,7 @@ const momentData = ref({
   mediaUrl: [],
 });
 
+const video = ref('');
 const photoList = ref([]);
 const photoUrlList = ref([]);
 const photoPreviewVisible = ref(false);
@@ -236,6 +249,7 @@ const selectMoment = async (item) => {
     asideLoading.value = true;
     photoList.value = [];
     photoUrlList.value = [];
+    video.value = '';
     photoPreviewVisible.value = false;
     const response = await axios.get(`/comment/getMomentById?commentId=${item.id}`, {
       headers: {
@@ -251,16 +265,26 @@ const selectMoment = async (item) => {
     momentData.value.avatar = 'https://tdesign.gtimg.com/site/avatar.jpg';
     thumbUpColor.value = response2.data.data.voteType === 1 ? 'red' : 'grey';
     thumbDownColor.value = response2.data.data.voteType === -1 ? 'blue' : 'grey';
-    for (let i = 0; i < momentData.value.mediaUrl.length; i++) {
+    if (momentData.value.mediaType === false) {
+      for (let i = 0; i < momentData.value.mediaUrl.length; i++) {
+        const fileServerResponse = await fileServerAxios.get(`/file/download`, {
+          responseType: 'blob',
+          headers: {
+            token: momentData.value.mediaUrl[i],
+          }
+        });
+        const image = fileServerResponse.data;
+        photoList.value.push(image);
+        photoUrlList.value.push(URL.createObjectURL(image));
+        }
+    }else {
       const fileServerResponse = await fileServerAxios.get(`/file/download`, {
         responseType: 'blob',
         headers: {
-          token: momentData.value.mediaUrl[i],
+          token: momentData.value.mediaUrl[0],
         }
       });
-      const image = fileServerResponse.data;
-      photoList.value.push(image);
-      photoUrlList.value.push(URL.createObjectURL(image));
+      video.value = URL.createObjectURL(fileServerResponse.data);
     }
     asideLoading.value = false;
   } catch (error) {
@@ -274,7 +298,9 @@ const onTypeChange = async (checkedValues) => {
   lastId.value = -1;
   noMoreImage.value = false;
   await getMomentBatch(-1);
-  await selectMoment(list.value[0]);
+  if (list.value.length > 0) {
+    await selectMoment(list.value[0]);
+  }
 };
 
 const editPost = () => {
