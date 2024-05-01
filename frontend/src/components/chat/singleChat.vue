@@ -27,12 +27,17 @@
 import {ref, getCurrentInstance, onMounted} from 'vue';
 import axios from 'axios';
 import {MessagePlugin} from 'tdesign-vue-next';
-import {useRouter} from "vue-router";
+import MarkdownIt from 'markdown-it';
 
+
+const md = new MarkdownIt();
+const renderMarkdown = (text) => {
+  return md.render(text);
+};
 
 const user = sessionStorage.getItem("uid") ? sessionStorage.getItem("uid") : ''; //当前用户
-const chatPartner = useRouter().currentRoute.value.query.id; //聊天对象
-const chatPartnerName = useRouter().currentRoute.value.query.name;
+const chatPartner = ref(sessionStorage.getItem("chatUserId")); //聊天对象
+const chatPartnerName = sessionStorage.getItem("chatUserName");
 
 
 const text = ref("");
@@ -133,7 +138,7 @@ const send = () => {
     } else {
       console.log("您的浏览器支持WebSocket");
       // {"from": "zhang", "to": "admin", "text": "聊天文本"}
-      let message = {from: user, to: chatPartner, text: text}
+      let message = {from: user, to: chatPartner.value, text: text.value}
       socket.send(JSON.stringify(message));
       createContent(null, user, text.value);
       text.value = '';

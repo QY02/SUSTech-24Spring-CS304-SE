@@ -104,11 +104,11 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     @Override
     public void deleteMoment(Integer momentId) {
         List<Integer> attachmentIds = entityAttachmentRelationMapper.selectList(new QueryWrapper<EntityAttachmentRelation>().eq("entity_id",momentId).eq("entity_type",COMMENT)).stream().map(EntityAttachmentRelation::getAttachmentId).toList();
-        attachmentService.deleteBatchByIdList(ADMIN,attachmentIds);
-        userBlogInteractionMapper.delete(new QueryWrapper<UserBlogInteraction>().eq("blog_id",momentId));
+        userBlogInteractionMapper.delete(new QueryWrapper<UserBlogInteraction>().eq("comment_id",momentId));
         replyMapper.delete(new QueryWrapper<Reply>().eq("comment_id",momentId));
         entityAttachmentRelationMapper.delete(new QueryWrapper<EntityAttachmentRelation>().eq("entity_id",momentId).eq("entity_type",COMMENT));
         baseMapper.deleteById(momentId);
+        attachmentService.deleteBatchByIdList(ADMIN,attachmentIds);
     }
 
     @Override

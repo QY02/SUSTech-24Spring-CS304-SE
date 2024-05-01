@@ -163,7 +163,7 @@ const onSubmit =  async (ctx: SubmitContext) => {
           },
         })
         .then(response => {
-          console.log(JSON.stringify(response));
+          // console.log(JSON.stringify(response));
         })
         .catch(reason => {
           console.log(JSON.stringify(reason));

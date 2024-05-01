@@ -1,7 +1,8 @@
 <template>
+  <t-loading :loading="loading" text="加载中..." fullscreen />
   <t-layout>
     <t-aside v-if="list.length>0">
-      <t-space v-loading="asideLoading" :break-line="true" class="card-with-margin scroll-container" align="center"
+      <t-space :break-line="true" class="card-with-margin scroll-container" align="center"
                :style="{height: 'calc(100vh - 96px)', 'overflow-y': 'scroll' }">
         <t-image
             v-for="item in list"
@@ -31,7 +32,7 @@
       </t-space>
     </t-aside>
 
-    <t-content v-loading="asideLoading">
+    <t-content>
       <div :style="{height: 'calc(100vh - 56px)', 'overflow-y': 'scroll' }">
       <t-radio-group class="card-with-margin" variant="default-filled" default-value="1" @change="onTypeChange">
         <t-radio-button value="1">动态</t-radio-button>
@@ -45,12 +46,12 @@
         <t-card v-if="list.length>0" class="card-with-margin" hoverShadow ref="cardRef">
         <t-space>
           <t-button variant="outline" theme="success" @click="showEvent">点击跳转相关活动：{{momentData.relatedEvent}}</t-button>
-          <t-button v-if="radioGroupValue === '2'" @click="editPost">
-            <template #icon>
-              <edit-icon/>
-            </template>
-            编辑
-          </t-button>
+<!--          <t-button v-if="radioGroupValue === '2'" @click="editPost">-->
+<!--            <template #icon>-->
+<!--              <edit-icon/>-->
+<!--            </template>-->
+<!--            编辑-->
+<!--          </t-button>-->
           <t-button v-if="radioGroupValue === '2'" @click="deletePost" theme="danger">
             <template #icon>
               <delete-icon/>
@@ -64,7 +65,7 @@
         <t-comment :author="momentData.userName" :datetime="momentData.publishDate"
                    :content="momentData.content">
           <template #avatar>
-            <t-popconfirm content="与ta聊天" :cancel-btn="null" @confirm="chat(momentData.publisherId)">
+            <t-popconfirm content="与ta聊天" :cancel-btn="null" @confirm="chat(momentData.publisherId,momentData.userName)">
               <t-avatar size="60px" :image="momentData.avatar"/>
             </t-popconfirm>
           </template>
@@ -166,11 +167,11 @@ const user = sessionStorage.getItem("uid") ? sessionStorage.getItem("uid") : '';
 const list = ref([]);// 左侧动态列表
 const lastId = ref(-1);// 上一次请求的最后一个动态的id
 const noMoreImage = ref(false);// 是否还有更多图片
-const asideLoading = ref(false);
+const loading = ref(false);
 
 const getMomentBatch = async (id) => {
   try {
-    asideLoading.value = true;
+    loading.value = true;
     const response = await axios.get(`/comment/getMomentBatch/${id}/${radioGroupValue.value}`, {
       headers: {
         token: sessionStorage.getItem('token'),
@@ -196,7 +197,7 @@ const getMomentBatch = async (id) => {
     if (list.value.length > 0) {
       lastId.value = response.data.data[response.data.data.length - 1].comment_id;
     }
-    asideLoading.value = false;
+    loading.value = false;
   } catch (error) {
   }
 };
@@ -246,7 +247,7 @@ const showEvent = () => {
 
 const selectMoment = async (item) => {
   try {
-    asideLoading.value = true;
+    loading.value = true;
     photoList.value = [];
     photoUrlList.value = [];
     video.value = '';
@@ -286,7 +287,7 @@ const selectMoment = async (item) => {
       });
       video.value = URL.createObjectURL(fileServerResponse.data);
     }
-    asideLoading.value = false;
+    loading.value = false;
   } catch (error) {
   }
 };
@@ -311,15 +312,18 @@ const deleteVisible = ref(false);
 
 const onDeleteClickConfirm = async () => {
   try {
-    asideLoading.value = true;
-    await axios.delete(`/blog/deleteMoment/${momentData.value.id}`, {
+    loading.value = true;
+    await axios.delete(`/comment/deleteMoment/${momentData.value.id}`, {
       headers: {
         token: sessionStorage.getItem('token'),
       }
     });
+    list.value = [];
+    lastId.value = -1;
+    noMoreImage.value = false;
     await getMomentBatch(-1);
     await selectMoment(list.value[0]);
-    asideLoading.value = false;
+    loading.value = false;
     deleteVisible.value = false;
     await MessagePlugin.success('删除成功');
   } catch (error) {
@@ -334,8 +338,10 @@ const closeDelete = () => {
   deleteVisible.value = false;
 };
 
-const chat = (id) => {
-  console.log('Chat with ' + id);
+const chat = (id,name) => {
+  sessionStorage.setItem('chatUserId',id);
+  sessionStorage.setItem('chatUserName',name);
+  router.push('/chat');
 };
 
 // ###### 动态详情 结束 ######
@@ -347,7 +353,7 @@ const thumbDownColor = ref('grey');
 
 const thumbUp = async () => {
   try {
-    asideLoading.value = true;
+    loading.value = true;
   if (thumbUpColor.value === 'grey') {
     thumbUpColor.value = 'red';
     await axios.get(`/blog/change/${momentData.value.id}/${user}/1`, {
@@ -369,14 +375,14 @@ const thumbUp = async () => {
     });
     momentData.value.upVote--;
   }
-    asideLoading.value = false;
+    loading.value = false;
   } catch (error) {
   }
 };
 
 const thumbDown = async () => {
   try {
-    asideLoading.value = true;
+    loading.value = true;
     if (thumbDownColor.value === 'grey') {
       thumbDownColor.value = 'blue';
       await axios.get(`/blog/change/${momentData.value.id}/${user}/-1`, {
@@ -398,7 +404,7 @@ const thumbDown = async () => {
       });
       momentData.value.downVote--;
     }
-    asideLoading.value = false;
+    loading.value = false;
   } catch (error) {
   }
 };

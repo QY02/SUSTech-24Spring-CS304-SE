@@ -30,7 +30,7 @@ public class ChatMessageController {
     IUserService userService;
 
     @PostMapping("/get/{toUserID}")
-    public Result onLogin(@NotNull HttpServletRequest request, HttpServletResponse response, @PathVariable String toUserID) {
+    public Result onLogin(@NotNull HttpServletRequest request, HttpServletResponse response, @PathVariable ("toUserID")String toUserID) {
         try {
             String userID = (String) request.getAttribute("loginUserId");
             String userName = userService.getById(userID).getName();
