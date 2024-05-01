@@ -50,7 +50,8 @@
         <t-comment :author="momentData.userName" :datetime="momentData.publishDate"
                    :content="momentData.content">
           <template #avatar>
-            <t-popconfirm content="与ta聊天" :cancel-btn="null" @confirm="chat(momentData.publisherId,momentData.userName)">
+            <t-avatar v-if="momentData.publisherId===user" size="60px" :image="momentData.avatar"/>
+            <t-popconfirm v-if="momentData.publisherId!==user" content="与ta聊天" :cancel-btn="null" @confirm="chat(momentData.publisherId,momentData.userName)">
               <t-avatar size="60px" :image="momentData.avatar"/>
             </t-popconfirm>
           </template>

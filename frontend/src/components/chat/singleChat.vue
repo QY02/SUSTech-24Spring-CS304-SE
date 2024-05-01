@@ -105,10 +105,7 @@ const initChat = async () => {
         initChat();
         return;
       }
-      if (msg.data === "对不起，请求失败，请稍后重试") {
-        console.log("请求失败");
-      }
-      createContent(chatPartner.value, null, msg.data);
+      createContent(chatPartner.value, null, msg.data.text);
     };
 
     socket.onclose = function () {
