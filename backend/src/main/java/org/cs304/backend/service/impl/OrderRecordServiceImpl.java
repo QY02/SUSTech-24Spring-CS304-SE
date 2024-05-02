@@ -24,11 +24,15 @@ public class OrderRecordServiceImpl extends ServiceImpl<OrderRecordMapper, Order
     private EventSessionMapper eventSessionMapper;
 
     @Override
-    public Object getMyOrderRecordByEventId(String userId, Integer eventId, Integer mode) {
-        if ((eventId == null) || (mode == null) || ((mode != 0) && (mode != 1) && (mode != 2) && (mode != 3))) {
+    public Object getMyOrderRecord(String userId, Integer eventId, Integer mode) {
+        if ((mode == null) || ((mode != 0) && (mode != 1) && (mode != 2) && (mode != 3))) {
             throw new ServiceException("400", "Invalid data");
         }
-        List<OrderRecord> orderRecordList = baseMapper.selectList(new QueryWrapper<OrderRecord>().eq("user_id", userId).eq("event_id", eventId));
+        QueryWrapper<OrderRecord> queryWrapper = new QueryWrapper<OrderRecord>().eq("user_id", userId);
+        if (eventId != null) {
+            queryWrapper.eq("event_id", eventId);
+        }
+        List<OrderRecord> orderRecordList = baseMapper.selectList(queryWrapper);
         return orderRecordList.stream().map(orderRecord -> {
             if (mode == 0) {
                 return orderRecord.getEventSessionId();

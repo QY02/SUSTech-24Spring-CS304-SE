@@ -89,7 +89,7 @@ const fetchSessionInformation = async () => {
       location: item.location.split(",").map(Number)
     } as Session));
     Object.assign(sessionInformation, dataConverted);
-    response = await axios.post("/orderRecord/getMyOrderRecordByEventId", {
+    response = await axios.post("/orderRecord/getMyOrderRecord", {
       eventId: bookingInformation.eventId,
       mode: 0
     }, {headers: {token: sessionStorage.getItem('token')}} as AxiosRequestConfig);
