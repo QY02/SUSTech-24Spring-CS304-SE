@@ -1,5 +1,4 @@
 package org.cs304.backend.controller;
-
 import com.alibaba.fastjson2.JSONObject;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
