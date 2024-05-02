@@ -2,6 +2,7 @@ package org.cs304.backend;
 
 import lombok.extern.slf4j.Slf4j;
 import org.cs304.backend.component.WebSocketLLMServer;
+import org.cs304.backend.component.WebSocketServer;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -18,6 +19,7 @@ public class BackendApplication {
         springApplication.addListeners(new ApplicationPidFileWriter("app.pid"));
         ConfigurableApplicationContext configurableApplicationContext = springApplication.run(args);
         WebSocketLLMServer.setApplicationContext(configurableApplicationContext);
+        WebSocketServer.setApplicationContext(configurableApplicationContext);
     }
 
 }

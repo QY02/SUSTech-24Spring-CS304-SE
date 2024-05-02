@@ -59,23 +59,34 @@
               @success="onSuccessUpload"
               :auto-upload="false"
               :show-image-file-name="true"
-              :max="8"
+              :max="9"
               :abridge-name="[6, 6]"
               :upload-button="null"
               :cancel-upload-button="null"
           >
           </t-upload>
+        <t-space>
         <t-upload
             v-if="mediaType===2"
             v-model="formData.files"
+            placeholder="仅能上传一个视频mp4文件"
             :auto-upload="false"
-            theme="file"
-            :data="{ extra_data: 123, file_name: 'certificate' }"
+            accept=".mp4"
+            @success="onSuccessUpload"
             :abridge-name="[10, 8]"
-            :format-response="formatResponse"
-            draggable
-            action="https://service-bv448zsw-1257786608.gz.apigw.tencentcs.com/api/upload-demo"
+            :upload-button="null"
         />
+        <t-upload
+            v-if="mediaType===2"
+            v-model="videoCover"
+            placeholder="上传视频封面"
+            :auto-upload="false"
+            accept="image/*"
+            @success="onSuccessUpload"
+            :abridge-name="[10, 8]"
+            :upload-button="null"
+        />
+        </t-space>
       </div>
     </div>
 
@@ -109,7 +120,9 @@ const formData = ref({ ...INITIAL_DATA });
 const mediaType = ref(1);// 1: 图片 2: 视频
 
 const changeType = (value: string) => {
+  formData.value.files = [];
   mediaType.value = Number(value);
+  videoCover.value = [];
 };
 
 const onReset = () => {
@@ -117,7 +130,8 @@ const onReset = () => {
 };
 
 const fileUrl = ref('');
-const commentId = ref(0);
+// 视频封面
+const videoCover = ref([]);
 
 const onSubmit =  async (ctx: SubmitContext) => {
   if (!allEvents.some(event => event.value === formData.value.event.value)) {
@@ -128,8 +142,15 @@ const onSubmit =  async (ctx: SubmitContext) => {
     await MessagePlugin.error('请上传文件');
     return;
   }
+  if (mediaType.value === 2 && videoCover.value.length === 0) {
+    await MessagePlugin.error('请上传视频封面');
+    return;
+  }
   if (ctx.validateResult === true) {
     loading.value = true;
+    if (mediaType.value === 2) {
+      formData.value.files.push(videoCover.value[0]);
+    }
     await sendEvent();
     const formDataUpload = new FormData();
     formData.value.files.forEach((file) => {formDataUpload.append('file', file.raw)})
@@ -142,14 +163,14 @@ const onSubmit =  async (ctx: SubmitContext) => {
           },
         })
         .then(response => {
-          console.log(JSON.stringify(response));
+          // console.log(JSON.stringify(response));
         })
         .catch(reason => {
-          alert(JSON.stringify(reason));
+          console.log(JSON.stringify(reason));
         });
     loading.value = false;
     await MessagePlugin.success('提交成功');
-    router.push('/moments');
+    await router.push('/moments');
   }
 };
 
@@ -167,16 +188,14 @@ const sendEvent = async () => {
   } as AxiosRequestConfig)
       .then(response => {
         fileUrl.value = response.data.data.fileToken;
-        commentId.value = response.data.data.commentId;
       })
       .catch();
 };
 
 // ###### 表单整体行为 结束 ######
 
-// ###### 上传文件 开始 ######
+// ###### 上传文件辅助 开始 ######
 
-const uploadRef = ref();
 
 const onSuccessUpload = (res: any) => {
   console.log(res);
@@ -199,7 +218,7 @@ function formatResponse(res: any) {
   return res;
 }
 
-// ###### 上传文件 结束 ######
+// ###### 上传文件辅助 结束 ######
 
 
 // ###### 选择活动 开始 ######
@@ -210,6 +229,8 @@ let events = ref([]);
 
 onMounted(() => {
   loading.value = true;
+  formData.value.files = [];
+  videoCover.value = [];
   axios.post(`/event/getAllEvents`, {},{
     headers: {
       token: sessionStorage.getItem('token'),

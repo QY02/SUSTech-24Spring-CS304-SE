@@ -1,7 +1,8 @@
 <template>
+  <t-loading :loading="loading" text="加载中..." fullscreen />
   <t-layout>
     <t-aside>
-      <t-space v-loading="asideLoading" :break-line="true" class="card-with-margin scroll-container" align="center"
+      <t-space :break-line="true" class="card-with-margin scroll-container" align="center"
                :style="{height: 'calc(100vh - 96px)', 'overflow-y': 'scroll' }">
         <t-image
             v-for="item in list"
@@ -33,7 +34,7 @@
 
     <t-content>
       <div :style="{height: 'calc( 100vh - 56px)', 'overflow-y': 'scroll' }">
-      <t-card class="card-with-margin" hoverShadow v-loading="asideLoading" >
+      <t-card class="card-with-margin" hoverShadow>
         <t-space>
           <t-button variant="outline" theme="success" @click="showEvent">点击跳转相关活动：{{momentData.relatedEvent}}</t-button>
           <t-button @click="deletePost" theme="danger">
@@ -49,7 +50,8 @@
         <t-comment :author="momentData.userName" :datetime="momentData.publishDate"
                    :content="momentData.content">
           <template #avatar>
-            <t-popconfirm content="与ta聊天" :cancel-btn="null" @confirm="chat(momentData.publisherId)">
+            <t-avatar v-if="momentData.publisherId===user" size="60px" :image="momentData.avatar"/>
+            <t-popconfirm v-if="momentData.publisherId!==user" content="与ta聊天" :cancel-btn="null" @confirm="chat(momentData.publisherId,momentData.userName)">
               <t-avatar size="60px" :image="momentData.avatar"/>
             </t-popconfirm>
           </template>
@@ -69,7 +71,8 @@
           </template>
         </t-comment>
         <div class="spacing"></div>
-        <t-swiper
+        <video v-if="momentData.mediaType===true" :src="video" controls :style="{ width: cardWidth - 60 + 'px' }"/>
+        <t-swiper v-if="momentData.mediaType===false"
             class="tdesign-demo-block--swiper"
             :autoplay="false"
         >
@@ -160,11 +163,11 @@ import {MessagePlugin} from "tdesign-vue-next";
 const list = ref([]);// 左侧动态列表
 const lastId = ref(-1);// 上一次请求的最后一个动态的id
 const noMoreImage = ref(false);// 是否还有更多图片
-const asideLoading = ref(false);
+const loading = ref(false);
 
 const getMomentBatch = async (id) => {
   try {
-    asideLoading.value = true;
+    loading.value = true;
     const response = await axios.get(`/comment/getMomentBatch/${id}/1`, {
       headers: {
         token: sessionStorage.getItem('token'),
@@ -187,8 +190,10 @@ const getMomentBatch = async (id) => {
           name: response.data.data[i].publisher_id,
         });
     }
-    lastId.value = response.data.data[response.data.data.length - 1].comment_id;
-    asideLoading.value = false;
+    if (list.value.length > 0) {
+      lastId.value = response.data.data[response.data.data.length - 1].comment_id;
+    }
+    loading.value = false;
   } catch (error) {
   }
 };
@@ -196,6 +201,7 @@ const getMomentBatch = async (id) => {
 onMounted(async() => {
   await getMomentBatch(-1);
   await selectMoment(list.value[0]);
+  cardWidth.value = cardRef.value.$el.offsetWidth;
 });
 
 const loadMore = async () => {
@@ -205,6 +211,9 @@ const loadMore = async () => {
 // ###### 动态列表 结束 ######
 
 // ###### 动态详情 开始 ######
+
+const cardRef = ref(null);
+let cardWidth = ref(0);
 
 const momentData = ref({
   id: 'A',
@@ -222,6 +231,7 @@ const momentData = ref({
   mediaUrl: [],
 });
 
+const video = ref('');
 const photoList = ref([]);
 const photoUrlList = ref([]);
 const photoPreviewVisible = ref(false);
@@ -233,9 +243,10 @@ const showEvent = () => {
 
 const selectMoment = async (item) => {
   try {
-    asideLoading.value = true;
+    loading.value = true;
     photoList.value = [];
     photoUrlList.value = [];
+    video.value = '';
     photoPreviewVisible.value = false;
     const response = await axios.get(`/comment/getMomentById?commentId=${item.id}`, {
       headers: {
@@ -244,18 +255,28 @@ const selectMoment = async (item) => {
     });
     momentData.value = response.data.data;
     momentData.value.avatar = 'https://tdesign.gtimg.com/site/avatar.jpg';
-    for (let i = 0; i < momentData.value.mediaUrl.length; i++) {
+    if (momentData.value.mediaType === false) {
+      for (let i = 0; i < momentData.value.mediaUrl.length; i++) {
+        const fileServerResponse = await fileServerAxios.get(`/file/download`, {
+          responseType: 'blob',
+          headers: {
+            token: momentData.value.mediaUrl[i],
+          }
+        });
+        const image = fileServerResponse.data;
+        photoList.value.push(image);
+        photoUrlList.value.push(URL.createObjectURL(image));
+      }
+    }else {
       const fileServerResponse = await fileServerAxios.get(`/file/download`, {
         responseType: 'blob',
         headers: {
-          token: momentData.value.mediaUrl[i],
+          token: momentData.value.mediaUrl[0],
         }
       });
-      const image = fileServerResponse.data;
-      photoList.value.push(image);
-      photoUrlList.value.push(URL.createObjectURL(image));
+      video.value = URL.createObjectURL(fileServerResponse.data);
     }
-    asideLoading.value = false;
+    loading.value = false;
   } catch (error) {
   }
 };
@@ -267,8 +288,8 @@ const onDeleteClickConfirm = async () => {
     if (deleteTips.value === '请输入删除原因') {
       return;
     }
-    asideLoading.value = true;
-    await axios.post(`/blog/deleteMomentByAdmin`, {
+    loading.value = true;
+    await axios.post(`/comment/deleteMomentByAdmin`, {
       momentId: momentData.value.id,
       deleteReason: deleteReason,
     },{
@@ -276,9 +297,12 @@ const onDeleteClickConfirm = async () => {
         token: sessionStorage.getItem('token'),
       }
     });
+    list.value = [];
+    lastId.value = -1;
+    noMoreImage.value = false;
     await getMomentBatch(-1);
     await selectMoment(list.value[0]);
-    asideLoading.value = false;
+    loading.value = false;
     deleteVisible.value = false;
     await MessagePlugin.success('删除成功');
   } catch (error) {
@@ -301,8 +325,10 @@ const onDeleteChange = (value) => {
   deleteReason = value;
 };
 
-const chat = (id) => {
-  console.log('Chat with ' + id);
+const chat = (id,name) => {
+  sessionStorage.setItem('chatUserId',id);
+  sessionStorage.setItem('chatUserName',name);
+  router.push('/chat');
 };
 
 // ###### 动态详情 结束 ######
