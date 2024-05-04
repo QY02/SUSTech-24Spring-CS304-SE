@@ -1,33 +1,31 @@
 <template>
-<h2 style="margin-left: 20px">历史记录</h2>
+  <h2 style="margin-left: 20px">我的发布</h2>
   <div id="event">
     <t-card
         v-for="(item,index) in curEvents"
         :key="index"
-        :title="item['name']" :subtitle="item['content']"  :style="{ width: '400px' }" hover-shadow
-        @click="clickEvent(item['eventId'])">
+        :title="item['name']" :subtitle="item['content']" :cover=cover :style="{ width: '400px' }" hover-shadow
+        @click="clickEvent(item['id'])">
       <template #actions>
-<!--        <t-dropdown :options="options" :min-column-width="112" @click="clickHandler">-->
-<!--          <div class="tdesign-demo-dropdown-trigger">-->
-
-            <p v-if="item['type']===0">
-              <t-tag theme="success" variant="light" style="margin-right: 20px">表演</t-tag>
-            </p>
-            <p v-if="item['type']===1">
-              <t-tag theme="primary" variant="light" style="margin-right: 20px">讲座</t-tag>
-            </p>
-            <p v-if="item['type']===2">
-              <t-tag theme="danger" variant="light" style="margin-right: 20px">比赛</t-tag>
-            </p>
-            <p v-if="item['type']===3">
-              <t-tag variant="light" style="margin-right: 20px">其他</t-tag>
-            </p>
-            {{item['visitTime'].replace("T"," ")}}
-<!--            <t-button variant="text" shape="square">-->
-<!--              <more-icon/>-->
-<!--            </t-button>-->
-<!--          </div>-->
-<!--        </t-dropdown>-->
+        <!--        <t-dropdown :options="options" :min-column-width="112" @click="clickHandler">-->
+        <!--          <div class="tdesign-demo-dropdown-trigger">-->
+        <a v-if="item['type']===0">
+          <t-tag theme="success" variant="light" style="margin-right: 20px">表演</t-tag>
+        </a>
+        <a v-if="item['type']===1">
+          <t-tag theme="primary" variant="light" style="margin-right: 20px">讲座</t-tag>
+        </a>
+        <a v-if="item['type']===2">
+          <t-tag theme="danger" variant="light" style="margin-right: 20px">比赛</t-tag>
+        </a>
+        <a v-if="item['type']===3">
+          <t-tag variant="light" style="margin-right: 20px">其他</t-tag>
+        </a>
+        <!--            <t-button variant="text" shape="square">-->
+        <!--              <more-icon/>-->
+        <!--            </t-button>-->
+        <!--          </div>-->
+        <!--        </t-dropdown>-->
       </template>
       <template #footer>
         <t-row :align="'middle'" justify="center" style="gap: 24px;">
@@ -62,14 +60,9 @@
 import {ThumbUpIcon, ChatIcon, ShareIcon, MoreIcon} from 'tdesign-icons-vue-next';
 import {MessagePlugin} from 'tdesign-vue-next';
 import axios from "axios";
-import {getCurrentInstance, ref} from "vue";
+import {computed, defineComponent, getCurrentInstance, inject, ref, watch} from "vue";
 import router from "@/routers/index.js";
-// 获取全局变量 $apiBaseUrl
-const globalProperties = getCurrentInstance().appContext.config.globalProperties;
-const apiBaseUrl = globalProperties.$apiBaseUrl;
 
-// alert(apiBaseUrl)
-axios.defaults.baseURL = apiBaseUrl;
 const cover = 'https://tdesign.gtimg.com/site/source/card-demo.png';
 const events = ref([]);
 const tmpEvents = ref([]);
@@ -106,9 +99,15 @@ const clickEvent = (eventId) => {
         router.push('/event');
       })
       .catch((error) => {
+        if (error.response) {
+          // 请求已发出，但服务器响应的状态码不在 2xx 范围内
+          MessagePlugin.warning(error.response.data.msg);
+        } else {
+          // 一些错误是在设置请求的时候触发
+          MessagePlugin.warning(error.message);
+        }
       });
 };
-
 // const eventType = inject('eventType')
 const eventType = ref(sessionStorage.getItem('eventType'))
 
@@ -134,10 +133,13 @@ function getSearchNew(message) {
 }
 
 defineExpose({getSearchNew});
-
-axios.post(`/history/getByUserId`, {
-  "userId": sessionStorage.getItem('uid')
-}, {
+// 获取全局变量 $apiBaseUrl
+const globalProperties = getCurrentInstance().appContext.config.globalProperties;
+const apiBaseUrl = globalProperties.$apiBaseUrl;
+// alert(apiBaseUrl)
+axios.defaults.baseURL = apiBaseUrl;
+const publisherId=sessionStorage.getItem('uid')
+axios.get(`/event/getMyPost/${publisherId}`, {
   params: {},
   headers: {
     token: sessionStorage.getItem('token')
@@ -146,29 +148,25 @@ axios.post(`/history/getByUserId`, {
     .then((response) => {
       // alert(response)
       events.value = response.data.data
-      curEvents.value = response.data.data
-      // tmpEvents.value = response.data.data
-      // alert(JSON.stringify(curEvents.value))
-
+      curEvents.value = events.value
+      tmpEvents.value = events.value
+      // alert(JSON.stringify(events.value))
+      for (let i = 0; i < events.value.length; i++) {//获取每个活动的海报
+        let id=events.value[i]['id'];
+        // alert(id)
+      }
     })
     .catch((error) => {
+      if (error.response) {
+        // 请求已发出，但服务器响应的状态码不在 2xx 范围内
+        MessagePlugin.warning(error.response.data.msg);
+      } else {
+        // 一些错误是在设置请求的时候触发
+        MessagePlugin.warning(error.message);
+      }
     });
 
 
-// const events = [
-//   {
-//     title: "hhh",
-//     content: "haode",
-//     cover: "https://tdesign.gtimg.com/site/source/card-demo.png",
-//
-//   },
-//
-//   {
-//     title: "hhh222",
-//     content: "haode2345",
-//     cover: "https://th.bing.com/th/id/R.c927115ffa24dacf9616d608ad7fdc2b?rik=aBFhSrgygnmG1g&pid=ImgRaw&r=0",
-//   }
-// ];
 
 
 // const {colors} = useColors();

@@ -48,6 +48,14 @@ const routes = [
                 component: () => import('@/components/home/UserHistory.vue')
             },
             {
+                path: '/myPublishes',
+                component: () => import('@/components/home/UserPublishedPage.vue')
+            },
+            {
+                path: '/myOrderRecords',
+                component: () => import('@/components/home/MyOrderRecords.vue')
+            },
+            {
                 path: '/approval',
                 component: () => import('@/components/admin/EventApproval.vue')
             },

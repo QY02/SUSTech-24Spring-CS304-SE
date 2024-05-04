@@ -164,3 +164,8 @@ create table if not exists user_blog_interaction
     vote_type  tinyint(1) null
 );
 
+create table user_favorite_type
+(
+    user_id VARCHAR(8) NOT NULL ,
+    event_type INT NOT NULL
+);

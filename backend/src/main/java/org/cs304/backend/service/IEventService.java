@@ -16,6 +16,8 @@ public interface IEventService extends IService<Event> {
     void insertEventAndSessions(JSONObject eventData);
 
     JSONArray getAllEvents();
+    List<Event> getEventByPublisher(int userType, Integer publisherId);
+
     List<Event> getBatchByIds(int userType,List<Integer> idList);
     JSONArray getAuditList(String eventStatus);
 

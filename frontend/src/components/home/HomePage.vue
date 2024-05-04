@@ -31,6 +31,7 @@
             v-if="options.length"
             :value="checkboxValue"
             :options="options"
+
             class="tdesign-demo__panel-options-multiple"
             @change="onCheckedChange"
         />
@@ -150,7 +151,7 @@ import router from "@/routers/index.js";
 const OPTIONS = [
   // 全选
   {label: '全选', checkAll: true},
-  {label: '表演', value: 1},
+  {label: '表演', value: 1,},
   {label: '讲座', value: 2},
   {label: '比赛', value: 3},
   {label: '其他', value: 4},
@@ -189,6 +190,7 @@ function resetSetItem(key, newVal) {
         newStorageEvent.initStorageEvent('setItem', false, false, k, null, val, null, null);
         // 派发对象
         window.dispatchEvent(newStorageEvent)
+        formData.search='';//搜索清空
       }
     }
     return storage.setItem(key, newVal);
