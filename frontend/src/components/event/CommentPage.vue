@@ -9,10 +9,8 @@ const uid = sessionStorage.getItem('uid')
 const commentForm  = reactive({
     title: '',
     content: '',
-    rate : 0,
+    score: '',
 })
-
-
 
 
 const getComment = () => {
@@ -29,7 +27,6 @@ const getComment = () => {
 }
 getComment();
 
-// 没完全实现。。好难啊。。。
 const addComment = () => {
     axios.get(`/comment/add`, {
         "eventId": eventId,
@@ -37,6 +34,8 @@ const addComment = () => {
         "score": commentForm.score,
         "title": commentForm.title,
         "content": commentForm.content,
+        "publishDate": new Date(),
+        "type": 0,
     }, {
         headers: {
             token: token

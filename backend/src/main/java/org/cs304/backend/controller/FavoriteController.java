@@ -17,7 +17,7 @@ public class FavoriteController {
 
     @PostMapping("/isFavorite")
     @Operation(summary = "判断是否存在",description = "")
-    public Result isFavouriteExists(HttpServletResponse response, Favorite favorite) {
+    public Result isFavouriteExists(HttpServletResponse response,@RequestBody Favorite favorite) {
         if (favoriteService.getOne(new QueryWrapper<Favorite>().eq("user_id", favorite.getUserId()).eq("event_id",favorite.getEventId()))==null) {
             return Result.success(response, 1); // 返回数字 1 代表存在
         }
@@ -27,14 +27,14 @@ public class FavoriteController {
 
     @PostMapping("/add")
     @Operation(summary = "添加收藏",description = "")
-    public Result addFavorite(HttpServletResponse response, @RequestParam Favorite favorite) {
+    public Result addFavorite(HttpServletResponse response, @RequestBody Favorite favorite) {
         favoriteService.save(favorite);
         return Result.success(response);
     }
 
     @GetMapping("/delete")
     @Operation(summary = "删除喜欢",description = "")
-    public Result delete(HttpServletResponse response, @RequestParam Favorite favorite) {
+    public Result delete(HttpServletResponse response, @RequestBody Favorite favorite) {
         favoriteService.deleteFavorite(favorite);
         return Result.success(response);
     }

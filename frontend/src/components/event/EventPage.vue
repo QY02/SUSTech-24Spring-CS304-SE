@@ -15,16 +15,20 @@
         <div class="bottom">
           <div class="card-4">
             <t-space size="24px">
-              <t-button shape="circle" theme="primary" @click="navigateToTab('review')">
-                <template #icon>
-                  <HeartIcon />
-                </template>
-              </t-button>
-              <t-button shape="circle" theme="primary">
+            <div v-if="isFavorite">
+              <t-button shape="circle" theme="primary" @click="deleteFavorite()">
                 <template #icon>
                   <HeartFilledIcon />
                 </template>
               </t-button>
+            </div>
+            <div v-else>
+              <t-button shape="circle" theme="primary" @click="addFavorite()">
+                <template #icon>
+                  <HeartIcon />
+                </template>
+              </t-button>
+            </div>
             </t-space>
           </div>
           <div class="card-4" style="margin-left: 30px ">
