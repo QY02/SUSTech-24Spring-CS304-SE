@@ -30,8 +30,8 @@
       <template #footer>
         <t-row :align="'middle'" justify="center" style="gap: 24px;">
           <t-col flex="auto" style="display: inline-flex; justify-content: center;">
-            <t-button variant="text" shape="square">
-              <thumb-up-icon/>
+            <t-button variant="text" shape="square"  @click.stop="favEvent(item['id'])">
+              <heart-icon/>
             </t-button>
           </t-col>
 
@@ -57,11 +57,15 @@
 
 <script setup>
 
-import {ThumbUpIcon, ChatIcon, ShareIcon, MoreIcon} from 'tdesign-icons-vue-next';
+import {ThumbUpIcon, ChatIcon, ShareIcon, MoreIcon, HeartIcon} from 'tdesign-icons-vue-next';
 import {MessagePlugin} from 'tdesign-vue-next';
 import axios from "axios";
 import {computed, defineComponent, getCurrentInstance, inject, ref, watch} from "vue";
 import router from "@/routers/index.js";
+const globalProperties = getCurrentInstance().appContext.config.globalProperties;
+const apiBaseUrl = globalProperties.$apiBaseUrl;
+// alert(apiBaseUrl)
+axios.defaults.baseURL = apiBaseUrl;
 
 const cover = 'https://tdesign.gtimg.com/site/source/card-demo.png';
 const events = ref([]);
@@ -83,7 +87,8 @@ const clickHandler = (data) => {
 };
 const clickEvent = (eventId) => {
   MessagePlugin.success(`${sessionStorage.getItem('uid')} 选中【${eventId}】`);
-
+  sessionStorage.setItem('eventId',eventId)
+  router.push('/event');
   // router.push('/event');
   axios.post(`/history/add`, {
     "eventId": eventId,
@@ -95,8 +100,42 @@ const clickEvent = (eventId) => {
     }
   })
       .then((response) => {
-        sessionStorage.setItem('eventId',eventId)
-        router.push('/event');
+
+      })
+      .catch((error) => {
+        if (error.response) {
+          // 请求已发出，但服务器响应的状态码不在 2xx 范围内
+          MessagePlugin.warning(error.response.data.msg);
+        } else {
+          // 一些错误是在设置请求的时候触发
+          MessagePlugin.warning(error.message);
+        }
+      });
+};
+const favEvent = (eventId) => {
+  MessagePlugin.success(`${sessionStorage.getItem('uid')} 喜欢【${eventId}】`);
+  const favorite = {
+    userId: sessionStorage.getItem('uid'),
+    eventId: eventId // 替换为你要收藏的事件的ID
+  };
+  axios.post(`/favorite/add`, {//有问题
+    "eventId": eventId,
+    "userId": sessionStorage.getItem('uid'),
+  }, {
+    headers: {
+      token: sessionStorage.getItem('token')
+    }
+  })
+      .then((response) => {
+        // alert(response)
+        events.value = response.data.data.filter(events => events['status']===1)
+        curEvents.value = events.value
+        tmpEvents.value = events.value
+        // alert(JSON.stringify(events.value))
+        for (let i = 0; i < events.value.length; i++) {//获取每个活动的海报
+          let id=events.value[i]['id'];
+          // alert(id)
+        }
       })
       .catch((error) => {
         if (error.response) {
@@ -134,10 +173,7 @@ function getSearchNew(message) {
 
 defineExpose({getSearchNew});
 // 获取全局变量 $apiBaseUrl
-const globalProperties = getCurrentInstance().appContext.config.globalProperties;
-const apiBaseUrl = globalProperties.$apiBaseUrl;
-// alert(apiBaseUrl)
-axios.defaults.baseURL = apiBaseUrl;
+
 axios.post(`/event/getAllEvents`, {}, {
   params: {},
   headers: {

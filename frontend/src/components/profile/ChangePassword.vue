@@ -25,6 +25,14 @@
   >
     我的发布
   </t-button>
+  <t-button
+      class="btn"
+      theme="success"
+      variant="base"
+      @click="router.push('/myOrderRecords');"
+  >
+    我的预定
+  </t-button>
 <t-dialog
     v-model:visible="visibleBody"
     attach="body"
