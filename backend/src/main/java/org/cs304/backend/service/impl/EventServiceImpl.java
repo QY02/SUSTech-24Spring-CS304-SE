@@ -11,10 +11,7 @@ import org.cs304.backend.constant.constant_OrderRecordStatus;
 import org.cs304.backend.constant.constant_User;
 import org.cs304.backend.entity.*;
 import org.cs304.backend.exception.ServiceException;
-import org.cs304.backend.mapper.EventMapper;
-import org.cs304.backend.mapper.EventSessionMapper;
-import org.cs304.backend.mapper.OrderRecordMapper;
-import org.cs304.backend.mapper.SeatMapper;
+import org.cs304.backend.mapper.*;
 import org.cs304.backend.service.IEventService;
 import org.cs304.backend.service.IEventSessionService;
 import org.springframework.stereotype.Service;
@@ -39,6 +36,10 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
     private SeatMapper seatMapper;
     @Resource
     private OrderRecordMapper orderRecordMapper;
+    @Resource
+    private UserInteractionMapper userInteractionMapper;
+    @Resource
+    private UserFavoriteTypeMapper userFavoriteTypeMapper;
 
     @Override
     public JSONArray getAuditList(String eventStatus) {
@@ -211,5 +212,27 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
             throw new ServiceException("400", "Invalid status");
         }
         baseMapper.updateById(event);
+    }
+
+    @Override
+    public List<Event> getRecommendEvents(String userId) {
+        // TODO 控制返回的个数
+        List<UserFavoriteType> userFavoriteTypeList = userFavoriteTypeMapper.selectList(new QueryWrapper<UserFavoriteType>().eq("user_id", userId));
+        if (userFavoriteTypeList == null || userFavoriteTypeList.isEmpty()) {
+            return new ArrayList<>();
+        }
+        List<Integer> typeList = userFavoriteTypeList.stream().map(UserFavoriteType::getEventType).collect(Collectors.toList());
+        QueryWrapper<Event> queryWrapper = new QueryWrapper<Event>().in("type", typeList).eq("status", constant_EventStatus.PASSED).eq("visible", true);
+        List<Event> list = list(queryWrapper);
+        List<UserInteraction> userInteractionList = userInteractionMapper.selectList(new QueryWrapper<UserInteraction>().eq("user_id", userId).eq("update_type",0));
+        if (userInteractionList != null && !userInteractionList.isEmpty()) {
+            List<Integer> eventIdList = userInteractionList.stream().map(UserInteraction::getEventId).collect(Collectors.toList());
+            List<Event> eventList = listByIds(eventIdList);
+            list.addAll(eventList);
+        }
+        if (list != null) {
+            return list;
+        }
+        return new ArrayList<>();
     }
 }

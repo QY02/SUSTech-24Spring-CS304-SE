@@ -6,6 +6,7 @@ import org.cs304.backend.entity.Event;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.cs304.backend.entity.EventSession;
 import org.cs304.backend.entity.OrderRecord;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -24,5 +25,9 @@ public interface IEventService extends IService<Event> {
 
     void submitBookingData(int userType, String userId, OrderRecord orderRecord);
 
+    @Transactional(rollbackFor = Exception.class)
     void changeAudit(Integer eventId, Integer status, String reason);
+
+    List<Event> getRecommendEvents(String userId);
+
 }

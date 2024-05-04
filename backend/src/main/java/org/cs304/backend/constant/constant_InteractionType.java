@@ -9,7 +9,7 @@ package org.cs304.backend.constant;
 //有点赞动态4分、差评2分
 //只历史记录3分
 public class constant_InteractionType {
-    public static final int RECOMMENDATION = 6;
+    public static final int RECOMMENDATION = 0;
     public static final int STAR = 5;
     public static final int FAVORITE = 4;
     public static final int ATTEND = 3;
