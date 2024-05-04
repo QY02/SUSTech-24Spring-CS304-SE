@@ -34,7 +34,6 @@ public class EntityAttachmentRelationServiceImpl extends ServiceImpl<EntityAttac
                         .eq("entity_id", entity_id)
                         .eq("attachment_type", attachment_type)
         );
-
         Attachment attachment = attachmentMapper.selectById(entityAttachmentRelation.get(0).getAttachmentId());//我目前是只获得了第一个
         if (attachment == null) {
             throw new ServiceException("400", "Attachment not exist");

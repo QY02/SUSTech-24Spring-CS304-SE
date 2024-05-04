@@ -33,18 +33,18 @@ public class EventController {
 
     @PostMapping("/add")
     @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, content = @Content(examples = @ExampleObject("""
-           {
-            "event":{
-            "name": "zyp",
-            "content": "",
-            "type": 0,
-            "publisher_id": "12112003",
-            "poster": [ { "url": "https://tdesign.gtimg.com/site/avatar.jpg" } ]
-            } ,
-            "sessions":[
-            { "key": 1, "registration_required": false, "registration_time_range": [], "event_time_range": [ "2024-03-25 11:36:11", "2024-03-31 11:36:11" ], "count_range_of_people": [ "1", "11" ], "seat_map_id": "", "venue": "12", "location": "啊大苏打", "visible": false } ]
-            }""")))
-    public Result postNewEvent(HttpServletResponse response, @RequestBody JSONObject event){
+            {
+             "event":{
+             "name": "zyp",
+             "content": "",
+             "type": 0,
+             "publisher_id": "12112003",
+             "poster": [ { "url": "https://tdesign.gtimg.com/site/avatar.jpg" } ]
+             } ,
+             "sessions":[
+             { "key": 1, "registration_required": false, "registration_time_range": [], "event_time_range": [ "2024-03-25 11:36:11", "2024-03-31 11:36:11" ], "count_range_of_people": [ "1", "11" ], "seat_map_id": "", "venue": "12", "location": "啊大苏打", "visible": false } ]
+             }""")))
+    public Result postNewEvent(HttpServletResponse response, @RequestBody JSONObject event) {
         eventService.insertEventAndSessions(event);
         return Result.success(response);
     }
@@ -74,28 +74,28 @@ public class EventController {
 
     @PostMapping("/getAllEvents")
     @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, content = @Content(examples = @ExampleObject("""
-           ### 参数 ###
-            无
-            ### 返回值 ###
-            {
-                "code": "200",
-                "msg": "Request Success",
-                "data": [
-                  {
-                    "content": "活动1的内容",
-                    "id": 1,
-                    "lowestPrice": 0,
-                    "name": "活动1",
-                    "publishDate": "2024-03-15T19:08:08",
-                    "publisherId": "12112003",
-                    "status": 0,
-                    "type": 0,
-                  }
-                ]
-              }
-            ### 注意事项 ###
-            无
-            """)))
+            ### 参数 ###
+             无
+             ### 返回值 ###
+             {
+                 "code": "200",
+                 "msg": "Request Success",
+                 "data": [
+                   {
+                     "content": "活动1的内容",
+                     "id": 1,
+                     "lowestPrice": 0,
+                     "name": "活动1",
+                     "publishDate": "2024-03-15T19:08:08",
+                     "publisherId": "12112003",
+                     "status": 0,
+                     "type": 0,
+                   }
+                 ]
+               }
+             ### 注意事项 ###
+             无
+             """)))
     public Result getAllEvents(@NotNull HttpServletRequest request, HttpServletResponse response) {
         int userType = (int) request.getAttribute("loginUserType");
 //        System.out.println(userType+"666666666666666666");
@@ -103,6 +103,14 @@ public class EventController {
 //            throw new ServiceException("403", "Permission denied");
 //        }
         return Result.success(response, eventService.getAllEvents());
+    }
+
+    @PostMapping("/getRecommendEvents")
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, content = @Content(examples = @ExampleObject("{\"userId\": \"12110141\"}")))
+    public Result getRecommendEvents(@NotNull HttpServletRequest request, HttpServletResponse response, @RequestBody JSONObject requestBody) {
+        int userType = (int) request.getAttribute("loginUserType");
+//        System.out.println(requestBody.getString("userId"));
+        return Result.success(response, eventService.getRecommendEvents(requestBody.getString("userId")));
     }
 
     //通过多个eventId返回多个活动
@@ -114,33 +122,33 @@ public class EventController {
     public Result getEventsByIds(HttpServletRequest request, HttpServletResponse response, @RequestBody JSONObject requestBody) {
         int userType = (int) request.getAttribute("loginUserType");
         List<Integer> idList = requestBody.getList("eventIdList", Integer.class);
-        return Result.success(response, eventService.getBatchByIds(userType,idList));
+        return Result.success(response, eventService.getBatchByIds(userType, idList));
     }
 
 
     //获得我发布的活动
     @GetMapping("/getMyPost/{publisherId}")
-    public Result getMyPost(@NotNull HttpServletRequest request, HttpServletResponse response, @PathVariable("publisherId")int publisherId, @RequestHeader("token") String token) {
+    public Result getMyPost(@NotNull HttpServletRequest request, HttpServletResponse response, @PathVariable("publisherId") int publisherId, @RequestHeader("token") String token) {
 //        System.out.println(publisherId+"hhhhhhhhh");
         int userType = (int) request.getAttribute("loginUserType");
-        return Result.success(response,eventService.getEventByPublisher(userType,publisherId));
+        return Result.success(response, eventService.getEventByPublisher(userType, publisherId));
     }
 
     @GetMapping("/getEventDetail/{eventId}")
-    public Result getEventDetail(@NotNull HttpServletRequest request, HttpServletResponse response, @PathVariable("eventId")int eventId, @RequestHeader("token") String token) {
+    public Result getEventDetail(@NotNull HttpServletRequest request, HttpServletResponse response, @PathVariable("eventId") int eventId, @RequestHeader("token") String token) {
         int userType = (int) request.getAttribute("loginUserType");
         QueryWrapper<Event> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("id", eventId);
         if (!eventService.exists(queryWrapper)) {
-            throw new ServiceException("404","No such event");
+            throw new ServiceException("404", "No such event");
         }
-        return Result.success(response,eventService.getById(eventId));
+        return Result.success(response, eventService.getById(eventId));
     }
 
 
     @PostMapping("/getSeatPriceByEventId/{eventId}")
     @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, content = @Content(examples = @ExampleObject("{\"seatMapId\": 1}")))
-    public Result getSeatPriceByEventId(HttpServletResponse response, HttpServletRequest request, @PathVariable("eventId")int eventId) {
+    public Result getSeatPriceByEventId(HttpServletResponse response, HttpServletRequest request, @PathVariable("eventId") int eventId) {
         int userType = (int) request.getAttribute("loginUserType");
         List<EventSession> event = eventService.getEventSessionsByEventId(userType, eventId);
 
