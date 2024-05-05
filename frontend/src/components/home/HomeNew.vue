@@ -122,9 +122,6 @@ window.addEventListener('setItem', () => {
   tmpEvents.value = events.value.filter(events => typeValue.value.includes(events['type'] + 1));
 })
 
-const clickHandler = (data) => {
-  MessagePlugin.success(`选中【${data.content}】 `);
-};
 const clickEvent = (eventId) => {
   MessagePlugin.success(`${sessionStorage.getItem('uid')} 选中【${eventId}】`);
   sessionStorage.setItem('eventId',eventId)
@@ -153,29 +150,18 @@ const clickEvent = (eventId) => {
       });
 };
 const favEvent = (eventId) => {
-  MessagePlugin.success(`${sessionStorage.getItem('uid')} 喜欢【${eventId}】`);
-  const favorite = {
-    userId: sessionStorage.getItem('uid'),
-    eventId: eventId // 替换为你要收藏的事件的ID
-  };
-  axios.post(`/favorite/add?userId=${encodeURIComponent(sessionStorage.getItem('uid'))}&eventId=${encodeURIComponent(eventId)}`, {//有问题
-    // "eventId": eventId,
-    // "userId": sessionStorage.getItem('uid'),
+  // MessagePlugin.success(`${sessionStorage.getItem('uid')} 喜欢【${eventId}】`);
+
+  axios.post(`/favorite/add`, {
+    "eventId": eventId,
+    "userId": sessionStorage.getItem('uid'),
   }, {
     headers: {
       token: sessionStorage.getItem('token')
     }
   })
-      .then((response) => {
-        // alert(response)
-        events.value = response.data.data.filter(events => events['status']===1)
-        curEvents.value = events.value
-        tmpEvents.value = events.value
-        // alert(JSON.stringify(events.value))
-        for (let i = 0; i < events.value.length; i++) {//获取每个活动的海报
-          let id=events.value[i]['id'];
-          // alert(id)
-        }
+      .then(() => {
+        MessagePlugin.success("Add favorite successfully!");
       })
       .catch((error) => {
         if (error.response) {
