@@ -1,5 +1,7 @@
 <template>
-<h2 style="margin-left: 20px">历史记录</h2>
+<!--<h2 style="margin-left: 20px">历史记录</h2>-->
+  <t-tag style="margin-left: 20px;height: 40px; margin-top: 15px;font-size: 20px" size="large" theme="primary" variant="light">历史记录</t-tag>
+
   <div id="event">
     <t-card
         v-for="(item,index) in curEvents"

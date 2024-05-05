@@ -14,14 +14,11 @@ import org.cs304.backend.exception.ServiceException;
 import org.cs304.backend.mapper.*;
 import org.cs304.backend.service.IEventService;
 import org.cs304.backend.service.IEventSessionService;
-import org.cs304.backend.utils.Result;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,6 +38,8 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
     private UserInteractionMapper userInteractionMapper;
     @Resource
     private UserFavoriteTypeMapper userFavoriteTypeMapper;
+    @Resource
+    private HistoryMapper historyMapper;
 
     @Override
     public JSONArray getAuditList(String eventStatus) {
@@ -126,17 +125,6 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
     }
 
 
-
-//    @Override
-//    public Event getEventByEventId(int userType, Integer eventId) {
-//        if (eventId == null) {
-//            throw new ServiceException("400", "Invalid event id");
-//        }
-//        Event event = baseMapper.selectById(eventId);
-//
-//        return event;
-//    }
-
     @Override
     public void submitBookingData(int userType, String userId, OrderRecord orderRecord) {
         Event event = baseMapper.selectById(orderRecord.getEventId());
@@ -186,6 +174,7 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
         }
         return new JSONArray();
     }
+
     public List<Event> getEventByPublisher(int userType, Integer publisherId) {
         if (publisherId == null) {
             throw new ServiceException("400", "Invalid event id");
@@ -196,6 +185,7 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
         return eventMapper.selectList(queryWrapper);
 
     }
+
     @Override
     public List<Event> getBatchByIds(int userType, List<Integer> idList) {
         List<Event> result = new ArrayList<>();
@@ -209,6 +199,7 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
         }
         return result;
     }
+
     @Override
     public void changeAudit(Integer eventId, Integer status, String reason) {
         Event event = baseMapper.selectById(eventId);
@@ -236,7 +227,7 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
         List<Integer> typeList = userFavoriteTypeList.stream().map(UserFavoriteType::getEventType).collect(Collectors.toList());
         QueryWrapper<Event> queryWrapper = new QueryWrapper<Event>().in("type", typeList).eq("status", constant_EventStatus.PASSED).eq("visible", true);
         List<Event> list = list(queryWrapper);
-        List<UserInteraction> userInteractionList = userInteractionMapper.selectList(new QueryWrapper<UserInteraction>().eq("user_id", userId).eq("update_type",0));
+        List<UserInteraction> userInteractionList = userInteractionMapper.selectList(new QueryWrapper<UserInteraction>().eq("user_id", userId).eq("update_type", 0));
         if (userInteractionList != null && !userInteractionList.isEmpty()) {
             List<Integer> eventIdList = userInteractionList.stream().map(UserInteraction::getEventId).collect(Collectors.toList());
             List<Event> eventList = listByIds(eventIdList);
@@ -246,5 +237,46 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
             return list;
         }
         return new ArrayList<>();
+    }
+
+    @Override
+    public JSONArray getHotValue() {
+        QueryWrapper<Event> queryWrapper = new QueryWrapper<Event>();
+        List<Event> list = list(queryWrapper);//所有活动
+        List<History> histories = historyMapper.selectList(new QueryWrapper<>());
+        Map<Integer, Long> countEvents = histories.stream()
+                .collect(Collectors.groupingBy(History::getEventId, Collectors.counting()));
+
+        if (list != null) {
+            LocalDateTime now = LocalDateTime.now();
+            JSONArray jsonArray = new JSONArray();
+            for (int i = 0; i < list.size(); i++) {
+                Event curEvent = list.get(i);
+                JSONObject eventDetails = JSONObject.from(curEvent);
+                //已经发布了多久
+                long daysBetween = ChronoUnit.DAYS.between(now, curEvent.getPublishDate());
+                double heat;
+                int eventId = curEvent.getId();
+                long countsOfEvent = 0;
+                if (countEvents.containsKey(eventId)) {
+                    countsOfEvent = countEvents.get(eventId);
+                }
+                if (daysBetween <= 3) {
+                    heat = Math.max(Math.exp(-0.099 * daysBetween), 0.01) * countsOfEvent;
+                } else if (daysBetween <= 7) {
+                    heat = Math.max(Math.exp(-0.099 * daysBetween), 0.01) * Math.log(countsOfEvent);
+                } else if (daysBetween <= 30) {
+                    heat = (double) (31 - daysBetween) / 30000 + 0.00001 * countsOfEvent;
+                } else if (daysBetween <= 365) {
+                    heat = (double) (366 - daysBetween) / 365000;
+                } else {
+                    heat = (double) 1 / 365000;
+                }
+                eventDetails.put("heat", heat);
+                jsonArray.add(eventDetails);
+            }
+            return jsonArray;
+        }
+        return new JSONArray();
     }
 }

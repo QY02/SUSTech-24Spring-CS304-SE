@@ -32,4 +32,5 @@ public interface IEventService extends IService<Event> {
 
     List<Event> getRecommendEvents(String userId);
 
+    JSONArray getHotValue();
 }
