@@ -52,6 +52,10 @@ const routes = [
                 component: () => import('@/components/home/UserPublishedPage.vue')
             },
             {
+                path: '/myFavorites',
+                component: () => import('@/components/home/MyFavoritesPage.vue')
+            },
+            {
                 path: '/myOrderRecords',
                 component: () => import('@/components/home/MyOrderRecords.vue')
             },

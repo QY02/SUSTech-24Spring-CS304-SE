@@ -27,6 +27,14 @@
   </t-button>
   <t-button
       class="btn"
+      theme="default"
+      variant="base"
+      @click="router.push('/myFavorites');"
+  >
+    我的收藏
+  </t-button>
+  <t-button
+      class="btn"
       theme="success"
       variant="base"
       @click="router.push('/myOrderRecords');"
