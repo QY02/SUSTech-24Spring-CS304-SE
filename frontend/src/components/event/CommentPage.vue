@@ -14,8 +14,9 @@
                 <template #content>
                     <div class="comment_card">
                         <t-space style="display: flex; align-items: baseline;">
-                            <h2 >{{ item.title }}</h2>
-                            <div class="stars" ><t-rate :default-value="item.score" allow-half disabled size="16" /></div>
+                            <h2>{{ item.title }}</h2>
+                            <div class="stars"><t-rate :default-value="item.score" allow-half disabled size="16" />
+                            </div>
                         </t-space>
                         <div class="comment_infos">
                             <p class="date-time">
@@ -25,9 +26,19 @@
                                 {{ item.content }}
                             </p>
                         </div>
-                        <div class="author">
-                            — {{ item.publisherId }}
-                        </div>
+                        <t-space>
+                            <div class="author">
+                                — {{ item.publisherId }}
+                            </div>
+                            <div v-if="userId == item.publisherId">
+                                <t-button theme="primary" @click="visibleDelete = true; deleteEventId = item.id"
+                                    shape="square" variant="text">
+                                    <template #icon>
+                                        <DeleteIcon />
+                                    </template>
+                                </t-button>
+                            </div>
+                        </t-space>
                     </div>
                 </template>
             </t-list-item>
@@ -40,7 +51,8 @@
     <t-dialog v-model:visible="visibleComment" attach="body" header="评论" destroy-on-close:true width="500px"
         :confirm-btn="null" :cancel-btn="null">
         <template #body>
-            <t-form ref="form" :rules="FORM_RULES" :data="commentForm" :colon="true" @reset="onReset" @submit="onSubmit">
+            <t-form ref="form" :rules="FORM_RULES" :data="commentForm" :colon="true" @reset="onReset"
+                @submit="onSubmit">
                 <t-form-item label="标题" name="title">
                     <t-input v-model="commentForm.title" placeholder="请输入标题" @enter="onEnter"></t-input>
                 </t-form-item>
@@ -48,7 +60,8 @@
                     <t-rate allowHalf v-model="commentForm.score"></t-rate>
                 </t-form-item>
                 <t-form-item label="内容" name="content">
-                    <t-textarea v-model="commentForm.content" placeholder="请输入内容" :maxcharacter="200" @enter="onEnter"></t-textarea>
+                    <t-textarea v-model="commentForm.content" placeholder="请输入内容" :maxcharacter="200"
+                        @enter="onEnter"></t-textarea>
                 </t-form-item>
                 <t-form-item>
                     <t-space size="medium">
@@ -59,6 +72,10 @@
                 </t-form-item>
             </t-form>
         </template>
+    </t-dialog>
+
+
+    <t-dialog v-model:visible="visibleDelete" header="确认删除" width="40%" :on-close="close" :on-confirm="deleteComment">
     </t-dialog>
 </template>
 
@@ -84,8 +101,11 @@ const FORM_RULES = {
     content: [{ required: true, message: '内容必填' }],
 };
 
-const loading = ref(false);
+const loading = ref(false); //add的loading
+const deleteLoading = ref(false)
 const visibleComment = ref(false)
+const visibleDelete = ref(false)
+const deleteEventId = ref(-1);
 
 const onSubmit = ({ validateResult, firstError }) => {
     if (validateResult === true) {
@@ -122,13 +142,18 @@ const addComment = () => {
     }).catch(() => { })
 }
 
-const deleteComment = (commentId) => {
-    axios.get(`/comment/delete/${commentId}`, {
+const deleteComment = () => {
+    deleteLoading.value = true;
+    axios.get(`/comment/delete/${deleteEventId}`, {
         headers: {
             token: token
         }
     }).then((response) => {
-    }).catch(() => { })
+    }).catch(() => {
+    }).finally(() => {
+        deleteLoading.value = false;
+    })
+
 }
 
 const getComment = () => {
@@ -178,49 +203,49 @@ getComment();
 }
 
 .comment_card {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  background-color: rgba(255, 255, 255, 1);
-  padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: rgba(255, 255, 255, 1);
+    padding: 20px;
 }
 
 .price_card {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 20px;
 }
 
 
 .stars {
-  display: flex;
-  grid-gap: 0.125rem;
-  gap: 0.125rem;
-  margin-bottom: -10px;
-  color: rgb(238, 203, 8);
+    display: flex;
+    grid-gap: 0.125rem;
+    gap: 0.125rem;
+    margin-bottom: -10px;
+    color: rgb(238, 203, 8);
 }
 
 .comment_infos {
-  margin-top: 0.3rem;
+    margin-top: 0.3rem;
 }
 
 .date-time {
-  color: rgba(7, 63, 216, 1);
-  font-size: 12px;
-  font-weight: 600;
+    color: rgba(7, 63, 216, 1);
+    font-size: 12px;
+    font-weight: 600;
 }
 
 .description {
-  margin-top: 0.4rem;
-  line-height: 1.625;
-  color: rgba(107, 114, 128, 1);
+    margin-top: 0.4rem;
+    line-height: 1.625;
+    color: rgba(107, 114, 128, 1);
 }
 
 .author {
-  margin-top: 1.3rem;
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-  color: rgba(107, 114, 128, 1);
+    margin-top: 1.3rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: rgba(107, 114, 128, 1);
 }
 </style>
