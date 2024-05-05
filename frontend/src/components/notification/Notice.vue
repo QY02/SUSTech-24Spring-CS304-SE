@@ -82,9 +82,9 @@ const getNotice = () => {
       token: token
     }
   }).then(response => {
-    console.log(response)
+    // console.log(response)
     msgData.value = response.data.data
-  }).catch();
+  }).catch(()=>{});
 }
 
 let unreadMsg = computed(() => msgData.value.filter(item => item.status === 0));

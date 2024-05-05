@@ -37,7 +37,7 @@ public class FavoriteController {
         return Result.success(response);
     }
 
-    @GetMapping("/delete")
+    @PostMapping("/delete")
     @Operation(summary = "删除喜欢",description = "")
     public Result delete(HttpServletResponse response, @RequestBody Favorite favorite) {
         favoriteService.deleteFavorite(favorite);

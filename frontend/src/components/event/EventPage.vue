@@ -212,37 +212,7 @@
     <!-- review part -->
     <div :id="`${path}#reviews`" style="height: 36px;"></div>
     <div class="card" style="flex-direction: column;">
-      <t-space style="display: flex; width: 100%;">
-        <div>
-          <div class="title">REVIEWS</div>
-          <div class="line"></div>
-        </div>
-        <div style="margin-top: 30px; display: flex; justify-content: flex-end; margin-right:30px ;">
-          <t-button>评论</t-button>
-        </div>
-      </t-space>
-      <div>
-        <t-list :split="true">
-          <t-list-item v-for="(item, index) in commentsData" :key="index">
-            <template #content>
-              <div class="comment_card">
-                <div class="stars"><t-rate :default-value="4.5" allow-half disabled size="16" /></div>
-                <div class="comment_infos">
-                  <p class="date-time">
-                    {{ item.datetime }}
-                  </p>
-                  <p class="description">
-                    {{ item.content }}
-                  </p>
-                </div>
-                <div class="author">
-                  — {{ item.author }}
-                </div>
-              </div>
-            </template>
-          </t-list-item>
-        </t-list>
-      </div>
+      <CommentPage></CommentPage>
       <div style="height: 40px;"></div>
     </div>
   </div>
@@ -263,6 +233,7 @@ import EventTicketCalender from './EventTicketCalender.vue';
 import ChooseSession from '../book/ChooseSession.vue';
 import router from '@/routers';
 import SkeletonPage from './SkeletonPage.vue';
+import CommentPage from './CommentPage.vue';
 const value_lable = ref('events');
 
 const show_event_type = ref(true);
@@ -315,7 +286,7 @@ const token = sessionStorage.getItem('token')
 const eventId = sessionStorage.getItem('eventId')
 const uid = sessionStorage.getItem('uid')
 const eventDetail = ref([])
-const isFavorite = ret(false);
+const isFavorite = ref(false);
 
 const addHistory = () => {
   axios.post(`/history/add`, {
@@ -372,7 +343,7 @@ const addFavorite = () => {
 }
 
 const deleteFavorite = () => {
-  axios.delete(`/favorite/delete`, {
+  axios.post(`/favorite/delete`, {
     "eventId": eventId,
     "userId": uid
   }, {
