@@ -5,32 +5,32 @@
         v-for="(item,index) in curEvents"
         :key="index"
         :title="item['name']" :subtitle="item['content']" :cover=cover :style="{ width: '400px' }" hover-shadow
-    @click="clickEvent(item['id'])">
+        @click="clickEvent(item['id'])">
       <template #actions>
-<!--        <t-dropdown :options="options" :min-column-width="112" @click="clickHandler">-->
-<!--          <div class="tdesign-demo-dropdown-trigger">-->
-            <a v-if="item['type']===0">
-              <t-tag theme="success" variant="light" style="margin-right: 20px">表演</t-tag>
-            </a>
-            <a v-if="item['type']===1">
-              <t-tag theme="primary" variant="light" style="margin-right: 20px">讲座</t-tag>
-            </a>
-            <a v-if="item['type']===2">
-              <t-tag theme="danger" variant="light" style="margin-right: 20px">比赛</t-tag>
-            </a>
-            <a v-if="item['type']===3">
-              <t-tag variant="light" style="margin-right: 20px">其他</t-tag>
-            </a>
-<!--            <t-button variant="text" shape="square">-->
-<!--              <more-icon/>-->
-<!--            </t-button>-->
-<!--          </div>-->
-<!--        </t-dropdown>-->
+        <!--        <t-dropdown :options="options" :min-column-width="112" @click="clickHandler">-->
+        <!--          <div class="tdesign-demo-dropdown-trigger">-->
+        <a v-if="item['type']>=0&&item['type']<=2">
+          <t-tag theme="success" variant="light" style="margin-right: 20px">{{ typeMap[item['type']] }}</t-tag>
+        </a>
+        <a v-if="item['type']>=3&&item['type']<=5">
+          <t-tag theme="primary" variant="light" style="margin-right: 20px">{{ typeMap[item['type']] }}</t-tag>
+        </a>
+        <a v-if="item['type']>=6&&item['type']<=8">
+          <t-tag theme="danger" variant="light" style="margin-right: 20px">{{ typeMap[item['type']] }}</t-tag>
+        </a>
+        <a v-if="item['type']>=9&&item['type']<=12">
+          <t-tag variant="light" style="margin-right: 20px">{{ typeMap[item['type']] }}</t-tag>
+        </a>
+        <!--            <t-button variant="text" shape="square">-->
+        <!--              <more-icon/>-->
+        <!--            </t-button>-->
+        <!--          </div>-->
+        <!--        </t-dropdown>-->
       </template>
       <template #footer>
         <t-row :align="'middle'" justify="center" style="gap: 24px;">
           <t-col flex="auto" style="display: inline-flex; justify-content: center;">
-            <t-button variant="text" shape="square"  @click.stop="favEvent(item['id'])">
+            <t-button variant="text" shape="square" @click.stop="favEvent(item['id'])">
               <heart-icon/>
             </t-button>
           </t-col>
@@ -62,6 +62,7 @@ import {MessagePlugin} from 'tdesign-vue-next';
 import axios from "axios";
 import {computed, defineComponent, getCurrentInstance, inject, ref, watch} from "vue";
 import router from "@/routers/index.js";
+
 const globalProperties = getCurrentInstance().appContext.config.globalProperties;
 const apiBaseUrl = globalProperties.$apiBaseUrl;
 // alert(apiBaseUrl)
@@ -82,7 +83,21 @@ const options = [
   },
 ];
 
-
+const typeMap = {
+  0: '讲座',
+  1: '工作坊',
+  2: '比赛',
+  3: '表演',
+  4: '展览',
+  5: '论坛',
+  6: '体育',
+  7: '志愿',
+  8: '学院',
+  9: '沙龙',
+  10: '培训',
+  11: '社团',
+  12: '其他',
+};
 axios.post(`/event/getAllEvents`, {}, {
   params: {},
   headers: {
@@ -91,12 +106,12 @@ axios.post(`/event/getAllEvents`, {}, {
 })
     .then((response) => {
       // alert(response)
-      events.value = response.data.data.filter(events => events['status']===1)
+      events.value = response.data.data.filter(events => events['status'] === 1)
       curEvents.value = events.value
       tmpEvents.value = events.value
       // alert(JSON.stringify(events.value))
       for (let i = 0; i < events.value.length; i++) {//获取每个活动的海报
-        let id=events.value[i]['id'];
+        let id = events.value[i]['id'];
         // alert(id)
       }
     })
@@ -113,18 +128,24 @@ axios.post(`/event/getAllEvents`, {}, {
 
 // const eventType = inject('eventType')
 const eventType = ref(sessionStorage.getItem('eventType'))
-const typeValue = ref([]);  // Initialize with a default value
+const typeValue = []  // Initialize with a default value
 
 // Function to handle incoming messages from other tabs
 window.addEventListener('setItem', () => {
-  typeValue.value = sessionStorage.getItem('eventType');
-  curEvents.value = events.value.filter(events => typeValue.value.includes(events['type'] + 1));
+  typeValue.value = sessionStorage.getItem('eventType').split(",").map(Number);//传进来的是个字符串！！！
+  // console.log(typeof typeValue.value)
+  // console.log(typeValue.value)
+  // console.log(typeValue.value.indexOf(1) !== -1)
+  // console.log(JSON.stringify(curEvents.value))
+  curEvents.value = events.value.filter(events => typeValue.value.indexOf(events['type'] + 1) !== -1);
+  // console.log(JSON.stringify(curEvents.value))
+
   tmpEvents.value = events.value.filter(events => typeValue.value.includes(events['type'] + 1));
 })
 
 const clickEvent = (eventId) => {
   MessagePlugin.success(`${sessionStorage.getItem('uid')} 选中【${eventId}】`);
-  sessionStorage.setItem('eventId',eventId)
+  sessionStorage.setItem('eventId', eventId)
   router.push('/event');
   // router.push('/event');
   axios.post(`/history/add`, {
@@ -186,9 +207,6 @@ function getSearchNew(message) {
 
 defineExpose({getSearchNew});
 // 获取全局变量 $apiBaseUrl
-
-
-
 
 
 // const {colors} = useColors();

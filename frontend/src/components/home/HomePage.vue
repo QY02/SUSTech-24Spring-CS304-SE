@@ -78,7 +78,7 @@
   <a v-else-if="currentTab.title==='推荐'">
     <HomeRecommend ref="childRef"/>
   </a>
-<!--  <component :is="currentTab.component" :ref="childRef"></component>-->
+  <!--  <component :is="currentTab.component" :ref="childRef"></component>-->
 
 
 </template>
@@ -151,10 +151,19 @@ import router from "@/routers/index.js";
 const OPTIONS = [
   // 全选
   {label: '全选', checkAll: true},
-  {label: '表演', value: 1,},
-  {label: '讲座', value: 2},
+  {label: '讲座', value: 1,},
+  {label: '工作坊', value: 2,},
   {label: '比赛', value: 3},
-  {label: '其他', value: 4},
+  {label: '表演', value: 4},
+  {label: '展览', value: 5},
+  {label: '论坛', value: 6,},
+  {label: '体育', value: 7},
+  {label: '志愿', value: 8},
+  {label: '学院', value: 9},
+  {label: '沙龙', value: 10,},
+  {label: '培训', value: 11},
+  {label: '社团', value: 12},
+  {label: '其他', value: 13},
 
 ];
 
@@ -162,10 +171,19 @@ const inputValue = ref('');
 // 全量数据
 const options = ref([...OPTIONS]);
 const value = ref([
-  {label: '表演', value: 1},
-  {label: '讲座', value: 2},
+  {label: '讲座', value: 1,},
+  {label: '工作坊', value: 2,},
   {label: '比赛', value: 3},
-  {label: '其他', value: 4},
+  {label: '表演', value: 4},
+  {label: '展览', value: 5},
+  {label: '论坛', value: 6,},
+  {label: '体育', value: 7},
+  {label: '志愿', value: 8},
+  {label: '学院', value: 9},
+  {label: '沙龙', value: 10,},
+  {label: '培训', value: 11},
+  {label: '社团', value: 12},
+  {label: '其他', value: 13},
 ]);
 
 const popupProps = ref({
@@ -190,7 +208,7 @@ function resetSetItem(key, newVal) {
         newStorageEvent.initStorageEvent('setItem', false, false, k, null, val, null, null);
         // 派发对象
         window.dispatchEvent(newStorageEvent)
-        formData.search='';//搜索清空
+        formData.search = '';//搜索清空
       }
     }
     return storage.setItem(key, newVal);
@@ -204,7 +222,7 @@ const checkboxValue = computed(() => {
   for (let i = 0, len = list.length; i < len; i++) {
     list[i].value && arr.value.push(list[i].value);
   }
-  sessionStorage.setItem('eventType', arr.value);
+  // sessionStorage.setItem('eventType', arr.value);
   resetSetItem('eventType', arr.value);
 
   return arr.value;
