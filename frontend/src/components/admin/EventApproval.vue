@@ -60,7 +60,7 @@
             <t-tag theme="warning" variant="light">￥{{ item.price }}起</t-tag>
           </t-space>
           <template #action>
-            <t-button variant="text" shape="square" @click="viewDetail">
+            <t-button variant="text" shape="square" @click="viewDetail(item)">
               <icon name="task-1" />
             </t-button>
             <t-button variant="text" shape="square" @click="onSuccess(item.id)">
@@ -141,8 +141,8 @@
       </template>
     </t-table>
   </t-dialog>
-  <t-drawer v-model:visible="detailVisible" header="活动详情" :confirm-btn="null">
-    <p>具体活动细节</p>
+  <t-drawer v-model:visible="detailVisible" :header="currentEvent.title" :confirm-btn="null">
+    <approval-detail :event="currentEvent"></approval-detail>
   </t-drawer>
 </template>
 
@@ -154,7 +154,7 @@ import {Icon} from 'tdesign-icons-vue-next';
 import {MessagePlugin} from 'tdesign-vue-next';
 import axios from 'axios';
 import {SearchIcon, MoneyIcon} from 'tdesign-icons-vue-next';
-
+import ApprovalDetail from './ApprovalDetail.vue';
 const appConfig = ref(getCurrentInstance().appContext.config.globalProperties).value;
 
 // ###### 数据 开始 ######
@@ -224,6 +224,8 @@ onMounted(() => {
               date: item.startTime,
               location: item.location,
               price: item.lowestPrice,
+              highestPrice: item.highestPrice,
+              policy: item.eventPolicy,
               type: mapEventType(item.type),
               status: item.status,
               publisherId: item.publisherId,
@@ -377,6 +379,7 @@ const onCurrentChange = (index) => {
 // ###### 分页 结束 ######
 
 // ###### 对话框 开始 ######
+const currentEvent = ref({});
 const deleteVisible = ref(false);
 const successVisible = ref(false);
 const detailVisible = ref(false);
@@ -394,8 +397,9 @@ const onDelete = (eventId) => {
   currentEventId.value = eventId;
 };
 
-const viewDetail = () => {
+const viewDetail = (event) => {
   detailVisible.value = true;
+  currentEvent.value = event
 };
 
 const onSuccess = (eventId) => {

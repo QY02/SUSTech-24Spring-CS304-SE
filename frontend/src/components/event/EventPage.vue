@@ -57,6 +57,8 @@
 
     <!-- event part -->
     <div :id="`${path}#events`" style="height: 60px;"></div>
+
+    <!-- button part -->
     <t-space style="display: flex; width: 100%; margin-left: 24px;">
       <div>
         <div class="title">EVENTS</div>
@@ -85,6 +87,8 @@
         </div>
       </div>
     </t-space>
+
+    <!-- detail part -->
     <el-card
       style="height: auto; padding: 5px;  max-width: 100% ; margin-right: 30px; margin-left: 30px; margin-bottom: 40px;">
       <div v-if="show_event_type"
