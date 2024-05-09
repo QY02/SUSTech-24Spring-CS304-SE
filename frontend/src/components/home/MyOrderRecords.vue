@@ -41,11 +41,20 @@
 
     </t-list>
   </div>
+  <t-popup content="返回上一页">
+    <t-button shape="circle" theme="primary" size="large" style="position: fixed;right: 30px;bottom: 40px"
+              @click="router.push('/user');">
+      <template #icon>
+        <rollback-icon/>
+      </template>
+
+    </t-button>
+  </t-popup>
 </template>
 
 <script setup>
 
-import {ThumbUpIcon, ChatIcon, ShareIcon, MoreIcon, ArrowRightIcon} from 'tdesign-icons-vue-next';
+import {ThumbUpIcon, ChatIcon, ShareIcon, MoreIcon, ArrowRightIcon, RollbackIcon} from 'tdesign-icons-vue-next';
 import {MessagePlugin} from 'tdesign-vue-next';
 import axios from "axios";
 import {computed, defineComponent, getCurrentInstance, inject, ref, watch} from "vue";

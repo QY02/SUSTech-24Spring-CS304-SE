@@ -113,6 +113,14 @@ public class EventController {
         return Result.success(response, eventService.getRecommendEvents(requestBody.getString("userId")));
     }
 
+    @PostMapping("/getHotEvents")//按照热度从大大小返回
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, content = @Content(examples = @ExampleObject()))
+    public Result getHotEvents(@NotNull HttpServletRequest request, HttpServletResponse response, @RequestBody JSONObject requestBody) {
+        int userType = (int) request.getAttribute("loginUserType");
+//        System.out.println(requestBody.getString("userId"));
+
+        return Result.success(response, eventService.getHotValue());
+    }
     //通过多个eventId返回多个活动
     @PostMapping("/getBatchEventsByIds")
     @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, content = @Content(examples = @ExampleObject("""

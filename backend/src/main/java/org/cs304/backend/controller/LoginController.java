@@ -63,7 +63,7 @@ public class LoginController {
             user = userService.login(user);
         } catch (Exception e) {
             log.error(e.getMessage());
-            return Result.error(response, "401", "Invalid username or password");
+            return Result.error(response, "400", "Invalid username or password");
         }
         if (user.getTwoFactorAuthentication()) {
             return Result.success(response);

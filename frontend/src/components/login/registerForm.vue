@@ -143,7 +143,7 @@
         <t-form-item name="code">
           <t-input
               v-model="formData1.code"
-              placeholder="Enter the verification code"
+              placeholder="输入验证码"
           >
           </t-input>
         </t-form-item>
@@ -213,19 +213,19 @@ import router from "@/routers";
 const rules = {
   username: [{required: true}, {
     validator: (v) => /^([A-Za-z\u4e00-\u9fa5\s]){1,50}$/.test(v),
-    message: 'Please enter Chinese, English, and spaces, and the length should be less than 50.'
+    message: '请输入中文、英文和空格，长度不超过50。'
   }],
-  id: [{required: true}, {validator: (v) => /^(\d{8})$/.test(v), message: 'ID must be 8 digits'}],
-  email: [{required: true}, {validator: (v) => /[^@]+@[^@]+\.[a-zA-Z]{2,}$/.test(v), message: 'Wrong format'}],
-  phoneNumber: [{required: true}, {validator: (v) => /^(\d{11})?$/.test(v), message: 'Phone number must be 11 digits'}],
+  id: [{required: true}, {validator: (v) => /^(\d{8})$/.test(v), message: 'ID必须是8个字符'}],
+  email: [{required: true}, {validator: (v) => /[^@]+@[^@]+\.[a-zA-Z]{2,}$/.test(v), message: '邮箱格式错误'}],
+  phoneNumber: [{required: true}, {validator: (v) => /^(\d{11})?$/.test(v), message: '电话必须是11个字符'}],
 
   password: [{required: true}, {
     validator: (v) => /^[a-zA-Z0-9/]{8,}$/.test(v),
-    message: 'Only numbers, characters, and slash are allowed, minimum length is 8'
+    message: '只允许数字、字符和斜杠，最小长度为8'
   }],
   password2: [{required: true}, {
     validator: (v) => v === formData.password,
-    message: 'Different from the last password'
+    message: '与上面的密码不一样'
   }],
   favType: [{required: true},
     {
@@ -235,7 +235,7 @@ const rules = {
     }],
 };
 const rules1 = {
-  code: [{required: true}, {validator: (v) => /^[0-9]{6}$/.test(v), message: 'Code must be a six-digit number'}]
+  code: [{required: true}, {validator: (v) => /^[0-9]{6}$/.test(v), message: '验证码必须是6个数字'}]
 }
 const onReset = () => {
   MessagePlugin.success('重置成功');

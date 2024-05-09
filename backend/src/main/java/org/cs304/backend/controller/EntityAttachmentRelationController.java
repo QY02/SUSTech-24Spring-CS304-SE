@@ -24,6 +24,6 @@ public class EntityAttachmentRelationController {
         Integer entity_type = requestBody.getInteger("entity_type");
         Integer entity_id = requestBody.getInteger("entity_id");
         Integer attachment_type = requestBody.getInteger("attachment_type");
-        return Result.success(response, entityAttachmentRelationService.getAttachment(entity_type, entity_id, attachment_type));
+        return Result.success(response, entityAttachmentRelationService.getAttachment(userType,entity_type, entity_id, attachment_type));
     }
 }

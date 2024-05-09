@@ -1,69 +1,70 @@
 <template>
 
-    <div style="width: 285px">
-      <t-form ref="form" :data="formData" :rules="rules" :colon="true" :label-width="0" @reset="onReset"
-              @submit="handleSubmit">
-        <div style="margin-top: 18px">
-          <!--     <div style="color: #2b54d9">ID</div>-->
-          <t-form-item name="account" style="margin-bottom: 30px;">
-            <t-input v-model="formData.account" clearable placeholder="请输入账户名">
-              <template #prefix-icon>
-                <desktop-icon/>
-              </template>
-            </t-input>
-          </t-form-item>
-        </div>
-        <!--      <div style="color: #2b54d9">密码</div>-->
-        <t-form-item name="password">
-          <t-input v-model="formData.password" type="password" clearable placeholder="请输入密码"
-                   style="margin-bottom: 12px">
+  <div style="width: 285px">
+    <t-form ref="form" :data="formData" :rules="rules" :colon="true" :label-width="0" @reset="onReset"
+            @submit="handleSubmit">
+      <div style="margin-top: 18px">
+        <!--     <div style="color: #2b54d9">ID</div>-->
+        <t-form-item name="account" style="margin-bottom: 30px;">
+          <t-input v-model="formData.account" clearable placeholder="请输入账户名">
             <template #prefix-icon>
-              <lock-on-icon/>
+              <desktop-icon/>
             </template>
           </t-input>
         </t-form-item>
+      </div>
+      <!--      <div style="color: #2b54d9">密码</div>-->
+      <t-form-item name="password">
+        <t-input v-model="formData.password" type="password" clearable placeholder="请输入密码"
+                 style="margin-bottom: 12px">
+          <template #prefix-icon>
+            <lock-on-icon/>
+          </template>
+        </t-input>
+      </t-form-item>
 
-        <t-form-item>
-          <t-button theme="primary" shape="round" type="submit" block style="height: 40px; margin-bottom: 8px" :loading="loadingg">登录
-          </t-button>
-        </t-form-item>
-      </t-form>
-    </div>
-    <!--  <va-form class="form" ref="formRef">-->
-    <!--    <va-input type="text" label="id" class="va-input"-->
-    <!--              v-model="id"-->
-    <!--              placeholder="Enter your 8-digit ID"-->
-    <!--              :rules="[(v) => /^(\d{8})$/.test(v) || 'ID must be 8 digits']"-->
-    <!--    ></va-input>-->
-    <!--    <va-value v-slot="isPasswordVisible" :default-value="false">-->
-    <!--      <va-input-->
-    <!--          v-model="password"-->
-    <!--          :type="isPasswordVisible.value ? 'text' : 'password'"-->
-    <!--          label="Password"-->
-    <!--          placeholder="Enter your password"-->
-    <!--          :rules="[(v) => /^[a-zA-Z0-9/]{8,}$/.test(v) || 'Only numbers, characters, and slash are allowed, minimum length is 8']"-->
-    <!--          @click-append-inner="isPasswordVisible.value = !isPasswordVisible.value"-->
-    <!--      >-->
-    <!--        <template #appendInner>-->
-    <!--          <va-icon-->
-    <!--              :name="isPasswordVisible.value ? 'visibility_off' : 'visibility'"-->
-    <!--              size="small"-->
-    <!--              color="primary"-->
-    <!--          />-->
-    <!--        </template>-->
-    <!--      </va-input>-->
-    <!--    </va-value>-->
-    <!--    <va-button-->
-    <!--        type="submit"-->
-    <!--        class="form-btn"-->
-    <!--        color="primary"-->
-    <!--        size="small"-->
-    <!--        :disabled="!isValid"-->
-    <!--        @click="  handleSubmit"-->
-    <!--    >-->
-    <!--      Log in-->
-    <!--    </va-button>-->
-    <!--  </va-form>-->
+      <t-form-item>
+        <t-button theme="primary" shape="round" type="submit" block style="height: 40px; margin-bottom: 8px"
+                  :loading="loadingg">登录
+        </t-button>
+      </t-form-item>
+    </t-form>
+  </div>
+  <!--  <va-form class="form" ref="formRef">-->
+  <!--    <va-input type="text" label="id" class="va-input"-->
+  <!--              v-model="id"-->
+  <!--              placeholder="Enter your 8-digit ID"-->
+  <!--              :rules="[(v) => /^(\d{8})$/.test(v) || 'ID must be 8 digits']"-->
+  <!--    ></va-input>-->
+  <!--    <va-value v-slot="isPasswordVisible" :default-value="false">-->
+  <!--      <va-input-->
+  <!--          v-model="password"-->
+  <!--          :type="isPasswordVisible.value ? 'text' : 'password'"-->
+  <!--          label="Password"-->
+  <!--          placeholder="Enter your password"-->
+  <!--          :rules="[(v) => /^[a-zA-Z0-9/]{8,}$/.test(v) || 'Only numbers, characters, and slash are allowed, minimum length is 8']"-->
+  <!--          @click-append-inner="isPasswordVisible.value = !isPasswordVisible.value"-->
+  <!--      >-->
+  <!--        <template #appendInner>-->
+  <!--          <va-icon-->
+  <!--              :name="isPasswordVisible.value ? 'visibility_off' : 'visibility'"-->
+  <!--              size="small"-->
+  <!--              color="primary"-->
+  <!--          />-->
+  <!--        </template>-->
+  <!--      </va-input>-->
+  <!--    </va-value>-->
+  <!--    <va-button-->
+  <!--        type="submit"-->
+  <!--        class="form-btn"-->
+  <!--        color="primary"-->
+  <!--        size="small"-->
+  <!--        :disabled="!isValid"-->
+  <!--        @click="  handleSubmit"-->
+  <!--    >-->
+  <!--      Log in-->
+  <!--    </va-button>-->
+  <!--  </va-form>-->
 
 </template>
 
@@ -94,23 +95,23 @@ const loadingg = ref(false);
 // const id = ref("");
 const rules = {
   // account: [{ required: true }, { validator: (v) => /^(\d{8})$/.test(v) , message: 'ID must be 8 digits' }],
-  account: [{required: true}, {validator: (v) => /^(\d{8})$/.test(v), message: 'ID must be 8 digits'}],
+  account: [{required: true}, {validator: (v) => /^(\d{8})$/.test(v), message: 'ID 必须为8个数字'}],
   // description: [{ validator: (val) => val.length < 10, message: '不能超过 20 个字，中文长度等于英文长度' }],
   password: [{required: true}, {
     validator: (v) => /^[a-zA-Z0-9/]{8,}$/.test(v),
-    message: 'Only numbers, characters, and slash are allowed, minimum length is 8'
+    message: '只允许数字、字符和斜杠，最小长度为8'
   }],
 };
 
 const handleSubmit = ({validateResult}) => {
   if (validateResult === true) {
-    loadingg.value=true
+    loadingg.value = true
     axios.post("/login", {
       id: formData.account,
       password: formData.password
     })
         .then((response) => {
-          loadingg.value=false;
+          loadingg.value = false;
           // alert(JSON.stringify(response.data.data))
           const rd = response.data.data.id;
           const type = response.data.data.type
@@ -130,9 +131,13 @@ const handleSubmit = ({validateResult}) => {
           } else {//正常用户
             router.push("/HomePage");
           }
-        }).catch(()=>{loadingg.value=false;})
+        }).catch(() => {
+      loadingg.value = false;
+      // MessagePlugin.warning("密码或者用户名错误!")
+
+    })
   } else {
-    MessagePlugin.warning("Please make sure the input format is correct!")
+    MessagePlugin.warning("请确保输入格式正确!")
     // alert('lll')
   }
 
@@ -161,7 +166,6 @@ const handleSubmit = ({validateResult}) => {
   cursor: pointer;
   box-shadow: rgba(0, 0, 0, 0.24) 0 3px 8px;
 }
-
 
 
 .form-btn:active {

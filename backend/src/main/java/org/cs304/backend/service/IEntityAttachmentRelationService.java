@@ -6,5 +6,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 public interface IEntityAttachmentRelationService extends IService<EntityAttachmentRelation> {
 
-    Attachment getAttachment(int entity_type, int entity_id, int attachment_type);
+    Attachment getAttachment(int userType,int entity_type, int entity_id, int attachment_type);
 }

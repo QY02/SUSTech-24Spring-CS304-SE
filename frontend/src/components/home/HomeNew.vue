@@ -6,6 +6,10 @@
         :key="index"
         :title="item['name']" :subtitle="item['content']" :cover=cover :style="{ width: '400px' }" hover-shadow
         @click="clickEvent(item['id'])">
+      <!--      <template #cover>-->
+      <!--        &lt;!&ndash; Image with native lazy loading &ndash;&gt;-->
+      <!--        <img :src="item.imageUrl" loading="lazy" alt="Event Image">-->
+      <!--      </template>-->
       <template #actions>
         <!--        <t-dropdown :options="options" :min-column-width="112" @click="clickHandler">-->
         <!--          <div class="tdesign-demo-dropdown-trigger">-->
@@ -110,10 +114,33 @@ axios.post(`/event/getAllEvents`, {}, {
       curEvents.value = events.value
       tmpEvents.value = events.value
       // alert(JSON.stringify(events.value))
-      for (let i = 0; i < events.value.length; i++) {//获取每个活动的海报
-        let id = events.value[i]['id'];
-        // alert(id)
-      }
+      // for (let i = 0; i < events.value.length; i++) {//获取每个活动的海报
+      //   let id = events.value[i]['id'];
+
+      //   axios.post(`/postAttachmentRelation/getAttachment`, {
+      //     "eventId": eventId,
+      //     "userId": sessionStorage.getItem('uid')
+      //   }, {
+      //     params: {},
+      //     headers: {
+      //       token: sessionStorage.getItem('token')
+      //     }
+      //   })
+      //       .then((response) => {
+      //
+      //       })
+      //       .catch((error) => {
+      //         if (error.response) {
+      //           // 请求已发出，但服务器响应的状态码不在 2xx 范围内
+      //           MessagePlugin.warning(error.response.data.msg);
+      //         } else {
+      //           // 一些错误是在设置请求的时候触发
+      //           MessagePlugin.warning(error.message);
+      //         }
+      //       });
+      //   events.value[i].imageUrl=
+      //   // alert(id)
+      // }
     })
     .catch((error) => {
       if (error.response) {

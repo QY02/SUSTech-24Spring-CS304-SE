@@ -99,8 +99,8 @@ const onReset = () => {
 // const password = ref("");
 // const id = ref("");
 const rules = {
-  email: [{required: true}, {validator: (v) => /[^@]+@[^@]+\.[a-zA-Z]{2,}$/.test(v), message: 'Wrong format'}],
-  code: [{required: true}, {validator: (v) => /^[0-9]{6}$/.test(v), message: 'Code must be a six-digit number'}],
+  email: [{required: true}, {validator: (v) => /[^@]+@[^@]+\.[a-zA-Z]{2,}$/.test(v), message: '格式错误'}],
+  code: [{required: true}, {validator: (v) => /^[0-9]{6}$/.test(v), message: '验证码必须是6位数字'}],
 };
 
 //   const onSubmit = ({ validateResult, firstError }) => {
@@ -149,7 +149,7 @@ const handleSubmit = ({validateResult}) => {
         .catch((error) => {
         });
   } else {
-    MessagePlugin.warning("Please make sure the input format is correct!")
+    MessagePlugin.warning("请确保输入格式正确!")
 
   }
 };
@@ -157,13 +157,13 @@ const handleVeri = () => {
 if(rules.email[1].validator(formData.email)) {
   axios.post(`/sendEmail/${formData.email}`, {}, {})
       .then(() => {
-        MessagePlugin.info("Already send the code, please check and enter.");
+        MessagePlugin.info("已经发送验证码，请查收。");
       })
       .catch((error) => {
       });
 
 }else{
-  MessagePlugin.warning("Please input correct email!");
+  MessagePlugin.warning("请输入正确的邮箱!");
 
 }
 

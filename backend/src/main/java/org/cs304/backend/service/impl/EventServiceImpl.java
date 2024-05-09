@@ -249,7 +249,7 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
 
         if (list != null) {
             LocalDateTime now = LocalDateTime.now();
-            JSONArray jsonArray = new JSONArray();
+            List<JSONObject> jsonArray = new ArrayList<>();
             for (int i = 0; i < list.size(); i++) {
                 Event curEvent = list.get(i);
                 JSONObject eventDetails = JSONObject.from(curEvent);
@@ -275,7 +275,21 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
                 eventDetails.put("heat", heat);
                 jsonArray.add(eventDetails);
             }
-            return jsonArray;
+
+            jsonArray.sort(new Comparator<JSONObject>() {
+                @Override
+                public int compare(JSONObject o1, JSONObject o2) {
+                    double heat1 = o1.getDouble("heat");
+                    double heat2 = o2.getDouble("heat");
+                    return Double.compare(heat2, heat1); // Order by descending
+                }
+            });
+
+            // Create a new JSONArray from the sorted list
+            JSONArray sortedJsonArray = new JSONArray();
+            sortedJsonArray.addAll(jsonArray);
+
+            return sortedJsonArray;
         }
         return new JSONArray();
     }
