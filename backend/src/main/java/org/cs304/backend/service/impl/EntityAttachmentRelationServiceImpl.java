@@ -23,6 +23,7 @@ public class EntityAttachmentRelationServiceImpl extends ServiceImpl<EntityAttac
     @Resource
     private AttachmentMapper attachmentMapper;
 
+
     @Resource
     private IAttachmentService attachmentService;
 
@@ -39,12 +40,15 @@ public class EntityAttachmentRelationServiceImpl extends ServiceImpl<EntityAttac
                         .eq("entity_id", entity_id)
                         .eq("attachment_type", attachment_type)
         );
-        return attachmentService.getById(userType, entityAttachmentRelation.get(0).getAttachmentId());
+        if (entityAttachmentRelation.size() > 0) {
+            Attachment attachment = attachmentService.getById(0, entityAttachmentRelation.get(0).getAttachmentId());
+            return attachment;
+        }
 //        Attachment attachment = attachmentMapper.selectById(entityAttachmentRelation.get(0).getAttachmentId());//我目前是只获得了第一个
 //        if (attachment == null) {
 //            throw new ServiceException("400", "Attachment not exist");
 //        }
-//        return attachment;
+        return new Attachment();
 
     }
 }

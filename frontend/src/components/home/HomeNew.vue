@@ -66,14 +66,18 @@ import {MessagePlugin} from 'tdesign-vue-next';
 import axios from "axios";
 import {computed, defineComponent, getCurrentInstance, inject, ref, watch} from "vue";
 import router from "@/routers/index.js";
+import {fileServerAxios} from "@/main.js";
 
 const globalProperties = getCurrentInstance().appContext.config.globalProperties;
 const apiBaseUrl = globalProperties.$apiBaseUrl;
+// const fileUrl = fileServerAxios;
+const fileUrl = 'http://localhost:8084';
 // alert(apiBaseUrl)
 axios.defaults.baseURL = apiBaseUrl;
 
 const cover = 'https://tdesign.gtimg.com/site/source/card-demo.png';
 const events = ref([]);
+const attachToken = ref([]);
 const tmpEvents = ref([]);
 const curEvents = ref([]);
 const options = [
@@ -114,33 +118,58 @@ axios.post(`/event/getAllEvents`, {}, {
       curEvents.value = events.value
       tmpEvents.value = events.value
       // alert(JSON.stringify(events.value))
-      // for (let i = 0; i < events.value.length; i++) {//获取每个活动的海报
-      //   let id = events.value[i]['id'];
+      for (let i = 0; i < 1; i++) {//获取每个活动的海报
+        let id = events.value[i]['id'];
+        alert(id)
 
-      //   axios.post(`/postAttachmentRelation/getAttachment`, {
-      //     "eventId": eventId,
-      //     "userId": sessionStorage.getItem('uid')
-      //   }, {
-      //     params: {},
-      //     headers: {
-      //       token: sessionStorage.getItem('token')
-      //     }
-      //   })
-      //       .then((response) => {
-      //
-      //       })
-      //       .catch((error) => {
-      //         if (error.response) {
-      //           // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-      //           MessagePlugin.warning(error.response.data.msg);
-      //         } else {
-      //           // 一些错误是在设置请求的时候触发
-      //           MessagePlugin.warning(error.message);
-      //         }
-      //       });
-      //   events.value[i].imageUrl=
-      //   // alert(id)
-      // }
+        axios.post(`/postAttachmentRelation/getAttachment`, {
+          "entity_type": 1,
+          "entity_id": id,
+          "attachment_type": 0,
+        }, {
+          params: {},
+          headers: {
+            token: sessionStorage.getItem('token')
+          }
+        })
+            .then((response) => {
+              attachToken.value = response.data.data['filePath']
+              alert(JSON.stringify(response.data.data))
+              let attachToken1=attachToken.value
+              // alert(attachToken1)
+              // 47.107.113.54:25572 文件服务器地址
+              axios.get(`${fileUrl}/file/download`, {
+                params: {},
+                headers: {
+                  token: attachToken1
+                },
+                responseType: 'blob'
+              })
+                  .then((response) => {//由于没有对应文件，所以还没测试得到的图片
+                    alert(response.data.data)
+                  })
+                  .catch((error) => {
+                    if (error.response) {
+                      // 请求已发出，但服务器响应的状态码不在 2xx 范围内
+                      MessagePlugin.warning(error.response.data.msg);
+                    } else {
+                      // 一些错误是在设置请求的时候触发
+                      MessagePlugin.warning(error.message);
+                    }
+                  });
+            })
+            .catch((error) => {
+              if (error.response) {
+                // 请求已发出，但服务器响应的状态码不在 2xx 范围内
+                MessagePlugin.warning(error.response.data.msg);
+              } else {
+                // 一些错误是在设置请求的时候触发
+                MessagePlugin.warning(error.message);
+              }
+            });
+        // events.value[i].imageUrl =
+        // alert(id)
+      }
     })
     .catch((error) => {
       if (error.response) {
