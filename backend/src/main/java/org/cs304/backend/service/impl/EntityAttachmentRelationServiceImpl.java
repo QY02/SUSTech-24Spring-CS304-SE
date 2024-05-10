@@ -29,10 +29,6 @@ public class EntityAttachmentRelationServiceImpl extends ServiceImpl<EntityAttac
 
     @Override
     public Attachment getAttachment(int userType, int entity_type, int entity_id, int attachment_type) {
-//        List<EntityAttachmentRelation> entityAttachmentRelation = entityAttachmentRelationMapper.selectList(
-//                new QueryWrapper<EntityAttachmentRelation>().select("entity_type,entity_id,attachment_type").eq(entity_type,entity_id,attachment_type)
-//
-//        );
         List<EntityAttachmentRelation> entityAttachmentRelation = entityAttachmentRelationMapper.selectList(
                 new QueryWrapper<EntityAttachmentRelation>()
                         .select("attachment_id")  // Adjusting to select only the attachment_id

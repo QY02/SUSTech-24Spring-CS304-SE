@@ -12,6 +12,7 @@
       <!--        <img :src="item.imageUrl" loading="lazy" alt="Event Image">-->
       <!--      </template>-->
       <template #actions>
+
         <!--        <t-dropdown :options="options" :min-column-width="112" @click="clickHandler">-->
         <!--          <div class="tdesign-demo-dropdown-trigger">-->
         <a v-if="item['type']>=0&&item['type']<=2">
