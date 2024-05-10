@@ -42,6 +42,8 @@ public class FileServiceImpl implements IFileService {
         if (filePath == null) {
             throw new ServiceException("400", "This API can not be used with admin token");
         }
+//        System.out.println(GlobalData.FILE_DIRECTORY);
+//        System.out.println(filePath);
         File file = new File(GlobalData.FILE_DIRECTORY, filePath);
         if (!file.isFile()) {
             throw new ServiceException("500", "File not exist");

@@ -4,7 +4,8 @@
     <t-card
         v-for="(item,index) in curEvents"
         :key="index"
-        :title="item['name']" :subtitle="item['content']" :cover=cover :style="{ width: '400px' }" hover-shadow
+        :title="item['name']" :subtitle="item['content']" :cover="item['cover']" :style="{ width: '400px' }"
+        hover-shadow
         @click="clickEvent(item['id'])">
       <!--      <template #cover>-->
       <!--        &lt;!&ndash; Image with native lazy loading &ndash;&gt;-->
@@ -61,12 +62,11 @@
 
 <script setup>
 
-import {ThumbUpIcon, ChatIcon, ShareIcon, MoreIcon, HeartIcon} from 'tdesign-icons-vue-next';
+import {ChatIcon, HeartIcon, ShareIcon} from 'tdesign-icons-vue-next';
 import {MessagePlugin} from 'tdesign-vue-next';
 import axios from "axios";
-import {computed, defineComponent, getCurrentInstance, inject, ref, watch} from "vue";
+import {getCurrentInstance, ref} from "vue";
 import router from "@/routers/index.js";
-import {fileServerAxios} from "@/main.js";
 
 const globalProperties = getCurrentInstance().appContext.config.globalProperties;
 const apiBaseUrl = globalProperties.$apiBaseUrl;
@@ -75,7 +75,7 @@ const fileUrl = 'http://localhost:8084';
 // alert(apiBaseUrl)
 axios.defaults.baseURL = apiBaseUrl;
 
-const cover = 'https://tdesign.gtimg.com/site/source/card-demo.png';
+const cover = ref('https://tdesign.gtimg.com/site/source/card-demo.png');
 const events = ref([]);
 const attachToken = ref([]);
 const tmpEvents = ref([]);
@@ -120,7 +120,7 @@ axios.post(`/event/getAllEvents`, {}, {
       // alert(JSON.stringify(events.value))
       for (let i = 0; i < 1; i++) {//获取每个活动的海报
         let id = events.value[i]['id'];
-        alert(id)
+        // alert(id)
 
         axios.post(`/postAttachmentRelation/getAttachment`, {
           "entity_type": 1,
@@ -134,8 +134,8 @@ axios.post(`/event/getAllEvents`, {}, {
         })
             .then((response) => {
               attachToken.value = response.data.data['filePath']
-              alert(JSON.stringify(response.data.data))
-              let attachToken1=attachToken.value
+              // alert(JSON.stringify(response.data.data))
+              let attachToken1 = attachToken.value
               // alert(attachToken1)
               // 47.107.113.54:25572 文件服务器地址
               axios.get(`${fileUrl}/file/download`, {
@@ -145,8 +145,18 @@ axios.post(`/event/getAllEvents`, {}, {
                 },
                 responseType: 'blob'
               })
-                  .then((response) => {//由于没有对应文件，所以还没测试得到的图片
-                    alert(response.data.data)
+                  .then((response) => {//
+                    // alert(JSON.stringify(response.data))
+                    // 将图片 URL 赋值给 cover 变量
+                    const blob = new Blob([response.data], {type: 'application/octet-stream'});
+
+                    // 创建一个 Blob 对象的 URL
+                    const imageUrl = URL.createObjectURL(blob);
+                    events.value[i]['cover'] = imageUrl
+
+                    // 将图片 URL 赋值给 cover 变量
+                    // cover.value = imageUrl;
+
                   })
                   .catch((error) => {
                     if (error.response) {
