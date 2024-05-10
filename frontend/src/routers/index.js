@@ -41,7 +41,7 @@ const routes = [
 
             {
                 path: '/apply',
-                component: () => import('@/components/event/ApplyForEvent.vue')
+                component: () => import('@/components/event/Event.vue')
             },
             {
                 path: '/historyEvents',

@@ -18,8 +18,8 @@
           <t-list-item v-for="(item, index) in unreadMsg" :key="index">
             <div>
               <p class="msg-content">{{ item.title }}</p>
-              <t-tag size="medium" :theme="NOTIFICATION_TYPES[item.type]" variant="light">
-                {{ statusMapping[item.type] }}
+              <t-tag size="medium" :theme="NOTIFICATION_THEMES[item.type]" variant="light">
+                {{ NOTIFICATION_TYPES[item.type] }}
               </t-tag>
             </div>
             <p class="msg-time">{{ item.notifyTime }}</p>
@@ -55,26 +55,11 @@
 import {ref, computed, onMounted, watchEffect} from 'vue';
 import {useRouter} from 'vue-router';
 import axios from "axios";
-import {MessagePlugin} from "tdesign-vue-next";
+import { NOTIFICATION_TYPES, NOTIFICATION_THEMES } from '@/constants';
 
 const token = sessionStorage.getItem('token')
 const router = useRouter();
-const statusMapping = {
-  0: '其他',
-  1: '审核通过',
-  2: '审核未通过',
-  3: '成功参加活动',
-  4: '活动修改',
-  5: '活动取消'
-};
-const NOTIFICATION_TYPES = {
-  0: 'default',
-  1: 'success',
-  2: 'danger',
-  3: 'primary',
-  4: 'warning',
-  5: 'danger'
-};
+
 const msgData = ref([]);
 const getNotice = () => {
   axios.get(`/notification/all`, {
