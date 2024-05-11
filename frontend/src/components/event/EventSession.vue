@@ -150,7 +150,7 @@
             <t-input v-model="modifyData.venue">地址</t-input>
           </t-form-item>
           <t-form-item label="地图" name="location">
-            <t-button @click="chooseLocationDialogVisible = true" theme="default" variant="outline">
+            <t-button @click="chooseLocationDialogVisibleModify = true" theme="default" variant="outline">
               <template #icon>
                 <MapInformation2Icon/>
               </template>
@@ -171,7 +171,17 @@
     </template>
   </t-dialog>
   <t-dialog v-model:visible="chooseLocationDialogVisible" placement="center" width="50vw" header="选择位置"
-            :onConfirm="handleChooseLocationConfirm" :onClose="handleChooseLocationCancel" @opened="showMap">
+            :onConfirm="() => handleChooseLocationConfirm(newData)" :onClose="handleChooseLocationCancel" @opened="()=>showMap(newData)">
+    <div id="mapContainer" class="choose-location-map-div">
+      <div class="search-place-div">
+        <input class="search-place-input" v-model="searchPlaceInputValue" placeholder="搜索地点"
+               id="searchPlaceInput"></input>
+        <div class="search-place-result-div" id="searchPlaceResultDiv"></div>
+      </div>
+    </div>
+  </t-dialog>
+  <t-dialog v-model:visible="chooseLocationDialogVisibleModify" placement="center" width="50vw" header="选择位置"
+            :onConfirm="()=>handleChooseLocationConfirm(modifyData)" :onClose="handleChooseLocationCancel" @opened="()=>showMap(modifyData)">
     <div id="mapContainer" class="choose-location-map-div">
       <div class="search-place-div">
         <input class="search-place-input" v-model="searchPlaceInputValue" placeholder="搜索地点"
@@ -192,6 +202,8 @@ import {AMap} from "@/main";
 import _ from 'lodash';
 
 const chooseLocationDialogVisible = ref(false);
+const chooseLocationDialogVisibleModify = ref(false);
+
 let map = null;
 let mapScale = null;
 let mapToolBar = null;
@@ -202,13 +214,13 @@ const searchPlaceInputValue = ref("");
 let mapAutoComplete = null;
 let mapPlaceSearch = null;
 
-const showMap = () => {
+const showMap = (Data) => {
   if (AMap.value !== null) {
     if (map === null) {
       map = new AMap.value.Map("mapContainer", {
         viewMode: "3D",
         zoom: 17,
-        center: newData.value.location === null ? [113.997, 22.596] : newData.value.location,
+        center: Data.value.location === null ? [113.997, 22.596] : Data.value.location,
       });
       mapScale = new AMap.value.Scale();
       mapToolBar = new AMap.value.ToolBar({
@@ -276,8 +288,8 @@ const showMap = () => {
         });
       });
     } else {
-      map.setZoomAndCenter(17, newData.value.location === null ? [113.997, 22.596] : newData.value.location);
-      mapMarker.setPosition(newData.value.location === null ? [113.997, 22.596] : newData.value.location);
+      map.setZoomAndCenter(17, Data.value.location === null ? [113.997, 22.596] : Data.value.location);
+      mapMarker.setPosition(Data.value.location === null ? [113.997, 22.596] : Data.value.location);
       mapMarker.setLabel({
         content: `${mapMarker.getPosition().getLng()}, ${mapMarker.getPosition().getLat()}`
       });
@@ -306,10 +318,10 @@ onUnmounted(() => {
   map?.destroy();
 });
 
-const handleChooseLocationConfirm = () => {
+const handleChooseLocationConfirm = (Data) => {
   const currentMarkerPosition = mapMarker.getPosition();
   if (currentMarkerPosition !== null) {
-    newData.value.location = currentMarkerPosition.toArray();
+    Data.value.location = currentMarkerPosition.toArray();
   }
   chooseLocationDialogVisible.value = false;
   mapPlaceSearch.clear();
