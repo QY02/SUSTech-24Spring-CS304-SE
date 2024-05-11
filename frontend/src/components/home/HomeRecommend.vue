@@ -97,7 +97,7 @@ axios.post(`/event/getRecommendEvents`, {
       events.value = response.data.data.filter(events => events['status'] === 1)
       curEvents.value = events.value
       tmpEvents.value = events.value
-      alert(JSON.stringify(events.value))
+      // alert(JSON.stringify(events.value))
       for (let i = 0; i < events.value.length; i++) {//获取每个活动的海报
         let id = events.value[i]['id'];
         // alert(id)
