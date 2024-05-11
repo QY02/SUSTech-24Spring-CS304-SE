@@ -5,8 +5,10 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import jakarta.validation.constraints.NotNull;
+import org.cs304.backend.entity.EntityAttachmentRelation;
 import org.cs304.backend.entity.Event;
 import org.cs304.backend.entity.Favorite;
+import org.cs304.backend.entity.UserFavoriteType;
 import org.cs304.backend.exception.ServiceException;
 import org.cs304.backend.mapper.EventMapper;
 import org.cs304.backend.mapper.FavoriteMapper;
@@ -16,6 +18,8 @@ import org.springframework.stereotype.Service;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import static org.cs304.backend.constant.constant_EntityType.COMMENT;
 
 @Service
 public class FavoriteServiceImpl extends ServiceImpl<FavoriteMapper, Favorite> implements IFavoriteService {
@@ -30,7 +34,8 @@ public class FavoriteServiceImpl extends ServiceImpl<FavoriteMapper, Favorite> i
         if (favorite.getEventId() == null || favorite.getUserId()==null) {
             throw new ServiceException("400", "Invalid data");
         }
-        favoriteMapper.deleteByUserIdAndEventId(favorite.getUserId(), favorite.getEventId());
+        favoriteMapper.delete(new QueryWrapper<Favorite>().eq("user_id",favorite.getUserId()).eq("event_id",favorite.getEventId()));
+//        favoriteMapper.deleteByUserIdAndEventId(favorite.getUserId(), favorite.getEventId());
     }
 
     @Override
