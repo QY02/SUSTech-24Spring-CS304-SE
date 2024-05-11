@@ -2,25 +2,25 @@
   <t-space direction="vertical" size="large" style="width: 100%">
     <div style="margin: 30px 40px;">
       <h2>申请新活动</h2>
-    <t-form ref="form" :data="formData" reset-type="initial" @reset="onReset" @submit="onSubmit" :rules="FORM_RULES">
-      <div>
-        <t-form-item label="标题" name="name" >
-          <t-input v-model="formData.name">标题</t-input>
-        </t-form-item>
+      <t-form ref="form" :data="formData" reset-type="initial" @reset="onReset" @submit="onSubmit" :rules="FORM_RULES">
+        <div>
+          <t-form-item label="标题" name="name">
+            <t-input v-model="formData.name">标题</t-input>
+          </t-form-item>
 
-        <t-form-item label="简介" name="content">
-          <t-textarea v-model="formData.content" placeholder="请简单描述项目内容" clearable />
-        </t-form-item>
-        <t-form-item label="类型" name="type">
-          <t-radio-group v-model="formData.type">
-            <t-radio value="0">表演</t-radio>
-            <t-radio value="1">讲座</t-radio>
-            <t-radio value="2">比赛</t-radio>
-            <t-radio value="3">其他</t-radio>
-          </t-radio-group>
-        </t-form-item>
+          <t-form-item label="简介" name="content">
+            <t-textarea v-model="formData.content" placeholder="请简单描述项目内容" clearable/>
+          </t-form-item>
+          <t-form-item label="类型" name="type">
+            <t-radio-group v-model="formData.type">
+              <t-radio value="0">表演</t-radio>
+              <t-radio value="1">讲座</t-radio>
+              <t-radio value="2">比赛</t-radio>
+              <t-radio value="3">其他</t-radio>
+            </t-radio-group>
+          </t-form-item>
 
-        <t-form-item label="海报" name="poster">
+          <t-form-item label="海报" name="poster">
             <t-upload
                 ref="uploadRef"
                 accept="image/*"
@@ -38,34 +38,34 @@
                 class="upload_image"
                 :uploadButton="null"
             />
-        </t-form-item>
-        <t-form-item label="是否可见" name="visible_event">
-          <t-switch v-model="formData.visible" :label="['是', '否']"></t-switch>
-        </t-form-item>
-        <t-form-item label="退换票规则" name="event_policy">
-          <t-textarea v-model="formData.event_policy" placeholder="请简单描述项目退换票规则" clearable />
-        </t-form-item>
-        <event-session v-model:sessionData="eventSessionData"></event-session>
-      </div>
+          </t-form-item>
+          <t-form-item label="是否可见" name="visible_event">
+            <t-switch v-model="formData.visible" :label="['是', '否']"></t-switch>
+          </t-form-item>
+          <t-form-item label="退换票规则" name="event_policy">
+            <t-textarea v-model="formData.event_policy" placeholder="请简单描述项目退换票规则" clearable/>
+          </t-form-item>
+          <event-session v-model:sessionData="eventSessionData"></event-session>
+        </div>
 
-      <div>
-        <t-form-item style="margin-top: 30px;display: flex; justify-content: right; align-items: center;">
-          <t-space>
-            <t-button theme="success" type="submit">提交</t-button>
-            <t-tooltip content="仅重置活动相关信息，场次信息不重置" theme="warning">
-              <t-button variant="outline" type="reset">重置</t-button>
-            </t-tooltip>
-          </t-space>
-        </t-form-item>
-      </div>
+        <div>
+          <t-form-item style="margin-top: 30px;display: flex; justify-content: right; align-items: center;">
+            <t-space>
+              <t-button theme="success" type="submit">提交</t-button>
+              <t-tooltip content="仅重置活动相关信息，场次信息不重置" theme="warning">
+                <t-button variant="outline" type="reset">重置</t-button>
+              </t-tooltip>
+            </t-space>
+          </t-form-item>
+        </div>
 
-    </t-form>
+      </t-form>
     </div>
   </t-space>
 </template>
 <script setup>
-import {ref,reactive} from 'vue';
-import { MessagePlugin } from 'tdesign-vue-next';
+import {ref, reactive} from 'vue';
+import {MessagePlugin} from 'tdesign-vue-next';
 import axios from "axios";
 import EventSession from "@/components/event/EventSession.vue";
 import router from "@/routers/index.js";
@@ -74,24 +74,22 @@ import router from "@/routers/index.js";
 const token = sessionStorage.getItem('token')
 const uid = sessionStorage.getItem('uid')
 const FORM_RULES = {
-  name: [{ required: true, message: '标题必填' }],
-  content: [{ required: true, message: '简介必填' }],
-  type: [{ required: true, message: '类型必填' }],
-  poster: [{ required: true, message: '必须上传海报' }],
+  name: [{required: true, message: '标题必填'}],
+  content: [{required: true, message: '简介必填'}],
+  type: [{required: true, message: '类型必填'}],
+  poster: [{required: true, message: '必须上传海报'}],
 };
 
-const session=[]
+const session = []
 
 const formData = ref({
   name: '',
   content: '',
   type: '0',
   publisher_id: uid,
-  poster: [
-
-  ],
+  poster: [],
   visible: false,
-  event_policy:'',
+  event_policy: '',
 });
 
 
@@ -106,7 +104,7 @@ const upload = reactive({
 const uploadFiles = () => {
   uploadRef.value.uploadFiles();
 };
-const handleFail = ({ file }) => {
+const handleFail = ({file}) => {
   MessagePlugin.error(`文件 ${file.name} 上传失败`);
 };
 const handleSuccess = (params) => {
@@ -130,34 +128,58 @@ function getCurrentDate(needTime = false) {
   if (needTime) return [date, time].join(' ');
   return date;
 }
-const eventSessionData= ref(session)
+
+const eventSessionData = ref(session)
 const onReset = () => {
   MessagePlugin.success('重置成功');
 };
+const postPoster = () => {
+  let re = false
+  axios.post(`/attachment/uploadStart`, {
+        "fileDir": uid
+      }, {
+        headers: {
+          token: token
+        }
+      }
+  ).then(response => {
+        // uploadFiles()
+        alert(JSON.stringify(response))
+        console.log(response)
+        re = true
+      }
+  ).catch();
+  return re
+}
 
-const onSubmit = ({ validateResult, firstError }) => {
+const onSubmit = ({validateResult, firstError}) => {
   alert(JSON.stringify(formData.value))
 
-  if (validateResult === true ) {
-    if (eventSessionData.value.length>0){
-      // console.log(formData)
-      axios.post(`/event/add`,{
-            "event":formData.value,
-            "sessions":eventSessionData.value
-          },{
-            headers: {
-              token: token
+  if (validateResult === true) {
+    if (eventSessionData.value.length > 0) {
+      if (postPoster()) {
+        // console.log(formData)
+        axios.post(`/event/add`, {
+              "event": formData.value,
+              "sessions": eventSessionData.value
+            }, {
+              headers: {
+                token: token
+              }
             }
-          }
-      ).then(
-          response => {
-            uploadFiles()
-            console.log(response)
-            MessagePlugin.success('提交成功');
-            router.push("/HomePage");
-          }
-      ).catch();
-    }else {
+        ).then(
+            response => {
+              console.log(response)
+              MessagePlugin.success('提交成功');
+              router.push("/HomePage");
+            }
+        ).catch();
+      } else {
+        console.log('上传海报失败');
+        MessagePlugin.warning('上传海报失败');
+      }
+
+    } else {
       console.log('至少添加一个场次');
       MessagePlugin.warning('至少添加一个场次');
     }
