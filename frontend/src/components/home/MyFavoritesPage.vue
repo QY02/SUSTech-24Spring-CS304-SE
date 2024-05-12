@@ -1,6 +1,6 @@
 <template>
 <!--  <h2 style="margin-left: 20px">我的收藏</h2>-->
-  <t-tag style="margin-left: 20px;height: 40px; margin-top: 15px;font-size: 20px" size="large" theme="warning" variant="light">我的收藏</t-tag>
+<!--  <t-tag style="margin-left: 20px;height: 40px; margin-top: 15px;font-size: 20px" size="large" theme="warning" variant="light">我的收藏</t-tag>-->
   <div id="event">
     <t-card
         v-for="(item,index) in curEvents"

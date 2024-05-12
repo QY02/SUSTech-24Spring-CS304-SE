@@ -1,6 +1,6 @@
 <template>
   <el-card :bordered="false" shadow v-if="!editYes"
-           style="display:flex;  align-items: center; justify-content: center; flex-direction: row ; height: 55%;padding-left: 30px; padding-right:30px; margin: 30px;">
+           style="display:flex;  align-items: center; justify-content: center; flex-direction: row ;padding-left: 30px; padding-right:30px; margin: 30px;">
     <br>
     <div style="width: 100%;">
       <t-space align="center" :size="40">
@@ -25,43 +25,52 @@
             }">
         修改个人信息
       </t-button>
-      <ChangePassword></ChangePassword>
-    </div>
-    <div class="button-container">
       <t-button
-          class="btn"
-          theme="primary"
-          variant="outline"
-          @click="router.push('/historyEvents');"
+          style="position: fixed; right: 50px; top: 100px"
+          theme="default"
+          variant="base"
+          @click="logout"
       >
-        历史记录
+        <logout-icon></logout-icon>
       </t-button>
 
-      <t-button
-          class="btn"
-          theme="default"
-          variant="outline"
-          @click="router.push('/myPublishes');"
-      >
-        我的发布
-      </t-button>
-      <t-button
-          class="btn"
-          theme="warning"
-          variant="outline"
-          @click="router.push('/myFavorites');"
-      >
-        我的收藏
-      </t-button>
-      <t-button
-          class="btn"
-          theme="success"
-          variant="outline"
-          @click="router.push('/myOrderRecords');"
-      >
-        我的预定
-      </t-button>
+      <ChangePassword></ChangePassword>
     </div>
+<!--    <div class="button-container">-->
+<!--      <t-button-->
+<!--          class="btn"-->
+<!--          theme="primary"-->
+<!--          variant="outline"-->
+<!--          @click="router.push('/historyEvents');"-->
+<!--      >-->
+<!--        历史记录-->
+<!--      </t-button>-->
+
+<!--      <t-button-->
+<!--          class="btn"-->
+<!--          theme="default"-->
+<!--          variant="outline"-->
+<!--          @click="router.push('/myPublishes');"-->
+<!--      >-->
+<!--        我的发布-->
+<!--      </t-button>-->
+<!--      <t-button-->
+<!--          class="btn"-->
+<!--          theme="warning"-->
+<!--          variant="outline"-->
+<!--          @click="router.push('/myFavorites');"-->
+<!--      >-->
+<!--        我的收藏-->
+<!--      </t-button>-->
+<!--      <t-button-->
+<!--          class="btn"-->
+<!--          theme="success"-->
+<!--          variant="outline"-->
+<!--          @click="router.push('/myOrderRecords');"-->
+<!--      >-->
+<!--        我的预定-->
+<!--      </t-button>-->
+<!--    </div>-->
     <!--    </div>-->
     <br>
   </el-card>
@@ -120,12 +129,18 @@ import {ref, onMounted, reactive} from "vue";
 import axios from "axios";
 import {MessagePlugin} from 'tdesign-vue-next';
 import router from "@/routers/index.js";
+import {LogoutIcon} from "tdesign-icons-vue-next";
 
 const visibleEmail = ref(false)
 
 const info = ref({});
 
 const showModalCode = ref(false)
+const logout= () =>{
+  sessionStorage.removeItem('token');
+  MessagePlugin.success('退出登录成功！');
+  router.push('/login');
+}
 
 const loadingg = ref(false)
 axios.post(`/user/get/${sessionStorage.getItem('uid')}`, {}, {
@@ -198,7 +213,7 @@ const editYes = ref(false);
 </script>
 
 
-<style>
+<style scoped>
 .inform {
   padding: 20px;
   display: flex;
