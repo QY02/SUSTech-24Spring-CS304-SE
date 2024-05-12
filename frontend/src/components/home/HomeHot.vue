@@ -1,7 +1,7 @@
 <template>
   <div id="event">
-    <t-list :split="true">
-      <t-list-item v-for="(item,index) in events" :key="item" @click="getEvent(item)">
+    <t-list :split="true" hover-shallow>
+      <t-list-item v-for="(item,index) in events" :key="item" @click="clickEvent(item['id'])" >
         <div style="display: flex;">
           <div v-if="index+1<=3">
             <t-tag theme="danger" variant="light" style="margin-right: 20px">{{ index + 1 }}
@@ -49,9 +49,9 @@ import router from "@/routers/index.js";
 
 
 
-const getEvent = (item) => {
-  MessagePlugin.success(`选中【${item.title}】`);
-};
+// const getEvent = (item) => {
+//   MessagePlugin.success(`选中【${item.title}】`);
+// };
 
 const globalProperties = getCurrentInstance().appContext.config.globalProperties;
 const apiBaseUrl = globalProperties.$apiBaseUrl;
@@ -73,21 +73,6 @@ const options = [
   },
 ];
 
-const typeMap = {
-  0: '讲座',
-  1: '工作坊',
-  2: '比赛',
-  3: '表演',
-  4: '展览',
-  5: '论坛',
-  6: '体育',
-  7: '志愿',
-  8: '学院',
-  9: '沙龙',
-  10: '培训',
-  11: '社团',
-  12: '其他',
-};
 axios.post(`/event/getHotEvents`, {}, {
   params: {},
   headers: {

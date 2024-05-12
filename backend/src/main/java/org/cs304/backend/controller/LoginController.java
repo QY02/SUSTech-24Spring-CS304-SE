@@ -196,7 +196,7 @@ public class LoginController {
             return Result.error(response, "401", "Verification error, please try again");
         }
         User user = userService.loginWithEmail(emailVerify);
-        user.setPassword(null);
+//        user.setPassword(null);
         return Result.success(response, user);
     }
 

@@ -1,6 +1,6 @@
 <template>
 <!--<h2 style="margin-left: 20px">历史记录</h2>-->
-  <t-tag style="margin-left: 20px;height: 40px; margin-top: 15px;font-size: 20px" size="large" theme="primary" variant="light">历史记录</t-tag>
+<!--  <t-tag style="margin-left: 20px;height: 40px; margin-top: 15px;font-size: 20px" size="large" theme="primary" variant="light">历史记录</t-tag>-->
 
   <div id="event">
     <t-card
@@ -56,15 +56,15 @@
 
 
   </div>
-  <t-popup content="返回上一页">
-    <t-button shape="circle" theme="primary" size="large" style="position: fixed;right: 30px;bottom: 40px"
-              @click="router.push('/user');">
-      <template #icon>
-        <rollback-icon/>
-      </template>
+<!--  <t-popup content="返回上一页">-->
+<!--    <t-button shape="circle" theme="primary" size="large" style="position: fixed;right: 30px;bottom: 40px"-->
+<!--              @click="router.push('/user');">-->
+<!--      <template #icon>-->
+<!--        <rollback-icon/>-->
+<!--      </template>-->
 
-    </t-button>
-  </t-popup>
+<!--    </t-button>-->
+<!--  </t-popup>-->
 </template>
 
 <script setup>

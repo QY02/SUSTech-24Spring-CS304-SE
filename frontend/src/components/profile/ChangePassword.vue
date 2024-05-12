@@ -36,6 +36,7 @@ import ChangePasswordByOld from "./ChangePasswordByOld.vue"
 import ChangePasswordByEmail from "./ChangePasswordByEmail.vue"
 import {createRouter, createWebHistory} from "vue-router";
 import router from "@/routers/index.js";
+import {LogoutIcon} from "tdesign-icons-vue-next";
 const visibleBody = ref(false)
 
 const TABS = [
