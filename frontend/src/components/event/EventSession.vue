@@ -81,7 +81,7 @@
             <t-input v-model="newData.venue">地址</t-input>
           </t-form-item>
           <t-form-item label="地图" name="location">
-            <t-button @click="chooseLocationDialogVisible = true" variant="outline">
+            <t-button @click="()=>{chooseLocationDialogVisible = true;Data=newData}" variant="outline">
               <template #icon>
                 <MapInformation2Icon/>
               </template>
@@ -150,7 +150,7 @@
             <t-input v-model="modifyData.venue">地址</t-input>
           </t-form-item>
           <t-form-item label="地图" name="location">
-            <t-button @click="chooseLocationDialogVisibleModify = true" theme="default" variant="outline">
+            <t-button @click="()=>{chooseLocationDialogVisible = true;Data=modifyData}" theme="default" variant="outline">
               <template #icon>
                 <MapInformation2Icon/>
               </template>
@@ -171,17 +171,7 @@
     </template>
   </t-dialog>
   <t-dialog v-model:visible="chooseLocationDialogVisible" placement="center" width="50vw" header="选择位置"
-            :onConfirm="() => handleChooseLocationConfirm(newData)" :onClose="handleChooseLocationCancel" @opened="()=>showMap(newData)">
-    <div id="mapContainer" class="choose-location-map-div">
-      <div class="search-place-div">
-        <input class="search-place-input" v-model="searchPlaceInputValue" placeholder="搜索地点"
-               id="searchPlaceInput"></input>
-        <div class="search-place-result-div" id="searchPlaceResultDiv"></div>
-      </div>
-    </div>
-  </t-dialog>
-  <t-dialog v-model:visible="chooseLocationDialogVisibleModify" placement="center" width="50vw" header="选择位置"
-            :onConfirm="()=>handleChooseLocationConfirm(modifyData)" :onClose="handleChooseLocationCancel" @opened="()=>showMap(modifyData)">
+            :onConfirm="handleChooseLocationConfirm" :onClose="handleChooseLocationCancel" @opened="showMap">
     <div id="mapContainer" class="choose-location-map-div">
       <div class="search-place-div">
         <input class="search-place-input" v-model="searchPlaceInputValue" placeholder="搜索地点"
@@ -202,7 +192,6 @@ import {AMap} from "@/main";
 import _ from 'lodash';
 
 const chooseLocationDialogVisible = ref(false);
-const chooseLocationDialogVisibleModify = ref(false);
 
 let map = null;
 let mapScale = null;
@@ -213,90 +202,104 @@ let mapMarker = null;
 const searchPlaceInputValue = ref("");
 let mapAutoComplete = null;
 let mapPlaceSearch = null;
-
-const showMap = (Data) => {
+const sampleData = {
+  key: '1',
+  registration_required: false,
+  registration_time_range: [],
+  event_time_range: [],
+  count_range_of_people: [],
+  seat_map_id: '',
+  venue: '',
+  location: null,
+  visible: false,
+}
+const newData = ref(_.cloneDeep(sampleData));
+const modifyData = ref(_.cloneDeep(sampleData));
+let Data = newData.value;
+const showMap = () => {
   if (AMap.value !== null) {
-    if (map === null) {
-      map = new AMap.value.Map("mapContainer", {
-        viewMode: "3D",
-        zoom: 17,
-        center: Data.value.location === null ? [113.997, 22.596] : Data.value.location,
-      });
-      mapScale = new AMap.value.Scale();
-      mapToolBar = new AMap.value.ToolBar({
-        position: {
-          top: '110px',
-          right: '40px'
-        }
-      });
-      mapControlBar = new AMap.value.ControlBar({
-        position: {
-          top: '10px',
-          right: '10px',
-        }
-      });
-      map.addControl(mapScale);
-      map.addControl(mapToolBar);
-      map.addControl(mapControlBar);
-      mapType = new AMap.value.MapType({
-        defaultType: 0,
-        position: {
-          bottom: '110px',
-          right: '10px',
-        }
-      });
-      mapMarker = new AMap.value.Marker({
-        icon: "https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-default.png",
-        position: map.getCenter(),
-        offset: new AMap.value.Pixel(-11, -35),
-        clickable: false,
-        draggable: true
-      });
-      mapMarker.on("dragend", function () {
-        setMapMarkerPosition();
-      });
-      mapAutoComplete = new AMap.value.AutoComplete({
-        input: "searchPlaceInput",
-        output: "searchPlaceResultDiv"
-      });
-      mapPlaceSearch = new AMap.value.PlaceSearch({
-        map: map
-      });
-      mapPlaceSearch.on("markerClick", function (e) {
-        setMapMarkerPosition(e.marker.getPosition());
-      });
-      mapAutoComplete.on("select", function (e) {
-        mapPlaceSearch.setCity(e.poi.adcode);
-        mapPlaceSearch.search(e.poi.name);
-      });
-      map.on('complete', function () {
-        map.addControl(mapType);
-        map.add(mapMarker);
-        mapMarker.setLabel({
-          content: `${mapMarker.getPosition().getLng()}, ${mapMarker.getPosition().getLat()}`,
-          direction: "top",
-          offset: new AMap.value.Pixel(-13, -8)
+      if (map === null) {
+        map = new AMap.value.Map("mapContainer", {
+          viewMode: "3D",
+          zoom: 17,
+          center: Data.location === null ? [113.997, 22.596] : Data.location,
         });
-        map.on('click', function (e) {
-          setMapMarkerPosition(e.lnglat);
+        mapScale = new AMap.value.Scale();
+        mapToolBar = new AMap.value.ToolBar({
+          position: {
+            top: '110px',
+            right: '40px'
+          }
         });
-        map.on('moveend', () => {
+        mapControlBar = new AMap.value.ControlBar({
+          position: {
+            top: '10px',
+            right: '10px',
+          }
+        });
+        map.addControl(mapScale);
+        map.addControl(mapToolBar);
+        map.addControl(mapControlBar);
+        mapType = new AMap.value.MapType({
+          defaultType: 0,
+          position: {
+            bottom: '110px',
+            right: '10px',
+          }
+        });
+        mapMarker = new AMap.value.Marker({
+          icon: "https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-default.png",
+          position: map.getCenter(),
+          offset: new AMap.value.Pixel(-11, -35),
+          clickable: false,
+          draggable: true
+        });
+        mapMarker.on("dragend", function () {
+          setMapMarkerPosition();
+        });
+        mapAutoComplete = new AMap.value.AutoComplete({
+          input: "searchPlaceInput",
+          output: "searchPlaceResultDiv"
+        });
+        mapPlaceSearch = new AMap.value.PlaceSearch({
+          map: map
+        });
+        mapPlaceSearch.on("markerClick", function (e) {
+          setMapMarkerPosition(e.marker.getPosition());
+        });
+        mapAutoComplete.on("select", function (e) {
+          mapPlaceSearch.setCity(e.poi.adcode);
+          mapPlaceSearch.search(e.poi.name);
+        });
+        map.on('complete', function () {
+          map.addControl(mapType);
+          map.add(mapMarker);
           mapMarker.setLabel({
+            content: `${mapMarker.getPosition().getLng()}, ${mapMarker.getPosition().getLat()}`,
             direction: "top",
             offset: new AMap.value.Pixel(-13, -8)
           });
+          map.on('click', function (e) {
+            setMapMarkerPosition(e.lnglat);
+          });
+          map.on('moveend', () => {
+            mapMarker.setLabel({
+              direction: "top",
+              offset: new AMap.value.Pixel(-13, -8)
+            });
+          });
         });
-      });
+      } else {
+        map.setZoomAndCenter(17, Data.location === null ? [113.997, 22.596] : Data.location);
+        mapMarker.setPosition(Data.location === null ? [113.997, 22.596] : Data.location);
+        mapMarker.setLabel({
+          content: `${mapMarker.getPosition().getLng()}, ${mapMarker.getPosition().getLat()}`
+        });
+      }
     } else {
-      map.setZoomAndCenter(17, Data.value.location === null ? [113.997, 22.596] : Data.value.location);
-      mapMarker.setPosition(Data.value.location === null ? [113.997, 22.596] : Data.value.location);
-      mapMarker.setLabel({
-        content: `${mapMarker.getPosition().getLng()}, ${mapMarker.getPosition().getLat()}`
-      });
+      NotifyPlugin.info({title: "地图模块加载中，请稍后"})
     }
-  } else {
-    NotifyPlugin.info({title: "地图模块加载中，请稍后"})
-  }
+
 }
 
 const setMapMarkerPosition = (position) => {
@@ -318,10 +321,10 @@ onUnmounted(() => {
   map?.destroy();
 });
 
-const handleChooseLocationConfirm = (Data) => {
+const handleChooseLocationConfirm = () => {
   const currentMarkerPosition = mapMarker.getPosition();
   if (currentMarkerPosition !== null) {
-    Data.value.location = currentMarkerPosition.toArray();
+    Data.location = currentMarkerPosition.toArray();
   }
   chooseLocationDialogVisible.value = false;
   mapPlaceSearch.clear();
@@ -350,19 +353,6 @@ const presets = ref({
   最近3天: [dayjs().format(), dayjs().add(3, 'day').format()],
   最近1天: [dayjs().format(), dayjs().add(1, 'day').format()],
 });
-const sampleData = {
-  key: '1',
-  registration_required: false,
-  registration_time_range: [],
-  event_time_range: [],
-  count_range_of_people: [],
-  seat_map_id: '',
-  venue: '',
-  location: null,
-  visible: false,
-}
-const newData = ref(_.cloneDeep(sampleData));
-const modifyData = ref(_.cloneDeep(sampleData));
 
 const visibleBody = ref(false);
 const visibleBodyModify = ref(false);
