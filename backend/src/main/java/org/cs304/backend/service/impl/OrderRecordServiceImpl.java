@@ -48,4 +48,17 @@ public class OrderRecordServiceImpl extends ServiceImpl<OrderRecordMapper, Order
             }
         }).collect(Collectors.toList());
     }
+
+    @Override
+    public int getPaymentById(Integer orderId) {
+        if (orderId == null) {
+            throw new ServiceException("400", "Invalid data");
+        }
+        QueryWrapper<OrderRecord> queryWrapper = new QueryWrapper<OrderRecord>().eq("id", orderId);
+        OrderRecord orderRecord = baseMapper.selectOne(queryWrapper);
+        if(orderRecord.getPaymentTime()!=null){
+            return 1;
+        }
+        return 0;
+    }
 }

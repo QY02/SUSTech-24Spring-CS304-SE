@@ -37,7 +37,7 @@ public class FavoriteController {
     @Operation(summary = "添加收藏", description = "")
     public Result addFavorite(HttpServletResponse response, @RequestBody Favorite favorite) {
         if (favoriteService.getOne(new QueryWrapper<Favorite>().eq("user_id", favorite.getUserId()).eq("event_id", favorite.getEventId())) != null) {
-            return Result.error(response, "400", "You have already favorite this event!"); //  代表存在
+            return Result.error(response, "400", "你已经收藏过此活动了"); //  代表存在
         }
         favoriteService.save(favorite);
         return Result.success(response);

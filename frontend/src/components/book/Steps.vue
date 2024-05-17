@@ -1,6 +1,6 @@
 <template>
   <div class="steps-main-div">
-    <t-steps style="width: 70%" :current="currentStep" :readonly="currentStep===3" @change="stepChange">
+    <t-steps style="width: 70%" :current="currentStep" :readonly="currentStep===4" @change="stepChange">
       <t-step-item title="选择场次">
         <template #icon>
           <TimeIcon size="24" class="icon-margin"/>
@@ -36,6 +36,9 @@
       <ChooseSeat></ChooseSeat>
     </div>
     <div v-show="currentStep === 3">
+      <PayPage></PayPage>
+    </div>
+    <div v-show="currentStep === 4">
       <Finish></Finish>
     </div>
     <div class="steps-footer-div"></div>
@@ -49,6 +52,7 @@ import {TimeIcon, VerifyIcon, CheckCircleIcon} from 'tdesign-icons-vue-next';
 import ChooseSession from '@/components/book/ChooseSession.vue';
 import ChooseSeat from '@/components/book/ChooseSeat.vue';
 import InputInformation from '@/components/book/InputInformation.vue';
+import PayPage from "./PayPage.vue";
 import Finish from '@/components/book/Finish.vue';
 import {MessagePlugin, NotifyPlugin} from "tdesign-vue-next";
 import axios, {AxiosRequestConfig} from 'axios';
@@ -145,6 +149,7 @@ interface BookingInformation {
   chosenSession: number;
   chosenSeat: string;
   additionalInformation: AdditionalInformationItem[];
+  seatPrice: number;
 }
 
 export const bookingInformation: BookingInformation = reactive({
@@ -255,6 +260,8 @@ export let sessionInformation: Session[] = reactive([{
     registered: false
   }])
 
+
+// 后端应该一起发送付款时间
 export const submitData = async () => {
   axios.post("/event/submitBookingData", {
     eventId: bookingInformation.eventId,

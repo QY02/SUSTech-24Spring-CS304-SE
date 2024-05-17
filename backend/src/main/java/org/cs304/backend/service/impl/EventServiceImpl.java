@@ -1,5 +1,6 @@
 package org.cs304.backend.service.impl;
 
+import cn.hutool.db.sql.Order;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
@@ -20,6 +21,8 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static org.cs304.backend.constant.constant_OrderRecordStatus.*;
 
 @Service
 public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements IEventService {
@@ -151,12 +154,26 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
         if (!seat.getAvailability()) {
             throw new ServiceException("401", "The seat is unavailable");
         }
-        if (orderRecordMapper.exists(new QueryWrapper<OrderRecord>().eq("user_id", userId).eq("event_id", orderRecord.getEventId()).eq("event_session_id", orderRecord.getEventSessionId()))) {
-            throw new ServiceException("400", "The order record already exist");
+        OrderRecord order = orderRecordMapper.selectOne(new QueryWrapper<OrderRecord>().eq("user_id", userId).eq("event_id", orderRecord.getEventId()).eq("event_session_id", orderRecord.getEventSessionId()));
+        if(order != null){
+            int status = order.getStatus();
+            if (status == SUBMITTED){
+                throw new ServiceException("400", "您已成功报名。");
+            }
+            if (status == PAID){
+                throw new ServiceException("400", "您已成功报名并支付。");
+            }
+            if (status == UNPAID){
+                throw new ServiceException("400", "已报名，等待用户支付中，请限定时间内及时支付。");
+            }
+            // status == EXPIRED 就可以重新加入了
         }
+//        if (orderRecordMapper.exists(new QueryWrapper<OrderRecord>().eq("user_id", userId).eq("event_id", orderRecord.getEventId()).eq("event_session_id", orderRecord.getEventSessionId()))) {
+//            throw new ServiceException("400", "The order record already exist");
+//        }
         orderRecord.setUserId(userId);
         orderRecord.setPrice(seat.getPrice());
-        orderRecord.setStatus(constant_OrderRecordStatus.SUBMITTED);
+        orderRecord.setStatus(SUBMITTED);
         orderRecord.setSubmitTime(LocalDateTime.now());
         orderRecord.setPaymentTime(null);
         orderRecordMapper.insert(orderRecord);
