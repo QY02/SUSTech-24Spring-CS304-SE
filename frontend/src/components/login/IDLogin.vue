@@ -75,6 +75,10 @@ import {DesktopIcon, LockOnIcon} from 'tdesign-icons-vue-next';
 import axios from "axios";
 import router from "@/routers";
 // import { ref} from "vue";
+const globalProperties = getCurrentInstance().appContext.config.globalProperties;
+const apiBaseUrl = globalProperties.$apiBaseUrl;
+// alert(apiBaseUrl)
+axios.defaults.baseURL = apiBaseUrl;
 
 const formData = reactive({
   account: '',

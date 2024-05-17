@@ -1,6 +1,6 @@
 <template>
 <!--  <h2 style="margin-left: 20px">我的发布</h2>-->
-  <t-tag style="margin-left: 20px;height: 40px; margin-top: 15px;font-size: 20px" size="large" theme="default" variant="light">我的发布</t-tag>
+<!--  <t-tag style="margin-left: 20px;height: 40px; margin-top: 15px;font-size: 20px" size="large" theme="default" variant="light">我的发布</t-tag>-->
 
   <div id="event">
     <t-card

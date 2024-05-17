@@ -147,6 +147,7 @@ const currentTab = computed(() => {
 });
 import {ChevronDownIcon} from 'tdesign-icons-vue-next';
 import router from "@/routers/index.js";
+import {EVENT_TYPE_value} from "@/constants/index.js";
 
 const OPTIONS = [
   // 全选
@@ -170,21 +171,7 @@ const OPTIONS = [
 const inputValue = ref('');
 // 全量数据
 const options = ref([...OPTIONS]);
-const value = ref([
-  {label: '讲座', value: 1,},
-  {label: '工作坊', value: 2,},
-  {label: '比赛', value: 3},
-  {label: '表演', value: 4},
-  {label: '展览', value: 5},
-  {label: '论坛', value: 6,},
-  {label: '体育', value: 7},
-  {label: '志愿', value: 8},
-  {label: '学院', value: 9},
-  {label: '沙龙', value: 10,},
-  {label: '培训', value: 11},
-  {label: '社团', value: 12},
-  {label: '其他', value: 13},
-]);
+const value = EVENT_TYPE_value
 
 const popupProps = ref({
   overlayInnerClassName: ['narrow-scrollbar'],

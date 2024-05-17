@@ -39,17 +39,16 @@ const throttle = (func) => {
   if (formData.new_email !== '') {
     console.log('a??')
     let inThrottle = false;
-    countDown.value = 10;
-    const timer = setInterval(() => {
-      if (countDown.value > 0) {
-        countDown.value--; // 每秒减一
-        console.log(countDown.value)
-      }
-    }, 1000);
-      return function (...args) {
         if (!inThrottle) {
           // 执行函数
-          func.apply(this, args);
+          console.log('inThrottle')
+          countDown.value = 10;
+          const timer = setInterval(() => {
+            if (countDown.value > 0) {
+              countDown.value--; // 每秒减一
+            }
+          }, 1000);
+          func.apply(this);
           inThrottle = true;
 
           // 设置节流结束的定时器
@@ -58,7 +57,6 @@ const throttle = (func) => {
             countDown.value = 10; // 重置倒计时
           }, 10000);
         }
-      };
   } else {
     MessagePlugin.warning("邮箱不能为空");
   }
@@ -77,7 +75,8 @@ const sendCode = () => {
     }).catch(()=>{})
 }
 
-const updateEmail = () => {
+const updateEmail = ({validateResult, firstError}) => {
+  if (validateResult === true) {
     axios.put(`/user/update/emailVerify`,{
       "id": sessionStorage.getItem('uid'),
       "email": formData.new_email,
@@ -88,7 +87,13 @@ const updateEmail = () => {
       }
     }).then(() => {
       MessagePlugin.info("已修改");
+      visibleBody.value=false;
+      location.reload()
     }).catch(()=>{})
+  } else {
+    console.log('Validate Errors: ', firstError, validateResult);
+    MessagePlugin.warning(firstError);
+  }
 }
 
 </script>
@@ -98,7 +103,7 @@ const updateEmail = () => {
     :confirm-btn=null>
     <template #body>
       <t-space direction="vertical">
-        <t-form ref="form" id="form" :data="formData" reset-type="initial" @reset="onReset" @submit="changePsw"
+        <t-form ref="form" id="form" :data="formData" reset-type="initial" @reset="onReset" @submit="updateEmail"
           :rules="FORM_RULES" label-width="100px" label-align="right">
           <t-form-item name="old_email" label="旧邮箱">
             <t-input v-model="formData.old_email" :placeholder="old_email" disabled>
@@ -115,7 +120,7 @@ const updateEmail = () => {
                 <lock-on-icon />
               </template>
             </t-input>
-            <t-button theme="default" variant="base" :disabled="countDown > 0" 
+            <t-button theme="default" variant="base" :disabled="countDown > 0"
               @click="throttle(sendCode)">{{ countDown > 0 ? `${countDown}秒` : '验证码' }}</t-button>
             <!-- <t-button theme="default" variant="base" @click="throttle(sendCode)">验证码</t-button> -->
           </t-form-item>
