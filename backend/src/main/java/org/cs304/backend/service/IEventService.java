@@ -13,6 +13,9 @@ import java.util.List;
 public interface IEventService extends IService<Event> {
 
 
+
+    String getAttachment(Integer eventId);
+
     void insertEventAndSessions(JSONObject eventData);
 
     JSONArray getAllEvents();

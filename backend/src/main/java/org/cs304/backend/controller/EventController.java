@@ -2,6 +2,7 @@ package org.cs304.backend.controller;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import jakarta.annotation.Resource;
@@ -164,5 +165,12 @@ public class EventController {
 //        Integer seatMapId = requestBody.getInteger("seatMapId");
 //        return Result.success(response, seatMapService.getSeatMapWithSeatsById(userType, seatMapId));
         return Result.success(response);
+    }
+
+    @GetMapping("/getPhotoById")
+    @Operation(summary = "获取一个事件的图片",description = "传入eventId")
+    public Result getPhotoById(HttpServletResponse response, @RequestParam Integer eventId) {
+        String attachmentPath = eventService.getAttachment(eventId);
+        return Result.success(response, attachmentPath);
     }
 }

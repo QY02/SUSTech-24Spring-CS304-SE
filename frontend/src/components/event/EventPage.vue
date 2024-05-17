@@ -2,7 +2,7 @@
   <div v-if="!loading && eventDetail.length !== 0">
     <div class="card">
       <div class="card-1">
-        <t-image src="https://tdesign.gtimg.com/demo/demo-image-1.png" fit="fill"
+        <t-image :src="photo" fit="fill"
           :style="{ width: '100%', height: '100%' }" shape="round" />
       </div>
       <div class="right">
@@ -15,17 +15,17 @@
         <div class="bottom">
           <div class="card-4">
             <t-space size="24px">
-            <!-- <div v-if="isFavorite"> -->
+              <!-- <div v-if="isFavorite"> -->
               <t-button :loading="loading_favorite" shape="circle" theme="primary" @click="clickHeart()">
                 <template #icon>
                   <div v-if="isFavorite">
                   </div>
-              
-                  <HeartFilledIcon v-if="isFavorite"/>
-                  <HeartIcon v-else/>
+
+                  <HeartFilledIcon v-if="isFavorite" />
+                  <HeartIcon v-else />
                 </template>
               </t-button>
-            <!-- </div>
+              <!-- </div>
             <div v-else>
               <t-button :loading="loading_favorite" shape="circle" theme="primary" @click="addFavorite()">
                 <template #icon>
@@ -151,17 +151,31 @@
     </t-space>
     <div class="ticket_card" style="margin-left: 55px; margin-top: -10px;">
       <p style="  color: rgba(7, 63, 216, 1); font-size: 18px; font-weight: 700; letter-spacing: 1px;">
-        GENERAL SALE
+        贩卖信息
       </p>
       <p style="  margin-top: 0.4rem; color: rgb(70, 73, 79);font-weight: 600;">
         开始日期
       </p>
       <p style=" margin-top: -5px; line-height: 1.625; color: rgb(70, 73, 79);">
-        2024年3月14号<br>13:00
+      <div v-for="(session, index) in sessionInformation">
+        <div class="choose-session-detail-div">
+          <p v-if="session.registrationRequired" class="choose-session-detail-text">
+            <p>场次{{ index }}: </p>
+            {{
+              `报名时间: ${dateToString(session.registrationStartTime)} - ${dateToString(session.registrationEndTime)}`
+            }}
+            <br>
+          </p>
+          <p v-else class="choose-session-detail-text">
+            <p>场次{{ index }}: </p>
+            <p>无需报名</p>
+          </p>
+        </div>
+      </div>
       </p>
       <el-divider />
       <p style="  color: rgba(7, 63, 216, 1); font-size: 18px; font-weight: 700; letter-spacing: 1px;">
-        STANDARD
+        价格标准
       </p>
       <p style="  margin-top: 0.4rem; line-height: 1.625; color: rgb(70, 73, 79);;">
         门票价格：¥{{ eventDetail.lowestPrice }} - ¥{{ eventDetail.highestPrice }}
@@ -236,6 +250,7 @@ import { sessionInformation, bookingInformation } from '@/components/book/Steps.
 import { HeartIcon, HeartFilledIcon, ListIcon, TableIcon, StarFilledIcon, DiscountIcon } from 'tdesign-icons-vue-next';
 import { computed, getCurrentInstance, ref, onMounted } from 'vue';
 import axios from "axios";
+import { fileServerAxios } from "@/main.js"
 import get from 'lodash/get';
 import EventTicketCalender from './EventTicketCalender.vue';
 import ChooseSession from '../book/ChooseSession.vue';
@@ -288,52 +303,32 @@ const dateToString = (date) => {
   return result;
 }
 
-const getPage = async (item) => {
-  try {
-    loading.value = true;
-    photoList.value = [];
-    photoUrlList.value = [];
-    video.value = '';
-    photoPreviewVisible.value = false;
-    const response = await axios.get(`/comment/getMomentById?commentId=${item.id}`, {
-      headers: {
-        token: sessionStorage.getItem('token')
-      }
-    });
-    momentData.value = response.data.data;
-    const response2 = await axios.get(`/blog/get/${item.id}`, {
-      headers: {
-        token: sessionStorage.getItem('token')
-      }
-    });
-    momentData.value.avatar = 'https://tdesign.gtimg.com/site/avatar.jpg';
-    thumbUpColor.value = response2.data.data.voteType === 1 ? 'red' : 'grey';
-    thumbDownColor.value = response2.data.data.voteType === -1 ? 'blue' : 'grey';
-    if (momentData.value.mediaType === false) {
-
-      const fileServerResponse = await fileServerAxios.get(`/file/download`, {
-        responseType: 'blob',
-        headers: {
-          token: momentData.value.mediaUrl,
-        }
-      });
-      const image = fileServerResponse.data;
-      photoList.value.push(image);
-      photoUrlList.value.push(URL.createObjectURL(image));
-      
-    }else {
-      const fileServerResponse = await fileServerAxios.get(`/file/download`, {
-        responseType: 'blob',
-        headers: {
-          token: momentData.value.mediaUrl[0],
-        }
-      });
-      video.value = URL.createObjectURL(fileServerResponse.data);
+const attachmentPath = ref('');
+const photo = ref('https://tdesign.gtimg.com/demo/demo-image-1.png');
+const photoUrl = ref('https://tdesign.gtimg.com/demo/demo-image-1.png');
+const getAttachment = () => {
+  axios.get(`/event/getPhotoById?eventId=${eventId}`, {
+    headers: {
+      token: token
     }
-    loading.value = false;
-  } catch (error) {
-  }
-};
+  }).then((response) => {
+    attachmentPath.value = response.data.data
+    if(attachmentPath.value!==null && attachmentPath.value!==undefined && attachmentPath.value!=='')
+    getPhoto();
+  }).catch(() => { })
+}
+const getPhoto = () => {
+  fileServerAxios.get(`/file/download`, {
+    responseType: 'blob',
+    headers: {
+      token: attachmentPath,
+    }
+  }).then((fileServerResponse) => {
+    const image = fileServerResponse.data;
+    photo.value=image;
+    photoUrl.value=URL.createObjectURL(image);
+  }).catch(() => { })
+}
 
 
 const pushRouter = (value) => {
@@ -364,12 +359,12 @@ const addHistory = () => {
       token: sessionStorage.getItem('token')
     }
   })
-    .then((response) => {})
+    .then((response) => { })
     .catch((error) => {
     });
 }
 
- const getEventDetail = () => {
+const getEventDetail = () => {
   loading.value = true;
   axios.get(`/event/getEventDetail/${eventId}`, {
     headers: {
@@ -396,11 +391,11 @@ const getFavorite = () => {
   }).catch(() => { })
 }
 
-const clickHeart =( )=>{
-  if(!isFavorite){
+const clickHeart = () => {
+  if (!isFavorite) {
     addFavorite()
   }
-  else{
+  else {
     deleteFavorite()
   }
 }
@@ -437,7 +432,7 @@ const deleteFavorite = () => {
 
 const fetchSessionInformation = async () => {
   try {
-    let response = await axios.post("/event/getEventSessionsByEventId", {eventId: eventId}, {headers: {token: sessionStorage.getItem('token')}});
+    let response = await axios.post("/event/getEventSessionsByEventId", { eventId: eventId }, { headers: { token: sessionStorage.getItem('token') } });
     const dataConverted = response.data.data.map((item) => ({
       ...item,
       startTime: new Date(item.startTime),
@@ -450,18 +445,19 @@ const fetchSessionInformation = async () => {
     response = await axios.post("/orderRecord/getMyOrderRecord", {
       eventId: eventId,
       mode: 0
-    }, {headers: {token: sessionStorage.getItem('token')}});
+    }, { headers: { token: sessionStorage.getItem('token') } });
     const registeredEventSessionIdArray = response.data.data;
     sessionInformation.forEach(session => {
       session.registered = registeredEventSessionIdArray.includes(session.eventSessionId);
     })
-  } 
+  }
   catch (error) {
   }
 }
 
 onMounted(() => {
   getEventDetail();
+  getPhoto();
   fetchSessionInformation();
 });
 

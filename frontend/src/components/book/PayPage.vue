@@ -1,10 +1,12 @@
 <template>
   <t-descriptions title="预定内容" column="1">
     <t-descriptions-item label="活动名称">{{ eventDetail.name }}</t-descriptions-item>
-    <t-descriptions-item label="活动时间">{{ sessionInformation[bookingInformation.chosenSession].startTime }} - {{
-      sessionInformation[bookingInformation.chosenSession].endTime }}</t-descriptions-item>
-    <t-descriptions-item label="活动场地">{{ sessionInformation[bookingInformation.chosenSession].venue
-      }}</t-descriptions-item>
+    <div v-if="bookingInformation.chosenSession">
+      <t-descriptions-item label="活动时间">{{ sessionInformation[bookingInformation.chosenSession].startTime }} - {{
+        sessionInformation[bookingInformation.chosenSession].endTime }}</t-descriptions-item>
+      <t-descriptions-item label="活动场地">{{ sessionInformation[bookingInformation.chosenSession].venue
+        }}</t-descriptions-item>
+    </div>
     <t-descriptions-item label="座位">{{ bookingInformation.chosenSeat }}</t-descriptions-item>
   </t-descriptions>
   <t-descriptions-item label="价格">{{ bookingInformation.seatPrice }}</t-descriptions-item>
@@ -67,7 +69,7 @@ const startPolling = () => {
     clearTimeout(timeoutId);
     timeoutId = null; // 清除后将timeoutId设为null
   }
-    // 定义轮询函数
+  // 定义轮询函数
   const poll = () => {
     if (payResult.value === 1) { // 当外部条件满足时
       clearInterval(intervalId); // 清除间隔定时器
@@ -88,18 +90,18 @@ const startPolling = () => {
 
 onUnmounted(() => {
   if (timeoutId) {
-        clearTimeout(timeoutId);
-        timeoutId = null;
-      }
+    clearTimeout(timeoutId);
+    timeoutId = null;
+  }
 });
 
-  function getPayResult() {
-    axios.post("/orderRecord/getPayResultById", { id: orderId },
-      { headers: { token: sessionStorage.getItem('token') } } as AxiosRequestConfig)
-      .then(response => {
-        payResult.value = response.data.data;
-      })
-      .catch(error => {
-      });
-  }
+function getPayResult() {
+  axios.post("/orderRecord/getPayResultById", { id: orderId },
+    { headers: { token: sessionStorage.getItem('token') } } as AxiosRequestConfig)
+    .then(response => {
+      payResult.value = response.data.data;
+    })
+    .catch(error => {
+    });
+}
 </script>

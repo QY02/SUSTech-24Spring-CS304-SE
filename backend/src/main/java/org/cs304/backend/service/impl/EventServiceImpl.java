@@ -1,6 +1,5 @@
 package org.cs304.backend.service.impl;
 
-import cn.hutool.db.sql.Order;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
@@ -8,11 +7,11 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import org.cs304.backend.constant.constant_EventStatus;
-import org.cs304.backend.constant.constant_OrderRecordStatus;
 import org.cs304.backend.constant.constant_User;
 import org.cs304.backend.entity.*;
 import org.cs304.backend.exception.ServiceException;
 import org.cs304.backend.mapper.*;
+import org.cs304.backend.service.IAttachmentService;
 import org.cs304.backend.service.IEventService;
 import org.cs304.backend.service.IEventSessionService;
 import org.springframework.stereotype.Service;
@@ -22,7 +21,9 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.cs304.backend.constant.constant_AttachmentType.IMAGE;
 import static org.cs304.backend.constant.constant_OrderRecordStatus.*;
+import static org.cs304.backend.constant.constant_User.ADMIN;
 
 @Service
 public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements IEventService {
@@ -30,9 +31,13 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
     @Resource
     private IEventSessionService eventSessionService;
     @Resource
+    private IAttachmentService attachmentService;
+    @Resource
     private EventMapper eventMapper;
     @Resource
     private EventSessionMapper eventSessionMapper;
+    @Resource
+    private EntityAttachmentRelationMapper entityAttachmentRelationMapper;
     @Resource
     private SeatMapper seatMapper;
     @Resource
@@ -75,7 +80,14 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
         return new JSONArray();
     }
 
-
+    @Override
+    public String getAttachment(Integer eventId){
+        EntityAttachmentRelation attachmentRelation = entityAttachmentRelationMapper.selectOne(new QueryWrapper<EntityAttachmentRelation>().eq("entity_id", eventId).eq("attachment_type",IMAGE));
+        int attachmentId = attachmentRelation.getAttachmentId();
+        Attachment attachment = attachmentService.getById(ADMIN, attachmentId);
+        String attachmentPath = attachment.getFilePath();
+        return attachmentPath;
+    }
     @Override
     public void insertEventAndSessions(JSONObject data) {
         JSONObject eventData = data.getJSONObject("event");
