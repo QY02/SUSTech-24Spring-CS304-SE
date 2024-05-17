@@ -1,7 +1,7 @@
 <template>
     <t-space style="display: flex; width: 100%;">
         <div>
-            <div class="title">REVIEWS</div>
+            <div class="title">评论</div>
             <div class="line"></div>
         </div>
         <div style="margin-top: 30px; display: flex; justify-content: flex-end; margin-right:30px ;">
