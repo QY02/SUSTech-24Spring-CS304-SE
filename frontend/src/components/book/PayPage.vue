@@ -107,6 +107,88 @@ const startPolling = () => {
   }, 10 * 60 * 1000); // 10分钟
 };
 
+const currentUrl = ref(window.location.href);
+const timestamp = ref(null);
+const formattedDateTime = ref(null);
+
+const checkUrl = ()=>{
+  console.log('checking')
+  if(currentUrl.value!=='http://localhost:5173/book'){
+    console.log('differnet')
+    const urlParams = new URLSearchParams(currentUrl.value.split('?')[1]); // 获取查询参数部分
+    const newTimestamp = urlParams.get('timestamp'); // 获取timestamp参数的值
+    orderId.value = parseInt(urlParams.get('out_trade_no'));
+    console.log(orderId.value)
+    timestamp.value = newTimestamp; // 更新timestamp的值
+
+    if (newTimestamp) {
+      const dateObj = new Date(newTimestamp.replace(/\+/g, ' ')); // 将带有+号的时间戳字符串转换成Date对象
+      formattedDateTime.value = formatDate(dateObj); // 转换成指定格式的日期时间字符串
+      console.log(formattedDateTime.value)
+      axios.post(`/orderRecord/payResult`, {
+        'orderId': orderId.value,
+        'time': formattedDateTime.value,
+        'result': 1
+      },{
+    headers: {
+      token: sessionStorage.getItem('token')
+    }
+  }).then((response) => {
+    console.log('next')
+    MessagePlugin.success('支付成功');
+    toNextStep();
+    window.location.href = 'http://localhost:5173/book';
+  }).catch(() => { })
+    }
+  }
+}
+
+onMounted(() => {
+  checkUrl();
+  watch(currentUrl, (newUrl, oldUrl) => {
+    console.log('inini')
+    const urlParams = new URLSearchParams(window.location.search);
+    const newTimestamp = urlParams.get('timestamp');
+    // const urlParams = new URLSearchParams(newUrl.split('?')[1]); // 获取查询参数部分
+    // const newTimestamp = urlParams.get('timestamp'); // 获取timestamp参数的值
+    timestamp.value = newTimestamp; // 更新timestamp的值
+
+    if (newTimestamp) {
+      const dateObj = new Date(newTimestamp.replace(/\+/g, ' ')); // 将带有+号的时间戳字符串转换成Date对象
+      formattedDateTime.value = formatDate(dateObj); // 转换成指定格式的日期时间字符串
+      axios.post(`/orderRecord/payResult`, {
+        'orderId': parseInt(sessionStorage.getItem('orderId')),
+        'time': formattedDateTime.value,
+        'result': 1
+      },{
+    headers: {
+      token: sessionStorage.getItem('token')
+    }
+  }).then((response) => {
+    console.log('next')
+    MessagePlugin.success('支付成功');
+    toNextStep();
+    window.location.href = 'http://localhost:5173/book';
+  }).catch(() => { })
+    }
+    // if (newUrl !== 'http://localhost:5173/book') {
+    //   const urlParams = new URLSearchParams(newUrl.split('?')[1]); // 获取查询参数部分
+    //   const newId = urlParams.get('id'); // 获取id参数的值
+    //   id.value = newId; // 更新id的值
+    // }
+  });
+});
+
+const formatDate = (dateObj) => {
+  const year = dateObj.getFullYear();
+  const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+  const day = String(dateObj.getDate()).padStart(2, '0');
+  const hours = String(dateObj.getHours()).padStart(2, '0');
+  const minutes = String(dateObj.getMinutes()).padStart(2, '0');
+  const seconds = String(dateObj.getSeconds()).padStart(2, '0');
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+};
+
 onUnmounted(() => {
   if (timeoutId) {
     clearTimeout(timeoutId);

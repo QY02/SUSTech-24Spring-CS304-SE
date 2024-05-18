@@ -114,7 +114,7 @@ const routes = [
             },
             {
                 path: '/admin/eventManage',
-                component: () => import('@/components/admin/adminHomePage.vue')
+                component: () => import('@/components/admin/homePage.vue')
             },
             {
                 name: 'newMoment',
