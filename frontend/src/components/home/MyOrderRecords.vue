@@ -1,6 +1,6 @@
 <template>
-<!--  <h2 style="margin-left: 20px">我的预定</h2>-->
-<!--  <t-tag style="margin-left: 20px;height: 40px; margin-top: 15px;font-size: 20px" size="large" theme="success" variant="light">我的预定</t-tag>-->
+  <!--  <h2 style="margin-left: 20px">我的预定</h2>-->
+  <!--  <t-tag style="margin-left: 20px;height: 40px; margin-top: 15px;font-size: 20px" size="large" theme="success" variant="light">我的预定</t-tag>-->
 
   <div id="MyOrderEvent">
 
@@ -17,27 +17,27 @@
     <!--  </t-list>-->
 
     <t-list :split="true" stripe>
-      <t-list-item v-for="(item,index) in events" :key="item" @click="getEvent(item)">
+      <t-list-item v-for="(item,index) in events" :key="item" @click="clickEvent(index)">
         <div style="display: flex;">
 
           <!--          <t-list-item-meta :title="item.title" :description="item.content" style="display: flex; align-items: center;"/>-->
-          <t-list-item-meta class="t-list-item-meta-description"  :title="item.name" :description="records[index].seatId"
+          <t-list-item-meta class="t-list-item-meta-description" :title="item.name" :description="records[index].seatId"
                             style="display: flex; align-items: center;">
             <!--            <p class="t-list-item-meta-description">{{ item.content }}</p>-->
           </t-list-item-meta>
-          <t-tag theme="primary" variant="light"  style="display: flex; margin-left: 30px;">
+          <t-tag theme="primary" variant="light" style="display: flex; margin-left: 30px;">
             {{ records[index].submitTime.replace('T', ' ') }}
           </t-tag>
-          <t-tag theme="success" variant="light"  style="display: flex; margin-left: 30px;">
+          <t-tag theme="success" variant="light" style="display: flex; margin-left: 30px;">
             活动开始时间： {{ records[index].eventSession.startTime.replace('T', ' ') }}
           </t-tag>
-          <t-tag theme="warning" variant="light"  style="display: flex; margin-left: 30px;">
+          <t-tag theme="warning" variant="light" style="display: flex; margin-left: 30px;">
             活动地点： {{ records[index].eventSession.venue.replace('T', ' ') }}
           </t-tag>
 
         </div>
         <template #action>
-          <t-button variant="text" shape="square">
+          <t-button variant="text" shape="square" @click="clickEvent(index)">
             <arrow-right-icon/>
           </t-button>
         </template>
@@ -47,15 +47,15 @@
 
     </t-list>
   </div>
-<!--  <t-popup content="返回上一页">-->
-<!--    <t-button shape="circle" theme="primary" size="large" style="position: fixed;right: 30px;bottom: 40px"-->
-<!--              @click="router.push('/user');">-->
-<!--      <template #icon>-->
-<!--        <rollback-icon/>-->
-<!--      </template>-->
+  <!--  <t-popup content="返回上一页">-->
+  <!--    <t-button shape="circle" theme="primary" size="large" style="position: fixed;right: 30px;bottom: 40px"-->
+  <!--              @click="router.push('/user');">-->
+  <!--      <template #icon>-->
+  <!--        <rollback-icon/>-->
+  <!--      </template>-->
 
-<!--    </t-button>-->
-<!--  </t-popup>-->
+  <!--    </t-button>-->
+  <!--  </t-popup>-->
 </template>
 
 <script setup>
@@ -104,10 +104,10 @@ axios.post(`/orderRecord/getMyOrderRecord`, {
       records.value = response.data.data;
 
       // alert(JSON.stringify(response.data.data))
-      for (let i = 0; i < events.value.length; i++) {//获取每个活动的海报
-        let id = events.value[i]['id'];
-        // alert(id)
-      }
+      // for (let i = 0; i < events.value.length; i++) {//获取每个活动的海报
+      //   let id = events.value[i]['id'];
+      //   // alert(id)
+      // }
     })
     .catch((error) => {
       if (error.response) {
@@ -122,32 +122,12 @@ axios.post(`/orderRecord/getMyOrderRecord`, {
 const clickHandler = (data) => {
   MessagePlugin.success(`选中【${data.content}】 `);
 };
-const clickEvent = (eventId) => {
-  MessagePlugin.success(`${sessionStorage.getItem('uid')} 选中【${eventId}】`);
+const clickEvent = (index) => {
+  MessagePlugin.success(`${sessionStorage.getItem('uid')} 选中【${index}】`);
+  // alert(typeof records.value)
+  sessionStorage.setItem('index', JSON.stringify(records.value[index]))
+  router.push('/OrderRecordDetails');
 
-  // router.push('/event');
-  axios.post(`/history/add`, {
-    "eventId": eventId,
-    "userId": sessionStorage.getItem('uid')
-  }, {
-    params: {},
-    headers: {
-      token: sessionStorage.getItem('token')
-    }
-  })
-      .then((response) => {
-        sessionStorage.setItem('eventId', eventId)
-        router.push('/event');
-      })
-      .catch((error) => {
-        if (error.response) {
-          // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-          MessagePlugin.warning(error.response.data.msg);
-        } else {
-          // 一些错误是在设置请求的时候触发
-          MessagePlugin.warning(error.message);
-        }
-      });
 };
 // const eventType = inject('eventType')
 const eventType = ref(sessionStorage.getItem('eventType'))

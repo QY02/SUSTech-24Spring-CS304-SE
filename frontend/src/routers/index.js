@@ -60,6 +60,10 @@ const routes = [
                 component: () => import('@/components/home/MyOrderRecords.vue')
             },
             {
+                path: '/OrderRecordDetails',
+                component: () => import('@/components/home/OrderRecordDetail.vue')
+            },
+            {
                 path: '/approval',
                 component: () => import('@/components/admin/EventApproval.vue')
             },
@@ -107,6 +111,10 @@ const routes = [
                 name: 'adminHomePage',
                 path: '/admin/homepage',
                 component: () => import('@/components/admin/homePage.vue')
+            },
+            {
+                path: '/admin/eventManage',
+                component: () => import('@/components/admin/adminHomePage.vue')
             },
             {
                 name: 'newMoment',

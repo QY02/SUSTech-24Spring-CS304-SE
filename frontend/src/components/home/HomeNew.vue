@@ -77,6 +77,7 @@
       v-model:visible="visible"
       header="评论"
       body="自定义底部按钮，直接传入文字"
+      :top="top"
       :confirm-btn="null"
       :cancel-btn="null"
   >
@@ -95,7 +96,7 @@ import {MessagePlugin} from 'tdesign-vue-next';
 import axios from "axios";
 import {getCurrentInstance, ref} from "vue";
 import router from "@/routers/index.js";
-import {EVENT_TYPE_MAP} from "../../constants/index.js";
+import {EVENT_TYPE_MAP} from "@/constants/index.js";
 import CommentPage from "@/components/event/CommentPage.vue";
 import {fileServerAxios} from "@/main.js";
 
@@ -107,6 +108,7 @@ const fileUrl = 'http://localhost:8084';
 const visible = ref(false);
 const loading = ref(true);
 // alert(apiBaseUrl)
+const top = '50px';
 axios.defaults.baseURL = apiBaseUrl;
 
 const cover = ref('https://tdesign.gtimg.com/site/source/card-demo.png');
