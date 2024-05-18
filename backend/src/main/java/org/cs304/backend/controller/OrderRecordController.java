@@ -22,13 +22,15 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.cs304.backend.constant.constant_OrderRecordStatus;
 import org.cs304.backend.entity.Favorite;
 import org.cs304.backend.entity.OrderRecord;
+import org.cs304.backend.exception.ServiceException;
 import org.cs304.backend.service.IEventService;
 import org.cs304.backend.service.IOrderRecordService;
 import org.cs304.backend.utils.Result;
 import org.springframework.web.bind.annotation.*;
-
+import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -38,7 +40,7 @@ import java.util.Map;
 //import static com.alipay.api.AlipayConstants.FORMAT;
 //import static com.alipay.api.AlipayConstants.CHARSET;
 //import static com.alipay.api.AlipayConstants.SIGN_TYPE;
-
+@Slf4j
 @RestController
 @RequestMapping("/orderRecord")
 public class OrderRecordController {
@@ -178,5 +180,34 @@ public class OrderRecordController {
                 orderRecordService.updateById(orderRecord);
             }
         }
+    }
+
+    @PostMapping("/payResult")
+    public Result payResult(HttpServletResponse response, HttpServletRequest request, @RequestBody JSONObject requestBody) {
+        String time = requestBody.getString("time");
+        Integer orderId = requestBody.getInteger("orderId");
+        System.out.println("orderId:" + orderId);
+        Integer result = requestBody.getInteger("result");
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        //支付时间
+        try{
+            Date dt2 = df.parse(time);
+            LocalDateTime payTime = DateUtil.toLocalDateTime(dt2);
+            //换成PAID！！！
+            OrderRecord orderRecord = orderRecordService.getOne(new QueryWrapper<OrderRecord>().eq("id", orderId));
+            orderRecord.setPaymentTime(payTime);
+            if(result==1){
+                orderRecord.setStatus(constant_OrderRecordStatus.PAID);
+            }
+            else{
+                orderRecord.setStatus(constant_OrderRecordStatus.EXPIRED);
+            }
+            orderRecordService.updateById(orderRecord);
+        }
+        catch(ParseException e){
+            log.error(e.getMessage());
+            throw new ServiceException("400", "日期格式错误");
+        }
+        return Result.success(response);
     }
 }

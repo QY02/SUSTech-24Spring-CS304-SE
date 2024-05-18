@@ -121,12 +121,13 @@ const fetchSessionInformation = async () => {
 
 onMounted(() => {
   removeClickableOnFinishStepItem();
-  fetchSessionInformation();
+  fetchSessionInformation()
+
 });
 
 watch(
   () => window.location.href,
-  (newSession, oldSession) => {
+  (newUrl, oldUrl) => {
     console.log('change')
   }
 );
