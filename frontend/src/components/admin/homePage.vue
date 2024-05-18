@@ -37,11 +37,12 @@ const productList = ref([
     name: '用户管理',
     description: '管理用户的相关信息',
     type: 1,},
-  {
-    index: 2,
-    name: '活动管理',
-    description: '管理活动的相关信息',
-    type: 2,},
+  // {
+  //   index: 2,
+  //   name: '活动管理',
+  //   description: '管理活动的相关信息',
+  //   type: 2,
+  // },
   {
     index: 3,
     name: '活动审核',
@@ -67,9 +68,11 @@ const productList = ref([
 const handleClickProduct = (product: CardProductType) => {
   if (product.type === 1) {
     router.push('/user');
-  } else if (product.type === 2) {
-    router.push('/event');
-  } else if (product.type === 3) {
+  }
+  // else if (product.type === 2) {
+  //   router.push('/admin/eventManage');
+  // }
+  else if (product.type === 3) {
     router.push('/approval');
   } else if (product.type === 4) {
     router.push('/momentAudit');

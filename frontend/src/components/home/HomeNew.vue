@@ -1,12 +1,20 @@
-<template>
-
-  <div id="event">
+<template >
+  <div v-if="curEvents.length===0">
+    <div style="display: flex; align-items: center;text-align: center;">
+      <error-circle-icon size="large"></error-circle-icon>
+      <h1 style="color: #5e6066; font-size: large; margin-left: 10px;">暂无活动</h1>
+    </div>
+  </div>
+  <div v-else>
+  <div id="event" v-loading="loading">
     <t-card
         v-for="(item,index) in curEvents"
         :key="index"
         :title="item['name']" :subtitle="item['content']" :cover="item['cover']" :style="{ width: '400px' }"
         hover-shadow
-        @click="clickEvent(item['id'])">
+        @click="clickEvent(item['id'])"
+        lazy-load
+    >
       <!--      <template #cover>-->
       <!--        &lt;!&ndash; Image with native lazy loading &ndash;&gt;-->
       <!--        <img :src="item.imageUrl" loading="lazy" alt="Event Image">-->
@@ -36,27 +44,33 @@
       <template #footer>
         <t-row :align="'middle'" justify="center" style="gap: 24px;">
           <t-col flex="auto" style="display: inline-flex; justify-content: center;">
+            <t-popup content="收藏活动">
             <t-button variant="text" shape="square" @click.stop="favEvent(item['id'])">
 
               <t-icon name="heart" :color="favColor[item['id']]"/>
             </t-button>
+            </t-popup>
           </t-col>
 
           <t-col flex="auto" style="display: inline-flex; justify-content: center">
+            <t-popup content="评论">
             <t-button variant="text" shape="square" @click.stop="clickComment(item['id'])">
               <chat-icon/>
             </t-button>
+            </t-popup>
           </t-col>
 
           <t-col flex="auto" style="display: inline-flex; justify-content: center">
+            <t-popup content="分享活动">
             <t-button variant="text" shape="square" @click.stop="clickShare(item['id'],item['name'])">
               <share-icon/>
             </t-button>
+            </t-popup>
           </t-col>
         </t-row>
       </template>
     </t-card>
-
+  </div>
 
   </div>
   <t-dialog
@@ -71,24 +85,27 @@
     </a>
 
   </t-dialog>
+
 </template>
 
 <script setup>
 
-import {ChatIcon, HeartIcon, ShareIcon} from 'tdesign-icons-vue-next';
+import {ChatIcon, ErrorCircleIcon, HeartIcon, ShareIcon} from 'tdesign-icons-vue-next';
 import {MessagePlugin} from 'tdesign-vue-next';
 import axios from "axios";
 import {getCurrentInstance, ref} from "vue";
 import router from "@/routers/index.js";
 import {EVENT_TYPE_MAP} from "../../constants/index.js";
 import CommentPage from "@/components/event/CommentPage.vue";
+import {fileServerAxios} from "@/main.js";
+
 
 const globalProperties = getCurrentInstance().appContext.config.globalProperties;
 const apiBaseUrl = globalProperties.$apiBaseUrl;
 // const fileUrl = fileServerAxios;
 const fileUrl = 'http://localhost:8084';
 const visible = ref(false);
-
+const loading = ref(true);
 // alert(apiBaseUrl)
 axios.defaults.baseURL = apiBaseUrl;
 
@@ -151,6 +168,7 @@ axios.post(`/event/getAllEvents`, {}, {
       curEvents.value = events.value
       tmpEvents.value = events.value
       // alert(JSON.stringify(events.value))
+      // for (let i = 0; i < events.value.length; i++) {//获取每个活动的海报
       for (let i = 0; i < 1; i++) {//获取每个活动的海报
         let id = events.value[i]['id'];
         axios.post(`/favorite/isFavorite`, {
@@ -204,7 +222,7 @@ axios.post(`/event/getAllEvents`, {}, {
                     // 创建一个 Blob 对象的 URL
                     const imageUrl = URL.createObjectURL(blob);
                     events.value[i]['cover'] = imageUrl
-
+                    loading.value=false;
                     // 将图片 URL 赋值给 cover 变量
                     // cover.value = imageUrl;
 
@@ -231,6 +249,7 @@ axios.post(`/event/getAllEvents`, {}, {
         // events.value[i].imageUrl =
         // alert(id)
       }
+
     })
     .catch((error) => {
       if (error.response) {

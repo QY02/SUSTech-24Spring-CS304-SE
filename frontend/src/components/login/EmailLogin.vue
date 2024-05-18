@@ -26,10 +26,10 @@
         </t-form-item>
 
         <t-form-item>
-<!--          <t-button theme="default" variant="base" :disabled="countDown > 0"-->
-<!--                    @click="throttle(handleVeri)">{{ countDown > 0 ? `${countDown}秒` : '验证码' }}-->
-<!--          </t-button>-->
-                    <t-button theme="primary" block @click="handleVeri" style="width: 50px; margin-left: 10px">验证码</t-button>
+          <t-button style="margin-left: 10px;width: 50px;" theme="default" variant="base" :disabled="countDown > 0"
+                    @click="throttle(handleVeri)">{{ countDown > 0 ? `${countDown}秒` : '验证码' }}
+          </t-button>
+<!--                    <t-button theme="primary" block @click="handleVeri" style="width: 50px; margin-left: 10px">验证码</t-button>-->
         </t-form-item>
       </div>
       <t-form-item>
@@ -120,30 +120,30 @@ const countDown = ref(0); // 倒计时变量，初始为 0 表示可点击状态
 //   MessagePlugin.warning(firstError);
 // }
 
-// const throttle = (func) => {
-//   console.log("in")
-//
-//   let inThrottle = false;
-//   countDown.value = 3;
-//   const timer = setInterval(() => {
-//     if (countDown.value > 0) {
-//       countDown.value--; // 每秒减一
-//       console.log(countDown.value)
-//     }
-//   }, 1000);
-//   if (!inThrottle) {
-//     // 执行函数
-//     func.apply(this);
-//     inThrottle = true;
-//
-//     // 设置节流结束的定时器
-//     setTimeout(() => {
-//       inThrottle = false;
-//       countDown.value = 3; // 重置倒计时
-//     }, 10000);
-//   }
-//
-// }
+const throttle = (func) => {
+  console.log("in")
+
+  let inThrottle = false;
+  countDown.value = 3;
+  const timer = setInterval(() => {
+    if (countDown.value > 0) {
+      countDown.value--; // 每秒减一
+      console.log(countDown.value)
+    }
+  }, 1000);
+  if (!inThrottle) {
+    // 执行函数
+    func.apply(this);
+    inThrottle = true;
+
+    // 设置节流结束的定时器
+    setTimeout(() => {
+      inThrottle = false;
+      countDown.value = 3; // 重置倒计时
+    }, 10000);
+  }
+
+}
 // };
 
 

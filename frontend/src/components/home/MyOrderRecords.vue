@@ -28,6 +28,12 @@
           <t-tag theme="primary" variant="light"  style="display: flex; margin-left: 30px;">
             {{ records[index].submitTime.replace('T', ' ') }}
           </t-tag>
+          <t-tag theme="success" variant="light"  style="display: flex; margin-left: 30px;">
+            活动开始时间： {{ records[index].eventSession.startTime.replace('T', ' ') }}
+          </t-tag>
+          <t-tag theme="warning" variant="light"  style="display: flex; margin-left: 30px;">
+            活动地点： {{ records[index].eventSession.venue.replace('T', ' ') }}
+          </t-tag>
 
         </div>
         <template #action>
@@ -41,15 +47,15 @@
 
     </t-list>
   </div>
-  <t-popup content="返回上一页">
-    <t-button shape="circle" theme="primary" size="large" style="position: fixed;right: 30px;bottom: 40px"
-              @click="router.push('/user');">
-      <template #icon>
-        <rollback-icon/>
-      </template>
+<!--  <t-popup content="返回上一页">-->
+<!--    <t-button shape="circle" theme="primary" size="large" style="position: fixed;right: 30px;bottom: 40px"-->
+<!--              @click="router.push('/user');">-->
+<!--      <template #icon>-->
+<!--        <rollback-icon/>-->
+<!--      </template>-->
 
-    </t-button>
-  </t-popup>
+<!--    </t-button>-->
+<!--  </t-popup>-->
 </template>
 
 <script setup>

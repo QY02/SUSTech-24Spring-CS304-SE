@@ -1,6 +1,14 @@
 <template>
-
+  <div v-if="curEvents.length===0">
+    <div style="display: flex; align-items: center;text-align: center;">
+      <error-circle-icon size="large"></error-circle-icon>
+      <h1 style="color: #5e6066; font-size: large; margin-left: 10px;">暂无活动</h1>
+    </div>
+  </div>
+  <div v-else>
   <div id="event">
+
+
     <t-card
         v-for="(item,index) in curEvents"
         :key="index"
@@ -49,7 +57,7 @@
         </t-row>
       </template>
     </t-card>
-
+    </div>
 
   </div>
 
@@ -57,7 +65,7 @@
 
 <script setup>
 
-import {ThumbUpIcon, ChatIcon, ShareIcon, MoreIcon, HeartIcon} from 'tdesign-icons-vue-next';
+import {ThumbUpIcon, ChatIcon, ShareIcon, MoreIcon, HeartIcon, ErrorCircleIcon} from 'tdesign-icons-vue-next';
 import {MessagePlugin} from 'tdesign-vue-next';
 import axios from "axios";
 import {computed, defineComponent, getCurrentInstance, inject, ref, watch} from "vue";

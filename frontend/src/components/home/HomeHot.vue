@@ -1,30 +1,39 @@
 <template>
-  <div id="event">
-    <t-list :split="true" hover-shallow>
-      <t-list-item v-for="(item,index) in events" :key="item" @click="clickEvent(item['id'])" >
-        <div style="display: flex;">
-          <div v-if="index+1<=3">
-            <t-tag theme="danger" variant="light" style="margin-right: 20px">{{ index + 1 }}
-              <template #icon>
-                <t-icon name="rocket"/>
-              </template>
-            </t-tag>
+  <div v-if="curEvents.length===0">
+    <div style="display: flex; align-items: center;text-align: center;">
+      <error-circle-icon size="large"></error-circle-icon>
+      <h1 style="color: #5e6066; font-size: large; margin-left: 10px;">暂无活动</h1>
+    </div>
+  </div>
+  <div v-else>
+    <div id="event">
+
+      <t-list :split="true" hover-shallow>
+        <t-list-item v-for="(item,index) in events" :key="item" @click="clickEvent(item['id'])">
+          <div style="display: flex;">
+            <div v-if="index+1<=3">
+              <t-tag theme="danger" variant="light" style="margin-right: 20px">{{ index + 1 }}
+                <template #icon>
+                  <t-icon name="rocket"/>
+                </template>
+              </t-tag>
+            </div>
+            <div v-else>
+              <t-tag theme="primary" variant="light" style="margin-right: 40px">{{ index + 1 }}</t-tag>
+            </div>
+            <t-image
+                :src="item.cover"
+                fit="cover"
+                :style="{ width: '250px', height: '120px'}"
+                position="left"
+                style="margin-right: 50px"
+            />
+            <!--          <t-list-item-meta :title="item.title" :description="item.content" style="display: flex; align-items: center;"/>-->
+            <t-list-item-meta class="t-list-item-meta-description" :title="item.name" :description="item.content"
+                              style="display: flex; align-items: center;">
+              <!--            <p class="t-list-item-meta-description">{{ item.content }}</p>-->
+            </t-list-item-meta>
           </div>
-          <div v-else>
-            <t-tag theme="primary" variant="light" style="margin-right: 40px">{{ index + 1 }}</t-tag>
-          </div>
-          <t-image
-              :src="item.cover"
-              fit="cover"
-              :style="{ width: '250px', height: '120px'}"
-              position="left"
-              style="margin-right: 50px"
-          />
-<!--          <t-list-item-meta :title="item.title" :description="item.content" style="display: flex; align-items: center;"/>-->
-          <t-list-item-meta class="t-list-item-meta-description" :title="item.name" :description="item.content" style="display: flex; align-items: center;">
-<!--            <p class="t-list-item-meta-description">{{ item.content }}</p>-->
-          </t-list-item-meta>
-        </div>
           <template #action>
             <t-button variant="text" shape="square" @click="clickEvent(item['id'])">
               <arrow-right-icon/>
@@ -32,21 +41,20 @@
           </template>
 
 
+        </t-list-item>
 
-      </t-list-item>
-
-    </t-list>
+      </t-list>
+    </div>
   </div>
 </template>
 
 <script setup>
-import {ArrowRightIcon} from 'tdesign-icons-vue-next';
+import {ArrowRightIcon, ErrorCircleIcon} from 'tdesign-icons-vue-next';
 import {MessagePlugin} from "tdesign-vue-next";
 import rocket from "tdesign-icons-vue-next/lib/components/rocket.js";
 import {getCurrentInstance, ref} from "vue";
 import axios from "axios";
 import router from "@/routers/index.js";
-
 
 
 // const getEvent = (item) => {
@@ -189,9 +197,10 @@ defineExpose({getSearchNew});
 #event {
   margin: 10px;
 }
+
 .t-list-item-meta-description {
   max-width: 700px; /* 设置description的最大宽度 */
-  overflow:auto; /* 超出部分隐藏 */
+  overflow: auto; /* 超出部分隐藏 */
   text-overflow: ellipsis; /* 文本溢出显示省略号 */
   word-wrap: initial; /* 强制换行 */
 }

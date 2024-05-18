@@ -25,6 +25,7 @@
             }">
         修改个人信息
       </t-button>
+      <t-popup content="退出登录">
       <t-button
           style="position: fixed; right: 50px; top: 100px"
           theme="default"
@@ -33,6 +34,7 @@
       >
         <logout-icon></logout-icon>
       </t-button>
+      </t-popup>
 
       <ChangePassword></ChangePassword>
     </div>
