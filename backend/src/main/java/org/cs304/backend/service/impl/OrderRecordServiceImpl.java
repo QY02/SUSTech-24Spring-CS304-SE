@@ -12,8 +12,12 @@ import org.cs304.backend.mapper.OrderRecordMapper;
 import org.cs304.backend.service.IOrderRecordService;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.cs304.backend.constant.constant_OrderRecordStatus.PAID;
+import static org.cs304.backend.constant.constant_OrderRecordStatus.SUBMITTED;
 
 @Service
 public class OrderRecordServiceImpl extends ServiceImpl<OrderRecordMapper, OrderRecord> implements IOrderRecordService {
@@ -28,7 +32,8 @@ public class OrderRecordServiceImpl extends ServiceImpl<OrderRecordMapper, Order
         if ((mode == null) || ((mode != 0) && (mode != 1) && (mode != 2) && (mode != 3))) {
             throw new ServiceException("400", "Invalid data");
         }
-        QueryWrapper<OrderRecord> queryWrapper = new QueryWrapper<OrderRecord>().eq("user_id", userId);
+        List<Integer> status = Arrays.asList(PAID, SUBMITTED);
+        QueryWrapper<OrderRecord> queryWrapper = new QueryWrapper<OrderRecord>().eq("user_id", userId).in("status", status);
         if (eventId != null) {
             queryWrapper.eq("event_id", eventId);
         }

@@ -166,7 +166,9 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
         if (!seat.getAvailability()) {
             throw new ServiceException("401", "The seat is unavailable");
         }
-        OrderRecord order = orderRecordMapper.selectOne(new QueryWrapper<OrderRecord>().eq("user_id", userId).eq("event_id", orderRecord.getEventId()).eq("event_session_id", orderRecord.getEventSessionId()));
+        List<Integer> statuses = Arrays.asList(PAID, UNPAID, SUBMITTED);
+        OrderRecord order = orderRecordMapper.selectOne(new QueryWrapper<OrderRecord>().eq("user_id", userId).eq("event_id", orderRecord.getEventId()).eq("event_session_id", orderRecord.getEventSessionId())
+                .in("status",statuses));
         if(order != null){
             int status = order.getStatus();
             if (status == SUBMITTED){

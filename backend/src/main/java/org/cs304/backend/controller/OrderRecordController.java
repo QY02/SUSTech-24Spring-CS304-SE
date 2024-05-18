@@ -77,7 +77,7 @@ public class OrderRecordController {
 
     @PostMapping("/getPayResultById")
     public Result getResult(HttpServletResponse response, HttpServletRequest request, @RequestBody JSONObject requestBody){
-        Integer orderId = requestBody.getInteger("id");
+        Integer orderId =  (int) request.getAttribute("id");
         int result = orderRecordService.getPaymentById(orderId);
         return Result.success(response, result);
     }
