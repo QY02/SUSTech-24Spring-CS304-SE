@@ -102,7 +102,7 @@
     </t-loading>
     <t-space size="medium">
       <t-button @click="currentStep--">上一步</t-button>
-      <t-button @click="handleSubmit">提交</t-button>
+      <t-button @click="handleSubmit">下一步</t-button>
     </t-space>
   </t-space>
 </template>

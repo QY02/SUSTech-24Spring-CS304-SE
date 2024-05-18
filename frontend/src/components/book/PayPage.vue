@@ -1,20 +1,26 @@
 <template>
-  <t-descriptions title="预定内容" column="1">
-    <t-descriptions-item label="活动名称">{{ eventDetail.name }}</t-descriptions-item>
-    <div v-if="bookingInformation.chosenSession">
-      <t-descriptions-item label="活动时间">{{ sessionInformation[bookingInformation.chosenSession].startTime }} - {{
-        sessionInformation[bookingInformation.chosenSession].endTime }}</t-descriptions-item>
-      <t-descriptions-item label="活动场地">{{ sessionInformation[bookingInformation.chosenSession].venue
-        }}</t-descriptions-item>
+  <div class="input-information-main-div">
+    <h1 class="input-information-title">预定信息</h1>
+    <t-descriptions column="1">
+      <t-descriptions-item label="活动名称">{{ eventDetail.name }}</t-descriptions-item>
+      <t-descriptions-item label="该场次报名时间">
+          {{`${dateToString(sessionInformation[chosenSession].registrationStartTime)} - ${dateToString(sessionInformation[chosenSession].registrationEndTime)}`}}
+        </t-descriptions-item>
+        <t-descriptions-item label="活动时间">
+          {{`${dateToString(sessionInformation[chosenSession].startTime)} - ${dateToString(sessionInformation[chosenSession].startTime)}`}}
+        </t-descriptions-item>
+        <t-descriptions-item label="活动场地">{{ sessionInformation[chosenSession].venue
+          }}</t-descriptions-item>
+      <t-descriptions-item label="座位">{{ bookingInformation.chosenSeat }}</t-descriptions-item>
+      <t-descriptions-item label="价格">{{ bookingInformation.seatPrice }}</t-descriptions-item>
+    </t-descriptions>
+    <div class="input-information-button-div">
+      <t-space size="medium">
+        <t-button @click="currentStep--">上一步</t-button>
+        <t-button @click="prePay">前往付款</t-button>
+      </t-space>
     </div>
-    <t-descriptions-item label="座位">{{ bookingInformation.chosenSeat }}</t-descriptions-item>
-  </t-descriptions>
-  <t-descriptions-item label="价格">{{ bookingInformation.seatPrice }}</t-descriptions-item>
-  <t-space size="medium">
-    <t-button @click="currentStep--">上一步</t-button>
-    <t-button @click="prePay">前往付款</t-button>
-  </t-space>
-
+  </div>
 
 </template>
 <script setup lang="ts">
@@ -23,6 +29,15 @@ import { currentStep, submitData } from '@/components/book/Steps.vue';
 import { onMounted, onUnmounted, reactive, Ref, ref, watch } from "vue";
 import { sessionInformation, bookingInformation } from '@/components/book/Steps.vue';
 import { MessagePlugin, NotifyPlugin } from "tdesign-vue-next";
+
+const dateToString = (date: Date) => {
+  const dayNameArray = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+  const dayName = dayNameArray[date.getDay()];
+  const localeDateStringArray = date.toLocaleString().split(' ');
+  const result: string = `${localeDateStringArray[0]} ${dayName} ${localeDateStringArray[1]}`;
+  return result;
+}
+
 
 const eventDetail = ref({
   name: ''
@@ -104,4 +119,33 @@ function getPayResult() {
     .catch(error => {
     });
 }
+
+const chosenSession = ref(0);
+watch(
+  () => bookingInformation.chosenSession,
+  (newSession, oldSession) => {
+    chosenSession.value = newSession
+  }
+);
+
 </script>
+
+<style scoped lang="less">
+.input-information {
+  &-main-div {
+    position: relative;
+    top: 5vh;
+  }
+
+  &-button-div {
+    display: flex;
+    justify-content: center;
+  }
+
+  &-title {
+    text-align: center;
+    font-size: 25px;
+    line-height: 0;
+  }
+}
+</style>
