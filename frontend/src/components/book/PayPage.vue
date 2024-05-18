@@ -25,7 +25,7 @@
 </template>
 <script setup lang="ts">
 import axios, { AxiosRequestConfig } from 'axios';
-import { currentStep, submitData } from '@/components/book/Steps.vue';
+import { currentStep, submitData, toNextStep } from '@/components/book/Steps.vue';
 import { onMounted, onUnmounted, reactive, Ref, ref, watch } from "vue";
 import { sessionInformation, bookingInformation } from '@/components/book/Steps.vue';
 import { MessagePlugin, NotifyPlugin } from "tdesign-vue-next";
@@ -67,8 +67,12 @@ const prePay = async () => {
   }, { headers: { token: sessionStorage.getItem('token') } } as AxiosRequestConfig).then((response) => {
     orderId.value = response.data.data;
     MessagePlugin.success('提交支付信息成功');
-    window.open(`http://localhost:5173/orderRecord/pay/${orderId}`)
-    startPolling();
+    // alert(orderId.value)
+    // 构建跳转的 URL
+    let targetUrl = `http://localhost:8083/orderRecord/pay/${orderId.value}?token=${sessionStorage.getItem('token')}`;
+    // 将当前页面跳转到目标 URL
+    window.location.href = targetUrl;
+    // startPolling();
     // currentStep.value++;
   })
     .catch(error => { })

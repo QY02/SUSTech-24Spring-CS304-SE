@@ -20,6 +20,12 @@
           </svg>
         </template>
       </t-step-item>
+      <t-step-item title="确认信息">
+        <template #icon>
+          <MoneyIcon size="24" class="icon-margin"/>
+        </template>
+      </t-step-item>
+
       <t-step-item title="完成" class="finish-step-item">
         <template #icon>
           <CheckCircleIcon size="24" class="icon-margin"/>
@@ -47,8 +53,8 @@
 
 <script setup lang="ts">
 
-import {onMounted, ref} from "vue";
-import {TimeIcon, VerifyIcon, CheckCircleIcon} from 'tdesign-icons-vue-next';
+import {onMounted, ref, watch} from "vue";
+import {TimeIcon, VerifyIcon, CheckCircleIcon, MoneyIcon} from 'tdesign-icons-vue-next';
 import ChooseSession from '@/components/book/ChooseSession.vue';
 import ChooseSeat from '@/components/book/ChooseSeat.vue';
 import InputInformation from '@/components/book/InputInformation.vue';
@@ -118,6 +124,13 @@ onMounted(() => {
   fetchSessionInformation();
 });
 
+watch(
+  () => window.location.href,
+  (newSession, oldSession) => {
+    console.log('change')
+  }
+);
+
 </script>
 
 <script lang="ts">
@@ -128,10 +141,12 @@ import {globalProperties} from '@/main';
 import {useRoute} from "vue-router";
 
 
-export let currentStep = ref(0);
+export let currentStep = ref(parseInt(sessionStorage.getItem('currentStep')));
+
 
 export function toNextStep() {
   currentStep.value++;
+  sessionStorage.setItem('currentStep', String(currentStep.value));
 }
 
 export let fetchSessionInformationStatus = ref(0);
@@ -260,8 +275,6 @@ export let sessionInformation: Session[] = reactive([{
     registered: false
   }])
 
-
-// 后端应该一起发送付款时间
 export const submitData = async () => {
   axios.post("/event/submitBookingData", {
     eventId: bookingInformation.eventId,
