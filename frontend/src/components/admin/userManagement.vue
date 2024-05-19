@@ -59,8 +59,8 @@
         <div v-if="value==='0'||value==='管理员'">
           {{ '管理员' }}
         </div>
-        <div v-else-if="value==='1'||value==='用户'">
-          {{ '用户' }}
+        <div v-else-if="value==='1'||value==='普通用户'">
+          {{ '普通用户' }}
         </div>
       </template>
       <template #cell(actions)="{ rowIndex }">
@@ -308,12 +308,12 @@ const items = ref([]);
 const columns = [
   // {key: 'try'},
   {key: 'id', sortable: true},
-  {key: 'name', sortable: true},
-  {key: 'email', sortable: true},
-  {key: 'phoneNumber', sortable: true},
-  {key: 'type', sortable: true},
-  {key: 'department', width: 80},
-  {key: 'actions', width: 80},
+  {key: 'name',label:"名字", sortable: true},
+  {key: 'email',label:"邮箱", sortable: true},
+  {key: 'phoneNumber',label:"电话", sortable: true},
+  {key: 'type',label:"用户类型", sortable: true},
+  {key: 'department',label:"学院", width: 80},
+  {key: 'actions',label:"操作", width: 80},
 ];
 const defaultItem = {
   id: '',
@@ -321,7 +321,7 @@ const defaultItem = {
   password: '12345678',
   email: '',
   phoneNumber: '',
-  type: 'Student',
+  type: '普通用户',
   department: '',
 };
 
