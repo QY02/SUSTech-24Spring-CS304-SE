@@ -74,6 +74,8 @@ jobs:
             cd /home/shadowfall/Documents/Software_Engineering/auto-deployment/scripts
             chmod +x start-fileServer.sh
             chmod +x stop-fileServer.sh
+            chmod +x start-fileServer-on-tyc-server.sh
+            chmod +x stop-fileServer-on-tyc-server.sh
             chmod +x start-backend.sh
             chmod +x stop-backend.sh
 
