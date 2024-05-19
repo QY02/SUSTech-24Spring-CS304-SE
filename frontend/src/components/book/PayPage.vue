@@ -141,6 +141,13 @@ const checkUrl = ()=>{
   }).catch(() => { })
     }
   }
+  else{
+    console.log(currentStep.value==3)
+    if(!bookingInformation.chosenSeat && currentStep.value==3){
+      currentStep.value+=2;
+      sessionStorage.setItem('currentStep', currentStep.value);
+    }
+  }
 }
 
 onMounted(() => {

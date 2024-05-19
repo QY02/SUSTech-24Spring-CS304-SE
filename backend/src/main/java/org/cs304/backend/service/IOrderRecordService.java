@@ -9,5 +9,8 @@ public interface IOrderRecordService extends IService<OrderRecord> {
 
     Object getMyOrderRecord(String userId, Integer eventId, Integer mode);
 
+    Object getUnpaidOrderRecord(String userId, Integer eventId, Integer mode);
+
     int getPaymentById(Integer orderId);
+
 }

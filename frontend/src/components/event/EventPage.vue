@@ -258,7 +258,7 @@ import router from '@/routers';
 import SkeletonPage from './SkeletonPage.vue';
 import CommentPage from './CommentPage.vue';
 
-sessionStorage.setItem('currentStep', '0')
+sessionStorage.setItem('currentStep', 0)
 const value_lable = ref('events');
 
 const show_event_type = ref(true);

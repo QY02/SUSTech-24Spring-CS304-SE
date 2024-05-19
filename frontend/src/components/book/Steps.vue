@@ -47,6 +47,9 @@
     <div v-show="currentStep === 4">
       <Finish></Finish>
     </div>
+    <div v-show="currentStep === 5">
+      <FailPage></FailPage>
+    </div>
     <div class="steps-footer-div"></div>
   </div>
 </template>
@@ -60,6 +63,7 @@ import ChooseSeat from '@/components/book/ChooseSeat.vue';
 import InputInformation from '@/components/book/InputInformation.vue';
 import PayPage from "./PayPage.vue";
 import Finish from '@/components/book/Finish.vue';
+import FailPage from '@/components/book/FailPage.vue';
 import {MessagePlugin, NotifyPlugin} from "tdesign-vue-next";
 import axios, {AxiosRequestConfig} from 'axios';
 import {useRoute} from "vue-router";
@@ -147,7 +151,7 @@ export let currentStep = ref(parseInt(sessionStorage.getItem('currentStep')));
 
 export function toNextStep() {
   currentStep.value++;
-  sessionStorage.setItem('currentStep', String(currentStep.value));
+  sessionStorage.setItem('currentStep', currentStep.value);
 }
 
 export let fetchSessionInformationStatus = ref(0);

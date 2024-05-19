@@ -17,12 +17,12 @@
     <!--  </t-list>-->
 
     <t-list :split="true" stripe>
-      <t-list-item v-for="(item,index) in events" :key="item" @click="clickEvent(index)">
+      <t-list-item v-for="(item, index) in events" :key="item" @click="clickEvent(index)">
         <div style="display: flex;">
 
           <!--          <t-list-item-meta :title="item.title" :description="item.content" style="display: flex; align-items: center;"/>-->
           <t-list-item-meta class="t-list-item-meta-description" :title="item.name" :description="records[index].seatId"
-                            style="display: flex; align-items: center;">
+            style="display: flex; align-items: center;">
             <!--            <p class="t-list-item-meta-description">{{ item.content }}</p>-->
           </t-list-item-meta>
           <t-tag theme="primary" variant="light" style="display: flex; margin-left: 30px;">
@@ -38,7 +38,7 @@
         </div>
         <template #action>
           <t-button variant="text" shape="square" @click="clickEvent(index)">
-            <arrow-right-icon/>
+            <arrow-right-icon />
           </t-button>
         </template>
 
@@ -60,10 +60,10 @@
 
 <script setup>
 
-import {ThumbUpIcon, ChatIcon, ShareIcon, MoreIcon, ArrowRightIcon, RollbackIcon} from 'tdesign-icons-vue-next';
-import {MessagePlugin} from 'tdesign-vue-next';
+import { ThumbUpIcon, ChatIcon, ShareIcon, MoreIcon, ArrowRightIcon, RollbackIcon } from 'tdesign-icons-vue-next';
+import { MessagePlugin } from 'tdesign-vue-next';
 import axios from "axios";
-import {computed, defineComponent, getCurrentInstance, inject, ref, watch} from "vue";
+import { computed, defineComponent, getCurrentInstance, inject, ref, watch } from "vue";
 import router from "@/routers/index.js";
 import heart from "tdesign-icons-vue-next/lib/components/heart.js";
 
@@ -98,26 +98,42 @@ axios.post(`/orderRecord/getMyOrderRecord`, {
     token: sessionStorage.getItem('token')
   }
 })
-    .then((response) => {
-      // alert(response)
-      events.value = response.data.data.map(item => item.event);
-      records.value = response.data.data;
+  .then((response) => {
+    // alert(response)
+    events.value = response.data.data.map(item => item.event);
+    records.value = response.data.data;
 
-      // alert(JSON.stringify(response.data.data))
-      // for (let i = 0; i < events.value.length; i++) {//获取每个活动的海报
-      //   let id = events.value[i]['id'];
-      //   // alert(id)
-      // }
-    })
-    .catch((error) => {
-      if (error.response) {
-        // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-        MessagePlugin.warning(error.response.data.msg);
-      } else {
-        // 一些错误是在设置请求的时候触发
-        MessagePlugin.warning(error.message);
-      }
-    });
+    // alert(JSON.stringify(response.data.data))
+    // for (let i = 0; i < events.value.length; i++) {//获取每个活动的海报
+    //   let id = events.value[i]['id'];
+    //   // alert(id)
+    // }
+  })
+  .catch((error) => { });
+  
+const unpaidEvent = ref([])
+const unpaidRecords = ref([]);
+axios.post(`/orderRecord/getUnpaidOrderRecord`, {
+  "mode": 3,
+}, {
+  params: {},
+  headers: {
+    token: sessionStorage.getItem('token')
+  }
+})
+  .then((response) => {
+    // alert(response)
+    unpaidEvent.value = response.data.data.map(item => item.event);
+    unpaidRecords.value = response.data.data;
+
+    // alert(JSON.stringify(response.data.data))
+    // for (let i = 0; i < events.value.length; i++) {//获取每个活动的海报
+    //   let id = events.value[i]['id'];
+    //   // alert(id)
+    // }
+  })
+  .catch((error) => { });
+
 
 const clickHandler = (data) => {
   MessagePlugin.success(`选中【${data.content}】 `);
@@ -171,9 +187,13 @@ const typeValue = ref([]);  // Initialize with a default value
 }
 
 .t-list-item-meta-description {
-  max-width: 700px; /* 设置description的最大宽度 */
-  overflow: auto; /* 超出部分隐藏 */
-  text-overflow: ellipsis; /* 文本溢出显示省略号 */
-  word-wrap: initial; /* 强制换行 */
+  max-width: 700px;
+  /* 设置description的最大宽度 */
+  overflow: auto;
+  /* 超出部分隐藏 */
+  text-overflow: ellipsis;
+  /* 文本溢出显示省略号 */
+  word-wrap: initial;
+  /* 强制换行 */
 }
 </style>

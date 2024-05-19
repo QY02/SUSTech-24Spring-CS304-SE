@@ -36,7 +36,7 @@ import MyOrderRecords from "@/components/home/MyOrderRecords.vue";
 import MyFavoritesPage from "@/components/home/MyFavoritesPage.vue";
 import UserPublishedPage from "@/components/home/UserPublishedPage.vue";
 import {computed, ref} from "vue";
-
+sessionStorage.setItem('currentStep', 0)
 const TABS = [
   {
     title: "历史记录",

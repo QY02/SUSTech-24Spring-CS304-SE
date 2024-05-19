@@ -77,6 +77,28 @@ public class OrderRecordController {
         return Result.success(response, orderRecordService.getMyOrderRecord(userId, eventId, mode));
     }
 
+    @PostMapping("/getUnpaidOrderRecord")
+    @Operation(description = """
+            ### 参数 ###
+            eventId: 根据eventId查询预订记录, 可不填
+            
+            mode = 0: 只返回eventSessionId
+            
+            mode = 1: 返回orderRecord的所有数据
+            
+            mode = 2: 返回orderRecord和eventSession的所有数据
+            
+            mode = 3: 返回orderRecord, eventSession和event的所有数据
+            """)
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, content = @Content(examples = @ExampleObject("{\"eventId\": 1, \"mode\": 0}")))
+    public Result getUnpaidOrderRecord(HttpServletResponse response, HttpServletRequest request, @RequestBody JSONObject requestBody) {
+        String userId = (String) request.getAttribute("loginUserId");
+        Integer eventId = requestBody.getInteger("eventId");
+        Integer mode = requestBody.getInteger("mode");
+        return Result.success(response, orderRecordService.getUnpaidOrderRecord(userId, eventId, mode));
+    }
+
+
     @PostMapping("/getPayResultById")
     public Result getResult(HttpServletResponse response, HttpServletRequest request, @RequestBody JSONObject requestBody){
         Integer orderId =  (int) request.getAttribute("id");

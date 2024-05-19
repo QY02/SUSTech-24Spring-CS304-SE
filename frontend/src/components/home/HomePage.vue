@@ -95,7 +95,7 @@ import {MessagePlugin} from 'tdesign-vue-next';
 import HomeHot from "@/components/home/HomeHot.vue";
 import HomeNew from "@/components/home/HomeNew.vue";
 import HomeRecommend from "@/components/home/HomeRecommend.vue";
-
+sessionStorage.setItem('currentStep', 0)
 const title = '标题';
 
 

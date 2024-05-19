@@ -16,7 +16,7 @@ import router from '@/routers';
 import {CheckCircleIcon} from 'tdesign-icons-vue-next';
 
 const pushRouter = (value) => {
-  sessionStorage.setItem('currentStep','0')
+  sessionStorage.setItem('currentStep',0)
   switch (value) {
     case 'HomePage':
       router.push('/HomePage');

@@ -16,6 +16,7 @@ import org.cs304.backend.service.IEventService;
 import org.cs304.backend.service.IEventSessionService;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -170,6 +171,14 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
         OrderRecord order = orderRecordMapper.selectOne(new QueryWrapper<OrderRecord>().eq("user_id", userId).eq("event_id", orderRecord.getEventId()).eq("event_session_id", orderRecord.getEventSessionId())
                 .in("status",statuses));
         if(order != null){
+            LocalDateTime submitDateTime = order.getSubmitTime();
+            LocalDateTime currentDateTime = LocalDateTime.now();
+            Duration duration = Duration.between(submitDateTime, currentDateTime);
+            if (duration.toMinutes() >= 10) {
+                order.setStatus(-1);//expired
+                orderRecordMapper.updateById(order);
+                System.out.println("update successful");
+            }
             int status = order.getStatus();
             if (status == SUBMITTED){
                 throw new ServiceException("400", "您已成功报名。");
@@ -192,6 +201,8 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
         orderRecord.setPaymentTime(null);
         orderRecordMapper.insert(orderRecord);
     }
+
+
 
     @Override
     public JSONArray getAllEvents() {//开始时间从大到小排序返回
