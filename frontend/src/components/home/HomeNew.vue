@@ -106,7 +106,7 @@ const apiBaseUrl = globalProperties.$apiBaseUrl;
 // const fileUrl = fileServerAxios;
 const fileUrl = 'http://localhost:8084';
 const visible = ref(false);
-const loading = ref(true);
+const loading = ref(false);
 // alert(apiBaseUrl)
 const top = '50px';
 axios.defaults.baseURL = apiBaseUrl;
