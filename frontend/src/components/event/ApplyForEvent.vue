@@ -1,7 +1,7 @@
 <template>
   <t-space direction="vertical" size="large" style="width: 100%">
     <div style="margin: 30px 40px;">
-      <h2>申请新活动</h2>
+      <h1>申请新活动</h1>
       <t-form ref="form" :data="formData" reset-type="initial" @reset="onReset" @submit="onSubmit" :rules="FORM_RULES">
         <div>
           <t-form-item label="标题" name="name">
@@ -26,21 +26,21 @@
           <t-form-item label="海报" name="poster">
             <t-upload
                 ref="uploadRef"
-                accept="image/*"
                 v-model="formData.poster"
-                :action="upload.actionUrl"
-                :data="upload.data"
-                :abridge-name="[10, 8]"
-                :auto-upload="false"
-                :size-limit="{ size: 10, unit: 'MB' }"
-                tips="请选择单张图片文件上传,文件最大为10MB"
+                theme="image"
+                accept="image/*"
                 @fail="handleFail"
                 @success="handleSuccess"
-                theme="image"
-                :format-response="formatResponse"
-                class="upload_image"
-                :uploadButton="null"
-            />
+                :auto-upload="false"
+                :show-image-file-name="true"
+                :max="9"
+                :abridge-name="[6, 6]"
+                :size-limit="{ size: 10, unit: 'MB' }"
+                tips="请选择单张图片文件上传,文件最大为10MB"
+                :upload-button="null"
+                :cancel-upload-button="null"
+            >
+            </t-upload>
           </t-form-item>
           <t-form-item label="是否可见" name="visible_event">
             <t-switch v-model="formData.visible" :label="['是', '否']"></t-switch>
@@ -67,16 +67,19 @@
   </t-space>
 </template>
 <script setup>
-import {ref, reactive} from 'vue';
+import {ref} from 'vue';
 import {MessagePlugin} from 'tdesign-vue-next';
 import axios from "axios";
 import EventSession from "@/components/event/EventSession.vue";
 import router from "@/routers/index.js";
 import {EVENT_TYPE_value_1} from "@/constants/index.js";
+import {fileServerAxios} from "@/main.js";
 
+// #### 数据 START ##########################################
 
 const token = sessionStorage.getItem('token')
 const uid = sessionStorage.getItem('uid')
+
 const FORM_RULES = {
   name: [{required: true, message: '标题必填'}],
   content: [{required: true, message: '简介必填'}],
@@ -85,6 +88,9 @@ const FORM_RULES = {
 };
 
 const session = []
+let loading = ref(false);
+const uploadRef = ref();
+const fileUrl = ref('');
 
 const formData = ref({
   name: '',
@@ -97,17 +103,10 @@ const formData = ref({
 });
 
 
-const uploadRef = ref();
-const upload = reactive({
-  // actionUrl: 'http://47.107.113.54:25572/file/upload',
-  actionUrl: 'http://localhost:8084/file/upload',
-  data: {
-    意见反馈id: "",
-  },//data里面是上传图片时，需要带的参数
-});
-const uploadFiles = () => {
-  uploadRef.value.uploadFiles();
-};
+// #### 数据 END ##########################################
+
+// #### 表单点击操作 START ##########################################
+
 const handleFail = ({file}) => {
   MessagePlugin.error(`文件 ${file.name} 上传失败`);
 };
@@ -115,84 +114,62 @@ const handleSuccess = (params) => {
   MessagePlugin.success("提交成功");//这个函数是在uploadFiles 成功调用之后才会调用
 };
 
-
-// res.url 图片地址；res.uploadTime 文件上传时间；res.error 上传失败的原因
-function formatResponse(res) {
-  // 响应结果添加上传时间字段，用于 UI 显示
-  res.uploadTime = getCurrentDate();
-  return res;
-}
-
-function getCurrentDate(needTime = false) {
-  const d = new Date();
-  let month = d.getMonth() + 1;
-  month = month < 10 ? Number(`0${month}`) : month;
-  const date = `${d.getFullYear()}-${month}-${d.getDate()}`;
-  const time = `${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}`;
-  if (needTime) return [date, time].join(' ');
-  return date;
-}
-
 const eventSessionData = ref(session)
+
 const onReset = () => {
   MessagePlugin.success('重置成功');
 };
-const postPoster = () => {
-  let re = false
-  axios.post(`/attachment/uploadStart`, {
-        "fileDir": uid
+const sendEvent = async () => {
+  await axios.post(`/event/add`, {
+        "event": formData.value,
+        "sessions": eventSessionData.value
       }, {
         headers: {
           token: token
         }
       }
   ).then(response => {
-        // uploadFiles()
-        alert(JSON.stringify(response))
         console.log(response)
-        re = true
+        MessagePlugin.success('提交成功');
+        fileUrl.value = response.data.data.fileToken;
       }
   ).catch();
-  return re
-}
-
-const onSubmit = ({validateResult, firstError}) => {
-  alert(JSON.stringify(formData.value))
+};
+const onSubmit = async ({validateResult, firstError}) => {
 
   if (validateResult === true) {
     if (eventSessionData.value.length > 0) {
-      if (postPoster()) {
-        // console.log(formData)
-        axios.post(`/event/add`, {
-              "event": formData.value,
-              "sessions": eventSessionData.value
-            }, {
-              headers: {
-                token: token
-              }
-            }
-        ).then(
-            response => {
-              console.log(response)
-              MessagePlugin.success('提交成功');
-              router.push("/HomePage");
-            }
-        ).catch();
-      } else {
-        console.log('上传海报失败');
-        MessagePlugin.warning('上传海报失败');
-      }
-
+      await sendEvent();
+      const formDataUpload = new FormData();
+      formData.value.poster.forEach((file) => {
+        formDataUpload.append('file', file.raw)
+      })
+      await fileServerAxios.post(`/file/uploadBatch`, formDataUpload,
+          {
+            headers: {
+              'token': fileUrl.value,
+              'Content-Type': 'multipart/form-data'
+            },
+          }).then(response => {
+            console.log(JSON.stringify(response));
+          }).catch(reason => {
+            console.log(JSON.stringify(reason));
+          });
+      loading.value = false;
+      await MessagePlugin.success('提交成功');
+      await router.push("/HomePage");
     } else {
       console.log('至少添加一个场次');
-      MessagePlugin.warning('至少添加一个场次');
+      await MessagePlugin.warning('至少添加一个场次');
     }
 
   } else {
     console.log('Errors: ', validateResult);
-    MessagePlugin.warning(firstError);
+    await MessagePlugin.warning(firstError);
   }
 };
+// #### 表单点击操作 END ##########################################
+
 </script>
 <style scoped>
 

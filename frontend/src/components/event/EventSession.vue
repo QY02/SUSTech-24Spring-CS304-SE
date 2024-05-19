@@ -34,7 +34,7 @@
       v-model:visible="visibleBody"
       header="请填写场次信息"
       placement="center"
-      width="45%"
+      :width="DIAG_WIDTH"
       :cancel-btn=null
       :confirm-btn=null
   >
@@ -106,7 +106,7 @@
       v-model:visible="visibleBodyModify"
       header="编辑该场次信息"
       placement="center"
-      width="45%"
+      :width="DIAG_WIDTH"
       :cancel-btn=null
       :confirm-btn=null
   >
@@ -191,17 +191,18 @@ import {AMap} from "@/main";
 import {ADDITIONAL_INFO_MAP} from "@/constants/index.js";
 
 // #### 数据 START ############
+const DIAG_WIDTH="600px"
 const INITIAL_DATA = {
-  key: '',
+  key: 0,
   registration_required: false,
-  registration_time_range: '',
-  event_time_range: '',
-  min_cnt: '',
-  max_cnt: '',
+  registration_time_range: [],
+  event_time_range: [],
+  min_cnt: 10,
+  max_cnt: 200,
   seat_map_id: '',
   venue: '',
-  location: '',
-  additional_information_required: '',
+  location: null,
+  additional_information_required: [],
   visible: false,
 }
 const newData = ref({...INITIAL_DATA});
@@ -384,7 +385,7 @@ const pagination = computed(() => ({
 // ##### Form START #############
 const count_range_of_peopleValidator = (val) => {
   // 将输入的字符串转化为数字
-  const [first, second] = val.map(Number);
+  const [first, second] = [Data.value.min_cnt,Data.value.max_cnt]
 
   if (isNaN(first) || first <= 0) {
     return {result: false, message: '最小值应该为正数', type: 'error'};
