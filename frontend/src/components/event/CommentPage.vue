@@ -5,7 +5,7 @@
             <div class="line"></div>
         </div>
         <div style="margin-top: 30px; display: flex; justify-content: flex-end; margin-right:30px ;">
-            <t-button @click="visibleComment = true">评论</t-button>
+            <t-button @click="setVisible">评论</t-button>
         </div>
     </t-space>
     <div>
@@ -26,17 +26,18 @@
                                 {{ item.content }}
                             </p>
                         </div>
-                        <t-space>
+                        <t-space style="display: flex; width: 100%;">
                             <div class="author">
                                 — {{ item.publisherId }}
-                            </div>
-                            <div v-if="userId == item.publisherId">
+                                <div v-if="userId == item.publisherId" style="margin-top: 30px; display: flex; justify-content: flex-end; margin-right:30px ;">
+    
                                 <t-button theme="primary" @click="visibleDelete = true; deleteEventId = item.id"
                                     shape="square" variant="text">
                                     <template #icon>
                                         <DeleteIcon />
                                     </template>
                                 </t-button>
+                            </div>
                             </div>
                         </t-space>
                     </div>
@@ -65,15 +66,16 @@
                 </t-form-item>
                 <t-form-item>
                     <t-space size="medium">
-                        <t-button theme="primary" type="submit">提交</t-button>
-                        <t-button theme="default" variant="base" type="reset">重置</t-button>
-                        <t-button theme="default" variant="base" @click="visibleComment = false">取消</t-button>
+                        <t-button theme="primary" type="submit" :loading="loading">提交</t-button>
+                        <t-button theme="default" variant="base" type="reset" :disabled="loading">重置</t-button>
+                        <t-button theme="default" variant="base" @click="visibleComment = false"
+                            :disabled="loading">取消</t-button>
+                        <!-- <t-button theme="default" variant="base" @click="handleClear">清空校验结果</t-button> -->
                     </t-space>
                 </t-form-item>
             </t-form>
         </template>
     </t-dialog>
-
 
     <t-dialog v-model:visible="visibleDelete" header="确认删除" width="40%" :on-close="close" :on-confirm="deleteComment">
     </t-dialog>
@@ -82,9 +84,12 @@
 
 <script setup>
 import { ref, reactive } from 'vue';
+import { DeleteIcon } from 'tdesign-icons-vue-next';
 import { MessagePlugin } from 'tdesign-vue-next';
 import axios from "axios";
 
+const form = ref(null);
+const userId = ref(sessionStorage.getItem('uid'))
 const commentsData = ref([]);
 const eventId = sessionStorage.getItem('eventId')
 const token = sessionStorage.getItem('token')
@@ -111,8 +116,6 @@ const onSubmit = ({ validateResult, firstError }) => {
     if (validateResult === true) {
         loading.value = true;
         addComment();
-        loading.value = false;
-        visibleComment.value = false;
     } else {
         console.log(commentForm.score)
         console.log('Validate Errors: ', firstError, validateResult);
@@ -120,6 +123,11 @@ const onSubmit = ({ validateResult, firstError }) => {
     }
 };
 
+const setVisible = async () => {
+    await handleClear();
+    console.log('open')
+    visibleComment.value = true;
+};
 
 const addComment = () => {
     axios.post(`/comment/add`, {
@@ -135,16 +143,23 @@ const addComment = () => {
             token: token
         }
     }).then((response) => {
+        loading.value = false;
+        visibleComment.value = false;
         commentForm.score = '';
         commentForm.title = ''
         commentForm.content = ''
+        handleClear();
         MessagePlugin.success('提交成功');
     }).catch(() => { })
 }
 
+const handleClear = () => {
+    form.value.clearValidate();
+};
+
 const deleteComment = () => {
     deleteLoading.value = true;
-    axios.get(`/comment/delete/${deleteEventId}`, {
+    axios.get(`/comment/delete/${deleteEventId.value}`, {
         headers: {
             token: token
         }
