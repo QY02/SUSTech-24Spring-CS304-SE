@@ -32,7 +32,7 @@
 
   <t-dialog
       v-model:visible="visibleBody"
-      :header="dialogHeader"
+      header="请填写场次信息"
       placement="center"
       :width="DIAG_WIDTH"
       :cancel-btn=null
@@ -43,52 +43,52 @@
         <t-form
             ref="form"
             id="form"
-            :data="Data"
+            :data="newData"
             reset-type="initial"
             @reset="onReset"
-            @submit="onSubmit"
+            @submit="onAdd"
             :rules="FORM_RULES"
             label-width="200px"
             label-align="right"
         >
           <t-form-item label="是否需要报名" name="registration_required">
-            <t-switch v-model="Data.registration_required" :label="['是', '否']"></t-switch>
+            <t-switch v-model="newData.registration_required" :label="['是', '否']"></t-switch>
           </t-form-item>
           <t-form-item label="报名开始时间-报名结束时间" name="registration_time_range">
             <t-date-range-picker enable-time-picker=true allow-input=true clearable=true
                                  :disable-date="{ before: dayjs().subtract(1, 'day').format() }"
-                                 v-model="Data.registration_time_range"
-                                 :disabled="!Data.registration_required"
+                                 v-model="newData.registration_time_range"
+                                 :disabled="!newData.registration_required"
                                  :presets="presets"
             />
           </t-form-item>
           <t-form-item label="开始时间-结束时间" name="event_time_range">
             <t-date-range-picker enable-time-picker=true allow-input=true clearable=true
                                  :disable-date="{ before: dayjs().subtract(1, 'day').format() }"
-                                 v-model="Data.event_time_range"
+                                 v-model="newData.event_time_range"
                                  :presets="presets"
             />
           </t-form-item>
 
           <t-form-item label="人数" name="count_range_of_people">
-            <t-range-input v-model="Data.count_range_of_people" :placeholder="['最小值','最大值']"/>
+            <t-range-input v-model="newData.count_range_of_people" :placeholder="['最小值','最大值']"/>
           </t-form-item>
           <t-form-item label="座位图" name="seat_map_id">
-            <t-cascader v-model="Data.seat_map_id" :options="seat_map_options" clearable/>
+            <t-cascader v-model="newData.seat_map_id" :options="seat_map_options" clearable/>
           </t-form-item>
           <t-form-item label="地址" name="venue">
-            <t-input v-model="Data.venue">地址</t-input>
+            <t-input v-model="newData.venue">地址</t-input>
           </t-form-item>
           <t-form-item label="地图" name="location">
-            <t-button @click="()=>{chooseLocationDialogVisible = true;Data=Data}" variant="outline">
+            <t-button @click="()=>{chooseLocationDialogVisible = true;Data=newData}" variant="outline">
               <template #icon>
                 <MapInformation2Icon/>
               </template>
-              {{ Data.location === null ? "选择位置" : `${Data.location[0]}, ${Data.location[1]}` }}
+              {{ newData.location === null ? "选择位置" : `${newData.location[0]}, ${newData.location[1]}` }}
             </t-button>
           </t-form-item>
           <t-form-item label="是否可见" name="visible">
-            <t-switch v-model="Data.visible" :label="['是', '否']"></t-switch>
+            <t-switch v-model="newData.visible" :label="['是', '否']"></t-switch>
           </t-form-item>
 
           <t-form-item class="confirm-reset-btns">
@@ -102,6 +102,73 @@
     </template>
   </t-dialog>
 
+  <t-dialog
+      v-model:visible="visibleBodyModify"
+      header="编辑该场次信息"
+      placement="center"
+      :width="DIAG_WIDTH"
+      :cancel-btn=null
+      :confirm-btn=null
+  >
+    <template #body>
+      <t-space direction="vertical">
+        <t-form
+            :data="modifyData"
+            :rules="FORM_RULES"
+            label-width="200px"
+            label-align="right"
+            @submit="onModify(modifyData.key)"
+        >
+          <t-form-item label="是否需要报名" name="registration_required">
+            <t-switch v-model="modifyData.registration_required" :label="['是', '否']"></t-switch>
+          </t-form-item>
+          <t-form-item label="报名开始时间-报名结束时间" name="registration_time_range">
+            <t-date-range-picker enable-time-picker=true allow-input=true clearable=true
+                                 :disable-date="{ before: dayjs().subtract(1, 'day').format() }"
+                                 v-model="modifyData.registration_time_range"
+                                 :disabled="!modifyData.registration_required"
+                                 :presets="presets"
+            />
+          </t-form-item>
+          <t-form-item label="开始时间-结束时间" name="event_time_range">
+            <t-date-range-picker enable-time-picker=true allow-input=true clearable=true
+                                 :disable-date="{ before: dayjs().subtract(1, 'day').format() }"
+                                 v-model="modifyData.event_time_range"
+                                 :presets="presets"
+            />
+          </t-form-item>
+
+          <t-form-item label="人数" name="count_range_of_people">
+            <t-range-input v-model="modifyData.count_range_of_people" :placeholder="['最小值','最大值']"/>
+          </t-form-item>
+          <t-form-item label="座位图" name="seat_map_id">
+            <t-cascader v-model="modifyData.seat_map_id" :options="seat_map_options" clearable/>
+          </t-form-item>
+          <t-form-item label="地址" name="venue">
+            <t-input v-model="modifyData.venue">地址</t-input>
+          </t-form-item>
+          <t-form-item label="地图" name="location">
+            <t-button @click="()=>{chooseLocationDialogVisible = true;Data=modifyData}" theme="default"
+                      variant="outline">
+              <template #icon>
+                <MapInformation2Icon/>
+              </template>
+              {{ modifyData.location === null ? "选择位置" : `${modifyData.location[0]}, ${modifyData.location[1]}` }}
+            </t-button>
+          </t-form-item>
+          <t-form-item label="是否可见" name="visible">
+            <t-switch v-model="modifyData.visible" :label="['是', '否']"></t-switch>
+          </t-form-item>
+          <t-form-item class="confirm-reset-btns">
+            <t-space size="small">
+              <t-button theme="success" type="submit">提交</t-button>
+              <t-button theme="default" variant="base" type="reset">重置</t-button>
+            </t-space>
+          </t-form-item>
+        </t-form>
+      </t-space>
+    </template>
+  </t-dialog>
   <t-dialog v-model:visible="chooseLocationDialogVisible" placement="center" width="50vw" header="选择位置"
             :onConfirm="handleChooseLocationConfirm" :onClose="handleChooseLocationCancel" @opened="showMap">
     <div id="mapContainer" class="choose-location-map-div">
@@ -124,7 +191,7 @@ import {AMap} from "@/main";
 import {ADDITIONAL_INFO_MAP} from "@/constants/index.js";
 
 // #### 数据 START ############
-const DIAG_WIDTH = "600px"
+const DIAG_WIDTH="600px"
 const INITIAL_DATA = {
   key: 0,
   registration_required: false,
@@ -141,7 +208,6 @@ const INITIAL_DATA = {
 const newData = ref({...INITIAL_DATA});
 const modifyData = ref({...INITIAL_DATA});
 const Data = ref({...INITIAL_DATA});
-let state = 0 //0 -> add ; 1 -> modify
 const props = defineProps({
   sessionData: Array
 })
@@ -319,7 +385,7 @@ const pagination = computed(() => ({
 // ##### Form START #############
 const count_range_of_peopleValidator = (val) => {
   // 将输入的字符串转化为数字
-  const [first, second] = [Data.value.min_cnt, Data.value.max_cnt]
+  const [first, second] = [Data.value.min_cnt,Data.value.max_cnt]
 
   if (isNaN(first) || first <= 0) {
     return {result: false, message: '最小值应该为正数', type: 'error'};
@@ -346,53 +412,51 @@ const FORM_RULES = ref({
   location: [{required: true, message: '地址必填'}],
   seat_map_id: [{required: true, message: '座位图必选'}],
 });
-const dialogHeader = computed(() => {
-  return state === 0 ? '请填写场次信息' : '编辑该场次信息';
-});
 // ##### Form END #############
 
 
 // #####  表单操作 START ###############
-const onOpenAddDiag = async () => {
-  Data.value = await newData.value
-  state = 0
-  visibleBody.value = true
+const onOpenDiag = (x) => {
+  if (x){
+
+  }else{
+    modifyData.value = data.value.find(k => k.key === id)
+    visibleBodyModify.value = true
+  }
+  visibleBodyModify
 }
-const onEdit = async (id) => {
-  modifyData.value = await data.value.find(k => k.key === id)
-  Data.value = await modifyData.value
-  state = 1
+const onEdit = (id) => {
+  modifyData.value = data.value.find(k => k.key === id)
   visibleBodyModify.value = true
 };
-const onSubmit = ({validateResult, firstError}) => {
-
+const onAdd = ({validateResult, firstError}) => {
   if (validateResult === true) {
-    if (state === 0) {
-      data.value = [...data.value, newData.value]
-      // alert(JSON.stringify(newData.value))
-      newData.value = {...INITIAL_DATA}
-      // alert(JSON.stringify(newData.value))
-      visibleBody.value = false;
-      MessagePlugin.success('提交成功');
-    } else {
-      const id = Data.value.key
-      // 找到要修改的数据在 data.value 中的索引
-      const index = data.value.findIndex((item) => item.key === id);
-      if (index !== -1) {
-        const updatedData = [...data.value];
-        updatedData[index] = modifyData.value;
-        data.value = updatedData;
-        visibleBodyModify.value = false
-        MessagePlugin.success('修改成功');
-      } else {
-        MessagePlugin.error('未找到要修改的行');
-      }
-    }
+    data.value = [...data.value, newData.value]
+    // alert(JSON.stringify(newData.value))
+    newData.value = {...INITIAL_DATA}
+    // alert(JSON.stringify(newData.value))
+    visibleBody.value = false;
+    MessagePlugin.success('提交成功');
   } else {
     console.log('Validate Errors: ', firstError, validateResult);
     MessagePlugin.warning(firstError);
   }
 }
+const onModify = (id) => {
+  // 找到要修改的数据在 data.value 中的索引
+  const index = data.value.findIndex((item) => item.key === id);
+
+  if (index !== -1) {
+    const updatedData = [...data.value];
+    updatedData[index] = modifyData.value;
+    data.value = updatedData;
+    visibleBodyModify.value = false
+    MessagePlugin.success('修改成功');
+  } else {
+    MessagePlugin.error('未找到要修改的行');
+  }
+};
+
 
 const onDelete = (id) => {
   const index = data.value.findIndex((item) => item.key === id);
@@ -413,15 +477,9 @@ function onValidate(params) {
 }
 
 
-const onReset = async () => {
-  if (state === 0) {
-    newData.value = {...INITIAL_DATA}
-  } else {
-    const key = await modifyData.value.key
-    modifyData.value = {...INITIAL_DATA}
-    modifyData.value.key = key
-  }
-  await MessagePlugin.success('重置成功');
+const onReset = () => {
+  newData.value.location = null;
+  MessagePlugin.success('重置成功');
 };
 // #####  表单操作 END ###############
 
