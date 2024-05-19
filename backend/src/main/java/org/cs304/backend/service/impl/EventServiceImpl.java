@@ -96,60 +96,58 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
 
     @Override
     public JSONObject createEventStart(JSONObject data) {
-//        JSONObject eventData = data.getJSONObject("event");
-//        JSONArray eventSessionData = data.getJSONArray("sessions");
-//
-//        Event event = new Event();
-//        event.setName(eventData.getString("name"));
-//        event.setContent(eventData.getString("content"));
-//        event.setType(eventData.getInteger("type"));
-//        event.setPublisherId(eventData.getString("publisher_id"));
-//        event.setPublishDate(LocalDateTime.now());
-//        event.setStatus(constant_EventStatus.AUDITING);
-//        event.setEventPolicy(eventData.getString("event_policy"));
-//        event.setVisible(eventData.getBoolean("visible"));
-//        JSONObject requestData = JSONObject.from(event);
-//        requestData.put("serviceClassName", this.getClass().getName());
-//        requestData.put("serviceMethodName", "createEventFinish");
-//        requestData.put("eventSessionData", eventSessionData);
-//        List<String> fileList = data.getJSONArray("poster").toJavaList(String.class);
-//        List<String> fileDirList = new ArrayList<>();
-//        for (String ignored : fileList) {
-//            fileDirList.add("event/" + "uuid");
-//        }
-//
-//        // 打印 Event 对象的属性值
-////        System.out.println("Event Object: " + event);
-//
-//
-//
-//        return attachmentService.uploadBatchStart(ADMIN, fileDirList, fileList, requestData);
-        return null;
+        JSONObject eventData = data.getJSONObject("event");
+        JSONArray eventSessionData = data.getJSONArray("sessions");
+
+        Event event = new Event();
+        event.setName(eventData.getString("name"));
+        event.setContent(eventData.getString("content"));
+        event.setType(eventData.getInteger("type"));
+        event.setPublisherId(eventData.getString("publisher_id"));
+        event.setPublishDate(LocalDateTime.now());
+        event.setStatus(constant_EventStatus.AUDITING);
+        event.setEventPolicy(eventData.getString("event_policy"));
+        event.setVisible(eventData.getBoolean("visible"));
+        JSONObject requestData = JSONObject.from(event);
+        requestData.put("serviceClassName", this.getClass().getName());
+        requestData.put("serviceMethodName", "createEventFinish");
+        requestData.put("eventSessionData", eventSessionData);
+        List<String> fileList = data.getJSONArray("poster").toJavaList(String.class);
+        List<String> fileDirList = new ArrayList<>();
+        for (String ignored : fileList) {
+            fileDirList.add("event/" + "uuid");
+        }
+
+        // 打印 Event 对象的属性值
+//        System.out.println("Event Object: " + event);
+
+
+
+        return attachmentService.uploadBatchStart(ADMIN, fileDirList, fileList, requestData);
     }
 
     @Override
     public JSONObject createEventFinish(JSONObject requestData) {
-//        List<Attachment> attachmentList = requestData.getList("fileInfoList", Attachment.class);
-//
-//        Event event = requestData.toJavaObject(Event.class);
-//        eventMapper.insert(event);
-//        Integer eventId = event.getId();
-//
-//        JSONArray eventSessionData = requestData.getJSONArray("eventSessionData");
-//        insertSessions(event.getId(), eventSessionData);
-//
-//        attachmentList.forEach(attachment -> {
-//            EntityAttachmentRelation entityAttachmentRelation = new EntityAttachmentRelation();
-//            entityAttachmentRelation.setEntityType(EVENT);
-//            entityAttachmentRelation.setEntityId(eventId);
-//            entityAttachmentRelation.setAttachmentType(constant_AttachmentType.IMAGE);
-//            entityAttachmentRelation.setAttachmentId(attachment.getId());
-//            entityAttachmentRelationMapper.insert(entityAttachmentRelation);
-//        });
-//        JSONObject jsonObject = new JSONObject();
-//        jsonObject.put("eventId", eventId);
-//        return jsonObject;
-        return null;
+        List<Attachment> attachmentList = requestData.getList("fileInfoList", Attachment.class);
+
+        Event event = requestData.toJavaObject(Event.class);
+        eventMapper.insert(event);
+        Integer eventId = event.getId();
+
+        JSONArray eventSessionData = requestData.getJSONArray("eventSessionData");
+        insertSessions(event.getId(), eventSessionData);
+
+        attachmentList.forEach(attachment -> {
+            EntityAttachmentRelation entityAttachmentRelation = new EntityAttachmentRelation();
+            entityAttachmentRelation.setEntityType(EVENT);
+            entityAttachmentRelation.setEntityId(eventId);
+            entityAttachmentRelation.setAttachmentType(constant_AttachmentType.IMAGE);
+            entityAttachmentRelation.setAttachmentId(attachment.getId());
+            entityAttachmentRelationMapper.insert(entityAttachmentRelation);
+        });
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("eventId", eventId);
+        return jsonObject;
     }
 
 
