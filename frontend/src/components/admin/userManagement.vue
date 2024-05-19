@@ -5,14 +5,12 @@
 
     <!--    表头 ---------------------------------------------------------------------------------->
     <div style="display: flex;justify-content: space-between;margin: 10px;align-items: center">
-      <va-button
-          @click="showAdd"
-          icon="add"
-          style="width: fit-content;height: fit-content"
-      >
-        添加用户
-      </va-button>
-
+      <t-button @click="showAdd">
+        <template #icon>
+          <add-icon/>
+        </template>
+        添加新用户
+      </t-button>
       <va-input
           v-model.number="perPage"
           type="number"
@@ -33,13 +31,6 @@
       />
 
     </div>
-    <va-file-upload
-        v-model="basic"
-        dropzone
-        drop-zone-text="上传文件导入用户(csv/xlsx):"
-        file-types="csv/xlsx"
-        label="上传文件:"
-    />
 
     <!--    表格  ------------------------------------------------------------------>
     <va-data-table
@@ -160,38 +151,6 @@
       </template>
     </el-dialog>
 
-
-    <el-dialog
-        class="modal-crud"
-        :model-value="!!showModelChangeRole"
-        title="改变角色"
-        size="small"
-
-        hide-default-actions
-        :before-close="resetChangeRole"
-        destroy-on-close
-    >
-      <div style="color: #7f828b;margin-bottom: 8px">* You can Only Change Visitors' role you select, once you confirm
-        you can't change the role!!!
-      </div>
-      <template #footer>
-      <span class="dialog-footer">
-
-        <el-button @click="resetChangeRole">Cancel</el-button>
-        <el-button type="primary" @click="clickToChangRole">
-          Confirm
-        </el-button>
-      </span>
-      </template>
-      <va-select
-          v-model="selectState"
-          label="Change Role to:"
-          :options="optionsState"
-      />
-
-    </el-dialog>
-
-
     <el-dialog
         class="modal-crud"
         :model-value="!!isAdding"
@@ -267,28 +226,11 @@
   </div>
 
   <!--最下面的alert ---------------------------------------------------------------->
-  <va-alert
-      color="BackgroundElement"
-      icon="warning"
-      text-color="Secondary"
-      style="height: 80px;position: fixed;bottom: 0;width: 100%;display: flex;"
-  >
-    <va-button color="info" @click="addNewUsersByFile"
-               style="position: fixed;right: 345px;transform: translate(45%, -25%);">提交用户文件
-    </va-button>
 
-    <va-button color="info" @click="showChangeRole" :disabled="selectedList
-                    .filter(item => item.type === -1)
-                    .map(item => item.id).length===0"
-               style="position: fixed;right: 180px;transform: translate(45%, -25%);">
-      激活游客
-    </va-button>
+  <t-button theme="danger" @click="onButtonClickDelete" :disabled="selectedList.length===0"
+            style="position: fixed;right: 60px;transform: translate(45%, -25%);">删除所选用户
+  </t-button>
 
-    <va-button color="danger" @click="onButtonClickDelete" :disabled="selectedList.length===0"
-               style="position: fixed;right: 60px;transform: translate(45%, -25%);">删除
-    </va-button>
-
-  </va-alert>
 
 </template>
 
@@ -296,6 +238,7 @@
 import {ref, onMounted, computed, watch} from 'vue';
 import axios from "axios";
 import {useToast, useModal, useForm, useColors} from "vuestic-ui";
+import {AddIcon} from "tdesign-icons-vue-next";
 
 const token = sessionStorage.getItem('token')
 
@@ -333,25 +276,18 @@ const nowEditEmail = ref(null);
 const nowEditPhone = ref(null);
 const nowEditDep = ref(null);
 const isAdding = ref(null);
-const editedItemId = ref(null);
 const editedItem = ref(null);
 const createdItem = ref({...defaultItem});
 const selectedList = ref([]);
-const showModalAdd = ref(false);
 const showModalEdit = ref(false);
 const showModelChangeRole = ref(false);
 const filter = ref("");
 const filtered = ref("");
 const perPage = ref(10);
 const currentPage = ref(1);
-const basic = ref([]);
-const checkBox = ref([]);
 const optionsState = ref(["Student", "Teacher", "Admin"]);
-const optionsState_vis = ref(["Student", "Teacher", "Admin", "Visitor"]);
-// const selectedTab = ref('All');
 const selectState = ref('Student');
 const userId = ref(null);
-// const isRowBind = ref(true);
 
 const resetEditedItem = () => {//恢复初始值，设置弹窗不显示
   editedItem.value.type = nowEditType.value
@@ -371,59 +307,26 @@ const resetCreatedItem = () => {//恢复初始值，设置弹窗不显示
   createdItem.value = {...defaultItem};
   isAdding.value = null
 };
-const addNewUsersByFile = () => {
-  // alert(this.createdItem['title'])
-  //axios.defaults.baseURL = appConfig.$apiBaseUrl;
-
-  let fileNum = basic.value.length;
-  if (fileNum === 0) {
-    init({message: 'You haven\'t attach any files to import users!', color: "danger"})
-  } else {
-    const formData = new FormData();
-    for (let i = 0; i < fileNum; i++) {
-      formData.append('file', basic.value[i]);
-    }
-    //axios.defaults.baseURL = appConfig.$apiBaseUrl;
-    axios.post(`/user/import`,
-        formData,
-        {
-          headers: {
-            'token':
-            token,
-            'Content-Type': 'multipart/form-data'
-          },
-        }
-    ).then(() => {
-      location.reload();
+const deleteItemById = async (id) => {//单删
+  const result = await confirm({
+    title: "Are you sure to delete?",
+    okText: "Yes",
+    cancelText: "No",
+  });
+  if (result) {//暂时还不能用
+    // alert(items.value[id].id)
+    axios.post(`/user/delete/${items.value[id].id}`, {}, {
+      headers: {
+        token: token,
+      },
+    }).then(() => {
+      init({message: "Successfully deleted!!!", color: "success"});
+      location.reload()
     }).catch();
-    init("Add Score Successfully!")
-    // location.reload();
-
   }
 
 
 };
-const
-    deleteItemById = async (id) => {//单删
-      const result = await confirm({
-        title: "Are you sure to delete?",
-        okText: "Yes",
-        cancelText: "No",
-      });
-      if (result) {//暂时还不能用
-        // alert(items.value[id].id)
-        axios.post(`/user/delete/${items.value[id].id}`, {}, {
-          headers: {
-            token: token,
-          },
-        }).then(() => {
-          init({message: "Successfully deleted!!!", color: "success"});
-          location.reload()
-        }).catch();
-      }
-
-
-    };
 const getRowBind = (row) => {
   if (row.type !== "1") {
     return {
@@ -432,8 +335,6 @@ const getRowBind = (row) => {
   }
 };
 const addNewItem = () => {//add 确认弹窗点击确定后执行的操作
-
-
   // alert(JSON.stringify(createdItem.value))
   if (validateadd()) {
     if (createdItem.value.type === 'Student') {
@@ -526,47 +427,6 @@ const getAllUsers = () => {//拿到初始数据进行展示
       }).catch();
 };
 
-const clickToChangRole = async () => {//批量
-  if (selectedList.value.length === 0) {
-    init({message: 'Please add users to change role!', color: 'danger'})
-    resetChangeRole()
-  } else {
-    const result = await confirm({
-      message: "After submitting, the selected users will change their role.",
-      title: "Are you sure to submit?",
-      okText: "Yes",
-      cancelText: "No",
-    });
-    if (result) {
-      init({message: "Submitting...", color: "info"});
-      let newType = 2;
-      if (selectState.value === 'Teacher') {
-        newType = 1
-      } else if (selectState.value === 'Admin') {
-        newType = 0
-      } else {//student
-        newType = 2;
-      }
-      axios.put(
-          "/user/activate/batch", {
-            type: newType,
-            usersID: selectedList.value
-                .filter(item => item.type === -1)
-                .map(item => item.id),
-          },
-          {
-            headers: {
-              token: token,
-            },
-          }
-      ).then(() => {
-        init({message: "Successfully updated!!!", color: "success"});
-        location.reload()
-      }).catch();
-    }
-  }
-};
-
 const onButtonClickDelete = async () => {//批量删除所选items
   const result = await confirm({
     message: "After submitting, the selected items will be deleted.",
@@ -577,11 +437,8 @@ const onButtonClickDelete = async () => {//批量删除所选items
 
   if (result) {//暂时不能用
     init({message: "Submitting...", color: "success"});
-    // alert(selectedList.value
-    //     .filter(item => item.id !== userId.value)
-    //     .map(item => item.id))
-    axios.post(
-        "/user/delete/batch",
+
+    axios.post("/user/delete/batch",
         selectedList.value
             .filter(item => item.id !== userId.value)
             .map(item => item.id),
