@@ -227,8 +227,41 @@ watch(data, (newValue) => {
     console.error('Expected data to be an array, but received:', newValue);
   }
 });
-// #### 数据 END ############
-
+// 座位图
+const seat_map_options = ref([
+  {
+    label: '选项一',
+    value: '1',
+    children: [
+      {
+        label: '子选项一',
+        value: '1.1',
+      },
+      {
+        label: '子选项二',
+        value: '1.2',
+      },
+      {
+        label: '子选项三',
+        value: '1.3',
+      },
+    ],
+  },
+  {
+    label: '选项二',
+    value: '2',
+    children: [
+      {
+        label: '子选项一',
+        value: '2.1',
+      },
+      {
+        label: '子选项二',
+        value: '2.2',
+      },
+    ],
+  },
+])
 const presets = ref({
   最近7天: [dayjs().format(), dayjs().add(7, 'day').format()],
   最近3天: [dayjs().format(), dayjs().add(3, 'day').format()],
@@ -237,6 +270,9 @@ const presets = ref({
 
 const visibleBody = ref(false);
 const visibleBodyModify = ref(false);
+// #### 数据 END ############
+
+
 // ########表格 START ############
 const columns = computed(() => [
   {
@@ -377,41 +413,8 @@ const FORM_RULES = ref({
 });
 // ##### Form END #############
 
-const seat_map_options = ref([
-  {
-    label: '选项一',
-    value: '1',
-    children: [
-      {
-        label: '子选项一',
-        value: '1.1',
-      },
-      {
-        label: '子选项二',
-        value: '1.2',
-      },
-      {
-        label: '子选项三',
-        value: '1.3',
-      },
-    ],
-  },
-  {
-    label: '选项二',
-    value: '2',
-    children: [
-      {
-        label: '子选项一',
-        value: '2.1',
-      },
-      {
-        label: '子选项二',
-        value: '2.2',
-      },
-    ],
-  },
-])
 
+// #####  表单操作 START ###############
 const onEdit = (id) => {
   modifyData.value = data.value.find(k => k.key === id)
   visibleBodyModify.value = true
@@ -468,6 +471,7 @@ const onReset = () => {
   newData.value.location = null;
   MessagePlugin.success('重置成功');
 };
+// #####  表单操作 END ###############
 
 
 // #### AMap  START#####
