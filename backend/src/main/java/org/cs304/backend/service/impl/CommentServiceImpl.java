@@ -10,7 +10,6 @@ import org.cs304.backend.entity.*;
 import org.cs304.backend.mapper.*;
 import org.cs304.backend.service.IAttachmentService;
 import org.cs304.backend.service.ICommentService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -39,9 +38,9 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
 
     @Resource
     private EventMapper eventMapper;
-    @Autowired
+    @Resource
     private UserBlogInteractionMapper userBlogInteractionMapper;
-    @Autowired
+    @Resource
     private ReplyMapper replyMapper;
 
     @Override
