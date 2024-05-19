@@ -71,7 +71,22 @@
           </t-form-item>
 
           <t-form-item label="人数" name="count_range_of_people">
-            <t-range-input v-model="Data.count_range_of_people" :placeholder="['最小值','最大值']"/>
+            <t-input-number
+                v-model="Data.min_cnt"
+                theme="column"
+                align="center"
+                :min="1"
+                label="最小值"
+                style="width: 150px;margin-right: 10px"
+            ></t-input-number>
+            <t-input-number
+                v-model="Data.max_cnt"
+                theme="column"
+                align="center"
+                :min="1"
+                label="最大值"
+                style="width: 150px"
+            ></t-input-number>
           </t-form-item>
           <t-form-item label="座位图" name="seat_map_id">
             <t-cascader v-model="Data.seat_map_id" :options="seat_map_options" clearable/>
@@ -80,7 +95,7 @@
             <t-input v-model="Data.venue">地址</t-input>
           </t-form-item>
           <t-form-item label="地图" name="location">
-            <t-button @click="()=>{chooseLocationDialogVisible = true;Data=Data}" variant="outline">
+            <t-button @click="()=>{chooseLocationDialogVisible = true;}" variant="outline">
               <template #icon>
                 <MapInformation2Icon/>
               </template>
@@ -321,16 +336,24 @@ const count_range_of_peopleValidator = (val) => {
   // 将输入的字符串转化为数字
   const [first, second] = [Data.value.min_cnt, Data.value.max_cnt]
 
+  console.log("first:",first)
+  console.log("second:",second)
+  if (first === undefined || first.length <= 0){
+    return {result: false, message: '最小值必填', type: 'error'};
+  }
+  if (second === undefined || second.length <= 0){
+    return {result: false, message: '最大值必填', type: 'error'};
+  }
   if (isNaN(first) || first <= 0) {
-    return {result: false, message: '最小值应该为正数', type: 'error'};
+    return {result: false, message: '最小值应为正数', type: 'error'};
   }
   if (isNaN(second) || second <= 0) {
-    return {result: false, message: '最大值应该为正数', type: 'error'};
+    return {result: false, message: '最大值应为正数', type: 'error'};
   }
 
   // 检查第二个数字是否大于等于第一个数字
   if (second < first) {
-    return {result: false, message: '最大值必须大于等于最小值', type: 'error'};
+    return {result: false, message: '最大值不应小于最小值', type: 'error'};
   }
 
   return {result: true};
@@ -339,7 +362,7 @@ const FORM_RULES = ref({
   registration_time_range: [{required: computed(() => newData.value.registration_required), message: '报名时间必填'}],
   event_time_range: [{required: true, message: '活动时间必填'}],
   count_range_of_people: [
-    {required: true, message: '人数必填'},
+    // {required: true, message: '人数必填'},
     {validator: count_range_of_peopleValidator},
   ],
   venue: [{required: true, message: '地址必填'}],
