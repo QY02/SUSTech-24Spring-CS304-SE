@@ -1,45 +1,47 @@
 <template>
+
+<!--  Form 整体 ----------------------------------------------------------------------------->
   <div style="display: flex;flex-direction: column; margin-left: 10px">
+
+<!--    表头 ---------------------------------------------------------------------------------->
     <div style="display: flex;justify-content: space-between;margin: 10px;align-items: center">
       <va-button
           @click="showAdd"
           icon="add"
           style="width: fit-content;height: fit-content"
       >
-        Add User
+        添加用户
       </va-button>
 
       <va-input
           v-model.number="perPage"
           type="number"
           placeholder="Items..."
-          label="Items per page"
+          label="每页展示个数"
       />
 
       <va-input
           v-model.number="currentPage"
           type="number"
           placeholder="Page..."
-          label="Current page"
+          label="当前页面"
       />
       <va-input
           v-model="filter"
           class="sm:col-span-2 md:col-span-3"
-          placeholder="Filter..."
+          placeholder="搜索..."
       />
 
     </div>
     <va-file-upload
         v-model="basic"
         dropzone
-        drop-zone-text="Upload files to import users(csv/xlsx):"
+        drop-zone-text="上传文件导入用户(csv/xlsx):"
         file-types="csv/xlsx"
-        label="Upload files:"
+        label="上传文件:"
     />
-    <!--    <div style="color: #7f828b;margin-right:20px">-->
-    <!--      *type &nbsp; Student:2 &nbsp; Teacher:1 &nbsp; Admin:0-->
-    <!--    </div>-->
-    <!--    此处不用改动，只是需要改动js中对应的方法内容-->
+
+<!--    表格  ------------------------------------------------------------------>
     <va-data-table
         class="table-crud"
         :items="items"
@@ -53,26 +55,12 @@
         :filter="filter"
         @filtered="filtered = $event.items"
     >
-      <!--            <template #cell(try)>-->
-      <!--              <VaCheckbox-->
-      <!--                  class="checkcheck"-->
-      <!--                  v-model="checkBox"-->
-      <!--                  indeterminate-->
-      <!--              />-->
-      <!--            </template>-->
-
       <template #cell(type)="{ value }">
-        <div v-if="value==='0'||value==='Admin'||value==='admin'">
-          {{ 'admin' }}
+        <div v-if="value==='0'||value==='管理员'">
+          {{ '管理员' }}
         </div>
-        <div v-else-if="value==='1'||value==='Teacher'||value==='teacher'">
-          {{ 'teacher' }}
-        </div>
-        <div v-else-if="value==='-1'||value==='Visitor'||value==='visitor'">
-          {{ 'visitor' }}
-        </div>
-        <div v-else-if="value==='2'||value==='Student'||value==='student'">
-          {{ 'student' }}
+        <div v-else-if="value==='1'||value==='用户'">
+          {{ '用户' }}
         </div>
       </template>
       <template #cell(actions)="{ rowIndex }">
@@ -82,7 +70,7 @@
             @click="openModalToEditItemById(rowIndex)"
         />
         <va-button
-            v-if="items[rowIndex].id==userId"
+            v-if="items[rowIndex].id===userId"
             preset="plain"
             icon="delete"
             class="ml-3"
@@ -127,36 +115,30 @@
         <va-input
             v-model="editedItem['name']"
             class="my-6"
-            label="name"
+            label="姓名"
         />
-        <!--        <va-select-->
-        <!--            v-model="editedItem['type']"-->
-        <!--            label="type"-->
-        <!--            :options="optionsState"-->
-
-        <!--        />-->
         <va-input
             v-model="editedItem['password']"
             required-mark
             :rules="[(v) => /^[a-zA-Z0-9/]{8,}$/.test(v) || v === '********' || 'Only numbers, characters and slash are allowed, minimum length is 8']"
             class="my-6"
-            label="password"
+            label="密码"
         />
         <va-input
             v-model="editedItem['email']"
             class="my-6"
-            label="email"
+            label="邮箱"
         />
         <va-input
             v-model="editedItem['phoneNumber']"
             :rules="[(v) => v===null||/^(\d{11})?$/.test(v) || 'Phone number must be 11 digits']"
             class="my-6"
-            label="phoneNumber"
+            label="电话"
         />
         <va-input
             v-model="editedItem['department']"
             class="my-6"
-            label="department"
+            label="学院"
         />
       </va-form>
 
@@ -225,30 +207,30 @@
             required-mark
             :rules="[(v) => /^[0-9]{8}$/.test(v) || 'ID must be an .,lp-digit number']"
             class="my-6"
-            label="id"
+            label="ID"
         />
         <va-input
             v-model="createdItem['name']"
             class="my-6"
-            label="name"
+            label="姓名"
         />
         <va-input
             v-model="createdItem['password']"
             required-mark
             :rules="[(v) => /^[a-zA-Z0-9/]{8,}$/.test(v)  || 'Only numbers, characters and slash are allowed, minimum length is 8']"
             class="my-6"
-            label="password"
+            label="密码"
         />
         <va-input
             v-model="createdItem['email']"
             class="my-6"
-            label="email"
+            label="邮箱"
         />
         <va-input
             v-model="createdItem['phoneNumber']"
             :rules="[(v) => v===null||/^(\d{11})?$/.test(v) || 'Phone number must be 11 digits']"
             class="my-6"
-            label="phoneNumber"
+            label="电话"
         />
         <va-select
             v-model="createdItem['type']"
@@ -259,7 +241,7 @@
         <va-input
             v-model="createdItem['department']"
             class="my-6"
-            label="department"
+            label="学院"
         />
       </va-form>
       <template #footer>
@@ -268,22 +250,13 @@
             style="margin-right: 10px"
             color="BackgroundPrimary"
         >
-          Cancel
+          取消
         </va-button>
-        <!--        <va-button v-if="!validate2"-->
-        <!--                   disabled>-->
-        <!--          Ok-->
-        <!--        </va-button>-->
-        <!--        <va-button v-else-->
-        <!--                   @click="validate&&addNewItem()"-->
-        <!--        >-->
-        <!--          Ok-->
-        <!--        </va-button>-->
         <va-button
             :disabled="!isValidadd"
             @click="addNewItem"
         >
-          Ok
+          确认
         </va-button>
       </template>
 
@@ -292,7 +265,7 @@
     <div style="height: 100px;"></div>
   </div>
 
-
+<!--最下面的alert ---------------------------------------------------------------->
   <va-alert
       color="BackgroundElement"
       icon="warning"
@@ -418,19 +391,9 @@ const addNewUsersByFile = () => {
             'Content-Type': 'multipart/form-data'
           },
         }
-    )
-        .then(() => {
+    ).then(() => {
           location.reload();
-        })
-        .catch(error => {
-          if (error.response) {
-            // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-            init({message: error.response.data.msg, color: "danger"})
-          } else {
-            // 一些错误是在设置请求的时候触发
-            init({message: error.message, color: "danger"})
-          }
-        });
+        }).catch();
     init("Add Score Successfully!")
     // location.reload();
 
@@ -451,21 +414,10 @@ const
           headers: {
             token: sessionStorage.getItem('token'),
           },
-        })
-            .then(() => {
+        }).then(() => {
               init({message: "Successfully deleted!!!", color: "success"});
               location.reload()
-            })
-            .catch(error => {
-              if (error.response) {
-                // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-                init({message: error.response.data.msg, color: "danger"})
-              } else {
-                // 一些错误是在设置请求的时候触发
-                init({message: error.message, color: "danger"})
-
-              }
-            });
+            }).catch();
       }
 
 
@@ -495,22 +447,10 @@ const addNewItem = () => {//add 确认弹窗点击确定后执行的操作
       headers: {
         token: sessionStorage.getItem('token'),
       },
-    })
-        .then(() => {
+    }).then(() => {
           init({message: "Successfully created!!!", color: "success"});
           location.reload()
-        })
-        .catch(error => {
-          if (error.response) {
-            // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-            init({message: error.response.data.msg, color: "danger"})
-          } else {
-            // 一些错误是在设置请求的时候触发
-            init({message: error.message, color: "danger"})
-
-          }
-        });
-    // resetCreatedItem();
+        }).catch();
   }
 };
 
@@ -529,22 +469,10 @@ const editItem = () => {
         headers: {
           token: sessionStorage.getItem('token'),
         },
-      })
-          .then(() => {
+      }).then(() => {
             init({message: "Successfully updated!", color: "success"});
             location.reload()
-          })
-          .catch(error => {
-            if (error.response) {
-              // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-              init({message: error.response.data.msg, color: "danger"})
-
-            } else {
-              // 一些错误是在设置请求的时候触发
-              init({message: error.message, color: "danger"})
-
-            }
-          });
+          }).catch();
     } else {
       // alert(JSON.stringify(editedItem.value.name))
       // alert(JSON.stringify(editedItemId.value))
@@ -561,23 +489,10 @@ const editItem = () => {
         headers: {
           token: sessionStorage.getItem('token'),
         },
-      })
-          .then(() => {
+      }).then(() => {
             init({message: "Successfully updated!", color: "success"});
             location.reload()
-          })
-          .catch(error => {
-            if (error.response) {
-              // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-              init({message: error.response.data.msg, color: "danger"})
-
-
-            } else {
-              // 一些错误是在设置请求的时候触发
-              init({message: error.message, color: "danger"})
-
-            }
-          });
+          }).catch();
     }
   }
 };
@@ -592,25 +507,6 @@ const openModalToEditItemById = index => {
   nowEditEmail.value = editedItem.value.email;
   nowEditPhone.value = editedItem.value.phoneNumber;
   nowEditDep.value = editedItem.value.department;
-  // alert(nowEditType.value)
-
-  // if (editedItem.value.type === 2 || editedItem.value.type === 'student') {
-  //   editedItem.value['type'] = 'Student'
-  // } else if (editedItem.value.type === 1 || editedItem.value.type === 'teacher') {
-  //   editedItem.value['type'] = 'Teacher'
-  // } else if (editedItem.value.type === 0 || editedItem.value.type === 'admin') {
-  //   editedItem.value['type'] = 'Admin'
-  // } else if (editedItem.value.type === -1 || editedItem.value.type === 'visitor') {
-  //   editedItem.value['type'] = 'Visitor'
-  // }
-
-  // alert(editedItem.value.type)
-  // const {id: ignored, creatorId: ignored2, ...filteredDictionary} = (items.value[index]);
-  // ignored.value
-  // ignored2.value
-  // editedItem.value = filteredDictionary
-
-  // alert('hh')
 };
 
 
@@ -625,18 +521,7 @@ const getAllUsers = () => {//拿到初始数据进行展示
       .then(response => {
         items.value = response.data.data
         // alert(JSON.stringify(response.data.data))
-      })
-      .catch(error => {
-        if (error.response) {
-          // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-          init({message: error.response.data.msg, color: "danger"})
-
-        } else {
-          // 一些错误是在设置请求的时候触发
-          init({message: error.message, color: "danger"})
-
-        }
-      });
+      }).catch();
 };
 
 const clickToChangRole = async () => {//批量
@@ -660,10 +545,6 @@ const clickToChangRole = async () => {//批量
       } else {//student
         newType = 2;
       }
-      // alert(selectedList.value
-      //     .filter(item => item.type === -1)
-      //     .map(item => item.id))
-      // alert(newType)
       axios.put(
           "/user/activate/batch", {
             type: newType,
@@ -676,21 +557,10 @@ const clickToChangRole = async () => {//批量
               token: sessionStorage.getItem('token'),
             },
           }
-      )
-          .then(() => {
+      ).then(() => {
             init({message: "Successfully updated!!!", color: "success"});
             location.reload()
-          })
-          .catch((error) => {
-            if (error.response) {
-              // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-              init({message: error.response.data.msg, color: "danger"})
-
-            } else {
-              // 一些错误是在设置请求的时候触发
-              init({message: error.message, color: "danger"})
-            }
-          });
+          }).catch();
     }
   }
 };
@@ -718,28 +588,15 @@ const onButtonClickDelete = async () => {//批量删除所选items
             token: sessionStorage.getItem('token'),
           },
         }
-    )
-        .then(() => {
+    ).then(() => {
           init({message: "Successfully updated!!!", color: "success"});
           location.reload()
-        })
-        .catch((error) => {
-          if (error.response) {
-            // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-            init({message: error.response.data.msg, color: "danger"})
-
-          } else {
-            // 一些错误是在设置请求的时候触发
-            init({message: error.message, color: "danger"})
-          }
-        });
+        }).catch();
   }
 };
 const showAdd = () => {
   isAdding.value = 111;
 
-  // createdItem.value['id']=1;
-  // validate2.value = false;
 }
 const showChangeRole = () => {
   showModelChangeRole.value = !showModelChangeRole.value
