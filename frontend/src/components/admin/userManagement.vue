@@ -90,13 +90,18 @@
         </tr>
       </template>
     </va-data-table>
-    <!--    修改数据的modal 不用修改-->
-
+    <!--    修改用户 dialog------------------------------------------------------------->
+    <!--    <t-dialog-->
+    <!--        v-model:visible="!!isEditing"-->
+    <!--        header="编辑用户"-->
+    <!--        placement="center"-->
+    <!--        :cancel-btn=null-->
+    <!--        :confirm-btn=null-->
+    <!--    >-->
     <el-dialog
         class="modal-crud"
         :model-value="!!isEditing"
         title="编辑用户"
-
         size="small"
         hide-default-actions
         :before-close="resetEditedItem"
@@ -237,17 +242,16 @@
 <script setup>
 import {ref, onMounted, computed, watch} from 'vue';
 import axios from "axios";
-import {useToast, useModal, useForm, useColors} from "vuestic-ui";
+import {useModal, useForm} from "vuestic-ui";
 import {AddIcon} from "tdesign-icons-vue-next";
+import {MessagePlugin} from "tdesign-vue-next";
 
 const token = sessionStorage.getItem('token')
-
+const uid = sessionStorage.getItem('uid')
 const {isValid: isValidadd, validate: validateadd} = useForm('formRef1')
 const {isValid: isValidedit, validate: validateedit} = useForm('formRef2')
 
 const {confirm} = useModal()
-const {init} = useToast();
-
 const items = ref([]);
 const columns = [
   // {key: 'try'},
@@ -285,8 +289,7 @@ const filter = ref("");
 const filtered = ref("");
 const perPage = ref(10);
 const currentPage = ref(1);
-const optionsState = ref(["Student", "Teacher", "Admin"]);
-const selectState = ref('Student');
+const optionsState = ref(["普通用户", "管理员"]);
 const userId = ref(null);
 
 const resetEditedItem = () => {//恢复初始值，设置弹窗不显示
@@ -309,9 +312,10 @@ const resetCreatedItem = () => {//恢复初始值，设置弹窗不显示
 };
 const deleteItemById = async (id) => {//单删
   const result = await confirm({
-    title: "Are you sure to delete?",
-    okText: "Yes",
-    cancelText: "No",
+    message: "删除用户后，账号状态将变为‘已注销’",
+    title: "确认删除所选用户",
+    okText: "确认",
+    cancelText: "取消",
   });
   if (result) {//暂时还不能用
     // alert(items.value[id].id)
@@ -320,7 +324,7 @@ const deleteItemById = async (id) => {//单删
         token: token,
       },
     }).then(() => {
-      init({message: "Successfully deleted!!!", color: "success"});
+      MessagePlugin.success("提交成功");
       location.reload()
     }).catch();
   }
@@ -337,21 +341,20 @@ const getRowBind = (row) => {
 const addNewItem = () => {//add 确认弹窗点击确定后执行的操作
   // alert(JSON.stringify(createdItem.value))
   if (validateadd()) {
-    if (createdItem.value.type === 'Student') {
-      createdItem.value.type = 2
-    } else if (createdItem.value.type === 'Teacher') {
+    if (createdItem.value.type === '普通用户') {
       createdItem.value.type = 1
-    } else if (createdItem.value.type === 'Admin') {
+    } else if (createdItem.value.type === '管理员') {
       createdItem.value.type = 0
     } else {
-      createdItem.value.type = -1
+      MessagePlugin.error("用户类型非法");
+      return
     }
     axios.post("/user/add", createdItem.value, {
       headers: {
         token: token,
       },
     }).then(() => {
-      init({message: "Successfully created!!!", color: "success"});
+      MessagePlugin.success("提交成功");
       location.reload()
     }).catch();
   }
@@ -373,7 +376,7 @@ const editItem = () => {
           token: token,
         },
       }).then(() => {
-        init({message: "Successfully updated!", color: "success"});
+        MessagePlugin.success("提交成功");
         location.reload()
       }).catch();
     } else {
@@ -393,7 +396,7 @@ const editItem = () => {
           token: token,
         },
       }).then(() => {
-        init({message: "Successfully updated!", color: "success"});
+        MessagePlugin.success("提交成功");
         location.reload()
       }).catch();
     }
@@ -414,29 +417,28 @@ const openModalToEditItemById = index => {
 
 
 const getAllUsers = () => {//拿到初始数据进行展示
-  userId.value = sessionStorage.getItem('uid')
+  userId.value = uid
   // alert(userId.value)
   axios.post("/user/getAll", {}, {
     headers: {
       token: token,
     },
-  })
-      .then(response => {
-        items.value = response.data.data
-        // alert(JSON.stringify(response.data.data))
-      }).catch();
+  }).then(response => {
+    items.value = response.data.data
+    // alert(JSON.stringify(response.data.data))
+  }).catch();
 };
 
 const onButtonClickDelete = async () => {//批量删除所选items
   const result = await confirm({
-    message: "After submitting, the selected items will be deleted.",
-    title: "Are you sure to submit?",
-    okText: "Yes",
-    cancelText: "No",
+    message: "删除用户后，账号状态将变为‘已注销’",
+    title: "确认删除所选用户",
+    okText: "确认",
+    cancelText: "取消",
   });
 
   if (result) {//暂时不能用
-    init({message: "Submitting...", color: "success"});
+    await MessagePlugin.info("正在提交...");
 
     axios.post("/user/delete/batch",
         selectedList.value
@@ -448,7 +450,7 @@ const onButtonClickDelete = async () => {//批量删除所选items
           },
         }
     ).then(() => {
-      init({message: "Successfully updated!!!", color: "success"});
+      MessagePlugin.success("提交成功");
       location.reload()
     }).catch();
   }
