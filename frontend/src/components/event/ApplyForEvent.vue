@@ -12,11 +12,14 @@
             <t-textarea v-model="formData.content" placeholder="请简单描述项目内容" clearable/>
           </t-form-item>
           <t-form-item label="类型" name="type">
-            <t-radio-group v-model="formData.type">
-              <t-radio value="0">表演</t-radio>
-              <t-radio value="1">讲座</t-radio>
-              <t-radio value="2">比赛</t-radio>
-              <t-radio value="3">其他</t-radio>
+            <t-radio-group variant="primary-filled" v-model="formData.type">
+              <t-radio-button
+                  v-for="item in EVENT_TYPE_value_1"
+                  :key="item.value"
+                  :value="item.value"
+              >
+                {{ item.label }}
+              </t-radio-button>
             </t-radio-group>
           </t-form-item>
 
@@ -69,6 +72,7 @@ import {MessagePlugin} from 'tdesign-vue-next';
 import axios from "axios";
 import EventSession from "@/components/event/EventSession.vue";
 import router from "@/routers/index.js";
+import {EVENT_TYPE_value_1} from "@/constants/index.js";
 
 
 const token = sessionStorage.getItem('token')
@@ -85,7 +89,7 @@ const session = []
 const formData = ref({
   name: '',
   content: '',
-  type: '0',
+  type: 0,
   publisher_id: uid,
   poster: [],
   visible: false,
