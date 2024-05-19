@@ -6,7 +6,6 @@
           icon="add"
           style="width: fit-content;height: fit-content"
       >
-
         Add User
       </va-button>
 
@@ -517,15 +516,6 @@ const addNewItem = () => {//add 确认弹窗点击确定后执行的操作
 
 const editItem = () => {
   if (validateedit()) {
-    // if (editedItem.value.type === 'Student' || editedItem.value.type === 'student') {
-    //   editedItem.value.type = 2
-    // } else if (editedItem.value.type === 'Teacher' || editedItem.value.type === 'teacher') {
-    //   editedItem.value.type = 1
-    // } else if (editedItem.value.type === 'Admin' || editedItem.value.type === 'admin') {
-    //   editedItem.value.type = 0
-    // } else if (editedItem.value.type === 'Visitor' || editedItem.value.type === 'visitor') {
-    //   editedItem.value.type = -1
-    // }
     if (editedItem.value.password === '********') {
       axios.put("/user/update/admin", {
         id: editedItem.value.id,

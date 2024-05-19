@@ -67,7 +67,7 @@ const productList = ref([
 
 const handleClickProduct = (product: CardProductType) => {
   if (product.type === 1) {
-    router.push('/user');
+    router.push('/admin/userManage');
   }
   // else if (product.type === 2) {
   //   router.push('/admin/eventManage');
