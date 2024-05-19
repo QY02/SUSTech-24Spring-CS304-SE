@@ -336,12 +336,12 @@ const count_range_of_peopleValidator = (val) => {
   // 将输入的字符串转化为数字
   const [first, second] = [Data.value.min_cnt, Data.value.max_cnt]
 
-  console.log("first:",first)
-  console.log("second:",second)
-  if (first === undefined || first.length <= 0){
+  console.log("first:", first)
+  console.log("second:", second)
+  if (first === undefined || first.length <= 0) {
     return {result: false, message: '最小值必填', type: 'error'};
   }
-  if (second === undefined || second.length <= 0){
+  if (second === undefined || second.length <= 0) {
     return {result: false, message: '最大值必填', type: 'error'};
   }
   if (isNaN(first) || first <= 0) {
@@ -467,7 +467,7 @@ const showMap = () => {
       map = new AMap.value.Map("mapContainer", {
         viewMode: "3D",
         zoom: 17,
-        center: Data.location === null ? [113.997, 22.596] : Data.location,
+        center: Data.value.location === null ? [113.997, 22.596] : Data.value.location,
       });
       mapScale = new AMap.value.Scale();
       mapToolBar = new AMap.value.ToolBar({
@@ -535,8 +535,8 @@ const showMap = () => {
         });
       });
     } else {
-      map.setZoomAndCenter(17, Data.location === null ? [113.997, 22.596] : Data.location);
-      mapMarker.setPosition(Data.location === null ? [113.997, 22.596] : Data.location);
+      map.setZoomAndCenter(17, Data.value.location === null ? [113.997, 22.596] : Data.value.location);
+      mapMarker.setPosition(Data.value.location === null ? [113.997, 22.596] : Data.value.location);
       mapMarker.setLabel({
         content: `${mapMarker.getPosition().getLng()}, ${mapMarker.getPosition().getLat()}`
       });
@@ -569,7 +569,7 @@ onUnmounted(() => {
 const handleChooseLocationConfirm = () => {
   const currentMarkerPosition = mapMarker.getPosition();
   if (currentMarkerPosition !== null) {
-    Data.location = currentMarkerPosition.toArray();
+    Data.value.location = currentMarkerPosition.toArray();
   }
   chooseLocationDialogVisible.value = false;
   mapPlaceSearch.clear();
