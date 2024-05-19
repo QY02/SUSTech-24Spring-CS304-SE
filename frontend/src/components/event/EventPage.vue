@@ -2,8 +2,7 @@
   <div v-if="!loading && eventDetail.length !== 0">
     <div class="card">
       <div class="card-1">
-        <t-image :src="photo" fit="fill"
-          :style="{ width: '100%', height: '100%' }" shape="round" />
+        <t-image :src="photo" fit="fill" :style="{ width: '100%', height: '100%' }" shape="round" />
       </div>
       <div class="right">
         <div class="card-2">
@@ -18,11 +17,8 @@
               <!-- <div v-if="isFavorite"> -->
               <t-button :loading="loading_favorite" shape="circle" theme="primary" @click="clickHeart()">
                 <template #icon>
-                  <div v-if="isFavorite">
-                  </div>
-
-                  <HeartFilledIcon v-if="isFavorite" />
-                  <HeartIcon v-else />
+                  <HeartFilledIcon v-show="isFavorite" />
+                  <HeartIcon v-show="!isFavorite" />
                 </template>
               </t-button>
               <!-- </div>
@@ -160,15 +156,15 @@
       <div v-for="(session, index) in sessionInformation">
         <div class="choose-session-detail-div">
           <p v-if="session.registrationRequired" class="choose-session-detail-text">
-            <p>场次{{ index }}: </p>
-            {{
-              `报名时间: ${dateToString(session.registrationStartTime)} - ${dateToString(session.registrationEndTime)}`
-            }}
-            <br>
+          <p>场次{{ index }}: </p>
+          {{
+            `报名时间: ${dateToString(session.registrationStartTime)} - ${dateToString(session.registrationEndTime)}`
+          }}
+          <br>
           </p>
           <p v-else class="choose-session-detail-text">
-            <p>场次{{ index }}: </p>
-            <p>无需报名</p>
+          <p>场次{{ index }}: </p>
+          <p>无需报名</p>
           </p>
         </div>
       </div>
@@ -237,6 +233,7 @@
       <CommentPage></CommentPage>
       <div style="height: 40px;"></div>
     </div>
+    <!-- <TestPage></TestPage> -->
   </div>
   <div v-else>
     <SkeletonPage></SkeletonPage>
@@ -246,6 +243,7 @@
 
 
 <script setup>
+// import TestPage from './testPage.vue';
 import { sessionInformation, bookingInformation } from '@/components/book/Steps.vue';
 import { HeartIcon, HeartFilledIcon, ListIcon, TableIcon, StarFilledIcon, DiscountIcon } from 'tdesign-icons-vue-next';
 import { computed, getCurrentInstance, ref, onMounted } from 'vue';
@@ -314,21 +312,36 @@ const getAttachment = () => {
     }
   }).then((response) => {
     attachmentPath.value = response.data.data
-    if(attachmentPath.value!==null && attachmentPath.value!==undefined && attachmentPath.value!=='')
-    getPhoto();
+    if (attachmentPath.value !== null && attachmentPath.value !== undefined && attachmentPath.value !== '')
+      getPhoto();
   }).catch(() => { })
 }
-const getPhoto = () => {
-  fileServerAxios.get(`/file/download`, {
-    responseType: 'blob',
-    headers: {
-      token: attachmentPath,
+const getPhoto = async () => {
+  try {
+    if (attachmentPath.value) {
+      console.log('yes')
+      const fileServerResponse = await fileServerAxios.get(`/file/download`, {
+        responseType: 'blob',
+        headers: {
+          token: attachmentPath.value,
+        }
+      });
+      const image = fileServerResponse.data;
+      photo.value = image;
     }
-  }).then((fileServerResponse) => {
-    const image = fileServerResponse.data;
-    photo.value=image;
-    photoUrl.value=URL.createObjectURL(image);
-  }).catch(() => { })
+  } catch (error) {
+
+  }
+  // fileServerAxios.get(`/file/download`, {
+  //   responseType: 'blob',
+  //   headers: {
+  //     token: attachmentPath,
+  //   }
+  // }).then((fileServerResponse) => {
+  //   const image = fileServerResponse.data;
+  //   photo.value=image;
+  //   photoUrl.value=URL.createObjectURL(image);
+  // }).catch(() => { })
 }
 
 
@@ -393,7 +406,7 @@ const getFavorite = () => {
 }
 
 const clickHeart = () => {
-  if (!isFavorite) {
+  if (!isFavorite.value) {
     addFavorite()
   }
   else {
@@ -411,7 +424,8 @@ const addFavorite = () => {
       token: token
     }
   }).then((response) => {
-    isFavorite.value = false
+    isFavorite.value = true
+    console.log("add: " + isFavorite.value)
     loading_favorite.value = false
   }).catch(() => { loading_favorite.value = false })
 }
@@ -426,7 +440,8 @@ const deleteFavorite = () => {
       token: token
     }
   }).then((response) => {
-    isFavorite.value = true
+    isFavorite.value = false
+    console.log(isFavorite.value)
     loading_favorite.value = false
   }).catch(() => { loading_favorite.value = false })
 }
