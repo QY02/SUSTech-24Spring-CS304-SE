@@ -296,6 +296,7 @@ import {ref, onMounted, computed, watch} from 'vue';
 import axios from "axios";
 import {useToast, useModal, useForm, useColors} from "vuestic-ui";
 
+const token=sessionStorage.getItem('token')
 
 const {isValid: isValidadd, validate: validateadd} = useForm('formRef1')
 const {isValid: isValidedit, validate: validateedit} = useForm('formRef2')
@@ -387,7 +388,7 @@ const addNewUsersByFile = () => {
         {
           headers: {
             'token':
-                sessionStorage.getItem('token'),
+                token,
             'Content-Type': 'multipart/form-data'
           },
         }
@@ -412,7 +413,7 @@ const
         // alert(items.value[id].id)
         axios.post(`/user/delete/${items.value[id].id}`, {}, {
           headers: {
-            token: sessionStorage.getItem('token'),
+            token: token,
           },
         }).then(() => {
               init({message: "Successfully deleted!!!", color: "success"});
@@ -445,7 +446,7 @@ const addNewItem = () => {//add 确认弹窗点击确定后执行的操作
     }
     axios.post("/user/add", createdItem.value, {
       headers: {
-        token: sessionStorage.getItem('token'),
+        token: token,
       },
     }).then(() => {
           init({message: "Successfully created!!!", color: "success"});
@@ -467,7 +468,7 @@ const editItem = () => {
 
       }, {
         headers: {
-          token: sessionStorage.getItem('token'),
+          token: token,
         },
       }).then(() => {
             init({message: "Successfully updated!", color: "success"});
@@ -487,7 +488,7 @@ const editItem = () => {
 
       }, {
         headers: {
-          token: sessionStorage.getItem('token'),
+          token: token,
         },
       }).then(() => {
             init({message: "Successfully updated!", color: "success"});
@@ -515,7 +516,7 @@ const getAllUsers = () => {//拿到初始数据进行展示
   // alert(userId.value)
   axios.post("/user/getAll", {}, {
     headers: {
-      token: sessionStorage.getItem('token'),
+      token: token,
     },
   })
       .then(response => {
@@ -554,7 +555,7 @@ const clickToChangRole = async () => {//批量
           },
           {
             headers: {
-              token: sessionStorage.getItem('token'),
+              token: token,
             },
           }
       ).then(() => {
@@ -585,7 +586,7 @@ const onButtonClickDelete = async () => {//批量删除所选items
             .map(item => item.id),
         {
           headers: {
-            token: sessionStorage.getItem('token'),
+            token: token,
           },
         }
     ).then(() => {
