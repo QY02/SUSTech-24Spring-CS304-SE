@@ -219,7 +219,6 @@ const presets = ref({
 });
 
 const visibleBody = ref(false);
-const visibleBodyModify = ref(false);
 // #### 数据 END ############
 
 
@@ -262,7 +261,8 @@ const columns = computed(() => [
     title: '人数范围', colKey: 'count_range_of_people',
     width: 130, align: 'center',
     cell: (h, {row}) => {
-      const displayValue = row.count_range_of_people;
+
+      const displayValue = [Data.value.min_cnt, Data.value.max_cnt];
       return `${displayValue[0]} ~ ${displayValue[1]}`
     },
   },
@@ -359,7 +359,7 @@ const count_range_of_peopleValidator = (val) => {
   return {result: true};
 };
 const FORM_RULES = ref({
-  registration_time_range: [{required: computed(() => newData.value.registration_required), message: '报名时间必填'}],
+  registration_time_range: [{required: computed(() => Data.value.registration_required), message: '报名时间必填'}],
   event_time_range: [{required: true, message: '活动时间必填'}],
   count_range_of_people: [
     // {required: true, message: '人数必填'},
@@ -369,31 +369,29 @@ const FORM_RULES = ref({
   location: [{required: true, message: '地址必填'}],
   seat_map_id: [{required: true, message: '座位图必选'}],
 });
-const dialogHeader = computed(() => {
-  return state === 0 ? '请填写场次信息' : '编辑该场次信息';
-});
+const dialogHeader = ref('请填写场次信息');
+
 // ##### Form END #############
 
 
 // #####  表单操作 START ###############
 const onOpenAddDiag = async () => {
-  Data.value = await newData.value
+  Data.value = {...INITIAL_DATA}
   state = 0
   visibleBody.value = true
 }
 const onEdit = async (id) => {
-  modifyData.value = await data.value.find(k => k.key === id)
-  Data.value = await modifyData.value
+  Data.value = await {...data.value.find(k => k.key === id)}
   state = 1
-  visibleBodyModify.value = true
+  visibleBody.value = true
 };
 const onSubmit = ({validateResult, firstError}) => {
 
   if (validateResult === true) {
     if (state === 0) {
-      data.value = [...data.value, newData.value]
+      data.value = [...data.value, Data.value]
       // alert(JSON.stringify(newData.value))
-      newData.value = {...INITIAL_DATA}
+      Data.value = {...INITIAL_DATA}
       // alert(JSON.stringify(newData.value))
       visibleBody.value = false;
       MessagePlugin.success('提交成功');
@@ -403,9 +401,9 @@ const onSubmit = ({validateResult, firstError}) => {
       const index = data.value.findIndex((item) => item.key === id);
       if (index !== -1) {
         const updatedData = [...data.value];
-        updatedData[index] = modifyData.value;
+        updatedData[index] = {...Data.value};
         data.value = updatedData;
-        visibleBodyModify.value = false
+        visibleBody.value = false
         MessagePlugin.success('修改成功');
       } else {
         MessagePlugin.error('未找到要修改的行');
@@ -423,7 +421,7 @@ const onDelete = (id) => {
     const temp = [...data.value];
     temp.splice(index, 1);
     data.value = temp;
-    visibleBodyModify.value = false
+    // visibleBody.value = false
     MessagePlugin.success('删除成功');
   } else {
     MessagePlugin.error('未找到要删除的行');
@@ -438,11 +436,11 @@ function onValidate(params) {
 
 const onReset = async () => {
   if (state === 0) {
-    newData.value = {...INITIAL_DATA}
+    Data.value = {...INITIAL_DATA}
   } else {
-    const key = await modifyData.value.key
-    modifyData.value = {...INITIAL_DATA}
-    modifyData.value.key = key
+    const key = await Data.value.key
+    Data.value = {...INITIAL_DATA}
+    Data.value.key = key
   }
   await MessagePlugin.success('重置成功');
 };
