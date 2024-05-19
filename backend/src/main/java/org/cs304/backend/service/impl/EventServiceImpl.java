@@ -98,6 +98,7 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
     public JSONObject createEventStart(JSONObject data) {
         JSONObject eventData = data.getJSONObject("event");
         JSONArray eventSessionData = data.getJSONArray("sessions");
+        System.out.println("eventData:" + eventData);
 
         Event event = new Event();
         event.setName(eventData.getString("name"));
@@ -113,14 +114,17 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
         requestData.put("serviceMethodName", "createEventFinish");
         requestData.put("eventSessionData", eventSessionData);
         List<String> fileList = data.getJSONArray("poster").toJavaList(String.class);
+//        System.out.println("fileList");
+//        System.out.println(fileList);
         List<String> fileDirList = new ArrayList<>();
         for (String ignored : fileList) {
             fileDirList.add("event/" + "uuid");
         }
+//        System.out.println("fileDirList");
+//        System.out.println(fileDirList);
 
         // 打印 Event 对象的属性值
 //        System.out.println("Event Object: " + event);
-
 
 
         return attachmentService.uploadBatchStart(ADMIN, fileDirList, fileList, requestData);
@@ -135,7 +139,9 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
         Integer eventId = event.getId();
 
         JSONArray eventSessionData = requestData.getJSONArray("eventSessionData");
-        insertSessions(event.getId(), eventSessionData);
+        System.out.println("eventSessionData");
+        System.out.println(eventSessionData);
+        insertSessions(eventId, eventSessionData);
 
         attachmentList.forEach(attachment -> {
             EntityAttachmentRelation entityAttachmentRelation = new EntityAttachmentRelation();

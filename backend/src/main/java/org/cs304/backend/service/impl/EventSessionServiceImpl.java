@@ -19,6 +19,8 @@ public class EventSessionServiceImpl extends ServiceImpl<EventSessionMapper, Eve
 
     @Override
     public void insertEventSession(int id,JSONObject sessionData){
+        System.out.println("sessionData in method");
+        System.out.println(sessionData);
         EventSession session = new EventSession();
 
         // 设置 event_id
@@ -39,10 +41,13 @@ public class EventSessionServiceImpl extends ServiceImpl<EventSessionMapper, Eve
 
         // 设置 start_time 和 end_time
         JSONArray eventTimeRange = sessionData.getJSONArray("event_time_range");
-        LocalDateTime startTime = parseDateTime(eventTimeRange.getString(0));
-        LocalDateTime endTime = parseDateTime(eventTimeRange.getString(1));
-        session.setStartTime(startTime);
-        session.setEndTime(endTime);
+        if (eventTimeRange.size()==2){
+            LocalDateTime startTime = parseDateTime(eventTimeRange.getString(0));
+            LocalDateTime endTime = parseDateTime(eventTimeRange.getString(1));
+            session.setStartTime(startTime);
+            session.setEndTime(endTime);
+        }
+
 
         // 设置 min_size 和 max_size
         int minSize = sessionData.getInteger("min");
@@ -62,7 +67,9 @@ public class EventSessionServiceImpl extends ServiceImpl<EventSessionMapper, Eve
             }
             addi_info_str.append(addi_info_arr.getString(i));
         }
+        System.out.println("addi_info_str");
         System.out.println(addi_info_str);
+
         session.setAdditionalInformationRequired(String.valueOf(addi_info_str));
         session.setVisible(sessionData.getBoolean("visible"));
 

@@ -102,6 +102,10 @@
               {{ Data.location === null ? "选择位置" : `${Data.location[0]}, ${Data.location[1]}` }}
             </t-button>
           </t-form-item>
+          <t-form-item label="所需额外信息" name="additional_information_required">
+            <t-checkbox-group v-model="Data.additional_information_required" :options="ADDITIONAL_INFO" lazy-load />
+          </t-form-item>
+
           <t-form-item label="是否可见" name="visible">
             <t-switch v-model="Data.visible" :label="['是', '否']"></t-switch>
           </t-form-item>
@@ -136,7 +140,7 @@ import {AddIcon, MapInformation2Icon} from "tdesign-icons-vue-next";
 import {useVModel} from "@vueuse/core";
 import dayjs from "dayjs";
 import {AMap} from "@/main";
-import {ADDITIONAL_INFO_MAP} from "@/constants/index.js";
+import {ADDITIONAL_INFO, ADDITIONAL_INFO_MAP} from "@/constants/index.js";
 
 // #### 数据 START ############
 const DIAG_WIDTH = "600px"

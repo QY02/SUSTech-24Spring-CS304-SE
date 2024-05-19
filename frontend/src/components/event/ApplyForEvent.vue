@@ -120,9 +120,11 @@ const onReset = () => {
   MessagePlugin.success('重置成功');
 };
 const sendEvent = async () => {
+  const poster=formData.value.poster.map(file => file.name)
   await axios.post(`/event/add`, {
         "event": formData.value,
-        "sessions": eventSessionData.value
+        "sessions": eventSessionData.value,
+        "poster":poster
       }, {
         headers: {
           token: token
