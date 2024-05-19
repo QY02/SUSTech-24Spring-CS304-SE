@@ -12,11 +12,13 @@ import java.util.List;
 
 public interface IEventService extends IService<Event> {
 
-
+    @Transactional(rollbackFor = Exception.class)
+    JSONObject createEventStart(JSONObject data);
 
     String getAttachment(Integer eventId);
 
-    void insertEventAndSessions(JSONObject eventData);
+    @Transactional(rollbackFor = Exception.class)
+    JSONObject createEventFinish(JSONObject requestData);
 
     JSONArray getAllEvents();
     List<Event> getEventByPublisher(int userType, Integer publisherId);

@@ -46,8 +46,8 @@ public class EventController {
              { "key": 1, "registration_required": false, "registration_time_range": [], "event_time_range": [ "2024-03-25 11:36:11", "2024-03-31 11:36:11" ], "count_range_of_people": [ "1", "11" ], "seat_map_id": "", "venue": "12", "location": "啊大苏打", "visible": false } ]
              }""")))
     public Result postNewEvent(HttpServletResponse response, @RequestBody JSONObject event) {
-        eventService.insertEventAndSessions(event);
-        return Result.success(response);
+        JSONObject fileUrl=eventService.createEventStart(event);
+        return Result.success(response,fileUrl);
     }
 
     @PostMapping("/getEventSessionsByEventId")

@@ -54,18 +54,6 @@ export const EVENT_TYPE_value_1 = ref([ //从0开始的
     {label: '社团', value: 11},
     {label: '其他', value: 12},
 ]);
-// 合同类型枚举
-export const CONTRACT_TYPES = {
-    MAIN: 0,
-    SUB: 1,
-    SUPPLEMENT: 2,
-};
-
-// 合同收付类型枚举
-export const CONTRACT_PAYMENT_TYPES = {
-    PAYMENT: 0,
-    RECEIPT: 1,
-};
 
 // 通知主题映射
 export const NOTIFICATION_THEMES = {
@@ -85,5 +73,27 @@ export const NOTIFICATION_TYPES = {
     4: '活动修改',
     5: '活动取消'
 };
+// 定义 ADDITIONAL_INFO 数组
+export const ADDITIONAL_INFO = [
+    {
+        label: "手机号",
+        value: '{"name": "手机号", "nameEng": "phoneNumber", "required": true, "rules": [{"telnumber": true, "message": "请输入正确的手机号码"}], "value": ""}'
+    },
+    {
+        label: "书院",
+        value: '{"name": "书院","nameEng": "college", "required": true, "rules": null, "value": ""}',
+    },
+    {
+        label: "身份证号码",
+        value: '{"name": "身份证号码", "required": true, "rules": [{"idcard": true, "message": "请输入正确的身份证号码"}], "value": ""}'
+    }
+];
+
+// 创建一个映射，将 value 映射到 label
+export const ADDITIONAL_INFO_MAP = ADDITIONAL_INFO.reduce((map, item) => {
+    map[item.value] = item.label;
+    return map;
+}, {});
+
 
 
