@@ -67,9 +67,9 @@ public class EventSessionServiceImpl extends ServiceImpl<EventSessionMapper, Eve
         session.setVisible(sessionData.getBoolean("visible"));
 
         // 打印 Event 对象的属性值
-//        System.out.println("Session Object: " + session);
+        System.out.println("Session Object: " + session);
 
-//        eventSessionMapper.insert(session);
+        eventSessionMapper.insert(session);
     }
     private LocalDateTime parseDateTime(String dateTimeStr) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
