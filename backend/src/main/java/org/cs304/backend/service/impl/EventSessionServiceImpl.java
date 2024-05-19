@@ -45,23 +45,31 @@ public class EventSessionServiceImpl extends ServiceImpl<EventSessionMapper, Eve
         session.setEndTime(endTime);
 
         // 设置 min_size 和 max_size
-        JSONArray countRangeOfPeople = sessionData.getJSONArray("count_range_of_people");
-        int minSize = countRangeOfPeople.getInteger(0);
-        int maxSize = countRangeOfPeople.getInteger(1);
+        int minSize = sessionData.getInteger("min");
+        int maxSize = sessionData.getInteger("max");
         session.setMinSize(minSize);
         session.setMaxSize(maxSize);
 
         session.setCurrentSize(0);
-        session.setSeatMapId(sessionData.getInteger("seat_map_id"));
+        session.setSeatMapId(1);
         session.setVenue(sessionData.getString("venue"));
         session.setLocation(sessionData.getString("location"));
-        session.setAdditionalInformationRequired(sessionData.getString("additional_information_required"));
+        JSONArray addi_info_arr=sessionData.getJSONArray("additional_information_required");
+        StringBuilder addi_info_str = new StringBuilder();
+        for (int i = 0; i < addi_info_arr.size(); i++) {
+            if (i > 0) {
+                addi_info_str.append(", ");
+            }
+            addi_info_str.append(addi_info_arr.getString(i));
+        }
+        System.out.println(addi_info_str);
+        session.setAdditionalInformationRequired(String.valueOf(addi_info_str));
         session.setVisible(sessionData.getBoolean("visible"));
 
         // 打印 Event 对象的属性值
 //        System.out.println("Session Object: " + session);
 
-        eventSessionMapper.insert(session);
+//        eventSessionMapper.insert(session);
     }
     private LocalDateTime parseDateTime(String dateTimeStr) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");

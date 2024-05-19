@@ -6,6 +6,7 @@ import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
+import org.cs304.backend.constant.constant_AttachmentType;
 import org.cs304.backend.constant.constant_EventStatus;
 import org.cs304.backend.constant.constant_User;
 import org.cs304.backend.entity.*;
@@ -23,6 +24,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.cs304.backend.constant.constant_AttachmentType.IMAGE;
+import static org.cs304.backend.constant.constant_EntityType.COMMENT;
+import static org.cs304.backend.constant.constant_EntityType.EVENT;
 import static org.cs304.backend.constant.constant_OrderRecordStatus.*;
 import static org.cs304.backend.constant.constant_User.ADMIN;
 
@@ -81,36 +84,74 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
         return new JSONArray();
     }
 
+
     @Override
-    public String getAttachment(Integer eventId){
-        EntityAttachmentRelation attachmentRelation = entityAttachmentRelationMapper.selectOne(new QueryWrapper<EntityAttachmentRelation>().eq("entity_id", eventId).eq("attachment_type",IMAGE));
+    public String getAttachment(Integer eventId) {
+        EntityAttachmentRelation attachmentRelation = entityAttachmentRelationMapper.selectOne(new QueryWrapper<EntityAttachmentRelation>().eq("entity_id", eventId).eq("attachment_type", IMAGE));
         int attachmentId = attachmentRelation.getAttachmentId();
         Attachment attachment = attachmentService.getById(ADMIN, attachmentId);
         String attachmentPath = attachment.getFilePath();
         return attachmentPath;
     }
+
     @Override
-    public void insertEventAndSessions(JSONObject data) {
-        JSONObject eventData = data.getJSONObject("event");
-        JSONArray eventSessionData = data.getJSONArray("sessions");
-
-        Event event = new Event();
-        event.setName(eventData.getString("name"));
-        event.setContent(eventData.getString("content"));
-        event.setType(eventData.getInteger("type"));
-        event.setPublisherId(eventData.getString("publisher_id"));
-        event.setPublishDate(LocalDateTime.now());
-        event.setStatus(constant_EventStatus.AUDITING);
-        event.setEventPolicy(eventData.getString("event_policy"));
-        event.setVisible(eventData.getBoolean("visible"));
-
-        // 打印 Event 对象的属性值
-//        System.out.println("Event Object: " + event);
-        eventMapper.insert(event);
-
-        insertSessions(event.getId(), eventSessionData);
-
+    public JSONObject createEventStart(JSONObject data) {
+//        JSONObject eventData = data.getJSONObject("event");
+//        JSONArray eventSessionData = data.getJSONArray("sessions");
+//
+//        Event event = new Event();
+//        event.setName(eventData.getString("name"));
+//        event.setContent(eventData.getString("content"));
+//        event.setType(eventData.getInteger("type"));
+//        event.setPublisherId(eventData.getString("publisher_id"));
+//        event.setPublishDate(LocalDateTime.now());
+//        event.setStatus(constant_EventStatus.AUDITING);
+//        event.setEventPolicy(eventData.getString("event_policy"));
+//        event.setVisible(eventData.getBoolean("visible"));
+//        JSONObject requestData = JSONObject.from(event);
+//        requestData.put("serviceClassName", this.getClass().getName());
+//        requestData.put("serviceMethodName", "createEventFinish");
+//        requestData.put("eventSessionData", eventSessionData);
+//        List<String> fileList = data.getJSONArray("poster").toJavaList(String.class);
+//        List<String> fileDirList = new ArrayList<>();
+//        for (String ignored : fileList) {
+//            fileDirList.add("event/" + "uuid");
+//        }
+//
+//        // 打印 Event 对象的属性值
+////        System.out.println("Event Object: " + event);
+//
+//
+//
+//        return attachmentService.uploadBatchStart(ADMIN, fileDirList, fileList, requestData);
+        return null;
     }
+
+    @Override
+    public JSONObject createEventFinish(JSONObject requestData) {
+//        List<Attachment> attachmentList = requestData.getList("fileInfoList", Attachment.class);
+//
+//        Event event = requestData.toJavaObject(Event.class);
+//        eventMapper.insert(event);
+//        Integer eventId = event.getId();
+//
+//        JSONArray eventSessionData = requestData.getJSONArray("eventSessionData");
+//        insertSessions(event.getId(), eventSessionData);
+//
+//        attachmentList.forEach(attachment -> {
+//            EntityAttachmentRelation entityAttachmentRelation = new EntityAttachmentRelation();
+//            entityAttachmentRelation.setEntityType(EVENT);
+//            entityAttachmentRelation.setEntityId(eventId);
+//            entityAttachmentRelation.setAttachmentType(constant_AttachmentType.IMAGE);
+//            entityAttachmentRelation.setAttachmentId(attachment.getId());
+//            entityAttachmentRelationMapper.insert(entityAttachmentRelation);
+//        });
+//        JSONObject jsonObject = new JSONObject();
+//        jsonObject.put("eventId", eventId);
+//        return jsonObject;
+        return null;
+    }
+
 
     private void insertSessions(int id, JSONArray eventSessionData) {
         if (eventSessionData != null && !eventSessionData.isEmpty()) {
@@ -169,8 +210,8 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
         }
         List<Integer> statuses = Arrays.asList(PAID, UNPAID, SUBMITTED);
         OrderRecord order = orderRecordMapper.selectOne(new QueryWrapper<OrderRecord>().eq("user_id", userId).eq("event_id", orderRecord.getEventId()).eq("event_session_id", orderRecord.getEventSessionId())
-                .in("status",statuses));
-        if(order != null){
+                .in("status", statuses));
+        if (order != null) {
             LocalDateTime submitDateTime = order.getSubmitTime();
             LocalDateTime currentDateTime = LocalDateTime.now();
             Duration duration = Duration.between(submitDateTime, currentDateTime);
@@ -180,13 +221,13 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
                 System.out.println("update successful");
             }
             int status = order.getStatus();
-            if (status == SUBMITTED){
+            if (status == SUBMITTED) {
                 throw new ServiceException("400", "您已成功报名。");
             }
-            if (status == PAID){
+            if (status == PAID) {
                 throw new ServiceException("400", "您已成功报名并支付。");
             }
-            if (status == UNPAID){
+            if (status == UNPAID) {
                 throw new ServiceException("400", "已报名，等待用户支付中，请限定时间内及时支付。");
             }
             // status == EXPIRED 就可以重新加入了
@@ -201,7 +242,6 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
         orderRecord.setPaymentTime(null);
         orderRecordMapper.insert(orderRecord);
     }
-
 
 
     @Override
