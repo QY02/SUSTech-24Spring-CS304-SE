@@ -12,7 +12,7 @@
       <div style="text-align: center; line-height: 50px;font-weight: bold;font-size: large">
         Chat With Event (beta)
       </div>
-      <div style="height: 55vh; overflow:auto; border-top: 1px solid #a8b1c9;" v-html="content"></div>
+      <div v-loading="loading" style="height: 55vh; overflow:auto; border-top: 1px solid #a8b1c9;" v-html="content"></div>
       <div style="padding: 18px 15px;">
         <t-space>
           <t-select
@@ -75,7 +75,7 @@ const chatModels = ref([
   {value: 'ZHIPU', label: '智谱AI'},
   {value: 'TONGYI', label: '通义千问'},
   {value: 'BAICHUAN', label: '百川智能'},
-  {value: 'WENXIN', label: '百度文心一言'},
+  // {value: 'WENXIN', label: '百度文心一言'},
   {value: 'TEST', label: '图灵机器人'},
 ]);
 const chatModelLogos = ref([
@@ -98,6 +98,7 @@ const webSocketBaseUrl = appConfig.$webSocketBaseUrl;
 let socketUrl = `${webSocketBaseUrl}/LLMserver/` + user;
 
 const disableSend = ref(false);
+const loading = ref(false);
 
 const apiTips = ref('');
 const apiValidate = () => {
@@ -117,7 +118,7 @@ let socket;
 
 const initChat = async () => {
   try {
-
+    loading.value = false;
     if (socket != null) {
       socket.close();
       socket = null;
@@ -147,6 +148,7 @@ const initChat = async () => {
       }
       messages.value.push({role: "ai", content: msg.data});
       createContent(chatModel.value, null, msg.data);
+      loading.value = false;
     };
 
     socket.onclose = function () {
@@ -179,6 +181,7 @@ const send = () => {
     if (typeof (WebSocket) == "undefined") {
       console.log("您的浏览器不支持WebSocket");
     } else {
+      loading.value = true;
       console.log("您的浏览器支持WebSocket");
       let message = {session_ID: user,
         history: messages.value,

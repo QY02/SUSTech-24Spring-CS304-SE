@@ -54,9 +54,9 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         }else {
             Comment comment = baseMapper.selectById(momentId);
             if (viewType == 1)
-                commentList = baseMapper.selectList(new QueryWrapper<Comment>().select("id,publisher_id").eq("type",BLOG).orderByDesc("publish_date").gt("publish_date",comment.getPublishDate()).last("limit 20"));
+                commentList = baseMapper.selectList(new QueryWrapper<Comment>().select("id,publisher_id").eq("type",BLOG).orderByDesc("publish_date").lt("publish_date",comment.getPublishDate()).last("limit 20"));
             else
-                commentList = baseMapper.selectList(new QueryWrapper<Comment>().select("id,publisher_id").eq("publisher_id",userId).eq("type",BLOG).orderByDesc("publish_date").gt("publish_date",comment.getPublishDate()).last("limit 20"));
+                commentList = baseMapper.selectList(new QueryWrapper<Comment>().select("id,publisher_id").eq("publisher_id",userId).eq("type",BLOG).orderByDesc("publish_date").lt("publish_date",comment.getPublishDate()).last("limit 20"));
         }
         if (commentList.isEmpty()) {
             return new ArrayList<>();

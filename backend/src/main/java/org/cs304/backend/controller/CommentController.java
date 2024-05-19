@@ -79,7 +79,7 @@ public class CommentController {
     }
 
     @GetMapping("/getMomentBatch/{momentId}/{viewType}")
-    @Operation(summary = "获取所有动态",description = "传入path的momentId，为之前传递的最后一个momentId，返回20个；第一次传-1。viewType为1时获取所有动态，为2时获取关注的动态")
+    @Operation(summary = "获取所有动态",description = "传入path的momentId，为之前传递的最后一个momentId，返回20个；第一次传-1。viewType为1时获取所有动态，为2时获取我的动态")
     public Result getAllMoment(HttpServletRequest request,HttpServletResponse response, @PathVariable("momentId")Integer momentId, @PathVariable("viewType")Integer viewType) {
         String userId = request.getAttribute("loginUserId").toString();
         List<JSONObject> momentList = commentService.getAllMoment(momentId, viewType, userId);
