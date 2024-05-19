@@ -102,13 +102,13 @@
     </t-loading>
     <t-space size="medium">
       <t-button @click="currentStep--">上一步</t-button>
-      <t-button @click="handleSubmit">提交</t-button>
+      <t-button @click="handleSubmit">下一步</t-button>
     </t-space>
   </t-space>
 </template>
 
 <script setup lang="ts">
-import {currentStep, submitData} from '@/components/book/Steps.vue';
+import {currentStep, toNextStep} from '@/components/book/Steps.vue';
 import {onMounted, reactive, Ref, ref, watch} from "vue";
 import {sessionInformation, bookingInformation} from '@/components/book/Steps.vue';
 import {MessagePlugin, NotifyPlugin} from "tdesign-vue-next";
@@ -293,6 +293,7 @@ const handleChoose = (seat) => {
   if (seat.availability) {
     if (seat.id !== bookingInformation.chosenSeat) {
       bookingInformation.chosenSeat = seat.id;
+      bookingInformation.seatPrice = seat.price;
     } else {
       bookingInformation.chosenSeat = null;
     }
@@ -320,7 +321,8 @@ const handleSubmit = async () => {
     result = false;
   }
   if (result) {
-    await submitData();
+    toNextStep();
+    // await submitData();
   }
 }
 

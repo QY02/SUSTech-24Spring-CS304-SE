@@ -21,6 +21,8 @@ public class SeatMap {
 
     private Integer type;
 
+    private String name;
+
     private String description;
 
     private String data;

@@ -1,12 +1,16 @@
 package org.cs304.backend.service;
 
-import com.alibaba.fastjson2.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import org.cs304.backend.entity.Favorite;
 import org.cs304.backend.entity.OrderRecord;
 import com.baomidou.mybatisplus.extension.service.IService;
 
-import java.util.List;
-
 public interface IOrderRecordService extends IService<OrderRecord> {
 
-    Object getMyOrderRecordByEventId(String userId, Integer eventId, Integer mode);
+    Object getMyOrderRecord(String userId, Integer eventId, Integer mode);
+
+    Object getUnpaidOrderRecord(String userId, Integer eventId, Integer mode);
+
+    int getPaymentById(Integer orderId);
+
 }

@@ -118,9 +118,7 @@ public class AttachmentServiceImpl extends ServiceImpl<AttachmentMapper, Attachm
         } catch (InvalidPathException e) {
             throw new ServiceException("400", "Invalid file path");
         }
-        if (userType != constant_User.ADMIN) {
-            throw new ServiceException("401", "Permission denied");
-        }
+
         JSONObject requestInfoJsonObject = new JSONObject();
         requestInfoJsonObject.put("fileDir", fileDir);
         if (requestData != null) {

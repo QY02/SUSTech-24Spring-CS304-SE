@@ -1,16 +1,26 @@
 <template>
-  <div>
     <div class="secondary-notification">
       <t-tabs v-model="tabValue">
         <t-tab-panel v-for="(tab, tabIndex) in TAB_LIST" :key="tabIndex" :value="tab.value" :label="tab.label">
           <t-list v-if="msgDataList.length > 0" class="secondary-msg-list" :split="true">
             <t-list-item v-for="(item, index) in msgDataList" :key="index">
-              <p :class="['content', { unread: (item.status===0) }]" style="display: flex;margin-left: 7px">
-                <t-tag size="medium" :theme="NOTIFICATION_TYPES[item.type]" variant="light">
-                  {{ statusMapping[item.type] }}
+              <div :class="['content', { unread: (item.status===0) }]" style="display: flex;margin-left: 7px;">
+                <t-tag size="medium" :theme="NOTIFICATION_THEMES[item.type]" variant="light">
+                  {{ NOTIFICATION_TYPES[item.type] }}
                 </t-tag>
-                <t-list-item-meta :title="item.title" :description="item.content" style="margin-left: 20px;"/>
-              </p>
+<!--                <t-list-item-meta :title="item.title"-->
+<!--                                  :description="item.content"-->
+<!--                                  style="margin-left: 20px;"-->
+<!--                />-->
+                <div style="display: flex;margin-left: 7px;flex-direction: column;">
+                  <div style="font-size: medium; font-weight: bold">
+                    {{item.title}}
+                  </div>
+                  <p>
+                    {{item.content}}
+                  </p>
+                </div>
+              </div>
               <template #action>
                 <span class="msg-date">{{ item.notifyTime }}</span>
                 <div class="msg-action">
@@ -33,7 +43,7 @@
               </template>
             </t-list-item>
           </t-list>
-          <div v-else class="__empty-list">
+          <div v-else class="secondary-msg-list__empty-list">
             <img src="https://tdesign.gtimg.com/pro-template/personal/nothing.png" alt="空"/>
             <p>{{ '空' }}</p>
           </div>
@@ -46,31 +56,15 @@
         :body="`确认删除通知：${selectedItem && selectedItem.content}吗？`"
         :on-confirm="deleteMsg"
     />
-  </div>
 </template>
 
 <script setup>
 import {computed, onMounted, ref} from 'vue';
 import axios from "axios";
+import { NOTIFICATION_TYPES, NOTIFICATION_THEMES } from '@/constants';
 
 const token = sessionStorage.getItem('token')
 
-const statusMapping = {
-  0: '其他',
-  1: '审核通过',
-  2: '审核未通过',
-  3: '成功参加活动',
-  4: '活动修改',
-  5: '活动取消'
-};
-const NOTIFICATION_TYPES = {
-  0: 'default',
-  1: 'success',
-  2: 'danger',
-  3: 'primary',
-  4: 'warning',
-  5: 'danger'
-};
 const TAB_LIST = [
   {
     label: '全部消息',
@@ -174,6 +168,7 @@ const deleteMsg = () => {
 
 <style lang="less" scoped>
 .secondary-notification {
+  margin: 30px;
   background-color: var(--td-bg-color-container);
   border-radius: var(--td-radius-medium);
   padding: var(--td-comp-paddingTB-xxl) var(--td-comp-paddingLR-xxl);
@@ -182,6 +177,7 @@ const deleteMsg = () => {
     padding-top: 0;
   }
 }
+
 
 .secondary-msg-list {
   height: 70vh;
@@ -250,6 +246,4 @@ const deleteMsg = () => {
     color: var(--td-text-color-primary);
   }
 }
-
-
 </style>

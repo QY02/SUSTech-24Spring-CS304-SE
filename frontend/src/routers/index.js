@@ -48,6 +48,22 @@ const routes = [
                 component: () => import('@/components/home/UserHistory.vue')
             },
             {
+                path: '/myPublishes',
+                component: () => import('@/components/home/UserPublishedPage.vue')
+            },
+            {
+                path: '/myFavorites',
+                component: () => import('@/components/home/MyFavoritesPage.vue')
+            },
+            {
+                path: '/myOrderRecords',
+                component: () => import('@/components/home/MyOrderRecords.vue')
+            },
+            {
+                path: '/OrderRecordDetails',
+                component: () => import('@/components/home/OrderRecordDetail.vue')
+            },
+            {
                 path: '/approval',
                 component: () => import('@/components/admin/EventApproval.vue')
             },
@@ -94,6 +110,10 @@ const routes = [
             {
                 name: 'adminHomePage',
                 path: '/admin/homepage',
+                component: () => import('@/components/admin/homePage.vue')
+            },
+            {
+                path: '/admin/eventManage',
                 component: () => import('@/components/admin/homePage.vue')
             },
             {

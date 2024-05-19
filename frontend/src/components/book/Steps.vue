@@ -1,6 +1,6 @@
 <template>
   <div class="steps-main-div">
-    <t-steps style="width: 70%" :current="currentStep" :readonly="currentStep===3" @change="stepChange">
+    <t-steps style="width: 70%" :current="currentStep" :readonly="currentStep===4" @change="stepChange">
       <t-step-item title="选择场次">
         <template #icon>
           <TimeIcon size="24" class="icon-margin"/>
@@ -20,6 +20,12 @@
           </svg>
         </template>
       </t-step-item>
+      <t-step-item title="确认信息">
+        <template #icon>
+          <MoneyIcon size="24" class="icon-margin"/>
+        </template>
+      </t-step-item>
+
       <t-step-item title="完成" class="finish-step-item">
         <template #icon>
           <CheckCircleIcon size="24" class="icon-margin"/>
@@ -36,7 +42,13 @@
       <ChooseSeat></ChooseSeat>
     </div>
     <div v-show="currentStep === 3">
+      <PayPage></PayPage>
+    </div>
+    <div v-show="currentStep === 4">
       <Finish></Finish>
+    </div>
+    <div v-show="currentStep === 5">
+      <FailPage></FailPage>
     </div>
     <div class="steps-footer-div"></div>
   </div>
@@ -44,12 +56,14 @@
 
 <script setup lang="ts">
 
-import {onMounted, ref} from "vue";
-import {TimeIcon, VerifyIcon, CheckCircleIcon} from 'tdesign-icons-vue-next';
+import {onMounted, ref, watch} from "vue";
+import {TimeIcon, VerifyIcon, CheckCircleIcon, MoneyIcon} from 'tdesign-icons-vue-next';
 import ChooseSession from '@/components/book/ChooseSession.vue';
 import ChooseSeat from '@/components/book/ChooseSeat.vue';
 import InputInformation from '@/components/book/InputInformation.vue';
+import PayPage from "./PayPage.vue";
 import Finish from '@/components/book/Finish.vue';
+import FailPage from '@/components/book/FailPage.vue';
 import {MessagePlugin, NotifyPlugin} from "tdesign-vue-next";
 import axios, {AxiosRequestConfig} from 'axios';
 import {useRoute} from "vue-router";
@@ -89,7 +103,7 @@ const fetchSessionInformation = async () => {
       location: item.location.split(",").map(Number)
     } as Session));
     Object.assign(sessionInformation, dataConverted);
-    response = await axios.post("/orderRecord/getMyOrderRecordByEventId", {
+    response = await axios.post("/orderRecord/getMyOrderRecord", {
       eventId: bookingInformation.eventId,
       mode: 0
     }, {headers: {token: sessionStorage.getItem('token')}} as AxiosRequestConfig);
@@ -111,8 +125,16 @@ const fetchSessionInformation = async () => {
 
 onMounted(() => {
   removeClickableOnFinishStepItem();
-  fetchSessionInformation();
+  fetchSessionInformation()
+
 });
+
+watch(
+  () => window.location.href,
+  (newUrl, oldUrl) => {
+    console.log('change')
+  }
+);
 
 </script>
 
@@ -124,10 +146,12 @@ import {globalProperties} from '@/main';
 import {useRoute} from "vue-router";
 
 
-export let currentStep = ref(0);
+export let currentStep = ref(parseInt(sessionStorage.getItem('currentStep')));
+
 
 export function toNextStep() {
   currentStep.value++;
+  sessionStorage.setItem('currentStep', currentStep.value);
 }
 
 export let fetchSessionInformationStatus = ref(0);
@@ -145,6 +169,7 @@ interface BookingInformation {
   chosenSession: number;
   chosenSeat: string;
   additionalInformation: AdditionalInformationItem[];
+  seatPrice: number;
 }
 
 export const bookingInformation: BookingInformation = reactive({

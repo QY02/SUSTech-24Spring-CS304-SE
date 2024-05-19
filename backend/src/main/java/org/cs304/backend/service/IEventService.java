@@ -6,15 +6,21 @@ import org.cs304.backend.entity.Event;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.cs304.backend.entity.EventSession;
 import org.cs304.backend.entity.OrderRecord;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 public interface IEventService extends IService<Event> {
 
 
+
+    String getAttachment(Integer eventId);
+
     void insertEventAndSessions(JSONObject eventData);
 
     JSONArray getAllEvents();
+    List<Event> getEventByPublisher(int userType, Integer publisherId);
+
     List<Event> getBatchByIds(int userType,List<Integer> idList);
     JSONArray getAuditList(String eventStatus);
 
@@ -24,5 +30,10 @@ public interface IEventService extends IService<Event> {
 
     void submitBookingData(int userType, String userId, OrderRecord orderRecord);
 
+    @Transactional(rollbackFor = Exception.class)
     void changeAudit(Integer eventId, Integer status, String reason);
+
+    List<Event> getRecommendEvents(String userId);
+
+    JSONArray getHotValue();
 }

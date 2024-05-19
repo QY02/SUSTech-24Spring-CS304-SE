@@ -2,7 +2,7 @@
   <div v-if="!loading && eventDetail.length !== 0">
     <div class="card">
       <div class="card-1">
-        <t-image src="https://tdesign.gtimg.com/demo/demo-image-1.png" fit="fill"
+        <t-image :src="photo" fit="fill"
           :style="{ width: '100%', height: '100%' }" shape="round" />
       </div>
       <div class="right">
@@ -15,16 +15,24 @@
         <div class="bottom">
           <div class="card-4">
             <t-space size="24px">
-              <t-button shape="circle" theme="primary" @click="navigateToTab('review')">
+              <!-- <div v-if="isFavorite"> -->
+              <t-button :loading="loading_favorite" shape="circle" theme="primary" @click="clickHeart()">
+                <template #icon>
+                  <div v-if="isFavorite">
+                  </div>
+
+                  <HeartFilledIcon v-if="isFavorite" />
+                  <HeartIcon v-else />
+                </template>
+              </t-button>
+              <!-- </div>
+            <div v-else>
+              <t-button :loading="loading_favorite" shape="circle" theme="primary" @click="addFavorite()">
                 <template #icon>
                   <HeartIcon />
                 </template>
               </t-button>
-              <t-button shape="circle" theme="primary">
-                <template #icon>
-                  <HeartFilledIcon />
-                </template>
-              </t-button>
+            </div> -->
             </t-space>
           </div>
           <div class="card-4" style="margin-left: 30px ">
@@ -41,21 +49,23 @@
 
     <el-affix :offset="55">
       <t-tabs :value="value_lable" size="large" @change="onTabChange" :affix-props="{ offsetTop: 150 }">
-        <t-tab-panel value="events" label="EVENTS"></t-tab-panel>
-        <t-tab-panel value="about" label="EVENT DETAILS"></t-tab-panel>
-        <t-tab-panel value="price" label="TICKET PRICING"></t-tab-panel>
-        <t-tab-panel value="policy" label="ADMISSION POLICY"></t-tab-panel>
-        <t-tab-panel value="gallery" label="GALLERY"></t-tab-panel>
-        <t-tab-panel value="reviews" label="REVIEWS"></t-tab-panel>
+        <t-tab-panel value="events" label="活动场次"></t-tab-panel>
+        <t-tab-panel value="about" label="活动细节"></t-tab-panel>
+        <t-tab-panel value="price" label="活动票价"></t-tab-panel>
+        <t-tab-panel value="policy" label="退换票规则"></t-tab-panel>
+        <t-tab-panel value="gallery" label="动态"></t-tab-panel>
+        <t-tab-panel value="reviews" label="评论"></t-tab-panel>
       </t-tabs>
     </el-affix>
 
 
     <!-- event part -->
     <div :id="`${path}#events`" style="height: 60px;"></div>
+
+    <!-- button part -->
     <t-space style="display: flex; width: 100%; margin-left: 24px;">
       <div>
-        <div class="title">EVENTS</div>
+        <div class="title">活动场次</div>
         <div class="line"></div>
       </div>
       <div style="margin-top: 30px; display: flex; justify-content: flex-end; margin-right:79px ;">
@@ -81,6 +91,8 @@
         </div>
       </div>
     </t-space>
+
+    <!-- detail part -->
     <el-card
       style="height: auto; padding: 5px;  max-width: 100% ; margin-right: 30px; margin-left: 30px; margin-bottom: 40px;">
       <div v-if="show_event_type"
@@ -118,7 +130,7 @@
     <div class="card" style="flex-direction: column;">
       <t-space style="display: flex; width: 100%;">
         <div>
-          <div class="title">EVENT DETAILS</div>
+          <div class="title">活动细节</div>
           <div class="line"></div>
         </div>
       </t-space>
@@ -133,23 +145,37 @@
     <div :id="`${path}#price`" style="height: 60px;"></div>
     <t-space style="display: flex; width: 100%; margin-left: 24px;">
       <div>
-        <div class="title">TICKET PRICING</div>
+        <div class="title">活动票价</div>
         <div class="line"></div>
       </div>
     </t-space>
     <div class="ticket_card" style="margin-left: 55px; margin-top: -10px;">
       <p style="  color: rgba(7, 63, 216, 1); font-size: 18px; font-weight: 700; letter-spacing: 1px;">
-        GENERAL SALE
+        贩卖信息
       </p>
       <p style="  margin-top: 0.4rem; color: rgb(70, 73, 79);font-weight: 600;">
         开始日期
       </p>
       <p style=" margin-top: -5px; line-height: 1.625; color: rgb(70, 73, 79);">
-        2024年3月14号<br>13:00
+      <div v-for="(session, index) in sessionInformation">
+        <div class="choose-session-detail-div">
+          <p v-if="session.registrationRequired" class="choose-session-detail-text">
+            <p>场次{{ index }}: </p>
+            {{
+              `报名时间: ${dateToString(session.registrationStartTime)} - ${dateToString(session.registrationEndTime)}`
+            }}
+            <br>
+          </p>
+          <p v-else class="choose-session-detail-text">
+            <p>场次{{ index }}: </p>
+            <p>无需报名</p>
+          </p>
+        </div>
+      </div>
       </p>
       <el-divider />
       <p style="  color: rgba(7, 63, 216, 1); font-size: 18px; font-weight: 700; letter-spacing: 1px;">
-        STANDARD
+        价格标准
       </p>
       <p style="  margin-top: 0.4rem; line-height: 1.625; color: rgb(70, 73, 79);;">
         门票价格：¥{{ eventDetail.lowestPrice }} - ¥{{ eventDetail.highestPrice }}
@@ -165,7 +191,7 @@
     <div class="card" style="flex-direction: column;">
       <t-space style="display: flex; width: 100%;">
         <div>
-          <div class="title">ADMISSION POLICY</div>
+          <div class="title">退换票规则</div>
           <div class="line"></div>
         </div>
       </t-space>
@@ -186,7 +212,7 @@
     <div :id="`${path}#gallery`" style="height: 60px;"></div>
     <t-space style="display: flex; width: 100%; margin-left: 24px;">
       <div>
-        <div class="title">GALLERY</div>
+        <div class="title">动态</div>
         <div class="line"></div>
       </div>
     </t-space>
@@ -199,7 +225,7 @@
         </el-carousel-item>
       </el-carousel>
       <div style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
-        <t-button @click="pushRouter('gallery')">前往画廊</t-button>
+        <t-button @click="pushRouter('gallery')">前往动态</t-button>
       </div>
     </el-card>
     <div style="height: 40px;"></div>
@@ -208,37 +234,7 @@
     <!-- review part -->
     <div :id="`${path}#reviews`" style="height: 36px;"></div>
     <div class="card" style="flex-direction: column;">
-      <t-space style="display: flex; width: 100%;">
-        <div>
-          <div class="title">REVIEWS</div>
-          <div class="line"></div>
-        </div>
-        <div style="margin-top: 30px; display: flex; justify-content: flex-end; margin-right:30px ;">
-          <t-button>评论</t-button>
-        </div>
-      </t-space>
-      <div>
-        <t-list :split="true">
-          <t-list-item v-for="(item, index) in commentsData" :key="index">
-            <template #content>
-              <div class="comment_card">
-                <div class="stars"><t-rate :default-value="4.5" allow-half disabled size="16" /></div>
-                <div class="comment_infos">
-                  <p class="date-time">
-                    {{ item.datetime }}
-                  </p>
-                  <p class="description">
-                    {{ item.content }}
-                  </p>
-                </div>
-                <div class="author">
-                  — {{ item.author }}
-                </div>
-              </div>
-            </template>
-          </t-list-item>
-        </t-list>
-      </div>
+      <CommentPage></CommentPage>
       <div style="height: 40px;"></div>
     </div>
   </div>
@@ -250,20 +246,25 @@
 
 
 <script setup>
-import { sessionInformation } from '@/components/book/Steps.vue';
+import { sessionInformation, bookingInformation } from '@/components/book/Steps.vue';
 import { HeartIcon, HeartFilledIcon, ListIcon, TableIcon, StarFilledIcon, DiscountIcon } from 'tdesign-icons-vue-next';
-import { computed, getCurrentInstance, ref } from 'vue';
+import { computed, getCurrentInstance, ref, onMounted } from 'vue';
 import axios from "axios";
+import { fileServerAxios } from "@/main.js"
 import get from 'lodash/get';
 import EventTicketCalender from './EventTicketCalender.vue';
 import ChooseSession from '../book/ChooseSession.vue';
 import router from '@/routers';
 import SkeletonPage from './SkeletonPage.vue';
+import CommentPage from './CommentPage.vue';
+
+sessionStorage.setItem('currentStep', 0)
 const value_lable = ref('events');
 
 const show_event_type = ref(true);
 
 const loading = ref(true);
+const loading_favorite = ref(false);
 
 const onClickEventType = (value) => {
   show_event_type.value = value;
@@ -280,10 +281,19 @@ const navigateToTab = (tabName) => {
 };
 
 const titleDict = {
-  '0': '表演',
-  '1': '讲座',
-  '2': '比赛',
-  '3': '其他',
+  0: '讲座',
+  1: '工作坊',
+  2: '比赛',
+  3: '表演',
+  4: '展览',
+  5: '论坛',
+  6: '体育',
+  7: '志愿',
+  8: '学院',
+  9: '沙龙',
+  10: '培训',
+  11: '社团',
+  12: '其他',
 };
 
 const dateToString = (date) => {
@@ -292,6 +302,33 @@ const dateToString = (date) => {
   const localeDateStringArray = date.toLocaleString().split(' ');
   const result = `${localeDateStringArray[0]} ${dayName} ${localeDateStringArray[1]}`;
   return result;
+}
+
+const attachmentPath = ref('');
+const photo = ref('https://tdesign.gtimg.com/demo/demo-image-1.png');
+const photoUrl = ref('https://tdesign.gtimg.com/demo/demo-image-1.png');
+const getAttachment = () => {
+  axios.get(`/event/getPhotoById?eventId=${eventId}`, {
+    headers: {
+      token: token
+    }
+  }).then((response) => {
+    attachmentPath.value = response.data.data
+    if(attachmentPath.value!==null && attachmentPath.value!==undefined && attachmentPath.value!=='')
+    getPhoto();
+  }).catch(() => { })
+}
+const getPhoto = () => {
+  fileServerAxios.get(`/file/download`, {
+    responseType: 'blob',
+    headers: {
+      token: attachmentPath,
+    }
+  }).then((fileServerResponse) => {
+    const image = fileServerResponse.data;
+    photo.value=image;
+    photoUrl.value=URL.createObjectURL(image);
+  }).catch(() => { })
 }
 
 
@@ -310,8 +347,8 @@ const pushRouter = (value) => {
 const token = sessionStorage.getItem('token')
 const eventId = sessionStorage.getItem('eventId')
 const uid = sessionStorage.getItem('uid')
-const eventDetail = ref([])
-const isFavorite = ret(false);
+const eventDetail = ref({})
+const isFavorite = ref(false);
 
 const addHistory = () => {
   axios.post(`/history/add`, {
@@ -323,12 +360,12 @@ const addHistory = () => {
       token: sessionStorage.getItem('token')
     }
   })
-    .then((response) => {})
+    .then((response) => { })
     .catch((error) => {
     });
 }
 
- const getEventDetail = () => {
+const getEventDetail = () => {
   loading.value = true;
   axios.get(`/event/getEventDetail/${eventId}`, {
     headers: {
@@ -355,7 +392,17 @@ const getFavorite = () => {
   }).catch(() => { })
 }
 
+const clickHeart = () => {
+  if (!isFavorite) {
+    addFavorite()
+  }
+  else {
+    deleteFavorite()
+  }
+}
+
 const addFavorite = () => {
+  loading_favorite.value = true
   axios.post(`/favorite/add`, {
     "eventId": eventId,
     "userId": uid
@@ -364,11 +411,14 @@ const addFavorite = () => {
       token: token
     }
   }).then((response) => {
-  }).catch(() => { })
+    isFavorite.value = false
+    loading_favorite.value = false
+  }).catch(() => { loading_favorite.value = false })
 }
 
 const deleteFavorite = () => {
-  axios.delete(`/favorite/delete`, {
+  loading_favorite.value = true
+  axios.post(`/favorite/delete`, {
     "eventId": eventId,
     "userId": uid
   }, {
@@ -376,11 +426,41 @@ const deleteFavorite = () => {
       token: token
     }
   }).then((response) => {
-  }).catch(() => { })
+    isFavorite.value = true
+    loading_favorite.value = false
+  }).catch(() => { loading_favorite.value = false })
 }
 
+const fetchSessionInformation = async () => {
+  try {
+    let response = await axios.post("/event/getEventSessionsByEventId", { eventId: eventId }, { headers: { token: sessionStorage.getItem('token') } });
+    const dataConverted = response.data.data.map((item) => ({
+      ...item,
+      startTime: new Date(item.startTime),
+      endTime: new Date(item.endTime),
+      registrationStartTime: new Date(item.registrationStartTime),
+      registrationEndTime: new Date(item.registrationEndTime),
+      location: item.location.split(",").map(Number)
+    }));
+    Object.assign(sessionInformation, dataConverted);
+    response = await axios.post("/orderRecord/getMyOrderRecord", {
+      eventId: eventId,
+      mode: 0
+    }, { headers: { token: sessionStorage.getItem('token') } });
+    const registeredEventSessionIdArray = response.data.data;
+    sessionInformation.forEach(session => {
+      session.registered = registeredEventSessionIdArray.includes(session.eventSessionId);
+    })
+  }
+  catch (error) {
+  }
+}
 
-getEventDetail();
+onMounted(() => {
+  getEventDetail();
+  getPhoto();
+  fetchSessionInformation();
+});
 
 defineExpose({ navigateToTab });
 
@@ -389,22 +469,7 @@ defineExpose({ navigateToTab });
 const { appContext } = getCurrentInstance();
 const path = computed(() => get(appContext, '$route.path', ''));
 
-
-const commentsData = [
-  {
-    id: 'A',
-    avatar: 'https://tdesign.gtimg.com/site/avatar.jpg',
-    author: '评论作者名A',
-    datetime: '今天16:38',
-    content: '评论作者名A写的评论内容。',
-  }
-];
-
-
-
 </script>
-
-
 
 <style lang="css" scoped>
 .anchor-demo {

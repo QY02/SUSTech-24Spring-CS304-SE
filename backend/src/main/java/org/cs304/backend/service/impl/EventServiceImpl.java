@@ -7,24 +7,24 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import org.cs304.backend.constant.constant_EventStatus;
-import org.cs304.backend.constant.constant_OrderRecordStatus;
 import org.cs304.backend.constant.constant_User;
 import org.cs304.backend.entity.*;
 import org.cs304.backend.exception.ServiceException;
-import org.cs304.backend.mapper.EventMapper;
-import org.cs304.backend.mapper.EventSessionMapper;
-import org.cs304.backend.mapper.OrderRecordMapper;
-import org.cs304.backend.mapper.SeatMapper;
+import org.cs304.backend.mapper.*;
+import org.cs304.backend.service.IAttachmentService;
 import org.cs304.backend.service.IEventService;
 import org.cs304.backend.service.IEventSessionService;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import static org.cs304.backend.constant.constant_AttachmentType.IMAGE;
+import static org.cs304.backend.constant.constant_OrderRecordStatus.*;
+import static org.cs304.backend.constant.constant_User.ADMIN;
 
 @Service
 public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements IEventService {
@@ -32,13 +32,23 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
     @Resource
     private IEventSessionService eventSessionService;
     @Resource
+    private IAttachmentService attachmentService;
+    @Resource
     private EventMapper eventMapper;
     @Resource
     private EventSessionMapper eventSessionMapper;
     @Resource
+    private EntityAttachmentRelationMapper entityAttachmentRelationMapper;
+    @Resource
     private SeatMapper seatMapper;
     @Resource
     private OrderRecordMapper orderRecordMapper;
+    @Resource
+    private UserInteractionMapper userInteractionMapper;
+    @Resource
+    private UserFavoriteTypeMapper userFavoriteTypeMapper;
+    @Resource
+    private HistoryMapper historyMapper;
 
     @Override
     public JSONArray getAuditList(String eventStatus) {
@@ -71,7 +81,14 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
         return new JSONArray();
     }
 
-
+    @Override
+    public String getAttachment(Integer eventId){
+        EntityAttachmentRelation attachmentRelation = entityAttachmentRelationMapper.selectOne(new QueryWrapper<EntityAttachmentRelation>().eq("entity_id", eventId).eq("attachment_type",IMAGE));
+        int attachmentId = attachmentRelation.getAttachmentId();
+        Attachment attachment = attachmentService.getById(ADMIN, attachmentId);
+        String attachmentPath = attachment.getFilePath();
+        return attachmentPath;
+    }
     @Override
     public void insertEventAndSessions(JSONObject data) {
         JSONObject eventData = data.getJSONObject("event");
@@ -123,15 +140,6 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
         return eventSessionMapper.selectList(new QueryWrapper<EventSession>().eq("event_id", eventId)).stream().filter(eventSession -> (userType == constant_User.ADMIN) || (eventSession.getVisible())).collect(Collectors.toList());
     }
 
-//    @Override
-//    public Event getEventByEventId(int userType, Integer eventId) {
-//        if (eventId == null) {
-//            throw new ServiceException("400", "Invalid event id");
-//        }
-//        Event event = baseMapper.selectById(eventId);
-//
-//        return event;
-//    }
 
     @Override
     public void submitBookingData(int userType, String userId, OrderRecord orderRecord) {
@@ -159,16 +167,42 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
         if (!seat.getAvailability()) {
             throw new ServiceException("401", "The seat is unavailable");
         }
-        if (orderRecordMapper.exists(new QueryWrapper<OrderRecord>().eq("user_id", userId).eq("event_id", orderRecord.getEventId()).eq("event_session_id", orderRecord.getEventSessionId()))) {
-            throw new ServiceException("400", "The order record already exist");
+        List<Integer> statuses = Arrays.asList(PAID, UNPAID, SUBMITTED);
+        OrderRecord order = orderRecordMapper.selectOne(new QueryWrapper<OrderRecord>().eq("user_id", userId).eq("event_id", orderRecord.getEventId()).eq("event_session_id", orderRecord.getEventSessionId())
+                .in("status",statuses));
+        if(order != null){
+            LocalDateTime submitDateTime = order.getSubmitTime();
+            LocalDateTime currentDateTime = LocalDateTime.now();
+            Duration duration = Duration.between(submitDateTime, currentDateTime);
+            if (duration.toMinutes() >= 10) {
+                order.setStatus(-1);//expired
+                orderRecordMapper.updateById(order);
+                System.out.println("update successful");
+            }
+            int status = order.getStatus();
+            if (status == SUBMITTED){
+                throw new ServiceException("400", "您已成功报名。");
+            }
+            if (status == PAID){
+                throw new ServiceException("400", "您已成功报名并支付。");
+            }
+            if (status == UNPAID){
+                throw new ServiceException("400", "已报名，等待用户支付中，请限定时间内及时支付。");
+            }
+            // status == EXPIRED 就可以重新加入了
         }
+//        if (orderRecordMapper.exists(new QueryWrapper<OrderRecord>().eq("user_id", userId).eq("event_id", orderRecord.getEventId()).eq("event_session_id", orderRecord.getEventSessionId()))) {
+//            throw new ServiceException("400", "The order record already exist");
+//        }
         orderRecord.setUserId(userId);
         orderRecord.setPrice(seat.getPrice());
-        orderRecord.setStatus(constant_OrderRecordStatus.SUBMITTED);
+        orderRecord.setStatus(SUBMITTED);
         orderRecord.setSubmitTime(LocalDateTime.now());
         orderRecord.setPaymentTime(null);
         orderRecordMapper.insert(orderRecord);
     }
+
+
 
     @Override
     public JSONArray getAllEvents() {//开始时间从大到小排序返回
@@ -181,6 +215,17 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
             return jsonArray;
         }
         return new JSONArray();
+    }
+
+    public List<Event> getEventByPublisher(int userType, Integer publisherId) {
+        if (publisherId == null) {
+            throw new ServiceException("400", "Invalid event id");
+        }
+        QueryWrapper<Event> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("publisher_id", publisherId);
+//        System.out.println(eventMapper.selectList(queryWrapper));
+        return eventMapper.selectList(queryWrapper);
+
     }
 
     @Override
@@ -196,6 +241,7 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
         }
         return result;
     }
+
     @Override
     public void changeAudit(Integer eventId, Integer status, String reason) {
         Event event = baseMapper.selectById(eventId);
@@ -211,5 +257,82 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
             throw new ServiceException("400", "Invalid status");
         }
         baseMapper.updateById(event);
+    }
+
+    @Override
+    public List<Event> getRecommendEvents(String userId) {
+        // TODO 控制返回的个数
+        List<UserFavoriteType> userFavoriteTypeList = userFavoriteTypeMapper.selectList(new QueryWrapper<UserFavoriteType>().eq("user_id", userId));
+        if (userFavoriteTypeList == null || userFavoriteTypeList.isEmpty()) {
+            return new ArrayList<>();
+        }
+        List<Integer> typeList = userFavoriteTypeList.stream().map(UserFavoriteType::getEventType).collect(Collectors.toList());
+        QueryWrapper<Event> queryWrapper = new QueryWrapper<Event>().in("type", typeList).eq("status", constant_EventStatus.PASSED).eq("visible", true);
+        List<Event> list = list(queryWrapper);
+        List<UserInteraction> userInteractionList = userInteractionMapper.selectList(new QueryWrapper<UserInteraction>().eq("user_id", userId).eq("update_type", 0));
+        if (userInteractionList != null && !userInteractionList.isEmpty()) {
+            List<Integer> eventIdList = userInteractionList.stream().map(UserInteraction::getEventId).collect(Collectors.toList());
+            List<Event> eventList = listByIds(eventIdList);
+            list.addAll(eventList);
+        }
+        if (list != null) {
+            return list;
+        }
+        return new ArrayList<>();
+    }
+
+    @Override
+    public JSONArray getHotValue() {
+        QueryWrapper<Event> queryWrapper = new QueryWrapper<Event>();
+        List<Event> list = list(queryWrapper);//所有活动
+        List<History> histories = historyMapper.selectList(new QueryWrapper<>());
+        Map<Integer, Long> countEvents = histories.stream()
+                .collect(Collectors.groupingBy(History::getEventId, Collectors.counting()));
+
+        if (list != null) {
+            LocalDateTime now = LocalDateTime.now();
+            List<JSONObject> jsonArray = new ArrayList<>();
+            for (int i = 0; i < list.size(); i++) {
+                Event curEvent = list.get(i);
+                JSONObject eventDetails = JSONObject.from(curEvent);
+                //已经发布了多久
+                long daysBetween = ChronoUnit.DAYS.between(now, curEvent.getPublishDate());
+                double heat;
+                int eventId = curEvent.getId();
+                long countsOfEvent = 0;
+                if (countEvents.containsKey(eventId)) {
+                    countsOfEvent = countEvents.get(eventId);
+                }
+                if (daysBetween <= 3) {
+                    heat = Math.max(Math.exp(-0.099 * daysBetween), 0.01) * countsOfEvent;
+                } else if (daysBetween <= 7) {
+                    heat = Math.max(Math.exp(-0.099 * daysBetween), 0.01) * Math.log(countsOfEvent);
+                } else if (daysBetween <= 30) {
+                    heat = (double) (31 - daysBetween) / 30000 + 0.00001 * countsOfEvent;
+                } else if (daysBetween <= 365) {
+                    heat = (double) (366 - daysBetween) / 365000;
+                } else {
+                    heat = (double) 1 / 365000;
+                }
+                eventDetails.put("heat", heat);
+                jsonArray.add(eventDetails);
+            }
+
+            jsonArray.sort(new Comparator<JSONObject>() {
+                @Override
+                public int compare(JSONObject o1, JSONObject o2) {
+                    double heat1 = o1.getDouble("heat");
+                    double heat2 = o2.getDouble("heat");
+                    return Double.compare(heat2, heat1); // Order by descending
+                }
+            });
+
+            // Create a new JSONArray from the sorted list
+            JSONArray sortedJsonArray = new JSONArray();
+            sortedJsonArray.addAll(jsonArray);
+
+            return sortedJsonArray;
+        }
+        return new JSONArray();
     }
 }

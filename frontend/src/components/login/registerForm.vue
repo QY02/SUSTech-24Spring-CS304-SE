@@ -3,7 +3,7 @@
   <div id="building">
     <div class="parent-container">
       <div class="form-container">
-        <p class="title">Register</p>
+        <p class="title">注册</p>
         <t-form ref="form" :data="formData" :rules="rules" :colon="true" :label-width="5" @reset="onReset"
                 @submit="handleSubmit" style="margin-top: 40px">
           <t-form-item name="username">
@@ -132,7 +132,7 @@
 
     <t-dialog
         v-model:visible="visible"
-        header="请输入手机验证码"
+        header="请输入验证码"
         body="自定义底部按钮，直接传入文字"
         :confirm-btn="null"
         :cancel-btn="null"
@@ -143,7 +143,7 @@
         <t-form-item name="code">
           <t-input
               v-model="formData1.code"
-              placeholder="Enter the verification code"
+              placeholder="输入验证码"
           >
           </t-input>
         </t-form-item>
@@ -155,7 +155,7 @@
           </t-form-item>
 
           <t-form-item>
-            <t-button theme="primary" type="submit" block style="width: 80px;margin-right: 0px">前往验证</t-button>
+            <t-button theme="primary" type="submit" block style="width: 80px;margin-right: 0px">验证</t-button>
           </t-form-item>
         </div>
       </t-form>
@@ -203,6 +203,7 @@ import {LockOnIcon} from "tdesign-icons-vue-next";
 import axios from "axios";
 import {MessagePlugin} from "tdesign-vue-next";
 import router from "@/routers";
+import {EVENT_TYPE_value_1} from "@/constants/index.js";
 
 // const apiUrl = inject('$API_URL');
 // const globalProperties = getCurrentInstance().appContext.config.globalProperties;
@@ -213,29 +214,29 @@ import router from "@/routers";
 const rules = {
   username: [{required: true}, {
     validator: (v) => /^([A-Za-z\u4e00-\u9fa5\s]){1,50}$/.test(v),
-    message: 'Please enter Chinese, English, and spaces, and the length should be less than 50.'
+    message: '请输入中文、英文和空格，长度不超过50。'
   }],
-  id: [{required: true}, {validator: (v) => /^(\d{8})$/.test(v), message: 'ID must be 8 digits'}],
-  email: [{required: true}, {validator: (v) => /[^@]+@[^@]+\.[a-zA-Z]{2,}$/.test(v), message: 'Wrong format'}],
-  phoneNumber: [{required: true}, {validator: (v) => /^(\d{11})?$/.test(v), message: 'Phone number must be 11 digits'}],
+  id: [{required: true}, {validator: (v) => /^(\d{8})$/.test(v), message: 'ID必须是8个字符'}],
+  email: [{required: true}, {validator: (v) => /[^@]+@[^@]+\.[a-zA-Z]{2,}$/.test(v), message: '邮箱格式错误'}],
+  phoneNumber: [{required: true}, {validator: (v) => /^(\d{11})?$/.test(v), message: '电话必须是11个字符'}],
 
   password: [{required: true}, {
     validator: (v) => /^[a-zA-Z0-9/]{8,}$/.test(v),
-    message: 'Only numbers, characters, and slash are allowed, minimum length is 8'
+    message: '只允许数字、字符和斜杠，最小长度为8'
   }],
   password2: [{required: true}, {
     validator: (v) => v === formData.password,
-    message: 'Different from the last password'
+    message: '与上面的密码不一样'
   }],
   favType: [{required: true},
     {
-      validator: (v) => v.length <= 3,
-      message: '请选择1-3个感兴趣的活动类型',
+      validator: (v) => v.length <= 12,
+      message: '请选择1-12个感兴趣的活动类型',
       type: 'warning'
     }],
 };
 const rules1 = {
-  code: [{required: true}, {validator: (v) => /^[0-9]{6}$/.test(v), message: 'Code must be a six-digit number'}]
+  code: [{required: true}, {validator: (v) => /^[0-9]{6}$/.test(v), message: '验证码必须是6个数字'}]
 }
 const onReset = () => {
   MessagePlugin.success('重置成功');
@@ -253,12 +254,7 @@ const formData = reactive({
   code: '',
   favType: [],
 });
-const courseOptions = [
-  {label: '表演', value: 0},
-  {label: '讲座', value: 1},
-  {label: '比赛', value: 2},
-  {label: '其他', value: 3},
-];
+const courseOptions = EVENT_TYPE_value_1
 const formData1 = reactive({
   code: '',
 });
@@ -305,7 +301,7 @@ const handleSubmit = ({validateResult}) => {
       // "githubUserId": sessionStorage.getItem('git-id'),
       // "githubUserName": sessionStorage.getItem('git-name'),
     }
-    alert(formData.favType)
+    // alert(formData.favType)
     axios.post("/register", {
       "user": data,
       "favType": formData.favType,

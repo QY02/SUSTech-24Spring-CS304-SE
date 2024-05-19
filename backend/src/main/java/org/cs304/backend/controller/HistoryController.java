@@ -1,5 +1,4 @@
 package org.cs304.backend.controller;
-
 import com.alibaba.fastjson2.JSONObject;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -9,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.cs304.backend.entity.OrderRecord;
 import org.cs304.backend.service.IHistoryService;
+import org.cs304.backend.service.IUserInteractionService;
 import org.cs304.backend.utils.Result;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,6 +24,9 @@ import java.time.LocalDateTime;
 public class HistoryController {
     @Resource
     private IHistoryService historyService;
+
+    @Resource
+    private IUserInteractionService userInteractionService;
     @PostMapping("/add")
     @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, content = @Content(examples = @ExampleObject("""
             {
@@ -35,6 +38,7 @@ public class HistoryController {
         Integer eventId = requestBody.getInteger("eventId");
 //        LocalDateTime visitTime=requestBody.getObject("visit_time");
         historyService.addEventHistory(userId,eventId);
+        userInteractionService.changeUserInteraction(userId,eventId,1,2);
         return Result.success(response);
     }
     @PostMapping("/getByUserId")

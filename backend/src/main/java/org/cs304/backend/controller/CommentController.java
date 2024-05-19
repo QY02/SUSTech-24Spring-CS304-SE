@@ -31,7 +31,7 @@ public class CommentController {
 
     @PostMapping("/add")
     @Operation(summary = "添加评论",description = "传入comment结构内容")
-    public Result postNewComment(HttpServletResponse response, @RequestParam Comment comment) {
+    public Result postNewComment(HttpServletResponse response, @RequestBody Comment comment) {
         commentMapper.insert(comment);
         return Result.success(response);
     }
@@ -45,9 +45,9 @@ public class CommentController {
     }
 
 
-    @GetMapping("/getByEvent")
+    @PostMapping("/getByEvent")
     @Operation(summary = "获取一个事件下的评论或动态",description = "传入eventId和type，type为0时获取评论，为1时获取动态")
-    public Result getEventComment(HttpServletResponse response, @RequestParam JSONObject jsonObject) {
+    public Result getEventComment(HttpServletResponse response, @RequestBody JSONObject jsonObject) {
         Integer eventId = jsonObject.getInteger("eventId");
         if (eventId == null) {
             throw new ServiceException("eventId不能为空");

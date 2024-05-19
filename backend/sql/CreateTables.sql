@@ -69,6 +69,7 @@ create table if not exists seat_map
 (
     id          int primary key auto_increment,
     type        int not null,
+    name varchar(128),
     description varchar(1024),
     data        varchar(5120)
 );
@@ -164,3 +165,8 @@ create table if not exists user_blog_interaction
     vote_type  tinyint(1) null
 );
 
+create table user_favorite_type
+(
+    user_id VARCHAR(8) NOT NULL ,
+    event_type INT NOT NULL
+);

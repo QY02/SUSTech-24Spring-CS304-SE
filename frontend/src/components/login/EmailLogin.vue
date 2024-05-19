@@ -5,19 +5,20 @@
       <div style="margin-top: 18px">
         <!--     <div style="color: #2b54d9">ID</div>-->
         <t-form-item name="email" style="margin-bottom: 30px;">
-        <t-input v-model="formData.email" clearable placeholder="请输入邮箱"
+          <t-input v-model="formData.email" clearable placeholder="请输入邮箱"
 
-        >
-          <template #prefix-icon>
-            <desktop-icon/>
-          </template>
-        </t-input>
-      </t-form-item>
+          >
+            <template #prefix-icon>
+              <desktop-icon/>
+            </template>
+          </t-input>
+        </t-form-item>
       </div>
 
       <div style="display: flex;">
         <t-form-item name="code">
-          <t-input v-model="formData.code" clearable placeholder="请输入验证码" style="width: 226px; margin-bottom: 12px">
+          <t-input v-model="formData.code" clearable placeholder="请输入验证码"
+                   style="width: 226px; margin-bottom: 12px">
             <template #prefix-icon>
               <lock-on-icon/>
             </template>
@@ -25,11 +26,15 @@
         </t-form-item>
 
         <t-form-item>
-          <t-button theme="primary" block @click="handleVeri" style="width: 50px; margin-left: 10px">验证码</t-button>
+          <t-button style="margin-left: 10px;width: 50px;" theme="default" variant="base" :disabled="countDown > 0"
+                    @click="throttle(handleVeri)">{{ countDown > 0 ? `${countDown}秒` : '验证码' }}
+          </t-button>
+<!--                    <t-button theme="primary" block @click="handleVeri" style="width: 50px; margin-left: 10px">验证码</t-button>-->
         </t-form-item>
       </div>
       <t-form-item>
-        <t-button theme="primary" shape="round" type="submit" block style="height: 40px; margin-bottom: 8px">登录</t-button>
+        <t-button theme="primary" shape="round" type="submit" block style="height: 40px; margin-bottom: 8px">登录
+        </t-button>
       </t-form-item>
 
     </t-form>
@@ -76,11 +81,15 @@
 
 <script setup>
 
-import {getCurrentInstance, inject, reactive} from 'vue';
+import {getCurrentInstance, inject, reactive, ref} from 'vue';
 import {MessagePlugin} from 'tdesign-vue-next';
 import {DesktopIcon, LockOnIcon} from 'tdesign-icons-vue-next';
 import axios from "axios";
 import router from "@/routers";
+const globalProperties = getCurrentInstance().appContext.config.globalProperties;
+const apiBaseUrl = globalProperties.$apiBaseUrl;
+
+axios.defaults.baseURL = apiBaseUrl;
 
 const formData = reactive({
   email: '',
@@ -92,16 +101,16 @@ const onReset = () => {
 };
 
 
-
 // const {isValid, validate} = useForm('formRef')
 // const {init} = useToast();
 
 // const password = ref("");
 // const id = ref("");
 const rules = {
-  email: [{required: true}, {validator: (v) => /[^@]+@[^@]+\.[a-zA-Z]{2,}$/.test(v), message: 'Wrong format'}],
-  code: [{required: true}, {validator: (v) => /^[0-9]{6}$/.test(v), message: 'Code must be a six-digit number'}],
+  email: [{required: true}, {validator: (v) => /[^@]+@[^@]+\.[a-zA-Z]{2,}$/.test(v), message: '格式错误'}],
+  code: [{required: true}, {validator: (v) => /^[0-9]{6}$/.test(v), message: '验证码必须是6位数字'}],
 };
+const countDown = ref(0); // 倒计时变量，初始为 0 表示可点击状态
 
 //   const onSubmit = ({ validateResult, firstError }) => {
 //   if (validateResult === true) {
@@ -111,7 +120,30 @@ const rules = {
 //   MessagePlugin.warning(firstError);
 // }
 
+const throttle = (func) => {
+  console.log("in")
 
+  let inThrottle = false;
+  countDown.value = 3;
+  const timer = setInterval(() => {
+    if (countDown.value > 0) {
+      countDown.value--; // 每秒减一
+      console.log(countDown.value)
+    }
+  }, 1000);
+  if (!inThrottle) {
+    // 执行函数
+    func.apply(this);
+    inThrottle = true;
+
+    // 设置节流结束的定时器
+    setTimeout(() => {
+      inThrottle = false;
+      countDown.value = 3; // 重置倒计时
+    }, 10000);
+  }
+
+}
 // };
 
 
@@ -130,6 +162,7 @@ const handleSubmit = ({validateResult}) => {
       code: formData.code
     })
         .then((response) => {
+          // alert(JSON.stringify(response.data.data))
           const rd = response.data.data.id;
           const type = response.data.data.type
           const token = response.data.data.password
@@ -138,34 +171,35 @@ const handleSubmit = ({validateResult}) => {
           sessionStorage.setItem('uid', rd);
           sessionStorage.setItem('username', response.data.data.name)
           sessionStorage.setItem('token', token);
+          MessagePlugin.success("Welcome! " + rd);
+
           if (type === 0) {//管理员
             router.push("/admin/homepage");
           } else {//正常用户
             router.push("/HomePage");
           }
-          MessagePlugin.success("Welcome! " + rd);
 
         })
         .catch((error) => {
         });
   } else {
-    MessagePlugin.warning("Please make sure the input format is correct!")
+    MessagePlugin.warning("请确保输入格式正确!")
 
   }
 };
 const handleVeri = () => {
-if(rules.email[1].validator(formData.email)) {
-  axios.post(`/sendEmail/${formData.email}`, {}, {})
-      .then(() => {
-        MessagePlugin.info("Already send the code, please check and enter.");
-      })
-      .catch((error) => {
-      });
+  if (rules.email[1].validator(formData.email)) {
+    axios.post(`/sendEmail/${formData.email}`, {}, {})
+        .then(() => {
+          MessagePlugin.info("已经发送验证码，请查收。");
+        })
+        .catch((error) => {
+        });
 
-}else{
-  MessagePlugin.warning("Please input correct email!");
+  } else {
+    MessagePlugin.warning("请输入正确的邮箱!");
 
-}
+  }
 
 };
 

@@ -63,7 +63,7 @@ public class LoginController {
             user = userService.login(user);
         } catch (Exception e) {
             log.error(e.getMessage());
-            return Result.error(response, "401", "Invalid username or password");
+            return Result.error(response, "400", "Invalid username or password");
         }
         if (user.getTwoFactorAuthentication()) {
             return Result.success(response);
@@ -196,7 +196,7 @@ public class LoginController {
             return Result.error(response, "401", "Verification error, please try again");
         }
         User user = userService.loginWithEmail(emailVerify);
-        user.setPassword(null);
+//        user.setPassword(null);
         return Result.success(response, user);
     }
 
