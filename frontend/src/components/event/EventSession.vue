@@ -55,7 +55,7 @@
             <t-switch v-model="Data.registration_required" :label="['是', '否']"></t-switch>
           </t-form-item>
           <t-form-item label="报名开始时间-报名结束时间" name="registration_time_range">
-            <t-date-range-picker enable-time-picker=true allow-input=true clearable=true
+            <t-date-range-picker :enable-time-picker="true" clearable
                                  :disable-date="{ before: dayjs().subtract(1, 'day').format() }"
                                  v-model="Data.registration_time_range"
                                  :disabled="!Data.registration_required"
@@ -63,7 +63,7 @@
             />
           </t-form-item>
           <t-form-item label="开始时间-结束时间" name="event_time_range">
-            <t-date-range-picker enable-time-picker=true allow-input=true clearable=true
+            <t-date-range-picker :enable-time-picker="true" clearable
                                  :disable-date="{ before: dayjs().subtract(1, 'day').format() }"
                                  v-model="Data.event_time_range"
                                  :presets="presets"
