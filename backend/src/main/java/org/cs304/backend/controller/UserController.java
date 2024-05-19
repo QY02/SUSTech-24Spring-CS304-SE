@@ -58,6 +58,8 @@ public class UserController {
             if (user.getPassword()==null||user.getEmail()==null||user.getType()==null||user.getName()==null){
                 throw new RuntimeException("User information incomplete");
             }
+            user.setTwoFactorAuthentication(false);
+
             userService.save(user);
         } catch (Exception e) {
             log.error(e.getMessage());
