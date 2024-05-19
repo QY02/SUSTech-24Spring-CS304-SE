@@ -1,9 +1,9 @@
 <template>
 
-<!--  Form 整体 ----------------------------------------------------------------------------->
+  <!--  Form 整体 ----------------------------------------------------------------------------->
   <div style="display: flex;flex-direction: column; margin-left: 10px">
 
-<!--    表头 ---------------------------------------------------------------------------------->
+    <!--    表头 ---------------------------------------------------------------------------------->
     <div style="display: flex;justify-content: space-between;margin: 10px;align-items: center">
       <va-button
           @click="showAdd"
@@ -41,7 +41,7 @@
         label="上传文件:"
     />
 
-<!--    表格  ------------------------------------------------------------------>
+    <!--    表格  ------------------------------------------------------------------>
     <va-data-table
         class="table-crud"
         :items="items"
@@ -74,6 +74,7 @@
             preset="plain"
             icon="delete"
             class="ml-3"
+            color="danger"
             disabled
         />
         <va-button
@@ -81,6 +82,7 @@
             preset="plain"
             icon="delete"
             class="ml-3"
+            color="danger"
             @click="deleteItemById(rowIndex)"
         />
       </template>
@@ -102,7 +104,7 @@
     <el-dialog
         class="modal-crud"
         :model-value="!!isEditing"
-        title="Edit item"
+        title="编辑用户"
 
         size="small"
         hide-default-actions
@@ -147,14 +149,13 @@
             @click="resetEditedItem()"
             style="margin-right: 10px"
             color="BackgroundPrimary"
-        >
-          Cancel
+        >取消
         </va-button>
         <va-button
             :disabled="!isValidedit"
             @click="editItem"
         >
-          Ok
+          确认
         </va-button>
       </template>
     </el-dialog>
@@ -163,7 +164,7 @@
     <el-dialog
         class="modal-crud"
         :model-value="!!showModelChangeRole"
-        title="Change Role"
+        title="改变角色"
         size="small"
 
         hide-default-actions
@@ -194,7 +195,7 @@
     <el-dialog
         class="modal-crud"
         :model-value="!!isAdding"
-        title="Add User"
+        title="添加用户"
         size="small"
 
         hide-default-actions
@@ -234,7 +235,7 @@
         />
         <va-select
             v-model="createdItem['type']"
-            label="type"
+            label="用户类型"
             :options="optionsState"
 
         />
@@ -265,7 +266,7 @@
     <div style="height: 100px;"></div>
   </div>
 
-<!--最下面的alert ---------------------------------------------------------------->
+  <!--最下面的alert ---------------------------------------------------------------->
   <va-alert
       color="BackgroundElement"
       icon="warning"
@@ -273,18 +274,18 @@
       style="height: 80px;position: fixed;bottom: 0;width: 100%;display: flex;"
   >
     <va-button color="info" @click="addNewUsersByFile"
-               style="position: fixed;right: 345px;transform: translate(45%, -25%);">Submit User File
+               style="position: fixed;right: 345px;transform: translate(45%, -25%);">提交用户文件
     </va-button>
 
     <va-button color="info" @click="showChangeRole" :disabled="selectedList
                     .filter(item => item.type === -1)
                     .map(item => item.id).length===0"
                style="position: fixed;right: 180px;transform: translate(45%, -25%);">
-      Activate Visitor
+      激活游客
     </va-button>
 
     <va-button color="danger" @click="onButtonClickDelete" :disabled="selectedList.length===0"
-               style="position: fixed;right: 60px;transform: translate(45%, -25%);">Delete
+               style="position: fixed;right: 60px;transform: translate(45%, -25%);">删除
     </va-button>
 
   </va-alert>
@@ -296,7 +297,7 @@ import {ref, onMounted, computed, watch} from 'vue';
 import axios from "axios";
 import {useToast, useModal, useForm, useColors} from "vuestic-ui";
 
-const token=sessionStorage.getItem('token')
+const token = sessionStorage.getItem('token')
 
 const {isValid: isValidadd, validate: validateadd} = useForm('formRef1')
 const {isValid: isValidedit, validate: validateedit} = useForm('formRef2')
@@ -308,12 +309,12 @@ const items = ref([]);
 const columns = [
   // {key: 'try'},
   {key: 'id', sortable: true},
-  {key: 'name',label:"名字", sortable: true},
-  {key: 'email',label:"邮箱", sortable: true},
-  {key: 'phoneNumber',label:"电话", sortable: true},
-  {key: 'type',label:"用户类型", sortable: true},
-  {key: 'department',label:"学院", width: 80},
-  {key: 'actions',label:"操作", width: 80},
+  {key: 'name', label: "名字", sortable: true},
+  {key: 'email', label: "邮箱", sortable: true},
+  {key: 'phoneNumber', label: "电话", sortable: true},
+  {key: 'type', label: "用户类型", sortable: true},
+  {key: 'department', label: "学院", width: 80},
+  {key: 'actions', label: "操作", width: 80},
 ];
 const defaultItem = {
   id: '',
@@ -388,13 +389,13 @@ const addNewUsersByFile = () => {
         {
           headers: {
             'token':
-                token,
+            token,
             'Content-Type': 'multipart/form-data'
           },
         }
     ).then(() => {
-          location.reload();
-        }).catch();
+      location.reload();
+    }).catch();
     init("Add Score Successfully!")
     // location.reload();
 
@@ -416,9 +417,9 @@ const
             token: token,
           },
         }).then(() => {
-              init({message: "Successfully deleted!!!", color: "success"});
-              location.reload()
-            }).catch();
+          init({message: "Successfully deleted!!!", color: "success"});
+          location.reload()
+        }).catch();
       }
 
 
@@ -449,9 +450,9 @@ const addNewItem = () => {//add 确认弹窗点击确定后执行的操作
         token: token,
       },
     }).then(() => {
-          init({message: "Successfully created!!!", color: "success"});
-          location.reload()
-        }).catch();
+      init({message: "Successfully created!!!", color: "success"});
+      location.reload()
+    }).catch();
   }
 };
 
@@ -471,9 +472,9 @@ const editItem = () => {
           token: token,
         },
       }).then(() => {
-            init({message: "Successfully updated!", color: "success"});
-            location.reload()
-          }).catch();
+        init({message: "Successfully updated!", color: "success"});
+        location.reload()
+      }).catch();
     } else {
       // alert(JSON.stringify(editedItem.value.name))
       // alert(JSON.stringify(editedItemId.value))
@@ -491,9 +492,9 @@ const editItem = () => {
           token: token,
         },
       }).then(() => {
-            init({message: "Successfully updated!", color: "success"});
-            location.reload()
-          }).catch();
+        init({message: "Successfully updated!", color: "success"});
+        location.reload()
+      }).catch();
     }
   }
 };
@@ -559,9 +560,9 @@ const clickToChangRole = async () => {//批量
             },
           }
       ).then(() => {
-            init({message: "Successfully updated!!!", color: "success"});
-            location.reload()
-          }).catch();
+        init({message: "Successfully updated!!!", color: "success"});
+        location.reload()
+      }).catch();
     }
   }
 };
@@ -590,9 +591,9 @@ const onButtonClickDelete = async () => {//批量删除所选items
           },
         }
     ).then(() => {
-          init({message: "Successfully updated!!!", color: "success"});
-          location.reload()
-        }).catch();
+      init({message: "Successfully updated!!!", color: "success"});
+      location.reload()
+    }).catch();
   }
 };
 const showAdd = () => {
