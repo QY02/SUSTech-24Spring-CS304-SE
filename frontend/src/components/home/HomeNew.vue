@@ -10,11 +10,17 @@
     <t-card
         v-for="(item,index) in curEvents"
         :key="index"
-        :title="item['name']" :subtitle="item['content']" :cover="item['cover']" :style="{ width: '400px' }"
+        :title="item['name']" :subtitle="item['content']" :style="{ width: '400px' }"
         hover-shadow
         @click="clickEvent(item['id'])"
         lazy-load
     >
+      <t-image
+          :src="item['cover']"
+          :style="{ width: '350px', height: '180px' }"
+          :overlay-content="renderMask"
+          overlay-trigger="hover"
+      />
       <!--      <template #cover>-->
       <!--        &lt;!&ndash; Image with native lazy loading &ndash;&gt;-->
       <!--        <img :src="item.imageUrl" loading="lazy" alt="Event Image">-->
@@ -104,7 +110,7 @@ import {fileServerAxios} from "@/main.js";
 const globalProperties = getCurrentInstance().appContext.config.globalProperties;
 const apiBaseUrl = globalProperties.$apiBaseUrl;
 // const fileUrl = fileServerAxios;
-const fileUrl = 'http://localhost:8084';
+// const fileUrl = 'http://localhost:8084';
 const visible = ref(false);
 const loading = ref(false);
 // alert(apiBaseUrl)
@@ -129,7 +135,20 @@ const options = [
 const favColor = ref({});
 
 const isFavorite = ref(false);
-
+// const renderMask = () => (
+//     <div
+//         style={{
+//           background: 'rgba(0,0,0,.4)',
+//           color: '#fff',
+//           height: '100%',
+//           display: 'flex',
+//           alignItems: 'center',
+//           justifyContent: 'center',
+//         }}
+//     >
+//       预览
+//     </div>
+// );
 const getFavorite = (eventId) => {
   axios.post(`/favorite/isFavorite`, {
     "eventId": eventId,
@@ -170,8 +189,8 @@ axios.post(`/event/getAllEvents`, {}, {
       curEvents.value = events.value
       tmpEvents.value = events.value
       // alert(JSON.stringify(events.value))
-      // for (let i = 0; i < events.value.length; i++) {//获取每个活动的海报
-      for (let i = 0; i < 1; i++) {//获取每个活动的海报
+      for (let i = 0; i < events.value.length; i++) {//获取每个活动的海报
+      // for (let i = 0; i < 1; i++) {//获取每个活动的海报
         let id = events.value[i]['id'];
         axios.post(`/favorite/isFavorite`, {
           "eventId": id,
@@ -209,7 +228,7 @@ axios.post(`/event/getAllEvents`, {}, {
               let attachToken1 = attachToken.value
               // alert(attachToken1)
               // 47.107.113.54:25572 文件服务器地址
-              axios.get(`${fileUrl}/file/download`, {
+              fileServerAxios.get(`/file/download`, {
                 params: {},
                 headers: {
                   token: attachToken1
