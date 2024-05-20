@@ -1,6 +1,6 @@
 <template >
   <div v-if="curEvents.length===0">
-    <div style="display: flex; align-items: center;text-align: center;">
+    <div style="display: flex; align-items: center;text-align: center;margin-left: 45%; margin-top: 10%">
       <error-circle-icon size="large"></error-circle-icon>
       <h1 style="color: #5e6066; font-size: large; margin-left: 10px;">暂无活动</h1>
     </div>
@@ -15,12 +15,15 @@
         @click="clickEvent(item['id'])"
         lazy-load
     >
+
       <t-image
           :src="item['cover']"
           :style="{ width: '350px', height: '180px' }"
-          :overlay-content="renderMask"
-          overlay-trigger="hover"
-      />
+          overlay-trigger="hover">
+
+      </t-image>
+
+
       <!--      <template #cover>-->
       <!--        &lt;!&ndash; Image with native lazy loading &ndash;&gt;-->
       <!--        <img :src="item.imageUrl" loading="lazy" alt="Event Image">-->
@@ -97,25 +100,21 @@
 
 <script setup>
 
-import {ChatIcon, ErrorCircleIcon, HeartIcon, ShareIcon} from 'tdesign-icons-vue-next';
+import {BrowseIcon, ChatIcon, ErrorCircleIcon, HeartIcon, ShareIcon} from 'tdesign-icons-vue-next';
 import {MessagePlugin} from 'tdesign-vue-next';
 import axios from "axios";
 import {getCurrentInstance, ref} from "vue";
 import router from "@/routers/index.js";
-import {EVENT_TYPE_MAP} from "@/constants/index.js";
+import {ENTITY_TYPE, EVENT_TYPE_MAP} from "@/constants/index.js";
 import CommentPage from "@/components/event/CommentPage.vue";
 import {fileServerAxios} from "@/main.js";
 
 
-const globalProperties = getCurrentInstance().appContext.config.globalProperties;
-const apiBaseUrl = globalProperties.$apiBaseUrl;
-// const fileUrl = fileServerAxios;
-// const fileUrl = 'http://localhost:8084';
 const visible = ref(false);
 const loading = ref(false);
 // alert(apiBaseUrl)
 const top = '50px';
-axios.defaults.baseURL = apiBaseUrl;
+
 
 const cover = ref('https://tdesign.gtimg.com/site/source/card-demo.png');
 const events = ref([]);
@@ -149,33 +148,7 @@ const isFavorite = ref(false);
 //       预览
 //     </div>
 // );
-const getFavorite = (eventId) => {
-  axios.post(`/favorite/isFavorite`, {
-    "eventId": eventId,
-    "userId": sessionStorage.getItem('uid')
-  }, {
-    headers: {
-      token: sessionStorage.getItem('token')
-    }
-  }).then((response) => {
-    isFavorite.value = response.data.data
-  }).catch(() => {
-  })
-}
 
-
-const deleteFavorite = (eventId) => {
-  axios.post(`/favorite/delete`, {
-    "eventId": eventId,
-    "userId": sessionStorage.getItem('uid')
-  }, {
-    headers: {
-      token: sessionStorage.getItem('token')
-    }
-  }).then((response) => {
-  }).catch(() => {
-  })
-}
 
 axios.post(`/event/getAllEvents`, {}, {
   params: {},
@@ -204,7 +177,7 @@ axios.post(`/event/getAllEvents`, {}, {
           if (response.data.data === 1) {
             favColor.value[id] = 'red'
           } else {
-            favColor.value[id] = 'grey'
+            favColor.value[id] = 'black'
           }
         }).catch(() => {
         })
@@ -213,7 +186,7 @@ axios.post(`/event/getAllEvents`, {}, {
         // alert(id)
 
         axios.post(`/postAttachmentRelation/getAttachment`, {
-          "entity_type": 1,
+          "entity_type": ENTITY_TYPE.EVENT,
           "entity_id": id,
           "attachment_type": 0,
         }, {
@@ -290,13 +263,7 @@ const typeValue = []  // Initialize with a default value
 // Function to handle incoming messages from other tabs
 window.addEventListener('setItem', () => {
   typeValue.value = sessionStorage.getItem('eventType').split(",").map(Number);//传进来的是个字符串！！！
-  // console.log(typeof typeValue.value)
-  // console.log(typeValue.value)
-  // console.log(typeValue.value.indexOf(1) !== -1)
-  // console.log(JSON.stringify(curEvents.value))
   curEvents.value = events.value.filter(events => typeValue.value.indexOf(events['type'] + 1) !== -1);
-  // console.log(JSON.stringify(curEvents.value))
-
   tmpEvents.value = events.value.filter(events => typeValue.value.includes(events['type'] + 1));
 })
 
@@ -339,7 +306,7 @@ const clickEvent = (eventId) => {
 };
 const favEvent = (eventId) => {
   // MessagePlugin.success(`${sessionStorage.getItem('uid')} 喜欢【${eventId}】`);
-  if (favColor.value[eventId] === 'grey') {//妹收藏过
+  if (favColor.value[eventId] === 'black') {//妹收藏过
     axios.post(`/favorite/add`, {
       "eventId": eventId,
       "userId": sessionStorage.getItem('uid'),
@@ -373,7 +340,7 @@ const favEvent = (eventId) => {
         token: sessionStorage.getItem('token')
       }
     }).then((response) => {
-      favColor.value[eventId] = 'grey'
+      favColor.value[eventId] = 'black'
       MessagePlugin.success("Delete favorite successfully!");
 
     }).catch(() => {
@@ -383,10 +350,6 @@ const favEvent = (eventId) => {
 
 
 function getSearchNew(message) {
-  // alert(JSON.stringify(tmpEvents.value))
-
-  // curEvents.value =event.content.includes(searchText.value) || event.title.includes(searchText.value)
-  // alert(message)
   curEvents.value = tmpEvents.value.filter(events => events['content'].includes(message) || events['name'].includes(message));
   // curEvents.value = tmpEvents.value.filter(tmpEvents => tmpEvents['content'].includes(message) || tmpEvents['eventPolicy'].includes(message));
 }
@@ -409,5 +372,79 @@ defineExpose({getSearchNew});
   gap: 20px;
   margin: 20px;
 
+}
+.tdesign-demo-image-viewer__ui-image {
+  width: 100%;
+  height: 100%;
+  display: inline-flex;
+  position: relative;
+  justify-content: center;
+  align-items: center;
+  border-radius: var(--td-radius-small);
+  overflow: hidden;
+}
+
+.tdesign-demo-image-viewer__ui-image--hover {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: var(--td-text-color-anti);
+  line-height: 22px;
+  transition: 0.2s;
+}
+
+.tdesign-demo-image-viewer__ui-image:hover .tdesign-demo-image-viewer__ui-image--hover {
+  opacity: 1;
+  cursor: pointer;
+}
+
+.tdesign-demo-image-viewer__ui-image--img {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  cursor: pointer;
+  position: absolute;
+}
+
+.tdesign-demo-image-viewer__ui-image--footer {
+  padding: 0 16px;
+  height: 56px;
+  width: 100%;
+  line-height: 56px;
+  font-size: 16px;
+  position: absolute;
+  bottom: 0;
+  color: var(--td-text-color-anti);
+  background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0) 100%);
+  display: flex;
+  box-sizing: border-box;
+}
+
+.tdesign-demo-image-viewer__ui-image--title {
+  flex: 1;
+}
+
+.tdesign-demo-popup__reference {
+  margin-left: 16px;
+}
+
+.tdesign-demo-image-viewer__ui-image--icons .tdesign-demo-icon {
+  cursor: pointer;
+}
+
+.tdesign-demo-image-viewer__base {
+  width: 160px;
+  height: 160px;
+  margin: 10px;
+  border: 4px solid var(--td-bg-color-secondarycontainer);
+  border-radius: var(--td-radius-medium);
 }
 </style>

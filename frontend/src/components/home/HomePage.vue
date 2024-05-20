@@ -137,14 +137,7 @@ const TABS = [
   //   component: GitHubLogin
   // }
 ];
-const value_tab = ref(TABS[0].title);
-const handlerChange = (newValue) => {
-  value_tab.value = newValue;
-};
-const currentTab = computed(() => {
-  // alert(currentTab)
-  return TABS.find((tab) => tab.title === value_tab.value);
-});
+
 import {ChevronDownIcon} from 'tdesign-icons-vue-next';
 import router from "@/routers/index.js";
 import {EVENT_TYPE_value} from "@/constants/index.js";
@@ -167,11 +160,30 @@ const OPTIONS = [
   {label: '其他', value: 13},
 
 ];
+function deepCopy(obj) {
+  if (typeof obj !== 'object' || obj === null) {
+    return obj; // 如果是基本数据类型或者null，则直接返回
+  }
+
+  let newObj = Array.isArray(obj) ? [] : {}; // 创建一个新的对象或数组
+
+  Object.keys(obj).forEach(key => {
+    newObj[key] = deepCopy(obj[key]); // 递归地进行深拷贝
+  });
+
+  return newObj;
+}
+
+// 使用示例
+let originalObj = { a: 1, b: { c: 2 } };
+let copiedObj = deepCopy(originalObj);
 
 const inputValue = ref('');
 // 全量数据
-const options = ref([...OPTIONS]);
-const value = EVENT_TYPE_value
+let options = ref([...OPTIONS]);
+// alert(EVENT_TYPE_value)
+// let EVENT_TYPE_value_copy=EVENT_TYPE_value;
+let value = ref(EVENT_TYPE_value);
 
 const popupProps = ref({
   overlayInnerClassName: ['narrow-scrollbar'],
@@ -181,6 +193,30 @@ const popupProps = ref({
     overscrollBehavior: 'contain',
     padding: '6px',
   },
+});
+const value_tab = ref(TABS[0].title);
+const handlerChange = (newValue) => {
+  value_tab.value = newValue;
+  value.value=[
+    {label: '讲座', value: 1,},
+    {label: '工作坊', value: 2,},
+    {label: '比赛', value: 3},
+    {label: '表演', value: 4},
+    {label: '展览', value: 5},
+    {label: '论坛', value: 6,},
+    {label: '体育', value: 7},
+    {label: '志愿', value: 8},
+    {label: '学院', value: 9},
+    {label: '沙龙', value: 10,},
+    {label: '培训', value: 11},
+    {label: '社团', value: 12},
+    {label: '其他', value: 13},
+  ];
+
+};
+const currentTab = computed(() => {
+  // alert(currentTab)
+  return TABS.find((tab) => tab.title === value_tab.value);
 });
 // const bc = new BroadcastChannel('eventTypeChannel');
 // alert(bc)
