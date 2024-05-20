@@ -27,5 +27,5 @@ public class User {
 
     private String department;
 
-    private Integer iconId;
+    private String avatar;
 }

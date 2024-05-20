@@ -40,10 +40,6 @@ const routes = [
             // },
 
             {
-                path: '/apply',
-                component: () => import('@/components/event/ApplyForEvent.vue')
-            },
-            {
                 path: '/historyEvents',
                 component: () => import('@/components/home/UserHistory.vue')
             },
@@ -111,6 +107,10 @@ const routes = [
                 name: 'adminHomePage',
                 path: '/admin/homepage',
                 component: () => import('@/components/admin/homePage.vue')
+            },
+            {   name: 'adminUserManage',
+                path: '/admin/userManage',
+                component: () => import('@/components/admin/userManagement.vue')
             },
             {
                 path: '/admin/eventManage',

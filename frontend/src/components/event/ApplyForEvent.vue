@@ -146,6 +146,7 @@ const onSubmit = async ({validateResult, firstError}) => {
       formData.value.poster.forEach((file) => {
         formDataUpload.append('file', file.raw)
       })
+      // console.log(formDataUpload)
       await fileServerAxios.post(`/file/uploadBatch`, formDataUpload,
           {
             headers: {

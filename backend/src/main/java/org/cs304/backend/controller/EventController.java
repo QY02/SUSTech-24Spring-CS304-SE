@@ -47,6 +47,7 @@ public class EventController {
              }""")))
     public Result postNewEvent(HttpServletResponse response, @RequestBody JSONObject event) {
         JSONObject fileUrl=eventService.createEventStart(event);
+        System.out.println(fileUrl);
         return Result.success(response,fileUrl);
     }
 
