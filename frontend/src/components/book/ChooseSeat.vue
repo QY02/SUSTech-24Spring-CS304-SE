@@ -101,7 +101,7 @@
       </div>
     </t-loading>
     <t-space size="medium">
-      <t-button @click="currentStep--">上一步</t-button>
+      <t-button theme="default" @click="currentStep--">上一步</t-button>
       <t-button @click="handleSubmit">下一步</t-button>
     </t-space>
   </t-space>

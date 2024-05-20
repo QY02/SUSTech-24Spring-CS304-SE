@@ -16,7 +16,7 @@
     </t-descriptions>
     <div class="input-information-button-div">
       <t-space size="medium">
-        <t-button @click="currentStep--">上一步</t-button>
+        <t-button  theme="default" @click="currentStep--">上一步</t-button>
         <t-button @click="prePay">前往付款</t-button>
       </t-space>
     </div>

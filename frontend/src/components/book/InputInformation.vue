@@ -7,7 +7,7 @@
       </t-form-item>
       <div class="input-information-button-div">
         <t-space size="medium">
-          <t-button @click="currentStep--">上一步</t-button>
+          <t-button theme="default" @click="currentStep--">上一步</t-button>
           <t-button type="submit">下一步</t-button>
         </t-space>
       </div>
