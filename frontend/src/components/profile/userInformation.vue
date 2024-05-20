@@ -27,7 +27,7 @@
       </t-button>
       <t-popup content="退出登录">
       <t-button
-          style="position: fixed; right: 50px; top: 100px"
+          style="position: absolute; right: 50px; top: 50px"
           theme="default"
           variant="base"
           @click="logout"

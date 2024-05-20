@@ -64,7 +64,7 @@ public class HistoryServiceImpl extends ServiceImpl<HistoryMapper, History> impl
                         JSONObject eventDetails = new JSONObject();
 //                        JSONArray jsonArray = new JSONArray();
 //                        jsonArray.addAll(list.stream().map(JSON::toJSON).toList());
-                        eventDetails.put("eventId", event.getId());
+                        eventDetails.put("id", event.getId());
                         eventDetails.put("name", event.getName());
                         eventDetails.put("content", event.getContent());
                         eventDetails.put("eventPolicy", event.getEventPolicy());
