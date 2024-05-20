@@ -3,6 +3,7 @@ import {computed, getCurrentInstance, reactive, ref} from 'vue';
 import {Input, MessagePlugin} from 'tdesign-vue-next';
 import {LockOnIcon} from "tdesign-icons-vue-next";
 import axios from "axios";
+import {emailSuffix} from "@/constants/index.js";
 
 // const globalProperties = getCurrentInstance().appContext.config.globalProperties;
 // const apiBaseUrl = globalProperties.$apiBaseUrl;
@@ -87,7 +88,6 @@ const FORM_RULES = ref({
       { validator: rePassword, message: '两次密码不一致' }
   ]
 });
-const emailSuffix = ['@qq.com', '@163.com', '@gmail.com','@mail.sustech.edu.cn'];
 const emailOptions = computed(() => {
   const emailPrefix = formData.email.split('@')[0];
   if (!emailPrefix) return [];

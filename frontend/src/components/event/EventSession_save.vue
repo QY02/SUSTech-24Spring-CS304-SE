@@ -617,7 +617,7 @@ const handleChooseLocationCancel = () => {
 }
 // #### AMap  END #####
 </script>
-<style lang="css">
+<style lang="css" scoped>
 .operations {
   display: flex;
   //justify-content: space-around;

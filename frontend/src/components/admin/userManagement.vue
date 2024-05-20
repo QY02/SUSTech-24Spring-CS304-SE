@@ -1,257 +1,251 @@
 <template>
+  <t-card class="card-with-margin">
+    <!--  Form 整体 ----------------------------------------------------------------------------->
+    <div style="display: flex;flex-direction: column; margin-left: 10px">
 
-  <!--  Form 整体 ----------------------------------------------------------------------------->
-  <div style="display: flex;flex-direction: column; margin-left: 10px">
+      <!--    表头 ---------------------------------------------------------------------------------->
+      <div style="display: flex;justify-content: space-between;margin: 10px;align-items: center">
+        <t-button @click="showAdd">
+          <template #icon>
+            <add-icon/>
+          </template>
+          添加新用户
+        </t-button>
+        <va-input
+            v-model.number="perPage"
+            type="number"
+            placeholder="Items..."
+            label="每页展示个数"
+        />
 
-    <!--    表头 ---------------------------------------------------------------------------------->
-    <div style="display: flex;justify-content: space-between;margin: 10px;align-items: center">
-      <t-button @click="showAdd">
-        <template #icon>
-          <add-icon/>
+        <va-input
+            v-model.number="currentPage"
+            type="number"
+            placeholder="Page..."
+            label="当前页面"
+        />
+        <va-input
+            v-model="filter"
+            class="sm:col-span-2 md:col-span-3"
+            placeholder="搜索..."
+        />
+
+      </div>
+
+      <!--    表格  ------------------------------------------------------------------>
+      <va-data-table
+          class="table-crud"
+          :items="items"
+          :columns="columns"
+          :per-page="perPage"
+          :current-page="currentPage"
+          striped
+          selectable
+          :row-bind="getRowBind"
+          v-model="selectedList"
+          :filter="filter"
+          @filtered="filtered = $event.items"
+      >
+        <template #cell(type)="{ value }">
+          <div v-if="value==='0'||value==='管理员'">
+            {{ '管理员' }}
+          </div>
+          <div v-else-if="value==='1'||value==='普通用户'">
+            {{ '普通用户' }}
+          </div>
         </template>
-        添加新用户
-      </t-button>
-      <va-input
-          v-model.number="perPage"
-          type="number"
-          placeholder="Items..."
-          label="每页展示个数"
-      />
+        <template #cell(actions)="{ rowIndex }">
+          <va-button
+              preset="plain"
+              icon="edit"
+              @click="openModalToEditItemById(rowIndex)"
+          />
+          <va-button
+              v-if="items[rowIndex].id===userId"
+              preset="plain"
+              icon="delete"
+              class="ml-3"
+              color="danger"
+              disabled
+          />
+          <va-button
+              v-else
+              preset="plain"
+              icon="delete"
+              class="ml-3"
+              color="danger"
+              @click="deleteItemById(rowIndex)"
+          />
+        </template>
 
-      <va-input
-          v-model.number="currentPage"
-          type="number"
-          placeholder="Page..."
-          label="当前页面"
-      />
-      <va-input
-          v-model="filter"
-          class="sm:col-span-2 md:col-span-3"
-          placeholder="搜索..."
-      />
-
-    </div>
-
-    <!--    表格  ------------------------------------------------------------------>
-    <va-data-table
-        class="table-crud"
-        :items="items"
-        :columns="columns"
-        :per-page="perPage"
-        :current-page="currentPage"
-        striped
-        selectable
-        :row-bind="getRowBind"
-        v-model="selectedList"
-        :filter="filter"
-        @filtered="filtered = $event.items"
-    >
-      <template #cell(type)="{ value }">
-        <div v-if="value==='0'||value==='管理员'">
-          {{ '管理员' }}
-        </div>
-        <div v-else-if="value==='1'||value==='普通用户'">
-          {{ '普通用户' }}
-        </div>
-      </template>
-      <template #cell(actions)="{ rowIndex }">
-        <va-button
-            preset="plain"
-            icon="edit"
-            @click="openModalToEditItemById(rowIndex)"
-        />
-        <va-button
-            v-if="items[rowIndex].id===userId"
-            preset="plain"
-            icon="delete"
-            class="ml-3"
-            color="danger"
-            disabled
-        />
-        <va-button
-            v-else
-            preset="plain"
-            icon="delete"
-            class="ml-3"
-            color="danger"
-            @click="deleteItemById(rowIndex)"
-        />
-      </template>
-
-      <template #bodyAppend>
-        <tr>
-          <td colspan="7">
-            <div style="display: flex;
+        <template #bodyAppend>
+          <tr>
+            <td colspan="7">
+              <div style="display: flex;
                              justify-content: center;
                               margin-top: 7px">
-              <va-pagination v-model="currentPage" :pages="pages"/>
-            </div>
-          </td>
-        </tr>
-      </template>
-    </va-data-table>
-    <!--    修改用户 dialog------------------------------------------------------------->
-    <!--    <t-dialog-->
-    <!--        v-model:visible="!!isEditing"-->
-    <!--        header="编辑用户"-->
-    <!--        placement="center"-->
-    <!--        :cancel-btn=null-->
-    <!--        :confirm-btn=null-->
-    <!--    >-->
-    <el-dialog
-        class="modal-crud"
-        :model-value="!!isEditing"
-        title="编辑用户"
-        size="small"
-        hide-default-actions
-        :before-close="resetEditedItem"
-        destroy-on-close
+                <va-pagination v-model="currentPage" :pages="pages"/>
+              </div>
+            </td>
+          </tr>
+        </template>
+      </va-data-table>
+
+      <div style="margin-top: 20px">
+        <t-button theme="danger"
+                  @click="onButtonClickDelete"
+                  :disabled="selectedList.length===0"
+                  style="float: right;">
+          <template #icon>
+            <delete-icon/>
+          </template>
+          删除所选用户
+        </t-button>
+      </div>
+    </div>
+  </t-card>
+
+  <!--    修改用户 dialog------------------------------------------------------------->
+  <t-dialog
+      class="modal-crud"
+      v-model:visible="isEditing"
+      header="编辑用户"
+      placement="center"
+      :cancel-btn="null"
+      :confirm-btn="null"
+  >
+    <t-form ref="formRef2"
+            :data="editedItem"
+            :rules="rules"
+            @reset="resetEditedItem"
+            @submit="editItem"
     >
-      <va-form
-          ref="formRef2"
-      >
-        <va-input
-            v-model="editedItem['name']"
-            class="my-6"
-            label="姓名"
-        />
-        <va-input
-            v-model="editedItem['password']"
-            required-mark
-            :rules="[(v) => /^[a-zA-Z0-9/]{8,}$/.test(v) || v === '********' || 'Only numbers, characters and slash are allowed, minimum length is 8']"
-            class="my-6"
-            label="密码"
-        />
-        <va-input
-            v-model="editedItem['email']"
-            class="my-6"
-            label="邮箱"
-        />
-        <va-input
-            v-model="editedItem['phoneNumber']"
-            :rules="[(v) => v===null||/^(\d{11})?$/.test(v) || 'Phone number must be 11 digits']"
-            class="my-6"
-            label="电话"
-        />
-        <va-input
-            v-model="editedItem['department']"
-            class="my-6"
-            label="学院"
-        />
-      </va-form>
+      <t-form-item label="姓名" name="name">
+        <t-input v-model="editedItem.name"></t-input>
+      </t-form-item>
+      <t-form-item label="密码" name="password">
+        <t-input v-model="editedItem.password" type="password"></t-input>
+      </t-form-item>
+      <t-form-item label="邮箱" name="email">
+        <t-auto-complete v-model="editedItem.email" :options="emailOptionsEdit" filterable></t-auto-complete>
+      </t-form-item>
+      <t-form-item label="电话" name="phoneNumber">
+        <t-input v-model="editedItem.phoneNumber"></t-input>
+      </t-form-item>
+      <t-form-item label="学院" name="department">
+        <t-select v-model="editedItem.department" class="demo-select-base" clearable filterable>
+          <t-option v-for="(item, index) in DEPARTMENT_OPTIONS" :key="index" :value="item.value" :label="item.label">
+            {{ item.label }}
+          </t-option>
+        </t-select>
+      </t-form-item>
+      <t-form-item class="confirm-reset-btns">
+        <t-space size="small">
+          <t-button theme="default" variant="base">取消</t-button>
+          <t-button theme="success" type="submit">提交</t-button>
+          <!--              <t-button theme="default" variant="base" @click="handleClear">清空校验结果</t-button>-->
+        </t-space>
+      </t-form-item>
+    </t-form>
 
-      <template #footer>
-        <va-button
-            @click="resetEditedItem()"
-            style="margin-right: 10px"
-            color="BackgroundPrimary"
-        >取消
-        </va-button>
-        <va-button
-            :disabled="!isValidedit"
-            @click="editItem"
-        >
-          确认
-        </va-button>
-      </template>
-    </el-dialog>
+  </t-dialog>
 
-    <el-dialog
-        class="modal-crud"
-        :model-value="!!isAdding"
-        title="添加用户"
-        size="small"
-
-        hide-default-actions
-        :before-close="resetCreatedItem"
-        destroy-on-close
+  <t-dialog
+      class="modal-crud"
+      v-model:visible="isAdding"
+      header="添加用户"
+      placement="center"
+      :cancel-btn="null"
+      :confirm-btn="null"
+  >
+    <t-form ref="formRef1"
+            :data="createdItem"
+            :rules="rules"
+            @reset="resetCreatedItem"
+            @submit="addNewItem"
     >
-      <va-form ref="formRef1">
-        <va-input
-            v-model="createdItem['id']"
-            required-mark
-            :rules="[(v) => /^[0-9]{8}$/.test(v) || 'ID must be an .,lp-digit number']"
-            class="my-6"
-            label="ID"
-        />
-        <va-input
-            v-model="createdItem['name']"
-            class="my-6"
-            label="姓名"
-        />
-        <va-input
-            v-model="createdItem['password']"
-            required-mark
-            :rules="[(v) => /^[a-zA-Z0-9/]{8,}$/.test(v)  || 'Only numbers, characters and slash are allowed, minimum length is 8']"
-            class="my-6"
-            label="密码"
-        />
-        <va-input
-            v-model="createdItem['email']"
-            class="my-6"
-            label="邮箱"
-        />
-        <va-input
-            v-model="createdItem['phoneNumber']"
-            :rules="[(v) => v===null||/^(\d{11})?$/.test(v) || 'Phone number must be 11 digits']"
-            class="my-6"
-            label="电话"
-        />
-        <va-select
-            v-model="createdItem['type']"
-            label="用户类型"
-            :options="optionsState"
-
-        />
-        <va-input
-            v-model="createdItem['department']"
-            class="my-6"
-            label="学院"
-        />
-      </va-form>
-      <template #footer>
-        <va-button
-            @click="resetCreatedItem()"
-            style="margin-right: 10px"
-            color="BackgroundPrimary"
-        >
-          取消
-        </va-button>
-        <va-button
-            :disabled="!isValidadd"
-            @click="addNewItem"
-        >
-          确认
-        </va-button>
-      </template>
-
-    </el-dialog>
-
-    <div style="height: 100px;"></div>
-  </div>
-
-  <!--最下面的alert ---------------------------------------------------------------->
-
-  <t-button theme="danger" @click="onButtonClickDelete" :disabled="selectedList.length===0"
-            style="position: fixed;right: 60px;transform: translate(45%, -25%);">删除所选用户
-  </t-button>
-
-
+      <t-form-item name="id" label="学号">
+        <t-input type="text"
+                 v-model="createdItem.id"
+                 placeholder="请输入8位学号"
+                 :rules="[(v) => /^(\d{8})$/.test(v) || '请输入8位学号']"
+        ></t-input>
+      </t-form-item>
+      <t-form-item label="用户名" name="username">
+        <t-input type="text" clearable placeholder="请输入用户名"
+                 v-model="createdItem.username"
+        ></t-input>
+      </t-form-item>
+      <t-form-item name="password" label="密码">
+        <t-input v-model="createdItem.password" type="password" clearable placeholder="请输入密码" >
+          <template #prefix-icon>
+            <lock-on-icon/>
+          </template>
+        </t-input>
+      </t-form-item>
+      <t-form-item name="email" label="邮箱">
+        <t-auto-complete v-model="createdItem.email" :options="emailOptionsAdd"
+                         filterable placeholder="请输入邮箱"></t-auto-complete>
+      </t-form-item>
+      <t-form-item name="phoneNumber" label="电话">
+        <t-input type="text"
+                 v-model="createdItem.phoneNumber"
+                 placeholder="请输入电话号码"
+        ></t-input>
+      </t-form-item>
+      <t-form-item label="用户类型" name="department">
+        <t-select v-model="createdItem.type" class="demo-select-base" clearable filterable>
+          <t-option v-for="item in optionsState" :key="item" :value="item" :label="item">
+            {{ item }}
+          </t-option>
+        </t-select>
+      </t-form-item>
+      <t-form-item label="系别" name="department">
+        <t-select v-model="createdItem.department" class="demo-select-base" clearable filterable>
+          <t-option v-for="(item, index) in DEPARTMENT_OPTIONS" :key="index" :value="item.value" :label="item.label">
+            {{ item.label }}
+          </t-option>
+        </t-select>
+      </t-form-item>
+      <t-form-item class="confirm-reset-btns">
+        <t-space size="small">
+          <t-button theme="default" variant="base">取消</t-button>
+          <t-button theme="success" type="submit">提交</t-button>
+          <!--              <t-button theme="default" variant="base" @click="handleClear">清空校验结果</t-button>-->
+        </t-space>
+      </t-form-item>
+    </t-form>
+  </t-dialog>
 </template>
 
 <script setup>
 import {ref, onMounted, computed, watch} from 'vue';
 import axios from "axios";
 import {useModal, useForm} from "vuestic-ui";
-import {AddIcon} from "tdesign-icons-vue-next";
+import {AddIcon, DeleteIcon} from "tdesign-icons-vue-next";
 import {MessagePlugin} from "tdesign-vue-next";
 import "vuestic-ui/css";
+import {DEPARTMENT_OPTIONS, emailSuffix} from "@/constants/index.js";
 
 const token = sessionStorage.getItem('token')
 const uid = sessionStorage.getItem('uid')
 const {isValid: isValidadd, validate: validateadd} = useForm('formRef1')
 const {isValid: isValidedit, validate: validateedit} = useForm('formRef2')
 
+const rules = {
+  username: [{required: true}, {
+    validator: (v) => /^([A-Za-z\u4e00-\u9fa5\s]){1,50}$/.test(v),
+    message: '请输入中文、英文和空格，长度不超过50。'
+  }],
+  id: [{required: true}, {validator: (v) => /^(\d{8})$/.test(v), message: 'ID必须是8个字符'}],
+  email: [{required: true}, {validator: (v) => /[^@]+@[^@]+\.[a-zA-Z]{2,}$/.test(v), message: '邮箱格式错误'}],
+  phoneNumber: [{required: true}, {validator: (v) => /^(\d{11})?$/.test(v), message: '电话必须是11个字符'}],
+
+  password: [{required: true}, {
+    validator: (v) => /^[a-zA-Z0-9/*]{8,}$/.test(v),
+    message: '只允许数字、字符和斜杠，最小长度为8'
+  }],
+};
 const {confirm} = useModal()
 const items = ref([]);
 const columns = [
@@ -264,33 +258,42 @@ const columns = [
   {key: 'department', label: "学院", width: 80},
   {key: 'actions', label: "操作", width: 80},
 ];
+
+const emailOptionsEdit = computed(() => {
+  const emailPrefix = editedItem.value.email.split('@')[0];
+  if (!emailPrefix) return [];
+  return emailSuffix.map((suffix) => emailPrefix + suffix);
+});
+const emailOptionsAdd = computed(() => {
+  const emailPrefix = createdItem.value.email.split('@')[0];
+  if (!emailPrefix) return [];
+  return emailSuffix.map((suffix) => emailPrefix + suffix);
+});
 const defaultItem = {
   id: '',
   name: '',
-  password: '12345678',
+  password: '',
   email: '',
   phoneNumber: '',
   type: '普通用户',
-  department: '',
+  department: '计算机系',
 };
 
-const isEditing = ref(null);
-const nowEditType = ref(null);
-const nowEditName = ref(null);
-const nowEditEmail = ref(null);
-const nowEditPhone = ref(null);
-const nowEditDep = ref(null);
-const isAdding = ref(null);
-const editedItem = ref(null);
+const isEditing = ref(false);
+const nowEditType = ref('');
+const nowEditName = ref('');
+const nowEditEmail = ref('');
+const nowEditPhone = ref('');
+const nowEditDep = ref('');
+const isAdding = ref(false);
+const editedItem = ref({...defaultItem});
 const createdItem = ref({...defaultItem});
 const selectedList = ref([]);
-const showModalEdit = ref(false);
-const showModelChangeRole = ref(false);
 const filter = ref("");
 const filtered = ref("");
 const perPage = ref(10);
 const currentPage = ref(1);
-const optionsState = ref(["普通用户", "管理员"]);
+const optionsState = ["普通用户", "管理员"];
 const userId = ref(null);
 
 const resetEditedItem = () => {//恢复初始值，设置弹窗不显示
@@ -299,17 +302,12 @@ const resetEditedItem = () => {//恢复初始值，设置弹窗不显示
   editedItem.value.email = nowEditEmail.value
   editedItem.value.phoneNumber = nowEditPhone.value
   editedItem.value.department = nowEditDep.value
-  isEditing.value = null;
-  // alert(nowEditType.value)
+  isEditing.value = false;
+};
 
-  // editedItem.value=null;
-};
-const resetChangeRole = () => {//恢复初始值，设置弹窗不显示
-  showModelChangeRole.value = false
-};
 const resetCreatedItem = () => {//恢复初始值，设置弹窗不显示
   createdItem.value = {...defaultItem};
-  isAdding.value = null
+  isAdding.value = false
 };
 const deleteItemById = async (id) => {//单删
   const result = await confirm({
@@ -407,7 +405,7 @@ const editItem = () => {
 const openModalToEditItemById = index => {
   // alert(JSON.stringify(items.value[index]))
   editedItem.value = items.value[index];
-  isEditing.value = 222;
+  isEditing.value = true;
   editedItem.value.password = '********'
   nowEditType.value = editedItem.value.type;
   nowEditName.value = editedItem.value.name;
@@ -457,15 +455,7 @@ const onButtonClickDelete = async () => {//批量删除所选items
   }
 };
 const showAdd = () => {
-  isAdding.value = 111;
-
-}
-const showChangeRole = () => {
-  showModelChangeRole.value = !showModelChangeRole.value
-}
-const showEdit = () => {//没用到的一个方法，不用管
-  showModalEdit.value = !showModalEdit.value
-
+  isAdding.value = true;
 }
 
 const pages = computed(() => {
@@ -507,8 +497,14 @@ onMounted(() => {
   }
 }
 
-//::v-deep(.custom-class) .va-data-table {
-//  pointer-events: none;
-//  background-color: var(--va-background-element);
-//}
+.card-with-margin {
+  margin: 20px;
+  height: max-content;
+}
+
+.confirm-reset-btns {
+  display: flex;
+  justify-content: right;
+  align-items: center;
+}
 </style>

@@ -90,5 +90,12 @@ export const ENTITY_TYPE = {
     EVENT: 0,
     COMMENT: 1
 };
+export const DEPARTMENT_OPTIONS = [
+    { label: '计算机系', value: '计算机学院' },
+    { label: '物理系', value: '软件学院' },
+    { label: '数学系', value: '物联网学院' },
+];
+export const emailSuffix = ['@qq.com', '@163.com', '@gmail.com','@mail.sustech.edu.cn'];
+
 
 

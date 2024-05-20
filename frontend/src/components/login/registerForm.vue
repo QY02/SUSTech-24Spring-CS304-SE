@@ -18,7 +18,7 @@
             <t-input type="text"
                      v-model="formData.id"
                      placeholder="请输入8位学号"
-                     :rules="[(v) => /^(\d{8})$/.test(v) || 'ID must be 8 digits']"
+                     :rules="[(v) => /^(\d{8})$/.test(v) || '请输入8位学号']"
                      label="学号"
                      required-mark
             ></t-input>
@@ -40,12 +40,8 @@
           </t-form-item>
 
           <t-form-item name="email">
-            <t-input
-                v-model="formData.email"
-                placeholder="请输入邮箱"
-                label="邮箱"
-                required-mark
-            ></t-input>
+            <t-auto-complete v-model="formData.email" :input-props="{ label: '邮箱' }" :options="emailOptions"
+                             filterable placeholder="请输入邮箱"></t-auto-complete>
           </t-form-item>
 
           <t-form-item name="phoneNumber">
@@ -66,7 +62,7 @@
           </t-form-item>
 
           <t-form-item name="password2">
-            <t-input v-model="formData.password2" type="password" clearable placeholder="请再次输入密码" label="密码">
+            <t-input v-model="formData.password2" type="password" clearable placeholder="请再次输入密码" label="确认密码">
               <template #prefix-icon>
                 <lock-on-icon/>
               </template>
@@ -198,19 +194,23 @@
 // import NavBarWithOnlyTitle from "@/components/layouts/NavBarWithOnlyTitle.vue";
 // // import {useForm, useToast} from "vuestic-ui";
 
-import {getCurrentInstance, inject, reactive, ref} from "vue";
+import {computed, getCurrentInstance, inject, reactive, ref} from "vue";
 import {LockOnIcon} from "tdesign-icons-vue-next";
 import axios from "axios";
 import {MessagePlugin} from "tdesign-vue-next";
 import router from "@/routers";
-import {EVENT_TYPE_value_1} from "@/constants/index.js";
+import {emailSuffix, EVENT_TYPE_value_1} from "@/constants/index.js";
 
 // const apiUrl = inject('$API_URL');
 // const globalProperties = getCurrentInstance().appContext.config.globalProperties;
 // const apiBaseUrl = globalProperties.$apiBaseUrl;
 // axios.defaults.baseURL = apiBaseUrl;
 
-
+const emailOptions = computed(() => {
+  const emailPrefix = formData.email.split('@')[0];
+  if (!emailPrefix) return [];
+  return emailSuffix.map((suffix) => emailPrefix + suffix);
+});
 const rules = {
   username: [{required: true}, {
     validator: (v) => /^([A-Za-z\u4e00-\u9fa5\s]){1,50}$/.test(v),
@@ -387,7 +387,7 @@ const handleOK = ({validateResult}) => {
 }
 
 #building {
-//background: url("@/assets/login.jpg"); background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)), url("@/assets/login.jpg"); width: 100%; height: 100%; position: fixed; background-size: 100% 100%;
+  //background: url("@/assets/login.jpg"); background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)), url("@/assets/login.jpg"); width: 100%; height: 100%; position: fixed; background-size: 100% 100%;
 }
 
 .sign-up-label {
