@@ -94,6 +94,10 @@ export const ADDITIONAL_INFO_MAP = ADDITIONAL_INFO.reduce((map, item) => {
     map[item.value] = item.label;
     return map;
 }, {});
-
+//entity 映射
+export const ENTITY_TYPE = {
+    EVENT: 0,
+    COMMENT: 1
+};
 
 
