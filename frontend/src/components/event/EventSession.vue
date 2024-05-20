@@ -340,18 +340,18 @@ const count_range_of_peopleValidator = (val) => {
   // 将输入的字符串转化为数字
   const [first, second] = [Data.value.min_cnt, Data.value.max_cnt]
 
-  console.log("first:", first)
-  console.log("second:", second)
-  if (first === undefined || first.length <= 0) {
+  // console.log("first:", first)
+  // console.log("second:", second)
+  if (first === undefined ||first === null || first.length <= 0) {
     return {result: false, message: '最小值必填', type: 'error'};
   }
-  if (second === undefined || second.length <= 0) {
+  if (second === undefined || second === null ||second.length <= 0) {
     return {result: false, message: '最大值必填', type: 'error'};
   }
-  if (isNaN(first) || first <= 0) {
+  if (first <= 0) {
     return {result: false, message: '最小值应为正数', type: 'error'};
   }
-  if (isNaN(second) || second <= 0) {
+  if (second <= 0) {
     return {result: false, message: '最大值应为正数', type: 'error'};
   }
 
@@ -390,7 +390,6 @@ const onEdit = async (id) => {
   visibleBody.value = true
 };
 const onSubmit = ({validateResult, firstError}) => {
-
   if (validateResult === true) {
     if (state === 0) {
       data.value = [...data.value, Data.value]

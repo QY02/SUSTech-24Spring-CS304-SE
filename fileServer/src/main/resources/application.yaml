@@ -1,5 +1,5 @@
 server:
-  port: 8084
+  port: 25572
 
 spring:
   data:
@@ -16,8 +16,8 @@ spring:
 admin-token: ca20856d238e4b8e83ac91132456b796
 
 backend:
-  host: localhost
-  port: 8083
+  host: 47.107.113.54
+  port: 25571
   api-token: 51cc09f300354fdba303d98322ef1698
 
 logging:

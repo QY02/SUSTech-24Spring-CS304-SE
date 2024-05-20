@@ -58,12 +58,12 @@ public class LoginController {
         try {
             if (StrUtil.isBlank(user.getId()) || StrUtil.isBlank(user.getPassword())) {
                 log.error("Invalid Input");
-                return Result.error(response, "400", "Invalid Input");
+                return Result.error(response, "400", "非法输入");
             }
             user = userService.login(user);
         } catch (Exception e) {
             log.error(e.getMessage());
-            return Result.error(response, "400", "Invalid username or password");
+            return Result.error(response, "400", "非法用户名或密码");
         }
         if (user.getTwoFactorAuthentication()) {
             return Result.success(response);
@@ -107,7 +107,7 @@ public class LoginController {
 
         if (StrUtil.isBlank(user.getId()) || StrUtil.isBlank(user.getPassword())) {
             log.error("Invalid Input");
-            return Result.error(response, "400", "Invalid Input");
+            return Result.error(response, "400", "非法输入");
         }
         try {
             userService.registerSearch(user);
@@ -141,13 +141,13 @@ public class LoginController {
         try {
             if (StrUtil.isBlank(emailVerify.getString("email")) || StrUtil.isBlank(emailVerify.getString("code"))) {
                 log.error("Invalid Input");
-                return Result.error(response, "401", "Verification error, please try again");
+                return Result.error(response, "401", "验证错误，请重试");
             }
             if (!Objects.equals(redisUtil.get(emailVerify.getString("code"), false, true), emailVerify.getString("email"))) {
 //                System.out.println("seee  " + redisUtil.get(emailVerify.getString("email"), false, true));
 //                System.out.println("seee  "+String.valueOf(JSON.parseObject(redisUtil.get(emailVerify.getString("email"), false, true)).get("user")));
                 log.error("Verification error, please try again");
-                return Result.error(response, "401", "Verification error, please try again");
+                return Result.error(response, "401", "验证错误，请重试");
             }
             User user;
             user = JSON.parseObject(String.valueOf(JSON.parseObject(redisUtil.get(emailVerify.getString("email"), false, false)).get("user")), User.class);
@@ -193,7 +193,7 @@ public class LoginController {
     public Result loginWithEmail(@NotNull HttpServletResponse response, @RequestBody JSONObject emailVerify) {
         if (StrUtil.isBlank(emailVerify.getString("email")) || StrUtil.isBlank(emailVerify.getString("code"))) {
             log.error("Invalid Input");
-            return Result.error(response, "401", "Verification error, please try again");
+            return Result.error(response, "401", "验证错误，请重试");
         }
         User user = userService.loginWithEmail(emailVerify);
 //        user.setPassword(null);
@@ -210,7 +210,7 @@ public class LoginController {
     public Result sendEmail(HttpServletResponse response, @PathVariable("email") String email) {
         if (StrUtil.isBlank(email)) {
             log.error("Invalid Input");
-            return Result.error(response, "400", "Invalid Input");
+            return Result.error(response, "400", "无效输入");
         }
         try {
             userService.verifyAndSendEmail(email);
