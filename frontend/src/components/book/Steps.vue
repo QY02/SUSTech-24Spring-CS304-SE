@@ -102,7 +102,8 @@ const fetchSessionInformation = async () => {
       registrationEndTime: new Date(item.registrationEndTime),
       location: item.location.split(",").map(Number)
     } as Session));
-    Object.assign(sessionInformation, dataConverted);
+    sessionInformation.length = 0;
+    sessionInformation.push(...dataConverted);
     response = await axios.post("/orderRecord/getMyOrderRecord", {
       eventId: bookingInformation.eventId,
       mode: 0

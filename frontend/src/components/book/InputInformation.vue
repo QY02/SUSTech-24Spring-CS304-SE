@@ -44,11 +44,14 @@ let FORM_RULES: UnwrapNestedRefs<FormProps['rules']> = reactive(additionalInform
 watch(() => bookingInformation.chosenSession, (newSession, oldSession) => {
   if ((oldSession === null) || (newSession === null) || (sessionInformation[oldSession].additionalInformationRequired !== sessionInformation[newSession].additionalInformationRequired)) {
     bookingInformation.additionalInformation = JSON.parse(sessionInformation[newSession].additionalInformationRequired);
-    Object.assign(additionalInformation, bookingInformation.additionalInformation);
+    additionalInformation.length = 0;
+    additionalInformation.push(...bookingInformation.additionalInformation);
+    Object.keys(formData).forEach(key => delete formData[key]);
     Object.assign(formData, additionalInformation.reduce((acc, item) => {
       acc[item.nameEng] = item.value;
       return acc;
     }, {} as Record<string, string>));
+    Object.keys(FORM_RULES).forEach(key => delete FORM_RULES[key]);
     Object.assign(FORM_RULES, additionalInformation.reduce((acc, item) => {
       acc[item.nameEng] = [
         {

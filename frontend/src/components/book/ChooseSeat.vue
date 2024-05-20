@@ -331,6 +331,7 @@ let fetchSeatMapStatus = ref(0);
 const fetchSessionInformation = async () => {
   fetchSeatMapStatus.value = 0;
   axios.post("/seatMap/getSeatMapWithSeatsById", {seatMapId: sessionInformation[bookingInformation.chosenSession].seatMapId}, {headers: {token: sessionStorage.getItem('token')}} as AxiosRequestConfig).then(response => {
+    Object.keys(seatMap).forEach(key => delete seatMap[key]);
     Object.assign(seatMap, response.data.data.detailedData);
     fetchSeatMapStatus.value = 1;
   }).catch(error => {
