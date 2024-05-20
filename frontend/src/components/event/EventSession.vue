@@ -42,7 +42,6 @@
       <t-space direction="vertical">
         <t-form
             ref="form"
-            id="form"
             :data="Data"
             reset-type="initial"
             @reset="onReset"
@@ -114,6 +113,7 @@
             <t-space size="small">
               <t-button theme="success" type="submit">提交</t-button>
               <t-button theme="default" variant="base" type="reset">重置</t-button>
+<!--              <t-button theme="default" variant="base" @click="handleClear">清空校验结果</t-button>-->
             </t-space>
           </t-form-item>
         </t-form>
@@ -223,6 +223,7 @@ const presets = ref({
 });
 
 const visibleBody = ref(false);
+const form=ref(null)
 // #### 数据 END ############
 
 
@@ -380,24 +381,25 @@ const dialogHeader = ref('请填写场次信息');
 
 // #####  表单操作 START ###############
 const onOpenAddDiag = async () => {
+  await handleClear();
   Data.value = {...INITIAL_DATA}
   state = 0
   visibleBody.value = true
 }
 const onEdit = async (id) => {
+  await handleClear();
   Data.value = await {...data.value.find(k => k.key === id)}
   state = 1
   visibleBody.value = true
 };
-const onSubmit = ({validateResult, firstError}) => {
+const onSubmit = async ({validateResult, firstError}) => {
   if (validateResult === true) {
     if (state === 0) {
       data.value = [...data.value, Data.value]
       // alert(JSON.stringify(newData.value))
       Data.value = {...INITIAL_DATA}
       // alert(JSON.stringify(newData.value))
-      visibleBody.value = false;
-      MessagePlugin.success('提交成功');
+      await MessagePlugin.success('提交成功');
     } else {
       const id = Data.value.key
       // 找到要修改的数据在 data.value 中的索引
@@ -406,28 +408,29 @@ const onSubmit = ({validateResult, firstError}) => {
         const updatedData = [...data.value];
         updatedData[index] = {...Data.value};
         data.value = updatedData;
-        visibleBody.value = false
-        MessagePlugin.success('修改成功');
+        await MessagePlugin.success('修改成功');
       } else {
-        MessagePlugin.error('未找到要修改的行');
+        await MessagePlugin.error('未找到要修改的行');
       }
     }
+    // await handleClear();
+    visibleBody.value = false
   } else {
     console.log('Validate Errors: ', firstError, validateResult);
-    MessagePlugin.warning(firstError);
+    await MessagePlugin.warning(firstError);
   }
 }
 
-const onDelete = (id) => {
+const onDelete = async (id) => {
   const index = data.value.findIndex((item) => item.key === id);
   if (index !== -1) {
     const temp = [...data.value];
     temp.splice(index, 1);
     data.value = temp;
     // visibleBody.value = false
-    MessagePlugin.success('删除成功');
+    await MessagePlugin.success('删除成功');
   } else {
-    MessagePlugin.error('未找到要删除的行');
+    await MessagePlugin.error('未找到要删除的行');
   }
 };
 
@@ -435,7 +438,6 @@ const onDelete = (id) => {
 function onValidate(params) {
   console.log('Event Table Data Validate:', params);
 }
-
 
 const onReset = async () => {
   if (state === 0) {
@@ -446,6 +448,9 @@ const onReset = async () => {
     Data.value.key = key
   }
   await MessagePlugin.success('重置成功');
+};
+const handleClear = () => {
+  form.value.clearValidate();
 };
 // #####  表单操作 END ###############
 
