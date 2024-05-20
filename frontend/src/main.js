@@ -75,7 +75,7 @@ export const globalProperties = reactive({
 
 
 const fileServerAxios = axios.create({
-    baseURL: 'http://47.107.113.54:25572',
+    baseURL: 'http://10.16.222.144:25572',
 });
 
 fileServerAxios.interceptors.response.use(function (response) {

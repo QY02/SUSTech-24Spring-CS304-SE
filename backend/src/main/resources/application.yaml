@@ -47,7 +47,7 @@ spring:
 
 file-server:
   host: 47.107.113.54
-  port: 25572
+  port: 25576
   admin-token: ca20856d238e4b8e83ac91132456b796
 
 user-token:
