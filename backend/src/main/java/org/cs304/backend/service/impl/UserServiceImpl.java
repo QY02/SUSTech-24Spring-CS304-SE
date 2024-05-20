@@ -135,8 +135,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     public void deleteUser(String id) {
         User user = baseMapper.selectOne(new QueryWrapper<User>().eq("id", id));
         user.setName("该账号已注销");
-        // TODO:注销头像
-//        user.setAvatar("");
+        user.setAvatarId(0);
     }
 
     @Override
