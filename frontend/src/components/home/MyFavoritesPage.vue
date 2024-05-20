@@ -1,7 +1,14 @@
 <template>
 <!--  <h2 style="margin-left: 20px">我的收藏</h2>-->
 <!--  <t-tag style="margin-left: 20px;height: 40px; margin-top: 15px;font-size: 20px" size="large" theme="warning" variant="light">我的收藏</t-tag>-->
-  <div id="event">
+  <div v-if="curEvents.length===0">
+    <div style="display: flex; align-items: center;text-align: center;margin-left: 45%; margin-top: 10%">
+      <error-circle-icon size="large"></error-circle-icon>
+      <h1 style="color: #5e6066; font-size: large; margin-left: 10px;">暂无活动</h1>
+    </div>
+  </div>
+  <div v-else>
+    <div id="event" v-loading="loading">
     <t-card
         v-for="(item,index) in curEvents"
         :key="index"
@@ -11,18 +18,18 @@
         <!--        <t-dropdown :options="options" :min-column-width="112" @click="clickHandler">-->
         <!--          <div class="tdesign-demo-dropdown-trigger">-->
 
-        <p v-if="item['type']===0">
-          <t-tag theme="success" variant="light" style="margin-right: 20px">表演</t-tag>
-        </p>
-        <p v-if="item['type']===1">
-          <t-tag theme="primary" variant="light" style="margin-right: 20px">讲座</t-tag>
-        </p>
-        <p v-if="item['type']===2">
-          <t-tag theme="danger" variant="light" style="margin-right: 20px">比赛</t-tag>
-        </p>
-        <p v-if="item['type']===3">
-          <t-tag variant="light" style="margin-right: 20px">其他</t-tag>
-        </p>
+        <a v-if="item['type']>=0&&item['type']<=2">
+          <t-tag theme="success" variant="light" style="margin-right: 20px">{{ EVENT_TYPE_MAP[item['type']] }}</t-tag>
+        </a>
+        <a v-if="item['type']>=3&&item['type']<=5">
+          <t-tag theme="primary" variant="light" style="margin-right: 20px">{{ EVENT_TYPE_MAP[item['type']] }}</t-tag>
+        </a>
+        <a v-if="item['type']>=6&&item['type']<=8">
+          <t-tag theme="danger" variant="light" style="margin-right: 20px">{{ EVENT_TYPE_MAP[item['type']] }}</t-tag>
+        </a>
+        <a v-if="item['type']>=9&&item['type']<=12">
+          <t-tag variant="light" style="margin-right: 20px">{{ EVENT_TYPE_MAP[item['type']] }}</t-tag>
+        </a>
         <!--        {{item['visitTime'].replace("T"," ")}}-->
         <!--            <t-button variant="text" shape="square">-->
         <!--              <more-icon/>-->
@@ -33,28 +40,48 @@
       <template #footer>
         <t-row :align="'middle'" justify="center" style="gap: 24px;">
           <t-col flex="auto" style="display: inline-flex; justify-content: center;">
-            <t-button variant="text" shape="square">
-              <thumb-up-icon/>
-            </t-button>
+            <t-popup content="收藏活动">
+              <t-button variant="text" shape="square" @click.stop="favEvent(item['id'])">
+
+                <t-icon name="heart" :color="favColor[item['id']]"/>
+              </t-button>
+            </t-popup>
           </t-col>
 
           <t-col flex="auto" style="display: inline-flex; justify-content: center">
-            <t-button variant="text" shape="square">
-              <chat-icon/>
-            </t-button>
+            <t-popup content="评论">
+              <t-button variant="text" shape="square" @click.stop="clickComment(item['id'])">
+                <chat-icon/>
+              </t-button>
+            </t-popup>
           </t-col>
 
           <t-col flex="auto" style="display: inline-flex; justify-content: center">
-            <t-button variant="text" shape="square">
-              <share-icon/>
-            </t-button>
+            <t-popup content="分享活动">
+              <t-button variant="text" shape="square" @click.stop="clickShare(item['id'],item['name'])">
+                <share-icon/>
+              </t-button>
+            </t-popup>
           </t-col>
         </t-row>
       </template>
     </t-card>
 
-
+    </div>
   </div>
+  <t-dialog
+      v-model:visible="visible"
+      header="评论"
+      body="自定义底部按钮，直接传入文字"
+      :top="'50px'"
+      :confirm-btn="null"
+      :cancel-btn="null"
+  >
+    <a v-if="visible===true">
+      <CommentPage></CommentPage>
+    </a>
+
+  </t-dialog>
 <!--  <t-popup content="返回上一页">-->
 <!--    <t-button shape="circle" theme="primary" size="large" style="position: fixed;right: 30px;bottom: 40px"-->
 <!--              @click="router.push('/user');">-->
@@ -68,21 +95,31 @@
 
 <script setup>
 
-import {ThumbUpIcon, ChatIcon, ShareIcon, MoreIcon, AddIcon, RollbackIcon} from 'tdesign-icons-vue-next';
+import {
+  ThumbUpIcon,
+  ChatIcon,
+  ShareIcon,
+  MoreIcon,
+  AddIcon,
+  RollbackIcon,
+  ErrorCircleIcon
+} from 'tdesign-icons-vue-next';
 import {MessagePlugin} from 'tdesign-vue-next';
 import axios from "axios";
 import {getCurrentInstance, ref} from "vue";
 import router from "@/routers/index.js";
+import {EVENT_TYPE_MAP} from "@/constants/index.js";
+import CommentPage from "@/components/event/CommentPage.vue";
 // 获取全局变量 $apiBaseUrl
-const globalProperties = getCurrentInstance().appContext.config.globalProperties;
-const apiBaseUrl = globalProperties.$apiBaseUrl;
 
-// alert(apiBaseUrl)
-axios.defaults.baseURL = apiBaseUrl;
 const cover = 'https://tdesign.gtimg.com/site/source/card-demo.png';
 const events = ref([]);
+const attachToken = ref([]);
 const tmpEvents = ref([]);
 const curEvents = ref([]);
+const favColor = ref({});
+const loading = ref(false);
+const visible = ref(false);
 const options = [
   {
     content: '操作一',
@@ -106,15 +143,98 @@ axios.post(`/favorite/getByUserId`, {
       // alert(response)
       events.value = response.data.data
       curEvents.value = response.data.data
-      // tmpEvents.value = response.data.data
-      // alert(JSON.stringify(curEvents.value))
+      for (let i = 0; i < events.value.length; i++) {//获取每个活动的海报
+        // for (let i = 0; i < 1; i++) {//获取每个活动的海报
+        let id = events.value[i]['id'];
+        axios.post(`/favorite/isFavorite`, {
+          "eventId": id,
+          "userId": sessionStorage.getItem('uid')
+        }, {
+          headers: {
+            token: sessionStorage.getItem('token')
+          }
+        }).then((response) => {
+          // alert(JSON.stringify(response.data.data))
+          if (response.data.data === 1) {
+            favColor.value[id] = 'red'
+          } else {
+            favColor.value[id] = 'black'
+          }
+        }).catch((error) => {
+          if (error.response) {
+            // 请求已发出，但服务器响应的状态码不在 2xx 范围内
+            // MessagePlugin.warning(error.response.data.msg);
+          } else {
+            // 一些错误是在设置请求的时候触发
+            // MessagePlugin.warning(error.message);
+          }
+        });
+        // events.value[i].imageUrl =
+        // alert(id)
+      }
 
     })
     .catch((error) => {
+      if (error.response) {
+        // 请求已发出，但服务器响应的状态码不在 2xx 范围内
+        MessagePlugin.warning(error.response.data.msg);
+      } else {
+        // 一些错误是在设置请求的时候触发
+        MessagePlugin.warning(error.message);
+      }
     });
 
-const clickHandler = (data) => {
-  MessagePlugin.success(`选中【${data.content}】 `);
+const clickComment = (eventId) => {
+  sessionStorage.setItem('eventId', eventId)
+  visible.value = true
+}
+const clickShare = (eventId, eventName) => {
+  sessionStorage.setItem('eventId', eventId)
+  sessionStorage.setItem('MomentName', eventName)
+  router.push('/newMoment');
+}
+const favEvent = (eventId) => {
+  // MessagePlugin.success(`${sessionStorage.getItem('uid')} 喜欢【${eventId}】`);
+  if (favColor.value[eventId] === 'black') {//妹收藏过
+    axios.post(`/favorite/add`, {
+      "eventId": eventId,
+      "userId": sessionStorage.getItem('uid'),
+    }, {
+      headers: {
+        token: sessionStorage.getItem('token')
+      }
+    })
+        .then(() => {
+          favColor.value[eventId] = 'red'
+          MessagePlugin.success("Add favorite successfully!");
+        })
+        .catch((error) => {
+          // thumbUpColor.value = 'red'
+          if (error.response) {
+
+            // 请求已发出，但服务器响应的状态码不在 2xx 范围内
+            // MessagePlugin.warning(error.response.data.msg);
+          } else {
+            // 一些错误是在设置请求的时候触发
+            MessagePlugin.warning(error.message);
+          }
+        });
+  } else {
+    // alert('hhh')
+    axios.post(`/favorite/delete`, {
+      "eventId": eventId,
+      "userId": sessionStorage.getItem('uid')
+    }, {
+      headers: {
+        token: sessionStorage.getItem('token')
+      }
+    }).then((response) => {
+      favColor.value[eventId] = 'black'
+      MessagePlugin.success("Delete favorite successfully!");
+
+    }).catch(() => {
+    })
+  }
 };
 const clickEvent = (eventId) => {
   MessagePlugin.success(`${sessionStorage.getItem('uid')} 选中【${eventId}】`);

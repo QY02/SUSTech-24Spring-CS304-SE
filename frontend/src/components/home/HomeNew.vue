@@ -133,21 +133,6 @@ const options = [
 ];
 const favColor = ref({});
 
-const isFavorite = ref(false);
-// const renderMask = () => (
-//     <div
-//         style={{
-//           background: 'rgba(0,0,0,.4)',
-//           color: '#fff',
-//           height: '100%',
-//           display: 'flex',
-//           alignItems: 'center',
-//           justifyContent: 'center',
-//         }}
-//     >
-//       预览
-//     </div>
-// );
 
 
 axios.post(`/event/getAllEvents`, {}, {
