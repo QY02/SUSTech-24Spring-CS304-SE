@@ -141,8 +141,6 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
         Integer eventId = event.getId();
 
         JSONArray eventSessionData = requestData.getJSONArray("eventSessionData");
-//        System.out.println("eventSessionData");
-//        System.out.println(eventSessionData);
         insertSessions(eventId, eventSessionData);
 
         attachmentList.forEach(attachment -> {

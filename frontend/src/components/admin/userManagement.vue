@@ -245,6 +245,7 @@ import axios from "axios";
 import {useModal, useForm} from "vuestic-ui";
 import {AddIcon} from "tdesign-icons-vue-next";
 import {MessagePlugin} from "tdesign-vue-next";
+import "vuestic-ui/css";
 
 const token = sessionStorage.getItem('token')
 const uid = sessionStorage.getItem('uid')

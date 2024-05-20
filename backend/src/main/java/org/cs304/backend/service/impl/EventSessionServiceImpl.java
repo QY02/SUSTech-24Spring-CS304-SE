@@ -20,8 +20,6 @@ public class EventSessionServiceImpl extends ServiceImpl<EventSessionMapper, Eve
 
     @Override
     public void insertEventSession(int id,JSONObject sessionData){
-//        System.out.println("sessionData in method");
-//        System.out.println(sessionData);
         EventSession session = new EventSession();
 
         // 设置 event_id
@@ -66,23 +64,15 @@ public class EventSessionServiceImpl extends ServiceImpl<EventSessionMapper, Eve
         // TODO:setSeatMapId,这里应该要给真实的数据
         session.setSeatMapId(1);
         session.setVenue(sessionData.getString("venue"));
-        session.setLocation(sessionData.getString("location"));
-        JSONArray addi_info_arr=sessionData.getJSONArray("additional_information_required");
-        StringBuilder addi_info_sb = new StringBuilder();
-        addi_info_sb.append("[");
-        for (int i = 0; i < addi_info_arr.size(); i++) {
-            if (i > 0) {
-                addi_info_sb.append(", ");
-            }
-            addi_info_sb.append(addi_info_arr.getString(i));
-        }
-        addi_info_sb.append("]");
-//        System.out.println("addi_info_str");
-        String addi_info_str=String.valueOf(addi_info_sb);
-//        System.out.println(addi_info_str);
 
+        // location 数组去除最外面的括号
+        // 数组可以直接当str读，保留中括号
+        String location_arr=sessionData.getString("location");
+        String location=location_arr.replace("[", "").replace("]", "");
+        session.setLocation(location);
+
+        String addi_info_str=sessionData.getString("additional_information_required");
         session.setAdditionalInformationRequired(addi_info_str);
-
         session.setVisible(sessionData.getBoolean("visible"));
 
         // 打印 Event 对象的属性值

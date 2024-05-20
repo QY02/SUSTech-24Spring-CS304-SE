@@ -1,13 +1,4 @@
-// 合同状态枚举
 import {ref} from "vue";
-
-export const CONTRACT_STATUS = {
-    FAIL: 0,
-    AUDIT_PENDING: 1,
-    EXEC_PENDING: 2,
-    EXECUTING: 3,
-    FINISH: 4,
-};
 export const EVENT_TYPE_MAP = {
     0: '讲座',
     1: '工作坊',
@@ -85,7 +76,7 @@ export const ADDITIONAL_INFO = [
     },
     {
         label: "身份证号码",
-        value: '{"name": "身份证号码", "required": true, "rules": [{"idcard": true, "message": "请输入正确的身份证号码"}], "value": ""}'
+        value: '{"name": "身份证号码","nameEng": "IDNumber", "required": true, "rules": [{"idcard": true, "message": "请输入正确的身份证号码"}], "value": ""}'
     }
 ];
 
