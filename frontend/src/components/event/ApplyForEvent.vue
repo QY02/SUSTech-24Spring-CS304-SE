@@ -98,7 +98,7 @@ const formData = ref({
   type: 0,
   publisher_id: uid,
   poster: [],
-  visible: false,
+  visible: true,
   event_policy: '',
 });
 

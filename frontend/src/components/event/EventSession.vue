@@ -155,7 +155,7 @@ const INITIAL_DATA = {
   venue: '',
   location: null,
   additional_information_required: [],
-  visible: false,
+  visible: true,
 }
 const newData = ref({...INITIAL_DATA});
 const modifyData = ref({...INITIAL_DATA});
