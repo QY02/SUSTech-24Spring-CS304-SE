@@ -1,15 +1,15 @@
 server:
-  port: 8083
+  port: 25571
 
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://47.107.113.54:3306/events_center
+    url: jdbc:mysql://localhost:3306/events_center
     username: root
     password: me#u6236kuGfsv
   data:
     redis:
-      host: 47.107.113.54
+      host: localhost
       port: 6379
       password: me#u6236kuGfsv
       database-index-authentication: 0
@@ -39,15 +39,15 @@ spring:
       max-file-size: 2048MB
       max-request-size: 2048MB
   rabbitmq:
-    host: 47.107.113.54
+    host: localhost
     port: 25569
     username: user
     password: 56481367
     virtual-host: test
 
 file-server:
-  host: 47.107.113.54
-  port: 25576
+  host: localhost
+  port: 25572
   admin-token: ca20856d238e4b8e83ac91132456b796
 
 user-token:
