@@ -103,6 +103,7 @@ public class LoginController {
         user.setPassword(userData.getString("password"));
         user.setPhoneNumber(userData.getString("phoneNumber"));
         user.setDepartment(userData.getString("department"));
+        user.setIconId(1);
         user.setTwoFactorAuthentication(userData.getBoolean("twoFactorAuthentication"));
 
         if (StrUtil.isBlank(user.getId()) || StrUtil.isBlank(user.getPassword())) {
