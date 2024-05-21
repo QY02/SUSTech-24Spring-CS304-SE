@@ -102,7 +102,7 @@
             </t-button>
           </t-form-item>
           <t-form-item label="所需额外信息" name="additional_information_required">
-            <t-checkbox-group v-model="Data.additional_information_required" :options="ADDITIONAL_INFO" lazy-load />
+            <t-checkbox-group v-model="Data.additional_information_required" :options="ADDITIONAL_INFO" lazy-load/>
           </t-form-item>
 
           <t-form-item label="是否可见" name="visible">
@@ -113,7 +113,7 @@
             <t-space size="small">
               <t-button theme="success" type="submit">提交</t-button>
               <t-button theme="default" variant="base" type="reset">重置</t-button>
-<!--              <t-button theme="default" variant="base" @click="handleClear">清空校验结果</t-button>-->
+              <!--              <t-button theme="default" variant="base" @click="handleClear">清空校验结果</t-button>-->
             </t-space>
           </t-form-item>
         </t-form>
@@ -223,7 +223,7 @@ const presets = ref({
 });
 
 const visibleBody = ref(false);
-const form=ref(null)
+const form = ref(null)
 // #### 数据 END ############
 
 
@@ -267,7 +267,7 @@ const columns = computed(() => [
     width: 130, align: 'center',
     cell: (h, {row}) => {
 
-      const displayValue = [Data.value.min_cnt, Data.value.max_cnt];
+      const displayValue = [row.min_cnt, row.max_cnt];
       return `${displayValue[0]} ~ ${displayValue[1]}`
     },
   },
@@ -343,10 +343,10 @@ const count_range_of_peopleValidator = (val) => {
 
   // console.log("first:", first)
   // console.log("second:", second)
-  if (first === undefined ||first === null || first.length <= 0) {
+  if (first === undefined || first === null || first.length <= 0) {
     return {result: false, message: '最小值必填', type: 'error'};
   }
-  if (second === undefined || second === null ||second.length <= 0) {
+  if (second === undefined || second === null || second.length <= 0) {
     return {result: false, message: '最大值必填', type: 'error'};
   }
   if (first <= 0) {
@@ -388,7 +388,8 @@ const onOpenAddDiag = async () => {
 }
 const onEdit = async (id) => {
   await handleClear();
-  Data.value = await {...data.value.find(k => k.key === id)}
+  const find = await data.value.find(k => k.key === id)
+  Data.value = {...find}
   state = 1
   visibleBody.value = true
 };
