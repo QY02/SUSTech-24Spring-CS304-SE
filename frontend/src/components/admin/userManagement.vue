@@ -227,7 +227,6 @@ import {MessagePlugin} from "tdesign-vue-next";
 import "vuestic-ui/css";
 import {DEPARTMENT_OPTIONS, emailSuffix} from "@/constants/index.js";
 
-
 // ###### 数据 START ########################
 const token = sessionStorage.getItem('token')
 const uid = sessionStorage.getItem('uid')
@@ -242,7 +241,6 @@ const defaultItem = {
 };
 const isAdding = ref(false);
 const isEditing = ref(false);
-const nowEdit=ref({...defaultItem})
 const editedItem = ref({...defaultItem});
 const createdItem = ref({...defaultItem});
 const selectedList = ref([]);

@@ -23,6 +23,7 @@ import org.cs304.backend.constant.constant_User;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * 用户信息表 前端控制器
@@ -55,10 +56,17 @@ public class UserController {
             if (user.getDepartment()==null){
                 user.setDepartment("");
             }
+            if (user.getIconId()==null){
+                user.setIconId(1);
+            }
+            if (user.getTwoFactorAuthentication()==null){
+                user.setTwoFactorAuthentication(false);
+            }
             if (user.getPassword()==null||user.getEmail()==null||user.getType()==null||user.getName()==null){
                 throw new RuntimeException("User information incomplete");
             }
-            user.setTwoFactorAuthentication(false);
+
+
 
             userService.save(user);
         } catch (Exception e) {
@@ -403,8 +411,8 @@ public class UserController {
         try {
             int userType = (int) request.getAttribute("loginUserType");
             if (userType != constant_User.ADMIN) {
-                log.error("Only admin can alter");
-                return Result.error(response, "403", "Only admin can alter");
+                log.error("仅管理员可操作");
+                return Result.error(response, "403", "仅管理员可操作");
             }
             if (ids.isEmpty()){
                 return Result.success(response);
@@ -412,7 +420,7 @@ public class UserController {
             userService.deleteUsers(ids);
         } catch (Exception e) {
             log.error(e.getMessage());
-            return Result.error(response, "400", "Delete user failed");
+            return Result.error(response, "400", "删除失败");
         }
         return Result.success(response);
     }
@@ -428,7 +436,7 @@ public class UserController {
             return Result.success(response, user);
         }catch (Exception e){
             log.error(e.getMessage());
-            return Result.error(response, "400", "Get user failed");
+            return Result.error(response, "400", "获取用户失败");
         }
     }
 
@@ -446,7 +454,7 @@ public class UserController {
             return Result.success(response, userList);
         }catch (Exception e){
             log.error(e.getMessage());
-            return Result.error(response, "400", "Get user failed");
+            return Result.error(response, "400", "获取用户失败");
         }
     }
 
@@ -458,15 +466,18 @@ public class UserController {
         try {
             int userType = (int) request.getAttribute("loginUserType");
             if (userType != constant_User.ADMIN) {
-                log.error("Only admin can alter");
-                return Result.error(response, "403", "Only admin can alter");
+                log.error("仅管理员可操作");
+                return Result.error(response, "403", "仅管理员可操作");
             }
             List<User> userList = userService.list();
-            userList.forEach(user -> user.setPassword(null));
-            return Result.success(response, userList);
+            List<User> filteredUserList = userList.stream()
+                    .filter(user -> user.getIconId() != 0)
+                    .toList();
+            filteredUserList.forEach(user -> user.setPassword(null));
+            return Result.success(response, filteredUserList);
         }catch (Exception e){
             log.error(e.getMessage());
-            return Result.error(response, "400", "Get user failed");
+            return Result.error(response, "400", "获取用户失败");
         }
     }
 }

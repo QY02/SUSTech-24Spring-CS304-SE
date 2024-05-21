@@ -49,8 +49,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Override
     public User login(User user) {
         User dbuser = baseMapper.selectOne(new QueryWrapper<User>().eq("id", user.getId()).eq("password", Encryption.encrypt(user.getPassword())));
+
         if (dbuser == null) {
-            throw new ServiceException("Invalid username or password");
+            throw new ServiceException("用户名或密码错误");
+        }
+        if (dbuser.getIconId()==0){
+            throw new ServiceException("该账号已注销");
         }
         return redisUtil.generateToken(dbuser);
     }
@@ -65,11 +69,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     public void registerSearch(User user) {
         User dbuser = baseMapper.selectById(user.getId());
         if (dbuser != null) {
-            throw new ServiceException("User ID already exists");
+            throw new ServiceException("该ID已注册");
         }
+
         dbuser = baseMapper.selectOne(new QueryWrapper<User>().eq("email", user.getEmail()));
         if (dbuser != null) {
-            throw new ServiceException("User Email already exists");
+            throw new ServiceException("该邮箱已占用");
         }
     }
 
@@ -84,9 +89,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Override
     public User loginWithEmail(JSONObject jsonObject) {
         if (!Objects.equals(redisUtil.get(jsonObject.getString("code"), false, true), jsonObject.getString("email"))) {
-            throw new ServiceException("Verification error, please try again");
+            throw new ServiceException("验证错误，请重试");
         }
         User dbuser = baseMapper.selectOne(new QueryWrapper<User>().eq("email", jsonObject.getString("email")));
+        if (dbuser.getIconId()==0){
+            throw new ServiceException("该账号已注销");
+        }
         return redisUtil.generateToken(dbuser);
     }
 
@@ -107,7 +115,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         try {
             mailSender.send(message);
         } catch (Exception e) {
-            throw new ServiceException("Email sending failed");
+            throw new ServiceException("发送邮件失败，请重试");
         }
         redisUtil.add(code, email, 300);
     }
@@ -121,12 +129,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     public void verifyAndSendEmail(String email) {
         User dbuser = baseMapper.selectOne(new QueryWrapper<User>().eq("email", email));
         if (dbuser == null) {
-            throw new ServiceException("User not found");
+            throw new ServiceException("未找到该用户");
+        }
+        if (dbuser.getIconId()==0){
+            throw new ServiceException("该账号已注销");
         }
         try {
             sendEmail(email);
         } catch (ServiceException e) {
-            throw new ServiceException("Email sending failed");
+            throw new ServiceException("发送邮件失败，请重试");
         }
 
     }
@@ -134,8 +145,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Override
     public void deleteUser(String id) {
         User user = baseMapper.selectOne(new QueryWrapper<User>().eq("id", id));
-        user.setName("该账号已注销");
+        if (user.getIconId()==0){
+            throw new ServiceException("该账号已注销");
+        }
+        user.setName("账号已注销");
         user.setIconId(0);
+        baseMapper.updateById(user);
     }
 
     @Override
