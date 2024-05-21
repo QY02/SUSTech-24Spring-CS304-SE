@@ -128,8 +128,11 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
 
         // 打印 Event 对象的属性值
 //        System.out.println("Event Object: " + event);
+        eventMapper.insert(event);
 
+//        insertSessions(1, eventSessionData);
         return attachmentService.uploadBatchStart(ADMIN, fileDirList, fileList, requestData);
+//        return null;
     }
 
     @Override
