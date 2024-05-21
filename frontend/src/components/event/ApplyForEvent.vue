@@ -121,6 +121,9 @@ const onReset = () => {
 };
 const sendEvent = async () => {
   const poster=formData.value.poster.map(file => file.name)
+  eventSessionData.value.forEach((eventSession) => {eventSession.additional_information_required = eventSession.additional_information_required.map((information) => {
+    return JSON.parse(information);
+  })})
   await axios.post(`/event/add`, {
         "event": formData.value,
         "sessions": eventSessionData.value,

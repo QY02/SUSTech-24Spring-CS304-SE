@@ -72,7 +72,7 @@ export const ADDITIONAL_INFO = [
     },
     {
         label: "书院",
-        value: '{"name": "书院","nameEng": "college", "required": true, "rules": null, "value": ""}',
+        value: '{"name": "书院","nameEng": "college", "required": true, "rules": [], "value": ""}',
     },
     {
         label: "身份证号码",
