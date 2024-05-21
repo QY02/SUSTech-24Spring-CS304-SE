@@ -142,6 +142,7 @@ const dateToString = (date: Date) => {
 
   &-title {
     text-align: center;
+    margin-top: 80px;
     font-size: 25px;
     line-height: 0;
   }
