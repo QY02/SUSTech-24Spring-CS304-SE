@@ -61,7 +61,7 @@
               @click="openModalToEditItemById(rowIndex)"
           />
           <va-button
-              v-if="items[rowIndex].id===userId"
+              v-if="items[rowIndex].id===uid"
               preset="plain"
               icon="delete"
               class="ml-3"
@@ -83,7 +83,7 @@
             <td colspan="7">
               <div style="display: flex;
                              justify-content: center;
-                              margin-top: 7px">
+                              margin-top: 20px">
                 <va-pagination v-model="currentPage" :pages="pages"/>
               </div>
             </td>
@@ -132,16 +132,16 @@
       <t-form-item label="电话" name="phoneNumber">
         <t-input v-model="editedItem.phoneNumber"></t-input>
       </t-form-item>
-      <t-form-item label="学院" name="department">
-        <t-select v-model="editedItem.department" class="demo-select-base" clearable filterable>
-          <t-option v-for="(item, index) in DEPARTMENT_OPTIONS" :key="index" :value="item.value" :label="item.label">
-            {{ item.label }}
+      <t-form-item label="系别" name="department">
+        <t-select v-model="editedItem.department" class="demo-select-base">
+          <t-option v-for="(item, index) in DEPARTMENT_OPTIONS" :key="index" :value="item" :label="item">
+            {{ item}}
           </t-option>
         </t-select>
       </t-form-item>
       <t-form-item class="confirm-reset-btns">
         <t-space size="small">
-          <t-button theme="default" variant="base">取消</t-button>
+          <t-button theme="default" variant="base" type="reset">取消</t-button>
           <t-button theme="success" type="submit">提交</t-button>
           <!--              <t-button theme="default" variant="base" @click="handleClear">清空校验结果</t-button>-->
         </t-space>
@@ -171,9 +171,9 @@
                  :rules="[(v) => /^(\d{8})$/.test(v) || '请输入8位学号']"
         ></t-input>
       </t-form-item>
-      <t-form-item label="用户名" name="username">
+      <t-form-item label="用户名" name="name">
         <t-input type="text" clearable placeholder="请输入用户名"
-                 v-model="createdItem.username"
+                 v-model="createdItem.name"
         ></t-input>
       </t-form-item>
       <t-form-item name="password" label="密码">
@@ -194,22 +194,22 @@
         ></t-input>
       </t-form-item>
       <t-form-item label="用户类型" name="department">
-        <t-select v-model="createdItem.type" class="demo-select-base" clearable filterable>
+        <t-select v-model="createdItem.type" class="demo-select-base">
           <t-option v-for="item in optionsState" :key="item" :value="item" :label="item">
             {{ item }}
           </t-option>
         </t-select>
       </t-form-item>
       <t-form-item label="系别" name="department">
-        <t-select v-model="createdItem.department" class="demo-select-base" clearable filterable>
-          <t-option v-for="(item, index) in DEPARTMENT_OPTIONS" :key="index" :value="item.value" :label="item.label">
-            {{ item.label }}
+        <t-select v-model="createdItem.department" class="demo-select-base">
+          <t-option v-for="(item, index) in DEPARTMENT_OPTIONS" :key="index" :value="item" :label="item">
+            {{ item }}
           </t-option>
         </t-select>
       </t-form-item>
       <t-form-item class="confirm-reset-btns">
         <t-space size="small">
-          <t-button theme="default" variant="base">取消</t-button>
+          <t-button theme="default" variant="base" type="reset">取消</t-button>
           <t-button theme="success" type="submit">提交</t-button>
           <!--              <t-button theme="default" variant="base" @click="handleClear">清空校验结果</t-button>-->
         </t-space>
@@ -221,16 +221,37 @@
 <script setup>
 import {ref, onMounted, computed, watch} from 'vue';
 import axios from "axios";
-import {useModal, useForm} from "vuestic-ui";
+import {useModal} from "vuestic-ui";
 import {AddIcon, DeleteIcon} from "tdesign-icons-vue-next";
 import {MessagePlugin} from "tdesign-vue-next";
 import "vuestic-ui/css";
 import {DEPARTMENT_OPTIONS, emailSuffix} from "@/constants/index.js";
 
+
+// ###### 数据 START ########################
 const token = sessionStorage.getItem('token')
 const uid = sessionStorage.getItem('uid')
-const {isValid: isValidadd, validate: validateadd} = useForm('formRef1')
-const {isValid: isValidedit, validate: validateedit} = useForm('formRef2')
+const defaultItem = {
+  id: '',
+  name: '',
+  password: '',
+  email: '',
+  phoneNumber: '',
+  type: '普通用户',
+  department: '计算机系',
+};
+const isAdding = ref(false);
+const isEditing = ref(false);
+const nowEdit=ref({...defaultItem})
+const editedItem = ref({...defaultItem});
+const createdItem = ref({...defaultItem});
+const selectedList = ref([]);
+const filter = ref("");
+const filtered = ref("");
+const perPage = ref(10);
+const currentPage = ref(1);
+const optionsState = ["普通用户", "管理员"];
+// ###### 数据 END ########################
 
 const rules = {
   username: [{required: true}, {
@@ -240,7 +261,6 @@ const rules = {
   id: [{required: true}, {validator: (v) => /^(\d{8})$/.test(v), message: 'ID必须是8个字符'}],
   email: [{required: true}, {validator: (v) => /[^@]+@[^@]+\.[a-zA-Z]{2,}$/.test(v), message: '邮箱格式错误'}],
   phoneNumber: [{required: true}, {validator: (v) => /^(\d{11})?$/.test(v), message: '电话必须是11个字符'}],
-
   password: [{required: true}, {
     validator: (v) => /^[a-zA-Z0-9/*]{8,}$/.test(v),
     message: '只允许数字、字符和斜杠，最小长度为8'
@@ -255,7 +275,7 @@ const columns = [
   {key: 'email', label: "邮箱", sortable: true},
   {key: 'phoneNumber', label: "电话", sortable: true},
   {key: 'type', label: "用户类型", sortable: true},
-  {key: 'department', label: "学院", width: 80},
+  {key: 'department', label: "系别", width: 80},
   {key: 'actions', label: "操作", width: 80},
 ];
 
@@ -269,83 +289,16 @@ const emailOptionsAdd = computed(() => {
   if (!emailPrefix) return [];
   return emailSuffix.map((suffix) => emailPrefix + suffix);
 });
-const defaultItem = {
-  id: '',
-  name: '',
-  password: '',
-  email: '',
-  phoneNumber: '',
-  type: '普通用户',
-  department: '计算机系',
-};
 
-const isEditing = ref(false);
-const nowEditType = ref('');
-const nowEditName = ref('');
-const nowEditEmail = ref('');
-const nowEditPhone = ref('');
-const nowEditDep = ref('');
-const isAdding = ref(false);
-const editedItem = ref({...defaultItem});
-const createdItem = ref({...defaultItem});
-const selectedList = ref([]);
-const filter = ref("");
-const filtered = ref("");
-const perPage = ref(10);
-const currentPage = ref(1);
-const optionsState = ["普通用户", "管理员"];
-const userId = ref(null);
-
-const resetEditedItem = () => {//恢复初始值，设置弹窗不显示
-  editedItem.value.type = nowEditType.value
-  editedItem.value.name = nowEditName.value
-  editedItem.value.email = nowEditEmail.value
-  editedItem.value.phoneNumber = nowEditPhone.value
-  editedItem.value.department = nowEditDep.value
-  isEditing.value = false;
-};
-
-const resetCreatedItem = () => {//恢复初始值，设置弹窗不显示
-  createdItem.value = {...defaultItem};
-  isAdding.value = false
-};
-const deleteItemById = async (id) => {//单删
-  const result = await confirm({
-    message: "删除用户后，账号状态将变为‘已注销’",
-    title: "确认删除所选用户",
-    okText: "确认",
-    cancelText: "取消",
-  });
-  if (result) {//暂时还不能用
-    // alert(items.value[id].id)
-    axios.post(`/user/delete/${items.value[id].id}`, {}, {
-      headers: {
-        token: token,
-      },
-    }).then(() => {
-      MessagePlugin.success("提交成功");
-      location.reload()
-    }).catch();
-  }
-
-
-};
-const getRowBind = (row) => {
-  if (row.type !== "1") {
-    return {
-      class: ["custom-class"]
-    };
-  }
-};
-const addNewItem = () => {//add 确认弹窗点击确定后执行的操作
-  // alert(JSON.stringify(createdItem.value))
-  if (validateadd()) {
+//######## 添加用户 START ###############################
+const addNewItem = async ({validateResult, firstError}) => {//add 确认弹窗点击确定后执行的操作
+  if (validateResult === true) {
     if (createdItem.value.type === '普通用户') {
       createdItem.value.type = 1
     } else if (createdItem.value.type === '管理员') {
       createdItem.value.type = 0
     } else {
-      MessagePlugin.error("用户类型非法");
+      await MessagePlugin.error("用户类型非法");
       return
     }
     axios.post("/user/add", createdItem.value, {
@@ -356,11 +309,23 @@ const addNewItem = () => {//add 确认弹窗点击确定后执行的操作
       MessagePlugin.success("提交成功");
       location.reload()
     }).catch();
+  } else {
+    console.log('Errors: ', validateResult);
+    await MessagePlugin.warning(firstError);
   }
 };
+const resetCreatedItem = () => {//恢复初始值，设置弹窗不显示
+  createdItem.value = {...defaultItem};
+  isAdding.value = false
+};
+const showAdd = () => {
+  isAdding.value = true;
+}
+//######## 添加用户 END ###############################
 
-const editItem = () => {
-  if (validateedit()) {
+// ######## 编辑用户 START #######################
+const editItem = async ({validateResult, firstError}) => {
+  if (validateResult === true) {
     if (editedItem.value.password === '********') {
       axios.put("/user/update/admin", {
         id: editedItem.value.id,
@@ -399,35 +364,53 @@ const editItem = () => {
         location.reload()
       }).catch();
     }
+  } else {
+    console.log('Errors: ', validateResult);
+    await MessagePlugin.warning(firstError);
   }
 };
 
-const openModalToEditItemById = index => {
+const openModalToEditItemById = async index => {
   // alert(JSON.stringify(items.value[index]))
-  editedItem.value = items.value[index];
+  editedItem.value = {...items.value[index]};
   isEditing.value = true;
   editedItem.value.password = '********'
-  nowEditType.value = editedItem.value.type;
-  nowEditName.value = editedItem.value.name;
-  nowEditEmail.value = editedItem.value.email;
-  nowEditPhone.value = editedItem.value.phoneNumber;
-  nowEditDep.value = editedItem.value.department;
+  // nowEdit.value={...editedItem.value}
 };
 
-
-const getAllUsers = () => {//拿到初始数据进行展示
-  userId.value = uid
-  // alert(userId.value)
-  axios.post("/user/getAll", {}, {
-    headers: {
-      token: token,
-    },
-  }).then(response => {
-    items.value = response.data.data
-    // alert(JSON.stringify(response.data.data))
-  }).catch();
+const resetEditedItem = () => {//恢复初始值，设置弹窗不显示
+  // editedItem.value={...nowEdit.value}
+  isEditing.value = false;
 };
 
+const getRowBind = (row) => {
+  if (row.type !== "1") {
+    return {
+      class: ["custom-class"]
+    };
+  }
+};
+// ######## 编辑用户 END #######################
+
+// ##### 删除用户 START ################################
+const deleteItemById = async (id) => {//单删
+  const result = await confirm({
+    message: "删除用户后，账号状态将变为‘已注销’",
+    title: "确认删除所选用户",
+    okText: "确认",
+    cancelText: "取消",
+  });
+  if (result)
+      // alert(items.value[id].id)
+    axios.post(`/user/delete/${items.value[id].id}`, {}, {
+      headers: {
+        token: token,
+      },
+    }).then(() => {
+      MessagePlugin.success("提交成功");
+      location.reload()
+    }).catch();
+};
 const onButtonClickDelete = async () => {//批量删除所选items
   const result = await confirm({
     message: "删除用户后，账号状态将变为‘已注销’",
@@ -438,10 +421,9 @@ const onButtonClickDelete = async () => {//批量删除所选items
 
   if (result) {//暂时不能用
     await MessagePlugin.info("正在提交...");
-
     axios.post("/user/delete/batch",
         selectedList.value
-            .filter(item => item.id !== userId.value)
+            .filter(item => item.id !== uid)
             .map(item => item.id),
         {
           headers: {
@@ -454,10 +436,8 @@ const onButtonClickDelete = async () => {//批量删除所选items
     }).catch();
   }
 };
-const showAdd = () => {
-  isAdding.value = true;
-}
-
+// ##### 删除用户 END ################################
+// ##### 分页 START #########################################
 const pages = computed(() => {
   return perPage.value && perPage.value !== 0
       ? Math.ceil(filtered.value.length / perPage.value)
@@ -469,8 +449,22 @@ watch([perPage, filtered], () => {
           ? Math.ceil(filtered.value.length / perPage.value)
           : filtered.value.length;
     }
-)
-;
+);
+// ##### 分页 END #########################################
+
+// ######## 拉取所有用户 START ########################
+const getAllUsers = () => {//拿到初始数据进行展示
+  axios.post("/user/getAll", {}, {
+    headers: {
+      token: token,
+    },
+  }).then(response => {
+    items.value = response.data.data
+    // alert(JSON.stringify(response.data.data))
+  }).catch();
+};
+// ######## 拉取所有用户 END ########################
+
 onMounted(() => {
   getAllUsers();
 });
