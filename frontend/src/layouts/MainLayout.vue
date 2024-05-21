@@ -13,24 +13,24 @@
             </template>
             首页
           </t-menu-item>
-          <t-menu-item value="book" @click="handleNav('book')">
-            <template #icon>
-              <HomeIcon/>
-            </template>
-            book
-          </t-menu-item>
-          <t-menu-item value="event" @click="handleNav('event')">
-            <template #icon>
-              <HomeIcon/>
-            </template>
-            event
-          </t-menu-item>
-          <t-menu-item value="approval" @click="handleNav('approval')">
-            <template #icon>
-              <HomeIcon/>
-            </template>
-            审批
-          </t-menu-item>
+<!--          <t-menu-item value="book" @click="handleNav('book')">-->
+<!--            <template #icon>-->
+<!--              <HomeIcon/>-->
+<!--            </template>-->
+<!--            book-->
+<!--          </t-menu-item>-->
+<!--          <t-menu-item value="event" @click="handleNav('event')">-->
+<!--            <template #icon>-->
+<!--              <HomeIcon/>-->
+<!--            </template>-->
+<!--            event-->
+<!--          </t-menu-item>-->
+<!--          <t-menu-item value="approval" @click="handleNav('approval')">-->
+<!--            <template #icon>-->
+<!--              <HomeIcon/>-->
+<!--            </template>-->
+<!--            审批-->
+<!--          </t-menu-item>-->
           <t-menu-item value="moments" @click="handleNav('moments')">
             <template #icon>
               <HomeIcon/>

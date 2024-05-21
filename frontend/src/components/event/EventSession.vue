@@ -267,7 +267,7 @@ const columns = computed(() => [
     width: 130, align: 'center',
     cell: (h, {row}) => {
 
-      const displayValue = [Data.value.min_cnt, Data.value.max_cnt];
+      const displayValue = [row.min_cnt, row.max_cnt];
       return `${displayValue[0]} ~ ${displayValue[1]}`
     },
   },
