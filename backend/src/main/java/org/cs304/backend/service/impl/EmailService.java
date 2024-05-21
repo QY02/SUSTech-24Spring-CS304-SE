@@ -7,7 +7,9 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Date;
+import java.time.ZoneId;
 
 /**
  * @author zyp
@@ -30,12 +32,13 @@ public class EmailService {
      * @param to 邮箱
      * @param title 邮件标题
      * @param content 邮件内容
-     * @param date 发送时间
+     * @param dateTime 发送时间
      *
      */
-    public void sendEmail(String to, String title, String content, Date date) {
+    public void sendEmail(String to, String title, String content, LocalDateTime dateTime) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(senderAddress);
+        Date date = Date.from(dateTime.atZone(ZoneId.systemDefault()).toInstant());
         message.setSentDate(date);
         message.setSubject(title);
         message.setText(content);
@@ -47,7 +50,7 @@ public class EmailService {
         }
     }
     public void sendImmediateEmail(String to, String title, String content) {
-        sendEmail(to,title,content,new Date());
+        sendEmail(to,title,content,LocalDateTime.now());
     }
 
 

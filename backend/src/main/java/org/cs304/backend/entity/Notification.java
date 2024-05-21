@@ -33,9 +33,9 @@ public class Notification {
 
     private Integer eventSessionId;
 
-    private Date createTime;
+    private LocalDateTime createTime;
 
-    private Date notifyTime;
+    private LocalDateTime notifyTime;
 
     private String title;
 

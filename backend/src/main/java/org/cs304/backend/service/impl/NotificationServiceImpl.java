@@ -23,7 +23,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -56,11 +55,9 @@ public class NotificationServiceImpl extends ServiceImpl<NotificationMapper, Not
         return dateTime.format(formatter);
     }
 
-    private void insertImmediateNotification(String publisherId, String notifiedUserId, String title, String content, int type) {
-        insertNotification(publisherId, notifiedUserId, title, content, new Date(), type);
-    }
 
-    private void insertNotification(String publisherId, String notifiedUserId, String title, String content, Date date, int type) {
+
+    private void insertNotification(String publisherId, String notifiedUserId, String title, String content, LocalDateTime date, int type) {
         User user = userMapper.selectById(notifiedUserId);
         if (user == null) {
             throw new ServiceException("User not found");
@@ -80,6 +77,33 @@ public class NotificationServiceImpl extends ServiceImpl<NotificationMapper, Not
             emailService.sendEmail(toEmail, title, content, date);
         }
     }
+    private void insertImmediateNotification(String publisherId, String notifiedUserId, String title, String content, int type) {
+        insertNotification(publisherId, notifiedUserId, title, content, LocalDateTime.now(), type);
+    }
+    private void insertHalfHourNotification(String publisherId, String notifiedUserId, String eventTitle, LocalDateTime startTime, LocalDateTime endTime, int type) {
+        LocalDateTime notificationTime = startTime.minusMinutes(30);
+        String title = String.format("活动'%s'将于30分钟后开始", eventTitle);
+        String content = String.format("您好！\n您参加的'%s' '%s ~ %s'场次 将于30分钟后开始，请准时参加。", eventTitle, formatDateTime(startTime), formatDateTime(endTime));
+        if (LocalDateTime.now().isBefore(notificationTime)) {
+            insertNotification(publisherId, notifiedUserId, title, content, notificationTime, type);
+        }
+    }
+    private void insert15MinNotification(String publisherId, String notifiedUserId, String eventTitle, LocalDateTime startTime, LocalDateTime endTime, int type) {
+        LocalDateTime notificationTime = startTime.minusMinutes(15);
+        String title = String.format("活动'%s'将于15分钟后开始", eventTitle);
+        String content = String.format("您好！\n您参加的'%s' '%s ~ %s'场次 将于15分钟后开始，请准时参加。", eventTitle, formatDateTime(startTime), formatDateTime(endTime));
+        if (LocalDateTime.now().isBefore(notificationTime)) {
+            insertNotification(publisherId, notifiedUserId, title, content, notificationTime, type);
+        }
+    }
+    private void insert0MinNotification(String publisherId, String notifiedUserId, String eventTitle, LocalDateTime startTime, LocalDateTime endTime, int type) {
+        String title = String.format("活动'%s'已经开始", eventTitle);
+        String content = String.format("您好！\n您参加的'%s' '%s ~ %s'场次 已经开始。", eventTitle, formatDateTime(startTime), formatDateTime(endTime));
+        if (LocalDateTime.now().isBefore(startTime)) {
+            insertNotification(publisherId, notifiedUserId, title, content, startTime, type);
+        }
+    }
+
 
     private JSONArray convertNotificationListToJsonArray(List<Notification> notificationList) {
         if (notificationList != null && !notificationList.isEmpty()) {
@@ -116,6 +140,7 @@ public class NotificationServiceImpl extends ServiceImpl<NotificationMapper, Not
             String title = "活动申请未通过";
             String content = String.format("您好！\n很遗憾地通知您：您申请的活动'%s'申请未通过。\n\n审核意见如下：\n%s", eventTitle, comment);
             insertImmediateNotification(publisherId, notifiedUserId, title, content, constant_NotificationType.NOTPASS);
+
         }
     }
 
@@ -137,6 +162,9 @@ public class NotificationServiceImpl extends ServiceImpl<NotificationMapper, Not
                 String title = "成功参加活动";
                 String content = String.format("您好！\n您已成功参加活动'%s'的'%s ~ %s'场次。", eventTitle, formatDateTime(startTime), formatDateTime(endTime));
                 insertImmediateNotification(publisherId, notifiedUserId, title, content, constant_NotificationType.RESERVE);
+                insertHalfHourNotification(publisherId,notifiedUserId,eventTitle,startTime,endTime,constant_NotificationType.RESERVE);
+                insert15MinNotification(publisherId,notifiedUserId,eventTitle,startTime,endTime,constant_NotificationType.RESERVE);
+                insert0MinNotification(publisherId,notifiedUserId,eventTitle,startTime,endTime,constant_NotificationType.RESERVE);
             }
         }
     }
@@ -179,6 +207,7 @@ public class NotificationServiceImpl extends ServiceImpl<NotificationMapper, Not
                 String content = String.format("您好！\n遗憾地通知您：您参加的活动'%s'的‘%s ~ %s'场次取消。\n\n具体原因如下：\n%s",
                         eventTitle, formatDateTime(startTime), formatDateTime(endTime), comment);
                 insertImmediateNotification(publisherId, userId, title, content, constant_NotificationType.CANCEL);
+
             }
         }
     }
