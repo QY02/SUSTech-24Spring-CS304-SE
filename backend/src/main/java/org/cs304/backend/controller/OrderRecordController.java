@@ -1,18 +1,16 @@
 package org.cs304.backend.controller;
 
-import ch.qos.logback.core.util.TimeUtil;
 import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson2.JSONObject;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 //import com.alipay.api.AlipayConfig;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import org.cs304.backend.config.AliPayConfig;
 import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.internal.util.AlipaySignature;
-import com.alipay.api.request.AlipayTradeCreateRequest;
 import com.alipay.api.request.AlipayTradePagePayRequest;
-import com.alipay.api.response.AlipayTradeCreateResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -20,9 +18,12 @@ import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.cs304.backend.constant.constant_OrderRecordStatus;
-import org.cs304.backend.entity.Favorite;
+import org.cs304.backend.entity.EventSession;
 import org.cs304.backend.entity.OrderRecord;
+import org.cs304.backend.entity.Seat;
 import org.cs304.backend.exception.ServiceException;
+import org.cs304.backend.mapper.EventSessionMapper;
+import org.cs304.backend.mapper.SeatMapper;
 import org.cs304.backend.service.IEventService;
 import org.cs304.backend.service.IOrderRecordService;
 import org.cs304.backend.utils.Result;
@@ -55,6 +56,12 @@ public class OrderRecordController {
 
     @Resource
     private IEventService eventService;
+
+    @Resource
+    private EventSessionMapper eventSessionMapper;
+
+    @Resource
+    private SeatMapper seatMapper;
 
     @PostMapping("/getMyOrderRecord")
     @Operation(description = """
@@ -124,6 +131,10 @@ public class OrderRecordController {
                 .eq("event_session_id", orderRecord.getEventSessionId()).eq("status",0));
         savedOrderRecord.setStatus(constant_OrderRecordStatus.UNPAID);
         orderRecordService.updateById(savedOrderRecord);
+        EventSession eventSession = eventSessionMapper.selectById(savedOrderRecord.getEventSessionId());
+        Seat seat = seatMapper.selectList(new QueryWrapper<Seat>().eq("seat_map_id", eventSession.getSeatMapId()).eq("seat_id", savedOrderRecord.getSeatId())).get(0);
+        seat.setAvailability(false);
+        seatMapper.update(seat, new UpdateWrapper<Seat>().eq("seat_map_id", eventSession.getSeatMapId()).eq("seat_id", savedOrderRecord.getSeatId()));
         int orderId = savedOrderRecord.getId();
         return Result.success(response, orderId);
     }
