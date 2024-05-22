@@ -39,7 +39,7 @@
                         </div>
                         <t-space style="display: flex; width: 100%;">
                             <div class="author">
-                                — {{ item.publisherId }}  {{ item.publisherNames }}
+                                — {{ item.publisherId }} {{ item.publisherNames }}
                             </div>
                         </t-space>
                     </div>
@@ -79,7 +79,14 @@
         </template>
     </t-dialog>
 
-    <t-dialog v-model:visible="visibleDelete" header="确认删除" width="40%" :on-close="close" :on-confirm="deleteComment">
+    <t-dialog v-model:visible="visibleDelete" header="确认删除" width="30%" :cancel-btn=null
+    :confirm-btn=null>
+    <div style="margin-top: 40px; margin-bottom: -10px; display: flex; justify-content: flex-end;;">
+        <t-space size="20px">
+            <t-button @click="deleteComment" :loading="deleteLoading">确定删除</t-button>
+            <t-button theme="default" variant="base" :disabled="deleteLoading" type="reset" @click="() => visibleDelete = false">取消</t-button>
+        </t-space>
+    </div>
     </t-dialog>
 </template>
 
@@ -89,7 +96,7 @@ import { ref, reactive, computed, watch } from 'vue';
 import { DeleteIcon } from 'tdesign-icons-vue-next';
 import { MessagePlugin } from 'tdesign-vue-next';
 import axios from "axios";
-const emits = defineEmits([ 'update:averageScore' ]);
+const emits = defineEmits(['update:averageScore']);
 const form = ref(null);
 const userId = ref(sessionStorage.getItem('uid'))
 const commentsData = ref([]);
@@ -167,6 +174,8 @@ const deleteComment = () => {
             token: token
         }
     }).then((response) => {
+        visibleDelete.value=false;
+        getComment();
     }).catch(() => {
     }).finally(() => {
         deleteLoading.value = false;
@@ -203,7 +212,7 @@ const computeAverageScore = () => {
     if (commentsData.value.length !== 0) {
         const totalScore = commentsData.value.reduce((sum, item) => sum + item.score, 0);
         // console.log(totalScore)
-        averageScore.value = totalScore / commentsData.value.length;
+        averageScore.value = Math.round(totalScore / commentsData.value.length);
     }
 }
 
