@@ -54,7 +54,8 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
     @Resource
     private HistoryMapper historyMapper;
 
-    private final INotificationService notificationService=new NotificationServiceImpl();
+    @Resource
+    private INotificationService notificationService;
 
     @Override
     public JSONArray getAuditList(String eventStatus) {
