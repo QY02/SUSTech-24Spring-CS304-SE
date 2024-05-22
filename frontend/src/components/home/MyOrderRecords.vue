@@ -1,52 +1,84 @@
 <template>
   <!--  <h2 style="margin-left: 20px">我的预定</h2>-->
   <!--  <t-tag style="margin-left: 20px;height: 40px; margin-top: 15px;font-size: 20px" size="large" theme="success" variant="light">我的预定</t-tag>-->
+  <t-loading size="small" :loading="loading" show-overlay>
+    <div v-if="events.length===0">
+      <div style="display: flex; align-items: center;text-align: center;margin-left: 45%; margin-top: 10%">
+        <error-circle-icon size="large"></error-circle-icon>
+        <h1 style="color: #5e6066; font-size: large; margin-left: 10px;">暂无活动</h1>
+      </div>
+    </div>
+    <div v-else>
+      <div id="MyOrderEvent">
+        <t-list :split="true" stripe>
+          <t-list-item v-for="(item, index) in unpaidEvent" :key="item" @click="clickEvent(index)">
+            <div style="display: flex;">
 
-  <div id="MyOrderEvent">
+              <!--          <t-list-item-meta :title="item.title" :description="item.content" style="display: flex; align-items: center;"/>-->
+              <t-list-item-meta class="t-list-item-meta-description" :title="item.name"
+                                :description="records[index].seatId"
+                                style="display: flex; align-items: center;">
+                <!--            <p class="t-list-item-meta-description">{{ item.content }}</p>-->
+              </t-list-item-meta>
+              <t-tag theme="primary" variant="light" style="display: flex; margin-left: 30px;">
+                {{ records[index].submitTime.replace('T', ' ') }}
+              </t-tag>
+              <t-tag theme="success" variant="light" style="display: flex; margin-left: 30px;">
+                活动开始时间： {{ records[index].eventSession.startTime.replace('T', ' ') }}
+              </t-tag>
+              <t-tag theme="warning" variant="light" style="display: flex; margin-left: 30px;">
+                活动地点： {{ records[index].eventSession.venue.replace('T', ' ') }}
+              </t-tag>
+              <t-tag theme="danger" style="display: flex; margin-left: 30px;">
+               未付款
+              </t-tag>
 
-    <!--  <t-list :split="true" stripe>-->
-    <!--    <t-list-item>-->
-    <!--      <t-list-item-meta :image="imageUrl" title="列表标题" description="列表内容的描述性文字" />-->
-    <!--    </t-list-item>-->
-    <!--    <t-list-item>-->
-    <!--      <t-list-item-meta :image="imageUrl" title="列表标题" description="列表内容的描述性文字" />-->
-    <!--    </t-list-item>-->
-    <!--    <t-list-item>-->
-    <!--      <t-list-item-meta :image="imageUrl" title="列表标题" description="列表内容的描述性文字" />-->
-    <!--    </t-list-item>-->
-    <!--  </t-list>-->
-
-    <t-list :split="true" stripe>
-      <t-list-item v-for="(item, index) in events" :key="item" @click="clickEvent(index)">
-        <div style="display: flex;">
-
-          <!--          <t-list-item-meta :title="item.title" :description="item.content" style="display: flex; align-items: center;"/>-->
-          <t-list-item-meta class="t-list-item-meta-description" :title="item.name" :description="records[index].seatId"
-            style="display: flex; align-items: center;">
-            <!--            <p class="t-list-item-meta-description">{{ item.content }}</p>-->
-          </t-list-item-meta>
-          <t-tag theme="primary" variant="light" style="display: flex; margin-left: 30px;">
-            {{ records[index].submitTime.replace('T', ' ') }}
-          </t-tag>
-          <t-tag theme="success" variant="light" style="display: flex; margin-left: 30px;">
-            活动开始时间： {{ records[index].eventSession.startTime.replace('T', ' ') }}
-          </t-tag>
-          <t-tag theme="warning" variant="light" style="display: flex; margin-left: 30px;">
-            活动地点： {{ records[index].eventSession.venue.replace('T', ' ') }}
-          </t-tag>
-
-        </div>
-        <template #action>
-          <t-button variant="text" shape="square" @click="clickEvent(index)">
-            <arrow-right-icon />
-          </t-button>
-        </template>
+            </div>
+            <template #action>
+              <t-popup content="前往付款">
+              <t-button variant="text" shape="square" @click="goToPay(index)">
+                <arrow-right-icon/>
+              </t-button>
+              </t-popup>
+            </template>
 
 
-      </t-list-item>
+          </t-list-item>
 
-    </t-list>
-  </div>
+
+          <t-list-item v-for="(item, index) in events" :key="item" @click="clickEvent(index)">
+            <div style="display: flex;">
+
+              <!--          <t-list-item-meta :title="item.title" :description="item.content" style="display: flex; align-items: center;"/>-->
+              <t-list-item-meta class="t-list-item-meta-description" :title="item.name"
+                                :description="records[index].seatId"
+                                style="display: flex; align-items: center;">
+                <!--            <p class="t-list-item-meta-description">{{ item.content }}</p>-->
+              </t-list-item-meta>
+              <t-tag theme="primary" variant="light" style="display: flex; margin-left: 30px;">
+                {{ records[index].submitTime.replace('T', ' ') }}
+              </t-tag>
+              <t-tag theme="success" variant="light" style="display: flex; margin-left: 30px;">
+                活动开始时间： {{ records[index].eventSession.startTime.replace('T', ' ') }}
+              </t-tag>
+              <t-tag theme="warning" variant="light" style="display: flex; margin-left: 30px;">
+                活动地点： {{ records[index].eventSession.venue.replace('T', ' ') }}
+              </t-tag>
+
+            </div>
+            <template #action>
+              <t-button variant="text" shape="square" @click="clickEvent(index)">
+                <arrow-right-icon/>
+              </t-button>
+            </template>
+
+
+          </t-list-item>
+
+        </t-list>
+      </div>
+    </div>
+  </t-loading>
   <!--  <t-popup content="返回上一页">-->
   <!--    <t-button shape="circle" theme="primary" size="large" style="position: fixed;right: 30px;bottom: 40px"-->
   <!--              @click="router.push('/user');">-->
@@ -60,10 +92,18 @@
 
 <script setup>
 
-import { ThumbUpIcon, ChatIcon, ShareIcon, MoreIcon, ArrowRightIcon, RollbackIcon } from 'tdesign-icons-vue-next';
-import { MessagePlugin } from 'tdesign-vue-next';
+import {
+  ThumbUpIcon,
+  ChatIcon,
+  ShareIcon,
+  MoreIcon,
+  ArrowRightIcon,
+  RollbackIcon,
+  ErrorCircleIcon
+} from 'tdesign-icons-vue-next';
+import {MessagePlugin} from 'tdesign-vue-next';
 import axios from "axios";
-import { computed, defineComponent, getCurrentInstance, inject, ref, watch } from "vue";
+import {computed, defineComponent, getCurrentInstance, inject, ref, watch} from "vue";
 import router from "@/routers/index.js";
 import heart from "tdesign-icons-vue-next/lib/components/heart.js";
 
@@ -72,6 +112,8 @@ const events = ref([]);
 const tmpEvents = ref([]);
 const curEvents = ref([]);
 const records = ref([]);
+const loading = ref(true);
+
 const options = [
   {
     content: '操作一',
@@ -98,19 +140,22 @@ axios.post(`/orderRecord/getMyOrderRecord`, {
     token: sessionStorage.getItem('token')
   }
 })
-  .then((response) => {
-    // alert(response)
-    events.value = response.data.data.map(item => item.event);
-    records.value = response.data.data;
+    .then((response) => {
+      // alert(response)
+      events.value = response.data.data.map(item => item.event);
+      records.value = response.data.data;
+      loading.value = false;
+      // alert(JSON.stringify(response.data.data))
+      // alert(JSON.stringify(events.value))
 
-    // alert(JSON.stringify(response.data.data))
-    // for (let i = 0; i < events.value.length; i++) {//获取每个活动的海报
-    //   let id = events.value[i]['id'];
-    //   // alert(id)
-    // }
-  })
-  .catch((error) => { });
-  
+      // for (let i = 0; i < events.value.length; i++) {//获取每个活动的海报
+      //   let id = events.value[i]['id'];
+      //   // alert(id)
+      // }
+    })
+    .catch((error) => {
+    });
+
 const unpaidEvent = ref([])
 const unpaidRecords = ref([]);
 axios.post(`/orderRecord/getUnpaidOrderRecord`, {
@@ -121,24 +166,32 @@ axios.post(`/orderRecord/getUnpaidOrderRecord`, {
     token: sessionStorage.getItem('token')
   }
 })
-  .then((response) => {
-    // alert(response)
-    unpaidEvent.value = response.data.data.map(item => item.event);
-    unpaidRecords.value = response.data.data;
+    .then((response) => {
+      // alert(response)
+      unpaidEvent.value = response.data.data.map(item => item.event);
+      unpaidRecords.value = response.data.data;
 
-    // alert(JSON.stringify(response.data.data))
-    // for (let i = 0; i < events.value.length; i++) {//获取每个活动的海报
-    //   let id = events.value[i]['id'];
-    //   // alert(id)
-    // }
-  })
-  .catch((error) => { });
+      // alert(JSON.stringify(response.data.data))
+      // for (let i = 0; i < events.value.length; i++) {//获取每个活动的海报
+      //   let id = events.value[i]['id'];
+      //   // alert(id)
+      // }
+    })
+    .catch((error) => {
+    });
 
 
 const clickHandler = (data) => {
   MessagePlugin.success(`选中【${data.content}】 `);
 };
 const clickEvent = (index) => {
+  MessagePlugin.success(`${sessionStorage.getItem('uid')} 选中【${index}】`);
+  // alert(typeof records.value)
+  sessionStorage.setItem('index', JSON.stringify(records.value[index]))
+  router.push('/OrderRecordDetails');
+
+};
+const goToPay = (index) => {
   MessagePlugin.success(`${sessionStorage.getItem('uid')} 选中【${index}】`);
   // alert(typeof records.value)
   sessionStorage.setItem('index', JSON.stringify(records.value[index]))
@@ -160,16 +213,16 @@ const typeValue = ref([]);  // Initialize with a default value
 //   // alert(typeValue.value)
 // })
 
-// function getSearchNew(message) {
-//   // alert(JSON.stringify(tmpEvents.value))
-//
-//   // curEvents.value =event.content.includes(searchText.value) || event.title.includes(searchText.value)
-//   // alert(message)
-//   curEvents.value = tmpEvents.value.filter(events => events['content'].includes(message) || events['name'].includes(message));
-//   // curEvents.value = tmpEvents.value.filter(tmpEvents => tmpEvents['content'].includes(message) || tmpEvents['eventPolicy'].includes(message));
-// }
+function getSearchNew(message) {
+  // alert(JSON.stringify(tmpEvents.value))
 
-// defineExpose({getSearchNew});
+  // curEvents.value =event.content.includes(searchText.value) || event.title.includes(searchText.value)
+  // alert(message)
+  curEvents.value = tmpEvents.value.filter(events => events['content'].includes(message) || events['name'].includes(message));
+  // curEvents.value = tmpEvents.value.filter(tmpEvents => tmpEvents['content'].includes(message) || tmpEvents['eventPolicy'].includes(message));
+}
+
+defineExpose({getSearchNew});
 
 
 // const {colors} = useColors();

@@ -237,8 +237,9 @@ const favEvent = (eventId) => {
   }
 };
 const clickEvent = (eventId) => {
-  MessagePlugin.success(`${sessionStorage.getItem('uid')} 选中【${eventId}】`);
-
+  // MessagePlugin.success(`${sessionStorage.getItem('uid')} 选中【${eventId}】`);
+  sessionStorage.setItem('eventId', eventId)
+  router.push('/event');
   // router.push('/event');
   axios.post(`/history/add`, {
     "eventId": eventId,
@@ -250,10 +251,16 @@ const clickEvent = (eventId) => {
     }
   })
       .then((response) => {
-        sessionStorage.setItem('eventId', eventId)
-        router.push('/event');
+
       })
       .catch((error) => {
+        if (error.response) {
+          // 请求已发出，但服务器响应的状态码不在 2xx 范围内
+          MessagePlugin.warning(error.response.data.msg);
+        } else {
+          // 一些错误是在设置请求的时候触发
+          MessagePlugin.warning(error.message);
+        }
       });
 };
 

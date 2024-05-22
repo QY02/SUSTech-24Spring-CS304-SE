@@ -36,6 +36,16 @@
         <a v-if="item['type']>=9&&item['type']<=12">
           <t-tag variant="light" style="margin-right: 20px">{{ EVENT_TYPE_MAP[item['type']] }}</t-tag>
         </a>
+
+        <a v-if="item['status']===0">
+          <t-tag theme="primary" variant="light" style="margin-right: 20px">审核中</t-tag>
+        </a>
+        <a v-if="item['status']===1">
+          <t-tag theme="success" variant="light" style="margin-right: 20px">审核通过</t-tag>
+        </a>
+        <a v-if="item['status']===2">
+          <t-tag theme="danger" variant="light" style="margin-right: 20px">审核未通过</t-tag>
+        </a>
         <!--            <t-button variant="text" shape="square">-->
         <!--              <more-icon/>-->
         <!--            </t-button>-->
@@ -132,7 +142,7 @@ axios.get(`/event/getMyPost/${publisherId}`, {
       events.value = response.data.data
       curEvents.value = events.value
       tmpEvents.value = events.value
-      // alert(JSON.stringify(events.value))
+      alert(JSON.stringify(events.value))
       for (let i = 0; i < events.value.length; i++) {//获取每个活动的海报
         // for (let i = 0; i < 1; i++) {//获取每个活动的海报
         let id = events.value[i]['id'];
@@ -283,7 +293,8 @@ const favEvent = (eventId) => {
 
 const clickEvent = (eventId) => {
   MessagePlugin.success(`${sessionStorage.getItem('uid')} 选中【${eventId}】`);
-
+  sessionStorage.setItem('eventId', eventId)
+  router.push('/event');
   // router.push('/event');
   axios.post(`/history/add`, {
     "eventId": eventId,
@@ -295,8 +306,7 @@ const clickEvent = (eventId) => {
     }
   })
       .then((response) => {
-        sessionStorage.setItem('eventId',eventId)
-        router.push('/event');
+
       })
       .catch((error) => {
         if (error.response) {
