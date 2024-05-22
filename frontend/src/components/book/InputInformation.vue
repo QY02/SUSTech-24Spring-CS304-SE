@@ -89,7 +89,7 @@ const onSubmit: FormProps['onSubmit'] = ({validateResult, firstError}) => {
 };
 </script>
 
-<script lang="ts">
+<script lang="ts" >
 import {ref} from "vue";
 import {MessagePlugin} from "tdesign-vue-next";
 

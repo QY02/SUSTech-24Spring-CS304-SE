@@ -304,7 +304,7 @@ const commentsData = [
 ];
 </script>
 
-<style lang="css">
+<style lang="css" scoped>
 .anchor-demo {
     border: 1px solid transparent;
     padding: 20px;
