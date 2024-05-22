@@ -146,7 +146,7 @@ import {ADDITIONAL_INFO, ADDITIONAL_INFO_MAP} from "@/constants/index.js";
 const DIAG_WIDTH = "600px"
 const INITIAL_DATA = {
   key: 0,
-  registration_required: false,
+  registration_required: true,
   registration_time_range: [],
   event_time_range: [],
   min_cnt: 10,

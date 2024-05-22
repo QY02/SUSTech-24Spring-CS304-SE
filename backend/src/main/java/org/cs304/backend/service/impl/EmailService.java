@@ -31,7 +31,6 @@ public class EmailService {
     private String senderAddress;
 
     public void sendEmail(String to, String title, String content, LocalDateTime dateTime) {
-//        System.out.println(11111);
         ZonedDateTime zonedDateTime = dateTime.atZone(ZoneId.systemDefault());
         long delay = ChronoUnit.MILLIS.between(ZonedDateTime.now(), zonedDateTime);
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
@@ -39,7 +38,6 @@ public class EmailService {
     }
 
     private void sendEmail_(String to, String title, String content) {
-//        System.out.println(2222);
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(senderAddress);
         message.setSubject(title);
