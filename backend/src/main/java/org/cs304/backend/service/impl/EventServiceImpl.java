@@ -15,6 +15,7 @@ import org.cs304.backend.mapper.*;
 import org.cs304.backend.service.IAttachmentService;
 import org.cs304.backend.service.IEventService;
 import org.cs304.backend.service.IEventSessionService;
+import org.cs304.backend.service.INotificationService;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -52,6 +53,8 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
     private UserFavoriteTypeMapper userFavoriteTypeMapper;
     @Resource
     private HistoryMapper historyMapper;
+
+    private INotificationService notificationService;
 
     @Override
     public JSONArray getAuditList(String eventStatus) {
@@ -289,16 +292,18 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
     }
 
     @Override
-    public void changeAudit(Integer eventId, Integer status, String reason) {
+    public void changeAudit(String publisherId,Integer eventId, Integer status, String reason) {
         Event event = baseMapper.selectById(eventId);
         if (event == null) {
             throw new ServiceException("400", "Event not exist");
         }
         if (status == constant_EventStatus.PASSED) {
             event.setStatus(constant_EventStatus.PASSED);
+            notificationService.insertEventPassNotification(publisherId,eventId);
         } else if (status == constant_EventStatus.REJECTED) {
             event.setStatus(constant_EventStatus.REJECTED);
             event.setAuditRecord(reason);
+            notificationService.insertEventNotPassNotification(publisherId,eventId,reason);
         } else {
             throw new ServiceException("400", "Invalid status");
         }

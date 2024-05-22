@@ -75,10 +75,11 @@ public class AdminController {
         if (userType != 0) {
             throw new ServiceException("403","Only admin can alter");
         }
+        String userId = (String) request.getAttribute("loginUserId");
         Integer eventId = requestBody.getInteger("eventId");
         Integer status = requestBody.getInteger("status");
         String reason = requestBody.getString("reason");
-        eventService.changeAudit(eventId,status,reason);
+        eventService.changeAudit(userId,eventId,status,reason);
         return Result.success(response);
     }
 }

@@ -33,7 +33,7 @@ public interface IEventService extends IService<Event> {
     void submitBookingData(int userType, String userId, OrderRecord orderRecord);
 
     @Transactional(rollbackFor = Exception.class)
-    void changeAudit(Integer eventId, Integer status, String reason);
+    void changeAudit(String publisherId,Integer eventId, Integer status, String reason);
 
     List<Event> getRecommendEvents(String userId);
 

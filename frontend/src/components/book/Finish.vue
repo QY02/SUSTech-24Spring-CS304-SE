@@ -14,9 +14,9 @@
 <script setup>
 import router from '@/routers';
 import {CheckCircleIcon} from 'tdesign-icons-vue-next';
-import {onMounted, onUnmounted} from "vue";
+import {watch} from "vue";
 import axios from "axios";
-import {sessionInformation, bookingInformation} from '@/components/book/Steps.vue';
+import {sessionInformation, bookingInformation, currentStep} from '@/components/book/Steps.vue';
 
 const pushRouter = (value) => {
   sessionStorage.setItem('currentStep', 0)
@@ -40,7 +40,11 @@ const notify = () => {
   }).catch()
 }
 // onUnmounted(() => notify())
-
+watch(currentStep, (newValue) => {
+  if (newValue === 3) {
+    notify()
+  }
+})
 </script>
 
 <style scoped lang="less">
