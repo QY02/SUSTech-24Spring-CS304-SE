@@ -14,9 +14,12 @@
 <script setup>
 import router from '@/routers';
 import {CheckCircleIcon} from 'tdesign-icons-vue-next';
+import {onMounted, onUnmounted} from "vue";
+import axios from "axios";
+import {sessionInformation, bookingInformation} from '@/components/book/Steps.vue';
 
 const pushRouter = (value) => {
-  sessionStorage.setItem('currentStep',0)
+  sessionStorage.setItem('currentStep', 0)
   switch (value) {
     case 'HomePage':
       router.push('/HomePage');
@@ -26,6 +29,17 @@ const pushRouter = (value) => {
       break;
   }
 }
+const notify = () => {
+  console.log("yes")
+  axios.post(`/notification/reserveSession/${sessionInformation[bookingInformation.chosenSession].eventSessionId}`, {}, {
+    headers: {
+      token: sessionStorage.getItem('token')
+    }
+  }).then((response) => {
+    console.log(response)
+  }).catch()
+}
+// onUnmounted(() => notify())
 
 </script>
 

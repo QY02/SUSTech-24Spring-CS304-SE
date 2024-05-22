@@ -4,19 +4,21 @@
     <t-descriptions column="1">
       <t-descriptions-item label="活动名称">{{ eventDetail.name }}</t-descriptions-item>
       <t-descriptions-item label="该场次报名时间">
-          {{`${dateToString(sessionInformation[chosenSession].registrationStartTime)} - ${dateToString(sessionInformation[chosenSession].registrationEndTime)}`}}
-        </t-descriptions-item>
-        <t-descriptions-item label="活动时间">
-          {{`${dateToString(sessionInformation[chosenSession].startTime)} - ${dateToString(sessionInformation[chosenSession].startTime)}`}}
-        </t-descriptions-item>
-        <t-descriptions-item label="活动场地">{{ sessionInformation[chosenSession].venue
-          }}</t-descriptions-item>
+        {{ `${dateToString(sessionInformation[chosenSession].registrationStartTime)} - ${dateToString(sessionInformation[chosenSession].registrationEndTime)}` }}
+      </t-descriptions-item>
+      <t-descriptions-item label="活动时间">
+        {{ `${dateToString(sessionInformation[chosenSession].startTime)} - ${dateToString(sessionInformation[chosenSession].startTime)}` }}
+      </t-descriptions-item>
+      <t-descriptions-item label="活动场地">{{
+          sessionInformation[chosenSession].venue
+        }}
+      </t-descriptions-item>
       <t-descriptions-item label="座位">{{ bookingInformation.chosenSeat }}</t-descriptions-item>
       <t-descriptions-item label="价格">{{ bookingInformation.seatPrice }}</t-descriptions-item>
     </t-descriptions>
     <div class="input-information-button-div">
       <t-space size="medium">
-        <t-button  theme="default" @click="currentStep--">上一步</t-button>
+        <t-button theme="default" @click="currentStep--">上一步</t-button>
         <t-button @click="prePay">前往付款</t-button>
       </t-space>
     </div>
@@ -24,11 +26,11 @@
 
 </template>
 <script setup lang="ts">
-import axios, { AxiosRequestConfig } from 'axios';
-import { currentStep, submitData, toNextStep } from '@/components/book/Steps.vue';
-import { onMounted, onUnmounted, reactive, Ref, ref, watch } from "vue";
-import { sessionInformation, bookingInformation } from '@/components/book/Steps.vue';
-import { MessagePlugin, NotifyPlugin } from "tdesign-vue-next";
+import axios, {AxiosRequestConfig} from 'axios';
+import {currentStep, submitData, toNextStep} from '@/components/book/Steps.vue';
+import {onMounted, onUnmounted, reactive, Ref, ref, watch} from "vue";
+import {sessionInformation, bookingInformation} from '@/components/book/Steps.vue';
+import {MessagePlugin, NotifyPlugin} from "tdesign-vue-next";
 
 const dateToString = (date: Date) => {
   const dayNameArray = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
@@ -49,7 +51,8 @@ const getEventDetail = () => {
     }
   }).then((response) => {
     eventDetail.value = response.data.data
-  }).catch(() => { })
+  }).catch(() => {
+  })
 }
 getEventDetail();
 const result = ref(0);
@@ -64,7 +67,7 @@ const prePay = async () => {
       nameEng: item.nameEng,
       value: item.value
     })))
-  }, { headers: { token: sessionStorage.getItem('token') } } as AxiosRequestConfig).then((response) => {
+  }, {headers: {token: sessionStorage.getItem('token')}} as AxiosRequestConfig).then((response) => {
     orderId.value = response.data.data;
     MessagePlugin.success('提交支付信息成功');
     // alert(orderId.value)
@@ -75,7 +78,8 @@ const prePay = async () => {
     // startPolling();
     // currentStep.value++;
   })
-    .catch(error => { })
+      .catch(error => {
+      })
 }
 
 const payResult = ref(0);
@@ -111,9 +115,9 @@ const currentUrl = ref(window.location.href);
 const timestamp = ref(null);
 const formattedDateTime = ref(null);
 
-const checkUrl = ()=>{
+const checkUrl = () => {
   console.log('checking')
-  if(currentUrl.value!=='http://localhost:5173/book'){
+  if (currentUrl.value !== 'http://localhost:5173/book') {
     console.log('differnet')
     const urlParams = new URLSearchParams(currentUrl.value.split('?')[1]); // 获取查询参数部分
     const newTimestamp = urlParams.get('timestamp'); // 获取timestamp参数的值
@@ -129,22 +133,22 @@ const checkUrl = ()=>{
         'orderId': orderId.value,
         'time': formattedDateTime.value,
         'result': 1
-      },{
-    headers: {
-      token: sessionStorage.getItem('token')
+      }, {
+        headers: {
+          token: sessionStorage.getItem('token')
+        }
+      }).then((response) => {
+        console.log('next')
+        MessagePlugin.success('支付成功');
+        toNextStep();
+        window.location.href = 'http://localhost:5173/book';
+      }).catch(() => {
+      })
     }
-  }).then((response) => {
-    console.log('next')
-    MessagePlugin.success('支付成功');
-    toNextStep();
-    window.location.href = 'http://localhost:5173/book';
-  }).catch(() => { })
-    }
-  }
-  else{
-    console.log(currentStep.value==3)
-    if(!bookingInformation.chosenSeat && currentStep.value==3){
-      currentStep.value+=2;
+  } else {
+    console.log(currentStep.value == 3)
+    if (!bookingInformation.chosenSeat && currentStep.value == 3) {
+      currentStep.value += 2;
       sessionStorage.setItem('currentStep', currentStep.value);
     }
   }
@@ -167,16 +171,17 @@ onMounted(() => {
         'orderId': parseInt(sessionStorage.getItem('orderId')),
         'time': formattedDateTime.value,
         'result': 1
-      },{
-    headers: {
-      token: sessionStorage.getItem('token')
-    }
-  }).then((response) => {
-    console.log('next')
-    MessagePlugin.success('支付成功');
-    toNextStep();
-    window.location.href = 'http://localhost:5173/book';
-  }).catch(() => { })
+      }, {
+        headers: {
+          token: sessionStorage.getItem('token')
+        }
+      }).then((response) => {
+        console.log('next')
+        MessagePlugin.success('支付成功');
+        toNextStep();
+        window.location.href = 'http://localhost:5173/book';
+      }).catch(() => {
+      })
     }
     // if (newUrl !== 'http://localhost:5173/book') {
     //   const urlParams = new URLSearchParams(newUrl.split('?')[1]); // 获取查询参数部分
@@ -204,21 +209,21 @@ onUnmounted(() => {
 });
 
 function getPayResult() {
-  axios.post("/orderRecord/getPayResultById", { id: orderId },
-    { headers: { token: sessionStorage.getItem('token') } } as AxiosRequestConfig)
-    .then(response => {
-      payResult.value = response.data.data;
-    })
-    .catch(error => {
-    });
+  axios.post("/orderRecord/getPayResultById", {id: orderId},
+      {headers: {token: sessionStorage.getItem('token')}} as AxiosRequestConfig)
+      .then(response => {
+        payResult.value = response.data.data;
+      })
+      .catch(error => {
+      });
 }
 
 const chosenSession = ref(0);
 watch(
-  () => bookingInformation.chosenSession,
-  (newSession, oldSession) => {
-    chosenSession.value = newSession
-  }
+    () => bookingInformation.chosenSession,
+    (newSession, oldSession) => {
+      chosenSession.value = newSession
+    }
 );
 
 </script>
