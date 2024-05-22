@@ -73,13 +73,13 @@ const handleClickProduct = (product: CardProductType) => {
   //   router.push('/admin/eventManage');
   // }
   else if (product.type === 3) {
-    router.push('/approval');
+    router.push('/admin/approval');
   } else if (product.type === 4) {
-    router.push('/momentAudit');
+    router.push('/admin/momentAudit');
   } else if (product.type === 5) {
-    router.push('/payment');
+    router.push('/admin/payment');
   } else if (product.type === 6) {
-    router.push('/monitor');
+    router.push('/admin/monitor');
 
   }
 };

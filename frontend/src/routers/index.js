@@ -128,6 +128,31 @@ const routes = [
             }
         ]
     },
+    {
+        path: '/admin',
+        component: () => import('@/layouts/AdminLayout.vue'),
+        children: [
+            {
+                path: '/',
+                redirect: '/adminHomePage',
+                component: () => import('@/components/admin/homePage.vue')
+            },
+            {
+                name: 'adminHomePage',
+                path: '/admin/homepage',
+                component: () => import('@/components/admin/homePage.vue')
+            },
+            {   name: 'adminUserManage',
+                path: '/admin/userManage',
+                component: () => import('@/components/admin/userManagement.vue')
+            },
+            {
+                name: 'approval',
+                path: '/admin/approval',
+                component: () => import('@/components/admin/EventApproval.vue')
+            },
+        ]
+    },
 
 
     // //userLayout
