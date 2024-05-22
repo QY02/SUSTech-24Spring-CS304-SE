@@ -4,6 +4,7 @@ import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import org.cs304.backend.constant.constant_AttachmentType;
@@ -22,6 +23,8 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import static org.cs304.backend.constant.constant_AttachmentType.IMAGE;
@@ -32,6 +35,8 @@ import static org.cs304.backend.constant.constant_User.ADMIN;
 
 @Service
 public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements IEventService {
+
+    private final Lock submitBookingDataLock = new ReentrantLock();
 
     @Resource
     private IEventSessionService eventSessionService;
@@ -194,6 +199,7 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
 
     @Override
     public void submitBookingData(int userType, String userId, OrderRecord orderRecord) {
+        submitBookingDataLock.lock();
         Event event = baseMapper.selectById(orderRecord.getEventId());
         if ((event == null) || (event.getStatus() != constant_EventStatus.PASSED) || (!event.getVisible())) {
             throw new ServiceException("400", "Event not exist");
@@ -216,8 +222,10 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
             throw new ServiceException("400", "Seat not exist");
         }
         if (!seat.getAvailability()) {
-            throw new ServiceException("401", "The seat is unavailable");
+            throw new ServiceException("409", "The seat is not available");
         }
+        seat.setAvailability(false);
+        seatMapper.update(seat, new UpdateWrapper<Seat>().eq("seat_map_id", eventSession.getSeatMapId()).eq("seat_id", orderRecord.getSeatId()));
         List<Integer> statuses = Arrays.asList(PAID, UNPAID, SUBMITTED);
         OrderRecord order = orderRecordMapper.selectOne(new QueryWrapper<OrderRecord>().eq("user_id", userId).eq("event_id", orderRecord.getEventId()).eq("event_session_id", orderRecord.getEventSessionId())
                 .in("status", statuses));
@@ -251,6 +259,7 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
         orderRecord.setSubmitTime(LocalDateTime.now());
         orderRecord.setPaymentTime(null);
         orderRecordMapper.insert(orderRecord);
+        submitBookingDataLock.unlock();
     }
 
 

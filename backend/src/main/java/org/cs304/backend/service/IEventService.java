@@ -30,6 +30,7 @@ public interface IEventService extends IService<Event> {
 
 //    Event getEventByEventId(int userType, Integer eventId);
 
+    @Transactional(rollbackFor = Exception.class)
     void submitBookingData(int userType, String userId, OrderRecord orderRecord);
 
     @Transactional(rollbackFor = Exception.class)

@@ -6,7 +6,6 @@ import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 //import com.alipay.api.AlipayConfig;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import org.cs304.backend.config.AliPayConfig;
 import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.internal.util.AlipaySignature;
@@ -18,9 +17,7 @@ import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.cs304.backend.constant.constant_OrderRecordStatus;
-import org.cs304.backend.entity.EventSession;
 import org.cs304.backend.entity.OrderRecord;
-import org.cs304.backend.entity.Seat;
 import org.cs304.backend.exception.ServiceException;
 import org.cs304.backend.mapper.EventSessionMapper;
 import org.cs304.backend.mapper.SeatMapper;
@@ -50,7 +47,6 @@ public class OrderRecordController {
     private static final String CHARSET = "GBK";
     private static final String FORMAT = "JSON";
     private static final String SIGN_TYPE = "RSA2";
-    private final Lock prePayInformationLock = new ReentrantLock();
     @Resource
     private IOrderRecordService orderRecordService;
 
@@ -125,14 +121,6 @@ public class OrderRecordController {
               "additionalInformation": "string"
             }""")))
     public Result prePayInformation(HttpServletResponse response, HttpServletRequest request, @RequestBody OrderRecord orderRecord) {
-        prePayInformationLock.lock();
-        EventSession eventSession = eventSessionMapper.selectById(orderRecord.getEventSessionId());
-        Seat seat = seatMapper.selectList(new QueryWrapper<Seat>().eq("seat_map_id", eventSession.getSeatMapId()).eq("seat_id", orderRecord.getSeatId())).get(0);
-        if (!seat.getAvailability()) {
-            throw new ServiceException("409", "The seat is not available");
-        }
-        seat.setAvailability(false);
-        seatMapper.update(seat, new UpdateWrapper<Seat>().eq("seat_map_id", eventSession.getSeatMapId()).eq("seat_id", orderRecord.getSeatId()));
         // 先加入
         int userType = (int) request.getAttribute("loginUserType");
         String userId = (String) request.getAttribute("loginUserId");
@@ -143,7 +131,6 @@ public class OrderRecordController {
         savedOrderRecord.setStatus(constant_OrderRecordStatus.UNPAID);
         orderRecordService.updateById(savedOrderRecord);
         int orderId = savedOrderRecord.getId();
-        prePayInformationLock.unlock();
         return Result.success(response, orderId);
     }
 
