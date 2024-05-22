@@ -34,7 +34,7 @@
           <div class="card-4" style="margin-left: 30px ">
             <t-tag size="large" theme="primary"><template #icon>
                 <StarFilledIcon />
-              </template>4.5</t-tag>
+              </template>{{ parentAverageScore }}</t-tag>
           </div>
         </div>
       </div>
@@ -230,7 +230,7 @@
     <!-- review part -->
     <div :id="`${path}#reviews`" style="height: 36px;"></div>
     <div class="card" style="flex-direction: column;">
-      <CommentPage></CommentPage>
+      <CommentPage @update:averageScore="parentAverageScore = $event"></CommentPage>
       <div style="height: 40px;"></div>
     </div>
     <!-- <TestPage></TestPage> -->
@@ -312,6 +312,7 @@ const getAttachment = () => {
     }
   }).then((response) => {
     attachmentPath.value = response.data.data
+    console.log(attachmentPath.value)
     if (attachmentPath.value !== null && attachmentPath.value !== undefined && attachmentPath.value !== '')
       getPhoto();
   }).catch(() => { })
@@ -362,6 +363,7 @@ const eventId = sessionStorage.getItem('eventId')
 const uid = sessionStorage.getItem('uid')
 const eventDetail = ref({})
 const isFavorite = ref(false);
+const parentAverageScore = ref(0);
 
 const addHistory = () => {
   axios.post(`/history/add`, {
@@ -473,7 +475,7 @@ const fetchSessionInformation = async () => {
 
 onMounted(() => {
   getEventDetail();
-  getPhoto();
+  getAttachment();
   fetchSessionInformation();
 });
 

@@ -1,7 +1,7 @@
 <template>
     <t-space style="display: flex; width: 100%;">
         <div>
-            <div class="title">评论</div>
+            <div class="title">评论{{ averageScore }}</div>
             <div class="line"></div>
         </div>
         <div style="margin-top: 30px; display: flex; justify-content: flex-end; margin-right:30px ;">
@@ -17,6 +17,17 @@
                             <h2>{{ item.title }}</h2>
                             <div class="stars"><t-rate :default-value="item.score" allow-half disabled size="16" />
                             </div>
+                            <div v-if="userId == item.publisherId"
+                                style="margin-top: 30px; display: flex; justify-content: flex-end; margin-right:30px ;">
+                                <t-popup content="删除该评论">
+                                    <t-button theme="primary" @click="visibleDelete = true; deleteEventId = item.id"
+                                        shape="square" variant="text">
+                                        <template #icon>
+                                            <DeleteIcon />
+                                        </template>
+                                    </t-button>
+                                </t-popup>
+                            </div>
                         </t-space>
                         <div class="comment_infos">
                             <p class="date-time">
@@ -29,15 +40,6 @@
                         <t-space style="display: flex; width: 100%;">
                             <div class="author">
                                 — {{ item.publisherId }}
-                                <div v-if="userId == item.publisherId" style="margin-top: 30px; display: flex; justify-content: flex-end; margin-right:30px ;">
-    
-                                <t-button theme="primary" @click="visibleDelete = true; deleteEventId = item.id"
-                                    shape="square" variant="text">
-                                    <template #icon>
-                                        <DeleteIcon />
-                                    </template>
-                                </t-button>
-                            </div>
                             </div>
                         </t-space>
                     </div>
@@ -83,7 +85,7 @@
 
 
 <script setup>
-import { ref, reactive } from 'vue';
+import { ref, reactive,computed, watch } from 'vue';
 import { DeleteIcon } from 'tdesign-icons-vue-next';
 import { MessagePlugin } from 'tdesign-vue-next';
 import axios from "axios";
@@ -171,6 +173,8 @@ const deleteComment = () => {
 
 }
 
+
+const averageScore = ref(-1)
 const getComment = () => {
     axios.post(`/comment/getByEvent`,
         {
@@ -184,8 +188,18 @@ const getComment = () => {
         }
     ).then((response) => {
         commentsData.value = response.data.data
+        averageScore.value = computed(() => {
+            if (commentsData.value.length === 0) return -1;
+            const totalScore = commentsData.value.reduce((sum, item) => sum + item.score, 0);
+            return totalScore / commentsData.value.length;
+        });
     }).catch(() => { })
 }
+
+watch(averageScore, (newAverageScore) => {
+  emits('update:averageScore', newAverageScore);
+});
+
 const onReset = () => {
     MessagePlugin.success('重置成功');
 };
