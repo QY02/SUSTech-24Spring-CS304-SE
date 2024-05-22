@@ -1,4 +1,5 @@
 <template >
+  <t-loading size="small" :loading="loading" show-overlay>
   <div v-if="curEvents.length===0">
     <div style="display: flex; align-items: center;text-align: center;margin-left: 45%; margin-top: 10%">
       <error-circle-icon size="large"></error-circle-icon>
@@ -82,6 +83,7 @@
   </div>
 
   </div>
+  </t-loading>
   <t-dialog
       v-model:visible="visible"
       header="评论"
@@ -111,7 +113,7 @@ import {fileServerAxios} from "@/main.js";
 
 
 const visible = ref(false);
-const loading = ref(false);
+const loading = ref(true);
 // alert(apiBaseUrl)
 const top = '50px';
 
@@ -146,6 +148,7 @@ axios.post(`/event/getAllEvents`, {}, {
       events.value = response.data.data.filter(events => events['status'] === 1)
       curEvents.value = events.value
       tmpEvents.value = events.value
+      loading.value=false
       // alert(JSON.stringify(events.value))
       for (let i = 0; i < events.value.length; i++) {//获取每个活动的海报
       // for (let i = 0; i < 1; i++) {//获取每个活动的海报

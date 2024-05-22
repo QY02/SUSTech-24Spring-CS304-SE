@@ -1,7 +1,7 @@
 <template>
     <t-space style="display: flex; width: 100%;">
         <div>
-            <div class="title">评论{{ averageScore }}</div>
+            <div class="title">评论</div>
             <div class="line"></div>
         </div>
         <div style="margin-top: 30px; display: flex; justify-content: flex-end; margin-right:30px ;">
@@ -20,7 +20,7 @@
                             <div v-if="userId == item.publisherId"
                                 style="margin-top: 30px; display: flex; justify-content: flex-end; margin-right:30px ;">
                                 <t-popup content="删除该评论">
-                                    <t-button theme="primary" @click="visibleDelete = true; deleteEventId = item.id"
+                                    <t-button theme="danger" @click="visibleDelete = true; deleteEventId = item.id"
                                         shape="square" variant="text">
                                         <template #icon>
                                             <DeleteIcon />
@@ -39,7 +39,7 @@
                         </div>
                         <t-space style="display: flex; width: 100%;">
                             <div class="author">
-                                — {{ item.publisherId }}
+                                — {{ item.publisherId }}  {{ item.publisherNames }}
                             </div>
                         </t-space>
                     </div>
@@ -85,11 +85,11 @@
 
 
 <script setup>
-import { ref, reactive,computed, watch } from 'vue';
+import { ref, reactive, computed, watch } from 'vue';
 import { DeleteIcon } from 'tdesign-icons-vue-next';
 import { MessagePlugin } from 'tdesign-vue-next';
 import axios from "axios";
-
+const emits = defineEmits([ 'update:averageScore' ]);
 const form = ref(null);
 const userId = ref(sessionStorage.getItem('uid'))
 const commentsData = ref([]);
@@ -138,7 +138,7 @@ const addComment = () => {
         "score": commentForm.score,
         "title": commentForm.title,
         "content": commentForm.content,
-        "publishDate": new Date(),
+        // "publishDate": new Date(),
         "type": 0,
     }, {
         headers: {
@@ -151,6 +151,7 @@ const addComment = () => {
         commentForm.title = ''
         commentForm.content = ''
         handleClear();
+        getComment();
         MessagePlugin.success('提交成功');
     }).catch(() => { })
 }
@@ -188,16 +189,27 @@ const getComment = () => {
         }
     ).then((response) => {
         commentsData.value = response.data.data
-        averageScore.value = computed(() => {
-            if (commentsData.value.length === 0) return -1;
-            const totalScore = commentsData.value.reduce((sum, item) => sum + item.score, 0);
-            return totalScore / commentsData.value.length;
-        });
+        // console.log(commentsData.value);
+        computeAverageScore();
+        // averageScore.value = computed(() => {
+        //     if (commentsData.value.length === 0) return -1;
+        //     const totalScore = commentsData.value.reduce((sum, item) => sum + item.score, 0);
+        //     return totalScore / commentsData.value.length;
+        // });
     }).catch(() => { })
 }
 
+const computeAverageScore = () => {
+    if (commentsData.value.length !== 0) {
+        const totalScore = commentsData.value.reduce((sum, item) => sum + item.score, 0);
+        // console.log(totalScore)
+        averageScore.value = totalScore / commentsData.value.length;
+    }
+}
+
+
 watch(averageScore, (newAverageScore) => {
-  emits('update:averageScore', newAverageScore);
+    emits('update:averageScore', newAverageScore);
 });
 
 const onReset = () => {

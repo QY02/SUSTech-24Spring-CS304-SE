@@ -25,15 +25,15 @@
           </t-form-item>
 
           <t-form-item name="department" style="margin-left: 20px">
-            <t-select v-model="formData.department" label="系别">
+            <t-select v-model="formData.department" :options="options1" label="系别">
 
-              <t-option key="Computer Science" label="Computer Science" value="Computer Science"/>
-              <t-option key="Engineering" label="Engineering" value="Engineering"/>
-              <t-option key="Mathematics" label="Mathematics" value="Mathematics"/>
-              <t-option key="Biology" label="Biology" value="Biology"/>
-              <t-option key="Physics" label="Physics" value="Physics"/>
-              <t-option key="Chemistry" label="Chemistry" value="Chemistry"/>
-              <!--              :options="['Computer Science','Engineering','Mathematics','Biology','Physics','Chemistry']"-->
+<!--              <t-option key="Computer Science" label="Computer Science" value="Computer Science"/>-->
+<!--              <t-option key="Engineering" label="Engineering" value="Engineering"/>-->
+<!--              <t-option key="Mathematics" label="Mathematics" value="Mathematics"/>-->
+<!--              <t-option key="Biology" label="Biology" value="Biology"/>-->
+<!--              <t-option key="Physics" label="Physics" value="Physics"/>-->
+<!--              <t-option key="Chemistry" label="Chemistry" value="Chemistry"/>-->
+<!--              &lt;!&ndash;              :options="['Computer Science','Engineering','Mathematics','Biology','Physics','Chemistry']"&ndash;&gt;-->
               required-mark
 
             </t-select>
@@ -241,7 +241,12 @@ const rules1 = {
 const onReset = () => {
   MessagePlugin.success('重置成功');
 };
+const options1 = [
+  { label: '计算机系', value: '计算机系' },
+  { label: '物理系', value: '物理系' },
+  { label: '数学系', value: '数学系' },
 
+];
 // const code = ref("");
 const formData = reactive({
   username: '',
@@ -319,7 +324,7 @@ const handleSubmit = ({validateResult}) => {
 
 };
 const handleOK = ({validateResult}) => {
-  alert(formData1.code)
+  // alert(formData1.code)
   if (validateResult === true) {
     axios.post("/registerEmailVerify", {
       "email": formData.email,

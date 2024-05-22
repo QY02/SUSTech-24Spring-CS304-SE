@@ -1,5 +1,6 @@
 package org.cs304.backend.controller;
 
+import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.swagger.v3.oas.annotations.Operation;
@@ -8,14 +9,19 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.cs304.backend.constant.constant_User;
 import org.cs304.backend.entity.Comment;
+import org.cs304.backend.entity.EntityAttachmentRelation;
+import org.cs304.backend.entity.User;
 import org.cs304.backend.exception.ServiceException;
 import org.cs304.backend.mapper.CommentMapper;
+import org.cs304.backend.mapper.UserMapper;
 import org.cs304.backend.service.ICommentService;
 import org.cs304.backend.service.INotificationService;
+import org.cs304.backend.service.IUserService;
 import org.cs304.backend.utils.Result;
 import org.springframework.web.bind.annotation.*;
-
+import java.util.ArrayList;
 import java.util.List;
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/comment")
@@ -29,9 +35,14 @@ public class CommentController {
     @Resource
     private INotificationService notificationService;
 
+    @Resource
+    IUserService userService;
+
+
     @PostMapping("/add")
     @Operation(summary = "添加评论",description = "传入comment结构内容")
     public Result postNewComment(HttpServletResponse response, @RequestBody Comment comment) {
+        comment.setPublishDate(LocalDateTime.now());
         commentMapper.insert(comment);
         return Result.success(response);
     }
@@ -56,7 +67,18 @@ public class CommentController {
         if (type == null) {
             throw new ServiceException("type不能为空");
         }
-        return Result.success(response,commentMapper.selectList(new QueryWrapper<Comment>().eq("event_id",eventId).eq("type",type)));
+        List<Comment> commentList = commentMapper.selectList(new QueryWrapper<Comment>().eq("event_id",eventId).eq("type",type));
+        List<JSONObject> jsonObjects = new ArrayList<>();
+        
+        if (!commentList.isEmpty()) {
+            for (Comment comment : commentList) {
+                JSONObject object = (JSONObject) JSON.toJSON(comment);
+                User user = userService.getById(comment.getPublisherId());
+                object.put("publisherNames", user.getName());
+                jsonObjects.add(object);
+            }
+        }
+        return Result.success(response,jsonObjects);
     }
 
     @GetMapping("/getById")

@@ -1,74 +1,85 @@
 <template>
   <!--<h2 style="margin-left: 20px">历史记录</h2>-->
   <!--  <t-tag style="margin-left: 20px;height: 40px; margin-top: 15px;font-size: 20px" size="large" theme="primary" variant="light">历史记录</t-tag>-->
-  <div v-if="curEvents.length===0">
-    <div style="display: flex; align-items: center;text-align: center;margin-left: 45%; margin-top: 10%">
-      <error-circle-icon size="large"></error-circle-icon>
-      <h1 style="color: #5e6066; font-size: large; margin-left: 10px;">暂无活动</h1>
+  <t-loading size="small" :loading="loading" show-overlay>
+    <div v-if="curEvents.length===0">
+      <div style="display: flex; align-items: center;text-align: center;margin-left: 45%; margin-top: 10%">
+        <error-circle-icon size="large"></error-circle-icon>
+        <h1 style="color: #5e6066; font-size: large; margin-left: 10px;">暂无活动</h1>
+      </div>
     </div>
-  </div>
-  <div v-else>
-    <div id="event" v-loading="loading">
-      <t-card
-          v-for="(item,index) in curEvents"
-          :key="index"
-          :title="item['name']" :subtitle="item['content']" :style="{ width: '400px' }" hover-shadow
-          @click="clickEvent(item['id'])">
-        <template #actions>
-          <!--        <t-dropdown :options="options" :min-column-width="112" @click="clickHandler">-->
-          <!--          <div class="tdesign-demo-dropdown-trigger">-->
+    <div v-else>
+      <div id="event" v-loading="loading">
+        <t-card
+            v-for="(item,index) in curEvents"
+            :key="index"
+            :title="item['name']" :subtitle="item['content']" :style="{ width: '400px' }" hover-shadow
+            @click="clickEvent(item['id'])">
+          <template #actions>
+            <!--        <t-dropdown :options="options" :min-column-width="112" @click="clickHandler">-->
+            <!--          <div class="tdesign-demo-dropdown-trigger">-->
 
-          <a v-if="item['type']>=0&&item['type']<=2">
-            <t-tag theme="success" variant="light" style="margin-right: 20px">{{ EVENT_TYPE_MAP[item['type']] }}</t-tag>
-          </a>
-          <a v-if="item['type']>=3&&item['type']<=5">
-            <t-tag theme="primary" variant="light" style="margin-right: 20px">{{ EVENT_TYPE_MAP[item['type']] }}</t-tag>
-          </a>
-          <a v-if="item['type']>=6&&item['type']<=8">
-            <t-tag theme="danger" variant="light" style="margin-right: 20px">{{ EVENT_TYPE_MAP[item['type']] }}</t-tag>
-          </a>
-          <a v-if="item['type']>=9&&item['type']<=12">
-            <t-tag variant="light" style="margin-right: 20px">{{ EVENT_TYPE_MAP[item['type']] }}</t-tag>
-          </a>
-          {{ item['visitTime'].replace("T", " ") }}
-          <!--            <t-button variant="text" shape="square">-->
-          <!--              <more-icon/>-->
-          <!--            </t-button>-->
-          <!--          </div>-->
-          <!--        </t-dropdown>-->
-        </template>
-        <template #footer>
-          <t-row :align="'middle'" justify="center" style="gap: 24px;">
-            <t-col flex="auto" style="display: inline-flex; justify-content: center;">
-              <t-popup content="收藏活动">
-                <t-button variant="text" shape="square" @click.stop="favEvent(item['id'])">
+            <a v-if="item['type']>=0&&item['type']<=2">
+              <t-tag theme="success" variant="light" style="margin-right: 20px">{{
+                  EVENT_TYPE_MAP[item['type']]
+                }}
+              </t-tag>
+            </a>
+            <a v-if="item['type']>=3&&item['type']<=5">
+              <t-tag theme="primary" variant="light" style="margin-right: 20px">{{
+                  EVENT_TYPE_MAP[item['type']]
+                }}
+              </t-tag>
+            </a>
+            <a v-if="item['type']>=6&&item['type']<=8">
+              <t-tag theme="danger" variant="light" style="margin-right: 20px">{{
+                  EVENT_TYPE_MAP[item['type']]
+                }}
+              </t-tag>
+            </a>
+            <a v-if="item['type']>=9&&item['type']<=12">
+              <t-tag variant="light" style="margin-right: 20px">{{ EVENT_TYPE_MAP[item['type']] }}</t-tag>
+            </a>
+            {{ item['visitTime'].replace("T", " ") }}
+            <!--            <t-button variant="text" shape="square">-->
+            <!--              <more-icon/>-->
+            <!--            </t-button>-->
+            <!--          </div>-->
+            <!--        </t-dropdown>-->
+          </template>
+          <template #footer>
+            <t-row :align="'middle'" justify="center" style="gap: 24px;">
+              <t-col flex="auto" style="display: inline-flex; justify-content: center;">
+                <t-popup content="收藏活动">
+                  <t-button variant="text" shape="square" @click.stop="favEvent(item['id'])">
 
-                  <t-icon name="heart" :color="favColor[item['id']]"/>
-                </t-button>
-              </t-popup>
-            </t-col>
+                    <t-icon name="heart" :color="favColor[item['id']]"/>
+                  </t-button>
+                </t-popup>
+              </t-col>
 
-            <t-col flex="auto" style="display: inline-flex; justify-content: center">
-              <t-popup content="评论">
-                <t-button variant="text" shape="square" @click.stop="clickComment(item['id'])">
-                  <chat-icon/>
-                </t-button>
-              </t-popup>
-            </t-col>
+              <t-col flex="auto" style="display: inline-flex; justify-content: center">
+                <t-popup content="评论">
+                  <t-button variant="text" shape="square" @click.stop="clickComment(item['id'])">
+                    <chat-icon/>
+                  </t-button>
+                </t-popup>
+              </t-col>
 
-            <t-col flex="auto" style="display: inline-flex; justify-content: center">
-              <t-popup content="分享活动">
-                <t-button variant="text" shape="square" @click.stop="clickShare(item['id'],item['name'])">
-                  <share-icon/>
-                </t-button>
-              </t-popup>
-            </t-col>
-          </t-row>
-        </template>
-      </t-card>
+              <t-col flex="auto" style="display: inline-flex; justify-content: center">
+                <t-popup content="分享活动">
+                  <t-button variant="text" shape="square" @click.stop="clickShare(item['id'],item['name'])">
+                    <share-icon/>
+                  </t-button>
+                </t-popup>
+              </t-col>
+            </t-row>
+          </template>
+        </t-card>
 
+      </div>
     </div>
-  </div>
+  </t-loading>
   <t-dialog
       v-model:visible="visible"
       header="评论"
@@ -110,7 +121,7 @@ const attachToken = ref([]);
 const tmpEvents = ref([]);
 const curEvents = ref([]);
 const favColor = ref({});
-const loading = ref(false);
+const loading = ref(true);
 const visible = ref(false);
 const options = [
   {
@@ -177,8 +188,9 @@ const favEvent = (eventId) => {
 };
 
 const clickEvent = (eventId) => {
-  MessagePlugin.success(`${sessionStorage.getItem('uid')} 选中【${eventId}】`);
-
+  // MessagePlugin.success(`${sessionStorage.getItem('uid')} 选中【${eventId}】`);
+  sessionStorage.setItem('eventId', eventId)
+  router.push('/event');
   // router.push('/event');
   axios.post(`/history/add`, {
     "eventId": eventId,
@@ -190,10 +202,16 @@ const clickEvent = (eventId) => {
     }
   })
       .then((response) => {
-        sessionStorage.setItem('eventId', eventId)
-        router.push('/event');
+
       })
       .catch((error) => {
+        if (error.response) {
+          // 请求已发出，但服务器响应的状态码不在 2xx 范围内
+          MessagePlugin.warning(error.response.data.msg);
+        } else {
+          // 一些错误是在设置请求的时候触发
+          MessagePlugin.warning(error.message);
+        }
       });
 };
 
@@ -252,6 +270,7 @@ axios.post(`/history/getByUserId`, {
           } else {
             favColor.value[id] = 'black'
           }
+
         }).catch((error) => {
           if (error.response) {
             // 请求已发出，但服务器响应的状态码不在 2xx 范围内
@@ -264,7 +283,7 @@ axios.post(`/history/getByUserId`, {
         // events.value[i].imageUrl =
         // alert(id)
       }
-
+      loading.value = false
     })
     .catch((error) => {
       if (error.response) {

@@ -155,6 +155,7 @@ public class LoginController {
 //            System.out.println(user);
             user.setType(constant_User.USER);
             user.setPassword(Encryption.encrypt(user.getPassword()));
+            user.setIconId(1);
             userMapper.insert(user);
             user.setPassword(null);
 
