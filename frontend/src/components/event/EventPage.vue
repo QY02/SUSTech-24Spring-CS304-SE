@@ -244,7 +244,7 @@
 
 <script setup>
 // import TestPage from './testPage.vue';
-import { sessionInformation, bookingInformation, currentStep } from '@/components/book/Steps.vue';
+import { sessionInformation, currentStep } from '@/components/book/Steps.vue';
 import { HeartIcon, HeartFilledIcon, ListIcon, TableIcon, StarFilledIcon, DiscountIcon } from 'tdesign-icons-vue-next';
 import { computed, getCurrentInstance, ref, onMounted } from 'vue';
 import axios from "axios";
@@ -451,7 +451,7 @@ const deleteFavorite = () => {
 
 const fetchSessionInformation = async () => {
   try {
-    let response = await axios.post("/event/getEventSessionsByEventId", { eventId: eventId }, { headers: { token: sessionStorage.getItem('token') } });
+    let response = await axios.post("/event/getEventSessionsByEventId", { eventId: sessionStorage.getItem('eventId') }, { headers: { token: sessionStorage.getItem('token') } });
     const dataConverted = response.data.data.map((item) => ({
       ...item,
       startTime: new Date(item.startTime),
@@ -460,7 +460,8 @@ const fetchSessionInformation = async () => {
       registrationEndTime: new Date(item.registrationEndTime),
       location: item.location.split(",").map(Number)
     }));
-    Object.assign(sessionInformation, dataConverted);
+    sessionInformation.length = 0;
+    sessionInformation.push(...dataConverted);
     response = await axios.post("/orderRecord/getMyOrderRecord", {
       eventId: eventId,
       mode: 0

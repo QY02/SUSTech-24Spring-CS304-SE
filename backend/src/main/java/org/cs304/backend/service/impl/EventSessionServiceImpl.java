@@ -2,21 +2,34 @@ package org.cs304.backend.service.impl;
 
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
+import org.cs304.backend.constant.constant_SeatMapType;
 import org.cs304.backend.entity.EventSession;
+import org.cs304.backend.entity.Seat;
+import org.cs304.backend.entity.SeatMap;
 import org.cs304.backend.exception.ServiceException;
 import org.cs304.backend.mapper.EventSessionMapper;
+import org.cs304.backend.mapper.SeatMapMapper;
+import org.cs304.backend.mapper.SeatMapper;
 import org.cs304.backend.service.IEventSessionService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Service
 public class EventSessionServiceImpl extends ServiceImpl<EventSessionMapper, EventSession> implements IEventSessionService {
     @Resource
     private EventSessionMapper eventSessionMapper;
+
+    @Resource
+    private SeatMapMapper seatMapMapper;
+
+    @Resource
+    private SeatMapper seatMapper;
 
     @Override
     public void insertEventSession(int id,JSONObject sessionData){
@@ -62,7 +75,17 @@ public class EventSessionServiceImpl extends ServiceImpl<EventSessionMapper, Eve
 
         session.setCurrentSize(0);
         // TODO:setSeatMapId,这里应该要给真实的数据
-        session.setSeatMapId(1);
+        Integer seatMapTemplateId = sessionData.getInteger("seat_map_id");
+        SeatMap seatMap = seatMapMapper.selectById(seatMapTemplateId);
+        seatMap.setId(null);
+        seatMap.setType(constant_SeatMapType.INSTANCE);
+        seatMapMapper.insert(seatMap);
+        List<Seat> seatList = seatMapper.selectList(new QueryWrapper<Seat>().eq("seat_map_id", seatMapTemplateId));
+        seatList.forEach(seat -> {
+            seat.setSeatMapId(seatMap.getId());
+            seatMapper.insert(seat);
+        });
+        session.setSeatMapId(seatMap.getId());
         session.setVenue(sessionData.getString("venue"));
 
         // location 数组去除最外面的括号

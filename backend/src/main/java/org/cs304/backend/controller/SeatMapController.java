@@ -22,4 +22,8 @@ public class SeatMapController {
         Integer seatMapId = requestBody.getInteger("seatMapId");
         return Result.success(response, seatMapService.getSeatMapWithSeatsById(userType, seatMapId));
     }
+    @GetMapping("/getAllSeatMapTemplate")
+    public Result getAllSeatMapTemplate(HttpServletResponse response) {
+        return Result.success(response, seatMapService.getAllSeatMapTemplate());
+    }
 }

@@ -6,11 +6,9 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import org.cs304.backend.constant.constant_EventStatus;
+import org.cs304.backend.constant.constant_SeatMapType;
 import org.cs304.backend.constant.constant_User;
-import org.cs304.backend.entity.Event;
-import org.cs304.backend.entity.EventSession;
-import org.cs304.backend.entity.Seat;
-import org.cs304.backend.entity.SeatMap;
+import org.cs304.backend.entity.*;
 import org.cs304.backend.exception.ServiceException;
 import org.cs304.backend.mapper.EventMapper;
 import org.cs304.backend.mapper.EventSessionMapper;
@@ -19,6 +17,7 @@ import org.cs304.backend.mapper.SeatMapper;
 import org.cs304.backend.service.ISeatMapService;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -62,5 +61,64 @@ public class SeatMapServiceImpl extends ServiceImpl<SeatMapMapper, SeatMap> impl
         seatMap.setData(null);
         seatMap.setDetailedData(seatMapData);
         return seatMap;
+    }
+
+    @Override
+    public JSONArray getAllSeatMapTemplate() {
+        List<SeatMapInfo> seatMapInfoList = new ArrayList<>();
+        baseMapper.selectList(new QueryWrapper<SeatMap>().eq("type", constant_SeatMapType.TEMPLATE).select("id", "name")).forEach(seatMap -> {
+            String[] nameArray = seatMap.getName().split("/");
+            List<SeatMapInfo> currentSeatMapInfoList = seatMapInfoList;
+            String currentValue = null;
+            for (int i = 0; i < nameArray.length; i++) {
+                SeatMapInfo currentSeatMapInfo = new SeatMapInfo();
+                currentSeatMapInfo.setLabel(nameArray[i]);
+                if (currentSeatMapInfoList.contains(currentSeatMapInfo)) {
+                    SeatMapInfo currentNode = currentSeatMapInfoList.get(currentSeatMapInfoList.indexOf(currentSeatMapInfo));
+                    currentValue = currentNode.getValue();
+                    currentSeatMapInfoList = currentNode.getChildren();
+                }
+                else {
+                    if (i < nameArray.length - 1) {
+                        if (currentSeatMapInfoList.isEmpty()) {
+                            if (currentValue == null) {
+                                currentValue = "0";
+                                currentSeatMapInfo.setValue(currentValue);
+                            }
+                            else {
+                                currentValue = currentValue + ".0";
+                                currentSeatMapInfo.setValue(currentValue);
+                            }
+                        }
+                        else {
+                            if (currentValue == null) {
+                                int maxValue = Integer.parseInt(currentSeatMapInfoList.get(currentSeatMapInfoList.size() - 1).getValue());
+                                currentValue = String.valueOf((maxValue + 1));
+                                currentSeatMapInfo.setValue(currentValue);
+                            }
+                            else {
+                                String[] maxValueStringArray = currentSeatMapInfoList.get(currentSeatMapInfoList.size() - 1).getValue().split("\\.");
+                                int maxValue = Integer.parseInt(maxValueStringArray[maxValueStringArray.length - 1]);
+                                currentValue = currentValue + "." + (maxValue + 1);
+                                currentSeatMapInfo.setValue(currentValue);
+                            }
+                        }
+                    }
+                    else {
+                        if (currentValue == null) {
+                            currentValue = String.valueOf(seatMap.getId());
+                            currentSeatMapInfo.setValue(currentValue);
+                        }
+                        else {
+                            currentValue = currentValue + "." + seatMap.getId();
+                            currentSeatMapInfo.setValue(currentValue);
+                        }
+                    }
+                    currentSeatMapInfoList.add(currentSeatMapInfo);
+                    currentSeatMapInfoList = currentSeatMapInfo.getChildren();
+                }
+            }
+        });
+        return JSONArray.from(seatMapInfoList);
     }
 }

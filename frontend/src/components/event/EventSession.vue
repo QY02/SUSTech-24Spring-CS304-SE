@@ -184,37 +184,21 @@ watch(data, (newValue) => {
 // 座位图
 const seat_map_options = ref([
   {
-    label: '选项一',
-    value: '1',
-    children: [
+    "children": [
       {
-        label: '子选项一',
-        value: '1.1',
+        "children": [],
+        "label": "111",
+        "value": "0.3"
       },
       {
-        label: '子选项二',
-        value: '1.2',
-      },
-      {
-        label: '子选项三',
-        value: '1.3',
-      },
+        "children": [],
+        "label": "211",
+        "value": "0.4"
+      }
     ],
-  },
-  {
-    label: '选项二',
-    value: '2',
-    children: [
-      {
-        label: '子选项一',
-        value: '2.1',
-      },
-      {
-        label: '子选项二',
-        value: '2.2',
-      },
-    ],
-  },
+    "label": "三教",
+    "value": "0"
+  }
 ])
 const presets = ref({
   最近7天: [dayjs().format(), dayjs().add(7, 'day').format()],
