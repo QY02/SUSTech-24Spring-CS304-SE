@@ -39,6 +39,7 @@ public class EmailService {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(senderAddress);
         Date date = Date.from(dateTime.atZone(ZoneId.systemDefault()).toInstant());
+        System.out.println(date);
         message.setSentDate(date);
         message.setSubject(title);
         message.setText(content);
