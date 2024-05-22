@@ -61,7 +61,7 @@
   </el-affix>
   <!--发布活动按钮-->
   <t-popup content="发布活动">
-    <t-button shape="circle" theme="primary" size="large" style="position: fixed;right: 30px;bottom: 40px"
+    <t-button shape="circle" theme="primary" size="large" style="position: fixed;right: 30px;bottom: 40px; z-index: 999"
               @click="router.push('/applyEvent');">
       <template #icon>
         <add-icon/>

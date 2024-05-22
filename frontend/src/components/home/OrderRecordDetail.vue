@@ -121,7 +121,7 @@ const dateToString = (date: Date) => {
   justify-content: center; /* 水平居中 */
   margin-top: 100px;
   //align-items: center; /* 垂直居中 */
-  height: 100vh; /* 设置父容器高度为视口高度，以确保内容垂直居中 */
+  //height: 100vh; /* 设置父容器高度为视口高度，以确保内容垂直居中 */
 }
 
 .descriptions-container {

@@ -142,7 +142,7 @@ axios.get(`/event/getMyPost/${publisherId}`, {
       events.value = response.data.data
       curEvents.value = events.value
       tmpEvents.value = events.value
-      alert(JSON.stringify(events.value))
+      // alert(JSON.stringify(events.value))
       for (let i = 0; i < events.value.length; i++) {//获取每个活动的海报
         // for (let i = 0; i < 1; i++) {//获取每个活动的海报
         let id = events.value[i]['id'];
