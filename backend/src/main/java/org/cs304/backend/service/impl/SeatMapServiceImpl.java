@@ -92,13 +92,26 @@ public class SeatMapServiceImpl extends ServiceImpl<SeatMapMapper, SeatMap> impl
                         }
                         else {
                             if (currentValue == null) {
-                                int maxValue = Integer.parseInt(currentSeatMapInfoList.get(currentSeatMapInfoList.size() - 1).getValue());
+                                String prevNodeValue = currentSeatMapInfoList.get(currentSeatMapInfoList.size() - 1).getValue();
+                                int maxValue;
+                                try {
+                                    maxValue = Integer.parseInt(prevNodeValue);
+                                }
+                                catch (NumberFormatException e) {
+                                    maxValue = Integer.parseInt(prevNodeValue.split("\\.")[0]);
+                                }
                                 currentValue = String.valueOf((maxValue + 1));
                                 currentSeatMapInfo.setValue(currentValue);
                             }
                             else {
                                 String[] maxValueStringArray = currentSeatMapInfoList.get(currentSeatMapInfoList.size() - 1).getValue().split("\\.");
-                                int maxValue = Integer.parseInt(maxValueStringArray[maxValueStringArray.length - 1]);
+                                int maxValue;
+                                try {
+                                    maxValue = Integer.parseInt(maxValueStringArray[maxValueStringArray.length - 1]);
+                                }
+                                catch (NumberFormatException e) {
+                                    maxValue = Integer.parseInt(maxValueStringArray[maxValueStringArray.length - 2]);
+                                }
                                 currentValue = currentValue + "." + (maxValue + 1);
                                 currentSeatMapInfo.setValue(currentValue);
                             }
@@ -107,11 +120,11 @@ public class SeatMapServiceImpl extends ServiceImpl<SeatMapMapper, SeatMap> impl
                     else {
                         if (currentValue == null) {
                             currentValue = String.valueOf(seatMap.getId());
-                            currentSeatMapInfo.setValue(currentValue);
+                            currentSeatMapInfo.setValue(currentValue + "." + seatMap.getName());
                         }
                         else {
                             currentValue = currentValue + "." + seatMap.getId();
-                            currentSeatMapInfo.setValue(currentValue);
+                            currentSeatMapInfo.setValue(currentValue + "." + seatMap.getName());
                         }
                     }
                     currentSeatMapInfoList.add(currentSeatMapInfo);

@@ -1,7 +1,16 @@
 <template>
   <div class="input-information-main-div">
     <h1 class="input-information-title">信息填写</h1>
-    <t-form ref="form" :rules="FORM_RULES" :data="formData" :colon="true" @submit="onSubmit">
+    <div v-show="additionalInformation.length === 0" class="input-information-no-information-div">
+      <h1 class="input-information-title">无需填写额外信息</h1>
+      <div class="input-information-button-div">
+        <t-space size="medium">
+          <t-button theme="default" @click="currentStep--">上一步</t-button>
+          <t-button theme="primary" @click="currentStep++">下一步</t-button>
+        </t-space>
+      </div>
+    </div>
+    <t-form v-show="additionalInformation.length !== 0" ref="form" :rules="FORM_RULES" :data="formData" :colon="true" @submit="onSubmit">
       <t-form-item v-for="information in additionalInformation" :label="information.name" :name="information.nameEng">
         <t-input v-model="formData[information.nameEng]" :placeholder="`请输入${information.name}`"></t-input>
       </t-form-item>
@@ -121,6 +130,15 @@ export function checkForm() {
     text-align: center;
     font-size: 25px;
     line-height: 0;
+  }
+
+  &-no-information-div {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    justify-content: space-between;
+    top: 2vh;
+    height: 20vh;
   }
 }
 </style>
