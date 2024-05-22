@@ -135,7 +135,6 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
 //        insertSessions(1, eventSessionData);
 
         return attachmentService.uploadBatchStart(ADMIN, fileDirList, fileList, requestData);
-//        return null;
     }
 
     @Override

@@ -377,7 +377,8 @@ const onOpenAddDiag = async () => {
 }
 const onEdit = async (id) => {
   await handleClear();
-  Data.value = await {...data.value.find(k => k.key === id)}
+  const find = await data.value.find(k => k.key === id)
+  Data.value = {...find}
   state = 1
   visibleBody.value = true
 };
