@@ -69,8 +69,8 @@ const renderMarkdown = (text) => {
 const user = sessionStorage.getItem("uid") ? sessionStorage.getItem("uid") : '';//当前用户
 const chatModel = ref('GPT3.5');//聊天对象
 const chatModels = ref([
-  {value: 'GPT3.5', label: 'OpenAI GPT3.5 Turbo'},
-  {value: 'GPT4', label: 'OpenAI GPT4'},
+  {value: 'GPT3.5', label: 'OpenAI GPT-3.5 Turbo'},
+  {value: 'GPT4', label: 'OpenAI GPT-4o'},
   {value: 'GOOGLE', label: 'Google Gemini'},
   {value: 'ZHIPU', label: '智谱AI'},
   {value: 'TONGYI', label: '通义千问'},
@@ -93,7 +93,6 @@ const text = ref("");
 const messages = ref([]);
 const content = ref('<br>');
 const appConfig = ref(getCurrentInstance().appContext.config.globalProperties).value;
-axios.defaults.baseURL = appConfig.$apiBaseUrl;
 const webSocketBaseUrl = appConfig.$webSocketBaseUrl;
 let socketUrl = `${webSocketBaseUrl}/LLMserver/` + user;
 
@@ -188,7 +187,7 @@ const send = () => {
         query: text.value,
         LLM_type: chatModel.value,
         api_key: api_key.value,
-        tmp_event: "1"};
+        tmp_event: 1};
       socket.send(JSON.stringify(message));
       messages.value.push({role: "user", content: text.value});
       createContent(null, user, text.value);

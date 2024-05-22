@@ -97,7 +97,7 @@ public class EventController {
                }
              ### 注意事项 ###
              无
-             """)))
+            """)))
     public Result getAllEvents(@NotNull HttpServletRequest request, HttpServletResponse response) {
         int userType = (int) request.getAttribute("loginUserType");
 //        System.out.println(userType+"666666666666666666");
@@ -111,7 +111,6 @@ public class EventController {
     @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, content = @Content(examples = @ExampleObject("{\"userId\": \"12110141\"}")))
     public Result getRecommendEvents(@NotNull HttpServletRequest request, HttpServletResponse response, @RequestBody JSONObject requestBody) {
         int userType = (int) request.getAttribute("loginUserType");
-//        System.out.println(requestBody.getString("userId"));
         return Result.success(response, eventService.getRecommendEvents(requestBody.getString("userId")));
     }
 

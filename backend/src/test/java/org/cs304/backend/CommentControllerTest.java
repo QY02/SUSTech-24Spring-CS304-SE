@@ -6,6 +6,7 @@ import org.cs304.backend.controller.CommentController;
 import org.cs304.backend.mapper.CommentMapper;
 import org.cs304.backend.service.ICommentService;
 import org.cs304.backend.entity.Comment;
+import org.cs304.backend.service.INotificationService;
 import org.cs304.backend.utils.Result;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -31,6 +32,9 @@ public class CommentControllerTest {
 
     @Mock
     ICommentService commentService;
+
+    @Mock
+    INotificationService notificationService;
 
     MockHttpServletRequest request;
     MockHttpServletResponse response;
@@ -63,7 +67,7 @@ public class CommentControllerTest {
         comment.setId(1);
         comment.setContent("Test content");
 
-        when(commentService.getMomentById(1)).thenReturn(JSONObject.from(comment));
+        when(commentMapper.selectById(1)).thenReturn(new Comment());
 
         Result result = commentController.getCommentById(response, 1);
 

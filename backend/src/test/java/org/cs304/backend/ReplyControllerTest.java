@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.cs304.backend.controller.ReplyController;
 import org.cs304.backend.entity.Reply;
 import org.cs304.backend.mapper.ReplyMapper;
+import org.cs304.backend.service.INotificationService;
 import org.cs304.backend.utils.Result;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -27,6 +28,9 @@ public class ReplyControllerTest {
 
     @Mock
     ReplyMapper replyMapper;
+
+    @Mock
+    INotificationService service;
 
     MockHttpServletRequest request;
     MockHttpServletResponse response;
