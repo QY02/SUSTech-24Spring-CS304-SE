@@ -83,7 +83,7 @@ public class NotificationServiceImpl extends ServiceImpl<NotificationMapper, Not
     private void insertHalfHourNotification(String publisherId, String notifiedUserId, String eventTitle, LocalDateTime startTime, LocalDateTime endTime, int type) {
         LocalDateTime notificationTime = startTime.minusMinutes(30);
         String title = String.format("活动'%s'将于30分钟后开始", eventTitle);
-        String content = String.format("您好！\n您参加的活动：\n活动名称：'%s'\n场次：%s ~ %s\n将于30分钟后开始，请准时参加。", eventTitle, formatDateTime(startTime), formatDateTime(endTime));
+        String content = String.format("您好！\n您参加的活动：\n\n活动名称：'%s'\n场次：%s ~ %s\n\n将于30分钟后开始，请准时参加。", eventTitle, formatDateTime(startTime), formatDateTime(endTime));
         if (LocalDateTime.now().isBefore(notificationTime)) {
             insertNotification(publisherId, notifiedUserId, title, content, notificationTime, type);
         }
@@ -91,14 +91,14 @@ public class NotificationServiceImpl extends ServiceImpl<NotificationMapper, Not
     private void insert15MinNotification(String publisherId, String notifiedUserId, String eventTitle, LocalDateTime startTime, LocalDateTime endTime, int type) {
         LocalDateTime notificationTime = startTime.minusMinutes(15);
         String title = String.format("活动'%s'将于15分钟后开始", eventTitle);
-        String content = String.format("您好！\n您参加的活动：\n活动名称：'%s'\n场次：%s ~ %s\n将于15分钟后开始，请准时参加。", eventTitle, formatDateTime(startTime), formatDateTime(endTime));
+        String content = String.format("您好！\n您参加的活动：\n\n活动名称：'%s'\n场次：%s ~ %s\n\n将于15分钟后开始，请准时参加。", eventTitle, formatDateTime(startTime), formatDateTime(endTime));
         if (LocalDateTime.now().isBefore(notificationTime)) {
             insertNotification(publisherId, notifiedUserId, title, content, notificationTime, type);
         }
     }
     private void insert0MinNotification(String publisherId, String notifiedUserId, String eventTitle, LocalDateTime startTime, LocalDateTime endTime, int type) {
         String title = String.format("活动'%s'已经开始", eventTitle);
-        String content = String.format("您好！\n您参加的活动：\n活动名称：'%s'\n场次：%s ~ %s\n已经开始。", eventTitle, formatDateTime(startTime), formatDateTime(endTime));
+        String content = String.format("您好！\n您参加的活动：\n\n活动名称：'%s'\n场次：%s ~ %s\n\n已经开始。", eventTitle, formatDateTime(startTime), formatDateTime(endTime));
         if (LocalDateTime.now().isBefore(startTime)) {
             insertNotification(publisherId, notifiedUserId, title, content, startTime, type);
         }
@@ -124,7 +124,7 @@ public class NotificationServiceImpl extends ServiceImpl<NotificationMapper, Not
             String notifiedUserId = event.getPublisherId();
             String eventTitle = event.getName();
             String title = "活动申请通过";
-            String content = String.format("活动'%s'申请已通过！", eventTitle);
+            String content = String.format("活动'%s'申请已通过！\n请注意查看。", eventTitle);
             insertImmediateNotification(publisherId, notifiedUserId, title, content, constant_NotificationType.PASS);
         }
     }
