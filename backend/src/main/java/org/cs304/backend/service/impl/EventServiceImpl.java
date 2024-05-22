@@ -91,7 +91,7 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
 
     @Override
     public String getAttachment(Integer eventId) {
-        EntityAttachmentRelation attachmentRelation = entityAttachmentRelationMapper.selectOne(new QueryWrapper<EntityAttachmentRelation>().eq("entity_id", eventId).eq("attachment_type", IMAGE));
+        EntityAttachmentRelation attachmentRelation = entityAttachmentRelationMapper.selectOne(new QueryWrapper<EntityAttachmentRelation>().eq("entity_id", eventId).eq("attachment_type", IMAGE).eq("entity_type", EVENT));
         int attachmentId = attachmentRelation.getAttachmentId();
         Attachment attachment = attachmentService.getById(ADMIN, attachmentId);
         String attachmentPath = attachment.getFilePath();

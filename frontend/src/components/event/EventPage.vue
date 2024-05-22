@@ -70,9 +70,9 @@
             <t-button theme="primary" shape="square" variant="base" @click="onClickEventType(true)">
               <list-icon slot="icon" />
             </t-button>
-            <t-button shape="square" variant="outline" @click="onClickEventType(false)">
+            <!-- <t-button shape="square" variant="outline" @click="onClickEventType(false)">
               <table-icon slot="icon" />
-            </t-button>
+            </t-button> -->
           </t-space>
         </div>
         <div v-else>
@@ -80,9 +80,9 @@
             <t-button shape="square" variant="outline" @click="onClickEventType(true)">
               <list-icon slot="icon" />
             </t-button>
-            <t-button theme="primary" shape="square" variant="base" @click="onClickEventType(false)">
+            <!-- <t-button theme="primary" shape="square" variant="base" @click="onClickEventType(false)">
               <table-icon slot="icon" />
-            </t-button>
+            </t-button> -->
           </t-space>
         </div>
       </div>
@@ -212,18 +212,22 @@
         <div class="line"></div>
       </div>
     </t-space>
-    <el-card
+    
+    <!-- <el-card
       style="padding: 5px; height: 390px ; max-width: 100% ; margin-right: 30px; margin-left: 30px; margin-bottom: 40px;">
-      <el-carousel :interval="4000" type="card" height="300px" width="100%" indicator-position="outside">
-        <el-carousel-item v-for="item in 6" :key="item">
-          <h3 text="2xl" justify="center"><t-image src="https://tdesign.gtimg.com/demo/demo-image-1.png" fit="fill"
-              :style="{ width: '100%', height: '100%' }" shape="round" /></h3>
+      <el-carousel :interval="4000" type="card"  height="270px" width="100%" indicator-position="outside">
+        <el-carousel-item v-for="item in 4" :key="item">
+          <h3 text="2xl" justify="center">
+            <t-image src="https://tdesign.gtimg.com/demo/demo-image-1.png" fit="fill"
+              :style="{ width: '100%', height: '100%' }" shape="round" />
+            </h3>
         </el-carousel-item>
       </el-carousel>
       <div style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
         <t-button @click="pushRouter('gallery')">前往动态</t-button>
       </div>
-    </el-card>
+    </el-card> -->
+    <GalleryPart></GalleryPart>
     <div style="height: 40px;"></div>
 
 
@@ -244,6 +248,7 @@
 
 <script setup>
 // import TestPage from './testPage.vue';
+import GalleryPart from './GalleryPart.vue';
 import { sessionInformation, bookingInformation, currentStep } from '@/components/book/Steps.vue';
 import { HeartIcon, HeartFilledIcon, ListIcon, TableIcon, StarFilledIcon, DiscountIcon } from 'tdesign-icons-vue-next';
 import { computed, getCurrentInstance, ref, onMounted } from 'vue';
@@ -313,7 +318,7 @@ const getAttachment = () => {
     }
   }).then((response) => {
     attachmentPath.value = response.data.data
-    console.log(attachmentPath.value)
+    // console.log(attachmentPath.value)
     if (attachmentPath.value !== null && attachmentPath.value !== undefined && attachmentPath.value !== '')
       getPhoto();
   }).catch(() => { })
@@ -321,7 +326,7 @@ const getAttachment = () => {
 const getPhoto = async () => {
   try {
     if (attachmentPath.value) {
-      console.log('yes')
+      // console.log('yes')
       const fileServerResponse = await fileServerAxios.get(`/file/download`, {
         responseType: 'blob',
         headers: {
@@ -461,14 +466,6 @@ const fetchSessionInformation = async () => {
       location: item.location.split(",").map(Number)
     }));
     Object.assign(sessionInformation, dataConverted);
-    response = await axios.post("/orderRecord/getMyOrderRecord", {
-      eventId: eventId,
-      mode: 0
-    }, { headers: { token: sessionStorage.getItem('token') } });
-    const registeredEventSessionIdArray = response.data.data;
-    sessionInformation.forEach(session => {
-      session.registered = registeredEventSessionIdArray.includes(session.eventSessionId);
-    })
   }
   catch (error) {
   }

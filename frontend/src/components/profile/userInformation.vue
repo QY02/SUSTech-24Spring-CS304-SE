@@ -1,6 +1,6 @@
 <template>
   <el-card :bordered="false" shadow v-if="!editYes"
-           style="display:flex;  align-items: center; justify-content: center; flex-direction: row ;padding-left: 30px; padding-right:30px; margin: 30px;">
+           style="display:flex;  align-items: center; justify-content: center; flex-direction: row ;padding-left: 30px; padding-right:30px; margin: 30px; height: 50%;">
     <br>
     <div style="width: 100%;">
       <t-space align="center" :size="40">
@@ -78,7 +78,7 @@
   </el-card>
 
   <el-card :bordered="false" shadow v-else
-           style=" align-items: center; justify-content: center; height: 85%; margin: 30px;">
+           style=" align-items: center; justify-content: center; height: 57%; margin: 30px;">
     <br>
     <br>
     <t-form ref="form" :data="formData" :rules="FORM_RULES" reset-type="initial" colon @reset="onReset"
@@ -121,6 +121,7 @@
     <br>
   </el-card>
   <ChangeEmail v-model:visible="visibleEmail" v-model:old_email="formData.email"></ChangeEmail>
+  <ChangeEmail v-model:visible="visibleAvator"></ChangeEmail>
 </template>
 
 
@@ -134,6 +135,7 @@ import router from "@/routers/index.js";
 import {LogoutIcon} from "tdesign-icons-vue-next";
 
 const visibleEmail = ref(false)
+const visibleAvator = ref(false)
 
 const info = ref({});
 
@@ -165,7 +167,7 @@ const FORM_RULES = ref({
     {telnumber: true, message: '请输入正确的手机号码'}
   ],
   department: [{required: true, message: '学院不可为空'},],
-  email: [{required: true, message: '学院不可为空'},]
+  email: [{required: true, message: '邮箱不可为空'},]
 });
 
 const formData = reactive({
