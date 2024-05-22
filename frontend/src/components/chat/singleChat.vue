@@ -44,7 +44,6 @@ const text = ref("");
 const historyMessages = ref([]);
 const content = ref('<br>');
 const appConfig = ref(getCurrentInstance().appContext.config.globalProperties).value;
-axios.defaults.baseURL = appConfig.$apiBaseUrl;
 const webSocketBaseUrl = appConfig.$webSocketBaseUrl;
 let socketUrl = `${webSocketBaseUrl}/chatserver/` + user;
 

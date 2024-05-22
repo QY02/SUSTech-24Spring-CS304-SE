@@ -1,6 +1,6 @@
 <template>
   <el-card :bordered="false" shadow v-if="!editYes"
-           style="display:flex;  align-items: center; justify-content: center; flex-direction: row ;padding-left: 30px; padding-right:30px; margin: 30px; height: 50%;">
+           style="display:flex;  align-items: center; justify-content: center; flex-direction: row ;padding-left: 30px; padding-right:30px; margin: 30px; height: 50vh;">
     <br>
     <div style="width: 100%;">
       <t-space align="center" :size="40">

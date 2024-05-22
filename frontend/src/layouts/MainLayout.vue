@@ -33,7 +33,7 @@
 <!--          </t-menu-item>-->
           <t-menu-item value="moments" @click="handleNav('moments')">
             <template #icon>
-              <HomeIcon/>
+              <Animation1Icon/>
             </template>
             动态
           </t-menu-item>
@@ -87,7 +87,8 @@ import {
   UserCircleIcon,
   SettingIcon,
   HomeIcon,
-  ViewListIcon
+  ViewListIcon,
+  Animation1Icon
 } from 'tdesign-icons-vue-next';
 import config from '@/config/style.js';
 import {onMounted, onBeforeUnmount, ref} from "vue";
@@ -156,5 +157,3 @@ const handleNav = (value: string) => {
 <style scoped>
 
 </style>
-<script setup>
-</script>
