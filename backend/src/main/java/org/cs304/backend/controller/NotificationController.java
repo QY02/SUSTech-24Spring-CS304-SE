@@ -13,9 +13,11 @@ import org.cs304.backend.entity.Notification;
 import org.cs304.backend.exception.ServiceException;
 import org.cs304.backend.mapper.NotificationMapper;
 import org.cs304.backend.service.INotificationService;
+import org.cs304.backend.service.impl.EmailService;
 import org.cs304.backend.utils.Result;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
@@ -32,6 +34,17 @@ public class NotificationController {
     @Resource
     private NotificationMapper notificationMapper;
 
+    @Resource
+    EmailService emailService;
+
+
+    @PostMapping("/h")
+    @Operation(summary = "发送申请活动成功通知", description = "传入eventId")
+    public Result h(HttpServletResponse response, HttpServletRequest request) {
+//        String userId = (String) request.getAttribute("loginUserId");
+        emailService.sendEmail("2826287819@qq.com","test","test", LocalDateTime.now().plusMinutes(2));
+        return Result.success(response);
+    }
     @PostMapping("/eventPass/{eventId}")
     @Operation(summary = "发送申请活动成功通知", description = "传入eventId")
     public Result postEventPass(HttpServletResponse response, HttpServletRequest request, @PathVariable int eventId) {
