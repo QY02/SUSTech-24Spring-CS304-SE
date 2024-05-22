@@ -244,7 +244,7 @@
 
 <script setup>
 // import TestPage from './testPage.vue';
-import { sessionInformation, bookingInformation } from '@/components/book/Steps.vue';
+import { sessionInformation, bookingInformation, currentStep } from '@/components/book/Steps.vue';
 import { HeartIcon, HeartFilledIcon, ListIcon, TableIcon, StarFilledIcon, DiscountIcon } from 'tdesign-icons-vue-next';
 import { computed, getCurrentInstance, ref, onMounted } from 'vue';
 import axios from "axios";
@@ -257,6 +257,7 @@ import SkeletonPage from './SkeletonPage.vue';
 import CommentPage from './CommentPage.vue';
 
 sessionStorage.setItem('currentStep', 0)
+currentStep.value=0;
 const value_lable = ref('events');
 
 const show_event_type = ref(true);
