@@ -4,8 +4,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
-import org.cs304.backend.entity.Comment;
-import org.cs304.backend.entity.UserBlogInteraction;
 import org.cs304.backend.entity.UserInteraction;
 import org.cs304.backend.mapper.UserInteractionMapper;
 import org.cs304.backend.service.IUserInteractionService;

@@ -6,6 +6,8 @@ import jakarta.websocket.*;
 import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
 import lombok.extern.slf4j.Slf4j;
+import org.cs304.backend.constant.constant_User;
+import org.cs304.backend.service.IEventService;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -28,6 +30,8 @@ public class WebSocketLLMServer {
 
 
     private static ApplicationContext applicationContext;
+
+    private IEventService eventService;
 
     public static void setApplicationContext(ApplicationContext applicationContext) {
         WebSocketLLMServer.applicationContext = applicationContext;
@@ -71,9 +75,15 @@ public class WebSocketLLMServer {
      */
     @OnMessage
     public void onMessage(String message, Session session, @PathParam("userID") String userID) {
+        eventService = applicationContext.getBean(IEventService.class);
         RabbitTemplate rabbitTemplate = applicationContext.getBean(RabbitTemplate.class);
         log.info("服务端收到用户username={}的消息，正在推送给大模型服务", userID);
-        rabbitTemplate.convertAndSend("ChatProduceExchange", "ChatProduceRouting", message);
+        JSONObject object = JSON.parseObject(message);
+        Integer eventId = object.getInteger("tmp_event");
+        String event = eventService.getById(eventId).toString();
+        String eventSession = eventService.getEventSessionsByEventId(constant_User.ADMIN, eventId).toString();
+        object.put("event","### 当前的活动是： "+event+" ###这个活动的场次安排是："+eventSession);
+        rabbitTemplate.convertAndSend("ChatProduceExchange", "ChatProduceRouting", object.toString());
     }
 
     @RabbitHandler
