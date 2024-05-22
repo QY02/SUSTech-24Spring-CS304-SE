@@ -14,7 +14,7 @@
                 </el-carousel-item>
             </el-carousel>
             <div style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
-                <t-button @click="pushRouter('moment')">前往动态</t-button>
+                <t-button @click="pushRouter('moments')">前往动态</t-button>
             </div>
         </el-card>
     </t-loading>
@@ -27,7 +27,7 @@ import axios from "axios";
 import { fileServerAxios } from "@/main.js"
 const pushRouter = (value) => {
     switch (value) {
-        case 'gallery':
+        case 'moments':
             router.push('/moments');
             break;
     }
