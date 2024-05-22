@@ -1,8 +1,8 @@
 <template>
     <t-loading :loading="loading">
         <el-card
-            style="padding: 5px; height: 360px ; max-width: 100% ; margin-right: 30px; margin-left: 30px; margin-bottom: 40px;">
-            <el-carousel :interval="4000" type="card" height="270px" width="100%" indicator-position="outside">
+            style="padding: 5px ; max-width: 100% ; margin-right: 30px; margin-left: 30px; margin-bottom: 40px;">
+            <el-carousel :interval="4000" type="card" height="270px" width="100%" indicator-position="outside" v-show="list.length>0">
                 <el-carousel-item v-for="item in list" :key="item.id">
                     <h3 text="2xl" justify="center">
                         <!-- <t-image src="https://tdesign.gtimg.com/demo/demo-image-1.png" fit="fill"
@@ -28,7 +28,7 @@ import { fileServerAxios } from "@/main.js"
 const pushRouter = (value) => {
     switch (value) {
         case 'gallery':
-            router.push('/moment');
+            router.push('/moments');
             break;
     }
 }
@@ -39,17 +39,13 @@ const getMomentBatch = async (id) => {
     try {
         loading.value = true;
         let radioGroupValue = ref('1');
-        const response = await axios.get(`/comment/getMomentBatch/${id}/${radioGroupValue.value}`, {
+        const response = await axios.get(`/comment/getEventMoment/${sessionStorage.getItem('eventId')}`, {
             headers: {
                 token: sessionStorage.getItem('token'),
             }
         });
-        let count = 0; // 用于计数
         // console.log(response)
         for (let i = 0; i < response.data.data.length; i++) {
-            if (count >= 5) {
-                break; // 达到限制长度，退出循环
-            }
             const fileServerResponse = await fileServerAxios.get(`/file/download`, {
                 responseType: 'blob',
                 headers: {
@@ -62,7 +58,6 @@ const getMomentBatch = async (id) => {
                 img: image,
                 name: response.data.data[i].publisher_id,
             });
-            count++;
         }
         // console.log(list)
         loading.value = false;
