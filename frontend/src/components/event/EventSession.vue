@@ -102,7 +102,7 @@
             </t-button>
           </t-form-item>
           <t-form-item label="所需额外信息" name="additional_information_required">
-            <t-checkbox-group v-model="Data.additional_information_required" :options="ADDITIONAL_INFO" lazy-load />
+            <t-checkbox-group v-model="Data.additional_information_required" :options="ADDITIONAL_INFO" lazy-load/>
           </t-form-item>
 
           <t-form-item label="是否可见" name="visible">
@@ -113,7 +113,7 @@
             <t-space size="small">
               <t-button theme="success" type="submit">提交</t-button>
               <t-button theme="default" variant="base" type="reset">重置</t-button>
-<!--              <t-button theme="default" variant="base" @click="handleClear">清空校验结果</t-button>-->
+              <!--              <t-button theme="default" variant="base" @click="handleClear">清空校验结果</t-button>-->
             </t-space>
           </t-form-item>
         </t-form>
@@ -134,13 +134,16 @@
 </template>
 
 <script setup>
-import {computed, onUnmounted, ref, watch} from 'vue';
+import {computed, onMounted, onUnmounted, ref, watch} from 'vue';
 import {DateRangePicker, Input, MessagePlugin, NotifyPlugin, RangeInput, Switch} from 'tdesign-vue-next';
 import {AddIcon, MapInformation2Icon} from "tdesign-icons-vue-next";
 import {useVModel} from "@vueuse/core";
 import dayjs from "dayjs";
 import {AMap} from "@/main";
 import {ADDITIONAL_INFO, ADDITIONAL_INFO_MAP} from "@/constants/index.js";
+import axios from "axios";
+
+const token = sessionStorage.getItem('token')
 
 // #### 数据 START ############
 const DIAG_WIDTH = "600px"
@@ -181,25 +184,7 @@ watch(data, (newValue) => {
     console.error('Expected data to be an array, but received:', newValue);
   }
 });
-// 座位图
-const seat_map_options = ref([
-  {
-    "children": [
-      {
-        "children": [],
-        "label": "111",
-        "value": "0.3"
-      },
-      {
-        "children": [],
-        "label": "211",
-        "value": "0.4"
-      }
-    ],
-    "label": "三教",
-    "value": "0"
-  }
-])
+
 const presets = ref({
   最近7天: [dayjs().format(), dayjs().add(7, 'day').format()],
   最近3天: [dayjs().format(), dayjs().add(3, 'day').format()],
@@ -207,9 +192,24 @@ const presets = ref({
 });
 
 const visibleBody = ref(false);
-const form=ref(null)
+const form = ref(null)
 // #### 数据 END ############
+// ### 座位图 START ############
 
+const seat_map_options = ref([])
+const getSeatMap = async () => {
+  await axios.get(`/seatMap/getAllSeatMapTemplate`, {
+        headers: {
+          token: token
+        }
+      }
+  ).then(response => {
+        console.log("抓取座位图成功", response)
+        seat_map_options.value = response.data.data
+      }
+  ).catch();
+}
+onMounted(() => getSeatMap())
 
 // ########表格 START ############
 const columns = computed(() => [
@@ -258,6 +258,11 @@ const columns = computed(() => [
   {
     title: '座位', colKey: 'seat_map_id',
     width: 100, align: 'center',
+    cell: (h, {row}) => {
+      const x = row.seat_map_id.split('.');
+      const displayValue=x[x.length-1]
+      return `${displayValue}`
+    },
   },
   {
     title: '地点', colKey: 'venue',
@@ -280,8 +285,8 @@ const columns = computed(() => [
       const additional_information_required = row.additional_information_required;
       let displayValue = [];
 
-      console.log('Type of additional_information_required:', typeof additional_information_required);
-      console.log(additional_information_required);
+      // console.log('Type of additional_information_required:', typeof additional_information_required);
+      // console.log(additional_information_required);
 
       if (Array.isArray(additional_information_required)) {
         if (additional_information_required.length > 0) {
@@ -327,10 +332,10 @@ const count_range_of_peopleValidator = (val) => {
 
   // console.log("first:", first)
   // console.log("second:", second)
-  if (first === undefined ||first === null || first.length <= 0) {
+  if (first === undefined || first === null || first.length <= 0) {
     return {result: false, message: '最小值必填', type: 'error'};
   }
-  if (second === undefined || second === null ||second.length <= 0) {
+  if (second === undefined || second === null || second.length <= 0) {
     return {result: false, message: '最大值必填', type: 'error'};
   }
   if (first <= 0) {
@@ -572,7 +577,7 @@ const handleChooseLocationCancel = () => {
 }
 // #### AMap  END #####
 </script>
-<style lang="css">
+<style lang="css" scoped>
 .operations {
   display: flex;
   //justify-content: space-around;

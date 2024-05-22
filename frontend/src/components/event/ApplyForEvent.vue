@@ -120,14 +120,19 @@ const onReset = () => {
   MessagePlugin.success('重置成功');
 };
 const sendEvent = async () => {
-  const poster=formData.value.poster.map(file => file.name)
-  eventSessionData.value.forEach((eventSession) => {eventSession.additional_information_required = eventSession.additional_information_required.map((information) => {
-    return JSON.parse(information);
-  })})
+  const poster = formData.value.poster.map(file => file.name)
+  eventSessionData.value.forEach((eventSession) => {
+    eventSession.additional_information_required = eventSession.additional_information_required.map((information) => {
+      return JSON.parse(information);
+    });
+    const x = eventSession.seat_map_id.split('.');
+    eventSession.seat_map_id = x[x.length - 2]
+  })
+  console.log(eventSessionData)
   await axios.post(`/event/add`, {
         "event": formData.value,
         "sessions": eventSessionData.value,
-        "poster":poster
+        "poster": poster
       }, {
         headers: {
           token: token
@@ -157,10 +162,10 @@ const onSubmit = async ({validateResult, firstError}) => {
               'Content-Type': 'multipart/form-data'
             },
           }).then(response => {
-            console.log(JSON.stringify(response));
-          }).catch(reason => {
-            console.log(JSON.stringify(reason));
-          });
+        console.log(JSON.stringify(response));
+      }).catch(reason => {
+        console.log(JSON.stringify(reason));
+      });
       loading.value = false;
       await MessagePlugin.success('提交成功');
       await router.push("/HomePage");

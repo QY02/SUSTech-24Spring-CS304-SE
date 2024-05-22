@@ -76,6 +76,9 @@ public class EventSessionServiceImpl extends ServiceImpl<EventSessionMapper, Eve
         session.setCurrentSize(0);
         // TODO:setSeatMapId,这里应该要给真实的数据
         Integer seatMapTemplateId = sessionData.getInteger("seat_map_id");
+//        System.out.println("seatMapTemplateId");
+//        System.out.println(seatMapTemplateId);
+
         SeatMap seatMap = seatMapMapper.selectById(seatMapTemplateId);
         seatMap.setId(null);
         seatMap.setType(constant_SeatMapType.INSTANCE);

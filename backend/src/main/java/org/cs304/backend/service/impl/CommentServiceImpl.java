@@ -81,6 +81,33 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     }
 
     @Override
+    public List<JSONObject> getEventMoment(Integer eventId) {
+        List<Comment> commentList;
+        commentList = baseMapper.selectList(new QueryWrapper<Comment>().eq("event_id", eventId).eq("type",BLOG)
+        .orderByDesc("publish_date").last("limit 5"));
+        if (commentList.isEmpty()) {
+            return new ArrayList<>();
+        }
+        List<Integer> ids = commentList.stream().map(Comment::getId).toList();
+        List<Integer> attachmentIds = new ArrayList<>();
+        for (Integer id : ids) {
+            attachmentIds.add(entityAttachmentRelationMapper.selectList(new QueryWrapper<EntityAttachmentRelation>().eq("entity_id",id).eq("entity_type",COMMENT).eq("attachment_type",IMAGE)).get(0).getAttachmentId());
+        }
+        Map<Integer, Comment> attachmentIdToCommentMap = new HashMap<>();
+        for (int i = 0; i < attachmentIds.size(); i++) {
+            attachmentIdToCommentMap.put(attachmentIds.get(i), commentList.get(i));
+        }
+        return attachmentService.getBatchByIds(ADMIN,attachmentIds).stream().map(
+                attachment -> {
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("attachment",attachment.getFilePath());
+                    jsonObject.put("comment_id",attachmentIdToCommentMap.get(attachment.getId()).getId());
+                    jsonObject.put("publisher_id",attachmentIdToCommentMap.get(attachment.getId()).getPublisherId());
+                    return jsonObject;
+                }).toList();
+    }
+
+    @Override
     public JSONObject getMomentById(Integer commentId) {
         Comment comment = baseMapper.selectById(commentId);
         String username = userMapper.selectById(comment.getPublisherId()).getName();

@@ -246,7 +246,7 @@ const createContent = (remoteUser, nowUser, text) => {
 };
 </script>
 
-<style>
+<style scoped>
 .tip {
   padding: 0 10px;
   border-radius: 10px;
