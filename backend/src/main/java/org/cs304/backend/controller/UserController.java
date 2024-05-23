@@ -381,14 +381,14 @@ public class UserController {
 
 
     /**
-     * 获取当前用户ID
+     * 获取当前用户ID 没用到 先注释了
      */
-    @Operation(summary = "获取当前用户ID",description = "这是一个详细的描述，你可以在这里添加更多的信息。")
-    @PostMapping("/getMyID")
-    public Result getMyID(HttpServletResponse response, HttpServletRequest request) {
-        String id = (String) request.getAttribute("loginUserId");
-        return Result.success(response, id);
-    }
+//    @Operation(summary = "获取当前用户ID",description = "这是一个详细的描述，你可以在这里添加更多的信息。")
+//    @PostMapping("/getMyID")
+//    public Result getMyID(HttpServletResponse response, HttpServletRequest request) {
+//        String id = (String) request.getAttribute("loginUserId");
+//        return Result.success(response, id);
+//    }
 
 
     /**
