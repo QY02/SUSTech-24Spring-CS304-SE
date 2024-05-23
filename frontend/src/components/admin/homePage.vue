@@ -53,11 +53,11 @@ const productList = ref([
     name: '动态审核',
     description: '审核动态内容',
     type: 4,},
-  {
-    index: 5,
-    name: '支付流水',
-    description: '查看最近支付流水信息',
-    type: 5,},
+  // {
+  //   index: 5,
+  //   name: '支付流水',
+  //   description: '查看最近支付流水信息',
+  //   type: 5,},
   {
     index: 6,
     name: '性能监控',
@@ -76,11 +76,10 @@ const handleClickProduct = (product: CardProductType) => {
     router.push('/admin/approval');
   } else if (product.type === 4) {
     router.push('/admin/momentAudit');
-  } else if (product.type === 5) {
-    router.push('/admin/payment');
+  // } else if (product.type === 5) {
+  //   router.push('/admin/payment');
   } else if (product.type === 6) {
-    router.push('/admin/monitor');
-
+    window.open('https://10.16.222.144:26202/a181d591', '_blank');
   }
 };
 </script>

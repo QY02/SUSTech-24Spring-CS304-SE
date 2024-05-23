@@ -13,6 +13,24 @@
               </template>
               首页
             </t-menu-item>
+            <t-menu-item value="userManage" @click="handleNav('userManage')">
+              <template #icon>
+                <UserAvatarIcon/>
+              </template>
+              用户管理
+            </t-menu-item>
+            <t-menu-item value="approval" @click="handleNav('approval')">
+              <template #icon>
+                <ListIcon/>
+              </template>
+              活动审核
+            </t-menu-item>
+            <t-menu-item value="momentAudit" @click="handleNav('momentAudit')">
+              <template #icon>
+                <ChatBubbleErrorIcon/>
+              </template>
+              动态审核
+            </t-menu-item>
           </t-menu>
         </t-aside>
         <t-layout>
@@ -54,10 +72,9 @@
   <script setup lang="ts">
   import {
     UserCircleIcon,
-    SettingIcon,
     HomeIcon,
     ViewListIcon,
-    Animation1Icon
+    UsergroupIcon, UserAvatarIcon, ChatBubbleErrorIcon, Calendar1Icon, ListIcon
   } from 'tdesign-icons-vue-next';
   import config from '@/config/style.js';
   import {onMounted, onBeforeUnmount, ref} from "vue";
@@ -109,6 +126,9 @@
         break;
       case 'approval':
         router.push('/admin/approval');
+        break;
+      case 'momentAudit':
+        router.push('/admin/momentAudit');
         break;
     }
   }

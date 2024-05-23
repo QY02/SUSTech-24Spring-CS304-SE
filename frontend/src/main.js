@@ -61,10 +61,12 @@ axios.interceptors.response.use(function (response) {
     return response;
 }, function (error) {
     if (error) {
-        if(error.response!==undefined && error.response.status === 401){
-            MessagePlugin.error("登录状态失效，请重新登陆")
-            router.push('/login')
-            return Promise.reject(error);
+        if(error.response!==undefined && (error.response.data.msg ==="Please login"||error.message ==="Please login")) {
+            if (router.currentRoute.value.path === '/'||router.currentRoute.value.path === '/login') {
+            } else {
+                MessagePlugin.error("登录状态失效，请先登陆")
+                router.push('/login')
+            }
         } else {
             // 响应错误
             if (error.response) {
