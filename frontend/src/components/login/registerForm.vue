@@ -25,7 +25,7 @@
           </t-form-item>
 
           <t-form-item name="department" style="margin-left: 20px">
-            <t-select v-model="formData.department" :options="options1" label="系别">
+            <t-select v-model="formData.department" :options="options1" label="学院">
 
 <!--              <t-option key="Computer Science" label="Computer Science" value="Computer Science"/>-->
 <!--              <t-option key="Engineering" label="Engineering" value="Engineering"/>-->

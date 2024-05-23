@@ -71,7 +71,7 @@
     UserCircleIcon,
     HomeIcon,
     ViewListIcon,
-    UsergroupIcon, UserAvatarIcon, ChatBubbleErrorIcon, Calendar1Icon, ListIcon, LogoutIcon
+    UserAvatarIcon, ChatBubbleErrorIcon, Calendar1Icon, ListIcon, LogoutIcon
   } from 'tdesign-icons-vue-next';
   import config from '@/config/style.js';
   import {onMounted, onBeforeUnmount, ref} from "vue";

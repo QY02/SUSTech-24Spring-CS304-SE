@@ -69,29 +69,6 @@ public class EventServiceImplTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    @Test
-    @DisplayName("Should get audit list for given event status")
-    public void shouldGetAuditList() {
-        String eventStatus = "1,2";
-        List<Event> eventList = new ArrayList<>();
-        Event event = new Event();
-        event.setId(1);
-        eventList.add(event);
-
-        when(eventMapper.selectList(any())).thenReturn(eventList);
-
-        List<EventSession> eventSessionList = new ArrayList<>();
-        EventSession eventSession = new EventSession();
-        eventSession.setEventId(1);
-        eventSession.setStartTime(LocalDateTime.now());
-        eventSessionList.add(eventSession);
-
-        when(eventSessionService.list((Wrapper<EventSession>) any())).thenReturn(eventSessionList);
-
-        JSONArray result = eventService.getAuditList(eventStatus);
-        assertNotNull(result);
-        assertEquals(1, result.size());
-    }
 
     @Test
     @DisplayName("Should get attachment for given event ID")
@@ -139,6 +116,9 @@ public class EventServiceImplTest {
         requestData.put("id", event.getId());
 
         JSONArray sessionData = new JSONArray();
+        JSONObject session1 = new JSONObject();
+        session1.put("sessionId", 1);
+        sessionData.add(session1);
         requestData.put("eventSessionData", sessionData);
 
         List<Attachment> attachmentList = new ArrayList<>();

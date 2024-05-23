@@ -31,11 +31,14 @@
             </div> -->
             </t-space>
           </div>
-          <div class="card-4" style="margin-left: 30px ">
+          <div class="card-4">
             <t-tag size="large" theme="primary"><template #icon>
                 <StarFilledIcon />
               </template>{{ parentAverageScore }}</t-tag>
           </div>
+          <t-badge count="试用" color="#00A870">
+          <t-button @click="pushRouter('chatWithEvent')">与大模型聊天</t-button>
+          </t-badge>
         </div>
       </div>
     </div>
@@ -366,6 +369,9 @@ const pushRouter = (value) => {
       break;
     case 'book':
       router.push('/book');
+      break;
+    case 'chatWithEvent':
+      router.push('/chatWithEvent');
       break;
   }
 }
