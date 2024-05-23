@@ -39,43 +39,6 @@
 
       <ChangePassword></ChangePassword>
     </div>
-    <!--    <div class="button-container">-->
-    <!--      <t-button-->
-    <!--          class="btn"-->
-    <!--          theme="primary"-->
-    <!--          variant="outline"-->
-    <!--          @click="router.push('/historyEvents');"-->
-    <!--      >-->
-    <!--        历史记录-->
-    <!--      </t-button>-->
-
-    <!--      <t-button-->
-    <!--          class="btn"-->
-    <!--          theme="default"-->
-    <!--          variant="outline"-->
-    <!--          @click="router.push('/myPublishes');"-->
-    <!--      >-->
-    <!--        我的发布-->
-    <!--      </t-button>-->
-    <!--      <t-button-->
-    <!--          class="btn"-->
-    <!--          theme="warning"-->
-    <!--          variant="outline"-->
-    <!--          @click="router.push('/myFavorites');"-->
-    <!--      >-->
-    <!--        我的收藏-->
-    <!--      </t-button>-->
-    <!--      <t-button-->
-    <!--          class="btn"-->
-    <!--          theme="success"-->
-    <!--          variant="outline"-->
-    <!--          @click="router.push('/myOrderRecords');"-->
-    <!--      >-->
-    <!--        我的预定-->
-    <!--      </t-button>-->
-    <!--    </div>-->
-    <!--    </div>-->
-    <br>
   </el-card>
 
   <el-card :bordered="false" shadow v-else
@@ -121,13 +84,13 @@
 
       <t-form-item>
         <t-space :size="20">
-          <t-button theme="success" type="submit" :loading="loadingg">提交</t-button>
-          <t-button theme="default" variant="base" type="reset">重置</t-button>
           <t-button theme="default" variant="base" @click="() => {
             editYes = !editYes;
           }">
             取消
           </t-button>
+          <t-button theme="default" variant="base" type="reset">重置</t-button>
+          <t-button theme="success" type="submit" :loading="loadingg">提交</t-button>
         </t-space>
       </t-form-item>
     </t-form>
@@ -192,8 +155,10 @@ const avatarList = ['https://avatars.githubusercontent.com/pengyyyyy',
   'https://avatars.githubusercontent.com/chaishi']
 
 
+
 const visibleEmail = ref(false)
 const visibleAvator = ref(false)
+
 const info = ref({});
 const favType = ref({});
 

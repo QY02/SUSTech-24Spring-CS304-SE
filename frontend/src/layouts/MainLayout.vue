@@ -13,24 +13,6 @@
             </template>
             首页
           </t-menu-item>
-<!--          <t-menu-item value="book" @click="handleNav('book')">-->
-<!--            <template #icon>-->
-<!--              <HomeIcon/>-->
-<!--            </template>-->
-<!--            book-->
-<!--          </t-menu-item>-->
-<!--          <t-menu-item value="event" @click="handleNav('event')">-->
-<!--            <template #icon>-->
-<!--              <HomeIcon/>-->
-<!--            </template>-->
-<!--            event-->
-<!--          </t-menu-item>-->
-<!--          <t-menu-item value="approval" @click="handleNav('approval')">-->
-<!--            <template #icon>-->
-<!--              <HomeIcon/>-->
-<!--            </template>-->
-<!--            审批-->
-<!--          </t-menu-item>-->
           <t-menu-item value="moments" @click="handleNav('moments')">
             <template #icon>
               <Animation1Icon/>
@@ -58,12 +40,6 @@
                 <t-tooltip placement="bottom" content="用户信息">
                   <t-button theme="default" shape="square" variant="text" @click="handleNav('user')">
                     <UserCircleIcon class="header-menu-icon"/>
-                  </t-button>
-                </t-tooltip>
-
-                <t-tooltip placement="bottom" content="设置">
-                  <t-button theme="default" shape="square" variant="text">
-                    <SettingIcon class="header-menu-icon"/>
                   </t-button>
                 </t-tooltip>
               </div>

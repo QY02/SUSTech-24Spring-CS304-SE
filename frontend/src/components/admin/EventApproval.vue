@@ -1,6 +1,6 @@
 <template>
   <t-card :bordered="false" shadow class="card-with-margin">
-    <t-button class="button-right" size="small" theme="success" variant="base" @click="viewHistory">审核历史</t-button>
+    <t-button class="button-right" size="medium" theme="primary" variant="base" @click="viewHistory">审核历史</t-button>
     <h1 class="title"> 审核 </h1>
     <t-divider/>
     <t-collapse borderless="true" expand-mutex>
@@ -37,8 +37,8 @@
               multiple
           />
           <t-space direction="horizontal">
-            <t-button @click="onResetFilter">重置</t-button>
-            <t-button @click="onSubmitFilter">提交</t-button>
+            <t-button @click="onResetFilter" theme="default">重置</t-button>
+            <t-button @click="onSubmitFilter">查询</t-button>
           </t-space>
         </t-space>
       </t-collapse-panel>

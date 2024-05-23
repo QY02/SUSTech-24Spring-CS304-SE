@@ -140,8 +140,8 @@ const onReset = () => {
 
           <t-form-item>
             <t-space size="small">
-              <t-button theme="success" type="submit">提交</t-button>
               <t-button variant="outline" type="reset">重置</t-button>
+              <t-button theme="success" type="submit">提交</t-button>
             </t-space>
           </t-form-item>
         </t-form>

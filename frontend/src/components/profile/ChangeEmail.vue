@@ -126,8 +126,8 @@ const updateEmail = ({validateResult, firstError}) => {
           </t-form-item>
           <t-form-item>
             <t-space size="20px">
-              <t-button theme="success" type="submit">提交</t-button>
               <t-button theme="default" variant="base" type="reset">重置</t-button>
+              <t-button theme="success" type="submit">提交</t-button>
             </t-space>
           </t-form-item>
         </t-form>
