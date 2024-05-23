@@ -38,13 +38,13 @@ public class NotificationController {
     EmailService emailService;
 
 
-    @PostMapping("/h")
-    @Operation(summary = "发送申请活动成功通知", description = "传入eventId")
-    public Result h(HttpServletResponse response, HttpServletRequest request) {
-//        String userId = (String) request.getAttribute("loginUserId");
-        emailService.sendEmail("2826287819@qq.com","test","test", LocalDateTime.now().plusMinutes(2));
-        return Result.success(response);
-    }
+//    @PostMapping("/h")
+//    @Operation(summary = "发送申请活动成功通知", description = "传入eventId")
+//    public Result h(HttpServletResponse response, HttpServletRequest request) {
+////        String userId = (String) request.getAttribute("loginUserId");
+//        emailService.sendEmail("2826287819@qq.com","test","test", LocalDateTime.now().plusMinutes(2));
+//        return Result.success(response);
+//    }
     @PostMapping("/eventPass/{eventId}")
     @Operation(summary = "发送申请活动成功通知", description = "传入eventId")
     public Result postEventPass(HttpServletResponse response, HttpServletRequest request, @PathVariable int eventId) {
@@ -68,27 +68,27 @@ public class NotificationController {
     }
 
 
-    @PostMapping("/eventCancel/{eventId}")
-    @Operation(summary = "发送活动取消通知(别用)", description = "传入eventId和取消原因comment")
-    @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, content = @Content(examples = @ExampleObject("""
-            {
-              "comment": "取消原因"
-            }
-            """)))
-    public Result postEvenCancel(HttpServletResponse response, HttpServletRequest request, @PathVariable int eventId, @RequestBody JSONObject data) {
-        String userId = (String) request.getAttribute("loginUserId");
-        notificationService.insertEventCancelNotification(userId, eventId, data.getString("comment"));
-        return Result.success(response);
-    }
+//    @PostMapping("/eventCancel/{eventId}")
+//    @Operation(summary = "发送活动取消通知(别用)", description = "传入eventId和取消原因comment")
+//    @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, content = @Content(examples = @ExampleObject("""
+//            {
+//              "comment": "取消原因"
+//            }
+//            """)))
+//    public Result postEvenCancel(HttpServletResponse response, HttpServletRequest request, @PathVariable int eventId, @RequestBody JSONObject data) {
+//        String userId = (String) request.getAttribute("loginUserId");
+//        notificationService.insertEventCancelNotification(userId, eventId, data.getString("comment"));
+//        return Result.success(response);
+//    }
 
 
-    @PostMapping("/eventModify/{eventId}")
-    @Operation(summary = "发送申请修改通知(别用)", description = "传入eventId")
-    public Result postEventModify(HttpServletResponse response, HttpServletRequest request, @PathVariable int eventId) {
-        String userId = (String) request.getAttribute("loginUserId");
-        notificationService.insertEventModifyNotification(userId, eventId);
-        return Result.success(response);
-    }
+//    @PostMapping("/eventModify/{eventId}")
+//    @Operation(summary = "发送申请修改通知(别用)", description = "传入eventId")
+//    public Result postEventModify(HttpServletResponse response, HttpServletRequest request, @PathVariable int eventId) {
+//        String userId = (String) request.getAttribute("loginUserId");
+//        notificationService.insertEventModifyNotification(userId, eventId);
+//        return Result.success(response);
+//    }
 
 
     @PostMapping("/reserveSession/{eventSessionId}")
@@ -182,17 +182,17 @@ public class NotificationController {
         return Result.success(response, notificationService.getAllNotificationsOfOneUser(userId));
     }
 
-    @GetMapping("/page")
-    @Operation(summary = "分页返回我的所有通知")
-    public Result getMyNotificationsByPage(HttpServletResponse response, HttpServletRequest request, @RequestParam int pageNum, @RequestParam int pageSize) {
-        if (pageNum < 0) {
-            return Result.error(response, "pageNum不能为负数");
-        } else if (pageSize <= 0) {
-            return Result.error(response, "pageSize应该为正数");
-        } else {
-            String userId = (String) request.getAttribute("loginUserId");
-            return Result.success(response, notificationService.getNotificationsOfOneUserByPage(userId, pageNum, pageSize));
-        }
-
-    }
+//    @GetMapping("/page")
+//    @Operation(summary = "分页返回我的所有通知")
+//    public Result getMyNotificationsByPage(HttpServletResponse response, HttpServletRequest request, @RequestParam int pageNum, @RequestParam int pageSize) {
+//        if (pageNum < 0) {
+//            return Result.error(response, "pageNum不能为负数");
+//        } else if (pageSize <= 0) {
+//            return Result.error(response, "pageSize应该为正数");
+//        } else {
+//            String userId = (String) request.getAttribute("loginUserId");
+//            return Result.success(response, notificationService.getNotificationsOfOneUserByPage(userId, pageNum, pageSize));
+//        }
+//
+//    }
 }
