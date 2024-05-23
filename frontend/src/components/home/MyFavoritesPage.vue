@@ -37,34 +37,34 @@
         <!--          </div>-->
         <!--        </t-dropdown>-->
       </template>
-      <template #footer>
-        <t-row :align="'middle'" justify="center" style="gap: 24px;">
-          <t-col flex="auto" style="display: inline-flex; justify-content: center;">
-            <t-popup content="收藏活动">
-              <t-button variant="text" shape="square" @click.stop="favEvent(item['id'])">
+<!--      <template #footer>-->
+<!--        <t-row :align="'middle'" justify="center" style="gap: 24px;">-->
+<!--          <t-col flex="auto" style="display: inline-flex; justify-content: center;">-->
+<!--            <t-popup content="收藏活动">-->
+<!--              <t-button variant="text" shape="square" @click.stop="favEvent(item['id'])">-->
 
-                <t-icon name="heart" :color="favColor[item['id']]"/>
-              </t-button>
-            </t-popup>
-          </t-col>
+<!--                <t-icon name="heart" :color="favColor[item['id']]"/>-->
+<!--              </t-button>-->
+<!--            </t-popup>-->
+<!--          </t-col>-->
 
-          <t-col flex="auto" style="display: inline-flex; justify-content: center">
-            <t-popup content="评论">
-              <t-button variant="text" shape="square" @click.stop="clickComment(item['id'])">
-                <chat-icon/>
-              </t-button>
-            </t-popup>
-          </t-col>
+<!--          <t-col flex="auto" style="display: inline-flex; justify-content: center">-->
+<!--            <t-popup content="评论">-->
+<!--              <t-button variant="text" shape="square" @click.stop="clickComment(item['id'])">-->
+<!--                <chat-icon/>-->
+<!--              </t-button>-->
+<!--            </t-popup>-->
+<!--          </t-col>-->
 
-          <t-col flex="auto" style="display: inline-flex; justify-content: center">
-            <t-popup content="分享活动">
-              <t-button variant="text" shape="square" @click.stop="clickShare(item['id'],item['name'])">
-                <share-icon/>
-              </t-button>
-            </t-popup>
-          </t-col>
-        </t-row>
-      </template>
+<!--          <t-col flex="auto" style="display: inline-flex; justify-content: center">-->
+<!--            <t-popup content="分享活动">-->
+<!--              <t-button variant="text" shape="square" @click.stop="clickShare(item['id'],item['name'])">-->
+<!--                <share-icon/>-->
+<!--              </t-button>-->
+<!--            </t-popup>-->
+<!--          </t-col>-->
+<!--        </t-row>-->
+<!--      </template>-->
     </t-card>
 
     </div>

@@ -6,6 +6,9 @@ import cn.hutool.poi.excel.ExcelUtil;
 import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import org.cs304.backend.mapper.UserFavoriteTypeMapper;
 import org.cs304.backend.utils.Encryption;
 import org.cs304.backend.utils.Result;
 import org.cs304.backend.entity.*;
@@ -41,10 +44,37 @@ public class UserController {
     @Resource
     private RedisUtil redisUtil;
 
-
+    @Resource
+    private IUserFavoriteTypeService userFavoriteTypeService;
     /**
      * 新增用户
      */
+
+    @PostMapping("/getUserFavoriteType")
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, content = @Content(examples = @ExampleObject("""
+            {
+              "userId": "12110141"
+            }""")))
+    public Result getUserFavoriteType(@NotNull HttpServletRequest request, HttpServletResponse response, @RequestBody JSONObject requestBody) {
+        int userType = (int) request.getAttribute("loginUserType");
+        String userId = requestBody.getString("userId");
+        return Result.success(response, userFavoriteTypeService.getAllType(userId));
+    }
+
+    @PostMapping("/changeUserFavoriteType")
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, content = @Content(examples = @ExampleObject("""
+            {
+              "userId": "12110141"
+              "favType": [1,2,3]
+            }""")))
+    public Result changeUserFavoriteType(@NotNull HttpServletRequest request, HttpServletResponse response, @RequestBody JSONObject requestBody) {
+        int userType = (int) request.getAttribute("loginUserType");
+        String userId = requestBody.getString("userId");
+        String favType=requestBody.getString("favType");
+//        System.out.println(favType);
+        return Result.success(response, userFavoriteTypeService.changeType(userId,favType));
+    }
+
     @PostMapping("/add")
     public Result add(HttpServletResponse response, HttpServletRequest request, @RequestBody User user) {
         try {

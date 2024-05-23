@@ -11,6 +11,7 @@
           <t-descriptions-item label="电话号码">{{ formData.phoneNumber }}</t-descriptions-item>
           <t-descriptions-item label="邮箱">{{ formData.email }}</t-descriptions-item>
           <t-descriptions-item label="学院">{{ formData.department }}</t-descriptions-item>
+          <t-descriptions-item label="我喜欢的活动类型">{{ temp }}</t-descriptions-item>
         </t-descriptions>
         <br>
         <br>
@@ -26,14 +27,14 @@
         修改个人信息
       </t-button>
       <t-popup content="退出登录">
-      <t-button
-          style="position: absolute; right: 50px; top: 50px"
-          theme="default"
-          variant="base"
-          @click="logout"
-      >
-        <logout-icon></logout-icon>
-      </t-button>
+        <t-button
+            style="position: absolute; right: 50px; top: 50px"
+            theme="default"
+            variant="base"
+            @click="logout"
+        >
+          <logout-icon></logout-icon>
+        </t-button>
       </t-popup>
 
       <ChangePassword></ChangePassword>
@@ -99,6 +100,12 @@
       <t-form-item label="电话" name="phoneNumber">
         <t-input v-model="formData.phoneNumber"></t-input>
       </t-form-item>
+      <t-form-item label="感兴趣的活动类型" name="favType" :label-width="140">
+        <t-checkbox-group v-model="formData.favTypes" :options="EVENT_TYPE_value_1">
+
+        </t-checkbox-group>
+      </t-form-item>
+
 
       <t-form-item label="头像" name="avatar">
         <t-space :size="30">
@@ -163,7 +170,8 @@ import { ref, onMounted, reactive } from "vue";
 import axios from "axios";
 import { MessagePlugin } from 'tdesign-vue-next';
 import router from "@/routers/index.js";
-import { LogoutIcon } from "tdesign-icons-vue-next";
+import {LogoutIcon} from "tdesign-icons-vue-next";
+import {EVENT_TYPE_MAP, EVENT_TYPE_value_1} from "../../constants/index.js";
 import { form } from "../book/InputInformation.vue";
 const avatar = ref('https://tdesign.gtimg.com/site/avatar.jpg')
 const avatarMap = {
@@ -186,8 +194,8 @@ const avatarList = ['https://avatars.githubusercontent.com/pengyyyyy',
 
 const visibleEmail = ref(false)
 const visibleAvator = ref(false)
-
 const info = ref({});
+const favType = ref({});
 
 const showModalCode = ref(false)
 const logout = () => {
@@ -229,13 +237,45 @@ axios.post(`/user/get/${sessionStorage.getItem('uid')}`, {}, {
   .catch(() => {
   })
 const FORM_RULES = ref({
-  name: [{ required: true, message: '名字不可为空' }],
-  phoneNumber: [
-    { telnumber: true, message: '请输入正确的手机号码' }
+  name: [{required: true, message: '名字不可为空'}],
+  favTypes: [{required: true,
+    message: '请选择1-12个感兴趣的活动类型',
+  }
   ],
-  department: [{ required: true, message: '学院不可为空' },],
-  email: [{ required: true, message: '邮箱不可为空' },]
+  phoneNumber: [
+    {telnumber: true, message: '请输入正确的手机号码'}
+  ],
+  department: [{required: true, message: '学院不可为空'},],
+  email: [{required: true, message: '学院不可为空'},],
+
 });
+let temp = ref();
+
+axios.post(`/user/getUserFavoriteType`, {
+  "userId": sessionStorage.getItem('uid'),
+}, {
+  headers: {
+    token: sessionStorage.getItem('token'),
+  },
+})
+    .then((response) => {
+      favType.value = response.data.data;
+      temp.value = JSON.stringify(favType.value)
+      // alert(temp.value)
+
+      temp.value = temp.value.substring(1, temp.value.length - 1)
+      temp.value = temp.value.split(',')
+      temp.value = temp.value.map(Number);
+      // alert(temp.value)
+      formData.favTypes = temp.value
+      temp.value = temp.value.map(type => EVENT_TYPE_MAP[type]).join(', ')
+
+      // alert(typeof temp[0])
+      // alert(temp.value)
+    })
+    .catch(() => {
+    })
+
 
 const formData = reactive({
   name: '',
@@ -262,16 +302,30 @@ const submitInfo = () => {
       token: sessionStorage.getItem('token'),
     },
   }).then(() => {
-    MessagePlugin.success('提交成功');
-    editYes.value = false;
-    loadingg.value = false;
-    console.log(formData.avatar)
+    axios.post("/user/changeUserFavoriteType", {
+      "userId": sessionStorage.getItem('uid'),
+      "favType": formData.favTypes,
+    }, {
+      headers: {
+        token: sessionStorage.getItem('token'),
+      },
+    })
+        .then(() => {
+          MessagePlugin.success('提交成功');
+          console.log(formData.avatar)
+          editYes.value = false;
+          loadingg.value = false;
+        })
+        .catch(error => {
+        });
+
   }).catch(() => {
     loadingg.value = false;
   })
 }
 
-const onSubmit = ({ validateResult, firstError }) => {
+const onSubmit = ({validateResult, firstError}) => {
+  // alert(formData.favTypes)
   if (validateResult === true) {
     submitInfo()
   } else {
