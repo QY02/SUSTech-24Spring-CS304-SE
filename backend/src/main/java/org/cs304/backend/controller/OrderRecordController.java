@@ -1,5 +1,10 @@
 package org.cs304.backend.controller;
 
+import com.alibaba.fastjson2.JSONObject;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import java.io.IOException;
+
 import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson2.JSONObject;
 import com.alipay.api.AlipayApiException;
@@ -52,6 +57,9 @@ public class OrderRecordController {
 
     @Resource
     private AliPayConfig aliPayConfig;
+
+    @Value("${alipay.alipayPublicKey:}")
+    private String alipayPublicKey;
 
     @Resource
     private IEventService eventService;
@@ -179,16 +187,19 @@ public class OrderRecordController {
             }
             String sign = params.get("sign");
             String content = AlipaySignature.getSignCheckContentV1(params);
-            boolean checkSignature = AlipaySignature.rsa256CheckContent(content, sign, aliPayConfig.getAlipayPublicKey(), "GBK");// 支付宝验签
+            if(alipayPublicKey==null){
+                alipayPublicKey="MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtVLxz/P63j250D6sT7ocEBVUs3og8gMrDkylyYVrE4ReJ7sk1RYwIiXUn/2l1irnUEAZGeMS+hklBEssNAQsUAXazDr1xcvmZ8V9Gu7y2JpnMMcCQpKfrIcKf++6XRskz3Mj239mUvitWd/VD18+P9hoLlI9ipjFTFfk1zUcRz2/TkfqpngOxioc3ik1WkgVbdlYZkCR/368JsRbx4WnLPw/tNmQyS5P329+h58gybfIgHJew28hGtxvSlFyqcgafWk1JCm19N8FcYPMDjTDslA0ZOJz4xxXXyAGlD+ATY04pfO47/owr4wTAIrWxkEIoHohvzkHCmsNQKgBEP5UPwIDAQAB";
+            }
+            boolean checkSignature = AlipaySignature.rsa256CheckContent(content, sign, alipayPublicKey, "GBK");// 支付宝验签
             if (checkSignature){
-                System.out.println("交易名称:"+ params.get("subject"));
+//                System.out.println("交易名称:"+ params.get("subject"));
                 System.out.println("交易状态:"+ params.get("trade_status"));
-                System.out.println("支付宝交易凭证号:"+ params.get("trade_no"));
+//                System.out.println("支付宝交易凭证号:"+ params.get("trade_no"));
                 System.out.println("商户订单号:"+ params.get("out_trade_no"));
-                System.out.println("交易金额:"+ params.get("total_amount"));
-                System.out.println("买家在支付宝唯一id:"+ params.get("buyer_id"));
+//                System.out.println("交易金额:"+ params.get("total_amount"));
+//                System.out.println("买家在支付宝唯一id:"+ params.get("buyer_id"));
                 System.out.println("买家付款时间:"+ params.get("gmt_payment"));
-                System.out.println("买家付款金额:"+ params.get("buyer_pay_amount"));
+//                System.out.println("买家付款金额:"+ params.get("buyer_pay_amount"));
 
                 String orderId = params.get("out_trade_no");
                 String gmtPayment = params.get("gmt_payment");
@@ -198,7 +209,7 @@ public class OrderRecordController {
                 LocalDateTime payTime = DateUtil.toLocalDateTime(dt2);
                 //换成PAID！！！
                 OrderRecord orderRecord = orderRecordService.getOne(new QueryWrapper<OrderRecord>().eq("id", orderId));
-                if(gmtPayment.equals("TRADE_CLOSED")){
+                if(gmtPayment.equals("TRADE_SUCCESS")){
                     orderRecord.setPaymentTime(payTime);
                     orderRecord.setStatus(constant_OrderRecordStatus.PAID);
                 }
