@@ -4,7 +4,7 @@
     <br>
     <div style="width: 100%;">
       <t-space align="center" :size="40">
-        <t-avatar :image="avatar" size="100px" />
+        <t-avatar :image="avatar" size="100px"/>
         <t-descriptions title="个人信息" :column="1">
           <t-descriptions-item label="名字">{{ formData.name }}</t-descriptions-item>
           <br>
@@ -39,41 +39,41 @@
 
       <ChangePassword></ChangePassword>
     </div>
-<!--    <div class="button-container">-->
-<!--      <t-button-->
-<!--          class="btn"-->
-<!--          theme="primary"-->
-<!--          variant="outline"-->
-<!--          @click="router.push('/historyEvents');"-->
-<!--      >-->
-<!--        历史记录-->
-<!--      </t-button>-->
+    <!--    <div class="button-container">-->
+    <!--      <t-button-->
+    <!--          class="btn"-->
+    <!--          theme="primary"-->
+    <!--          variant="outline"-->
+    <!--          @click="router.push('/historyEvents');"-->
+    <!--      >-->
+    <!--        历史记录-->
+    <!--      </t-button>-->
 
-<!--      <t-button-->
-<!--          class="btn"-->
-<!--          theme="default"-->
-<!--          variant="outline"-->
-<!--          @click="router.push('/myPublishes');"-->
-<!--      >-->
-<!--        我的发布-->
-<!--      </t-button>-->
-<!--      <t-button-->
-<!--          class="btn"-->
-<!--          theme="warning"-->
-<!--          variant="outline"-->
-<!--          @click="router.push('/myFavorites');"-->
-<!--      >-->
-<!--        我的收藏-->
-<!--      </t-button>-->
-<!--      <t-button-->
-<!--          class="btn"-->
-<!--          theme="success"-->
-<!--          variant="outline"-->
-<!--          @click="router.push('/myOrderRecords');"-->
-<!--      >-->
-<!--        我的预定-->
-<!--      </t-button>-->
-<!--    </div>-->
+    <!--      <t-button-->
+    <!--          class="btn"-->
+    <!--          theme="default"-->
+    <!--          variant="outline"-->
+    <!--          @click="router.push('/myPublishes');"-->
+    <!--      >-->
+    <!--        我的发布-->
+    <!--      </t-button>-->
+    <!--      <t-button-->
+    <!--          class="btn"-->
+    <!--          theme="warning"-->
+    <!--          variant="outline"-->
+    <!--          @click="router.push('/myFavorites');"-->
+    <!--      >-->
+    <!--        我的收藏-->
+    <!--      </t-button>-->
+    <!--      <t-button-->
+    <!--          class="btn"-->
+    <!--          theme="success"-->
+    <!--          variant="outline"-->
+    <!--          @click="router.push('/myOrderRecords');"-->
+    <!--      >-->
+    <!--        我的预定-->
+    <!--      </t-button>-->
+    <!--    </div>-->
     <!--    </div>-->
     <br>
   </el-card>
@@ -110,7 +110,7 @@
       <t-form-item label="头像" name="avatar">
         <t-space :size="30">
           <t-image :src="avatarList[formData.avatar]" v-model="formData.avatar"
-            :style="{ width: '120px', height: '120px' }" />
+                   :style="{ width: '120px', height: '120px' }"/>
           <t-button @click="() => visibleAvator = true">修改头像</t-button>
         </t-space>
         <!-- <t-upload v-model="formData.avatar"
@@ -135,12 +135,12 @@
   </el-card>
   <ChangeEmail v-model:visible="visibleEmail" v-model:old_email="formData.email"></ChangeEmail>
   <t-dialog v-model:visible="visibleAvator" attach="body" header="修改头像" destroy-on-close:true width="600px"
-    :cancel-btn=null :confirm-btn=null>
+            :cancel-btn=null :confirm-btn=null>
     <template #body>
       <t-space v-for="(item, index) in avatarList" size="20px">
         <div style="margin: 20px;">
           <t-space direction="vertical">
-            <t-image :src="item" :style="{ width: '120px', height: '120px' }" />
+            <t-image :src="item" :style="{ width: '120px', height: '120px' }"/>
             <t-tag shape="mark" theme="primary" variant="light">选项{{ index + 1 }}</t-tag>
           </t-space>
         </div>
@@ -166,13 +166,14 @@
 <script setup>
 import ChangePassword from "@/components/profile/ChangePassword.vue";
 import ChangeEmail from "./ChangeEmail.vue";
-import { ref, onMounted, reactive } from "vue";
+import {ref, onMounted, reactive} from "vue";
 import axios from "axios";
-import { MessagePlugin } from 'tdesign-vue-next';
+import {MessagePlugin} from 'tdesign-vue-next';
 import router from "@/routers/index.js";
 import {LogoutIcon} from "tdesign-icons-vue-next";
 import {EVENT_TYPE_MAP, EVENT_TYPE_value_1} from "../../constants/index.js";
-import { form } from "../book/InputInformation.vue";
+import {form} from "../book/InputInformation.vue";
+
 const avatar = ref('https://tdesign.gtimg.com/site/avatar.jpg')
 const avatarMap = {
   'https://avatars.githubusercontent.com/pengyyyyy': 1,
@@ -191,7 +192,6 @@ const avatarList = ['https://avatars.githubusercontent.com/pengyyyyy',
   'https://avatars.githubusercontent.com/chaishi']
 
 
-
 const visibleEmail = ref(false)
 const visibleAvator = ref(false)
 const info = ref({});
@@ -207,15 +207,15 @@ const logout = () => {
 const tempAvatar = ref(0)
 const onChange = (checkedValues) => {
   console.log('checkedValues:', checkedValues);
-  tempAvatar.value=checkedValues;
+  tempAvatar.value = checkedValues;
 };
 
-const changeFormAvatar =()=>{
-  if(tempAvatar.value!==0){
-    formData.avatar=tempAvatar.value;
-    tempAvatar.value=0;
+const changeFormAvatar = () => {
+  if (tempAvatar.value !== 0) {
+    formData.avatar = tempAvatar.value;
+    tempAvatar.value = 0;
   }
-  visibleAvator.value=false;
+  visibleAvator.value = false;
 }
 
 const loadingg = ref(false)
@@ -224,21 +224,22 @@ axios.post(`/user/get/${sessionStorage.getItem('uid')}`, {}, {
     token: sessionStorage.getItem('token'),
   },
 })
-  .then((response) => {
-    info.value = response.data.data;
-    console.log(info.value.iconId);
-    avatar.value = avatarList[info.value.iconId];
-    formData.avatar = info.value.iconId;
-    formData.name = info.value.name;
-    formData.email = info.value.email;
-    formData.phoneNumber = info.value.phoneNumber;
-    formData.department = info.value.department;
-  })
-  .catch(() => {
-  })
+    .then((response) => {
+      info.value = response.data.data;
+      console.log(info.value.iconId);
+      avatar.value = avatarList[info.value.iconId];
+      formData.avatar = info.value.iconId;
+      formData.name = info.value.name;
+      formData.email = info.value.email;
+      formData.phoneNumber = info.value.phoneNumber;
+      formData.department = info.value.department;
+    })
+    .catch(() => {
+    })
 const FORM_RULES = ref({
   name: [{required: true, message: '名字不可为空'}],
-  favTypes: [{required: true,
+  favTypes: [{
+    required: true,
     message: '请选择1-12个感兴趣的活动类型',
   }
   ],
@@ -327,7 +328,11 @@ const submitInfo = () => {
 const onSubmit = ({validateResult, firstError}) => {
   // alert(formData.favTypes)
   if (validateResult === true) {
-    submitInfo()
+    if (formData.favTypes.length <= 0 || formData.favTypes.length > 12) {
+      MessagePlugin.warning("请选择1-12个感兴趣的活动类型!");
+    } else {
+      submitInfo()
+    }
   } else {
     console.log('Errors: ', validateResult);
     MessagePlugin.warning(firstError);
@@ -378,6 +383,7 @@ const editYes = ref(false);
   flex-grow: 1;
   width: 120px;
 }
+
 .btn {
   margin-left: 20px;
   flex-grow: 1;
