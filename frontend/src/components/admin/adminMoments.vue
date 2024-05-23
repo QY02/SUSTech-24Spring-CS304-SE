@@ -173,7 +173,7 @@ const getMomentBatch = async (id) => {
         token: sessionStorage.getItem('token'),
       }
     });
-    if (response.data.data.length < 20) {
+    if (response.data.data.length <= 20) {
       noMoreImage.value = true;
     }
     for (let i = 0; i < response.data.data.length; i++) {
