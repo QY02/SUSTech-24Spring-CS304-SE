@@ -32,7 +32,7 @@
           </t-collapse-panel>
         </t-collapse>
       </t-loading>
-      <t-button>返回</t-button>
+      <t-button @click="router.push('/event')">返回</t-button>
     </t-space>
   </div>
   <t-dialog v-model:visible="mapDialogVisible" placement="center" width="50vw" :header="mapDialogHeader"
@@ -53,6 +53,7 @@ import {AMap} from "@/main";
 import {onUnmounted, ref} from "vue";
 import {MapInformation2Icon} from "tdesign-icons-vue-next";
 import {NotifyPlugin} from "tdesign-vue-next";
+import router from '@/routers';
 
 let map = null;
 let mapScale = null;

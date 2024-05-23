@@ -3,20 +3,20 @@ package org.cs304.backend.service.impl;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import org.cs304.backend.constant.constant_EventStatus;
+import org.cs304.backend.constant.constant_OrderRecordStatus;
 import org.cs304.backend.constant.constant_SeatMapType;
 import org.cs304.backend.constant.constant_User;
 import org.cs304.backend.entity.*;
 import org.cs304.backend.exception.ServiceException;
-import org.cs304.backend.mapper.EventMapper;
-import org.cs304.backend.mapper.EventSessionMapper;
-import org.cs304.backend.mapper.SeatMapMapper;
-import org.cs304.backend.mapper.SeatMapper;
+import org.cs304.backend.mapper.*;
 import org.cs304.backend.service.ISeatMapService;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -33,8 +33,18 @@ public class SeatMapServiceImpl extends ServiceImpl<SeatMapMapper, SeatMap> impl
     @Resource
     private SeatMapper seatMapper;
 
+    @Resource
+    private OrderRecordMapper orderRecordMapper;
+
     @Override
     public SeatMap getSeatMapWithSeatsById(int userType, Integer seatMapId) {
+        List<OrderRecord> orderRecordList = orderRecordMapper.selectList(new QueryWrapper<OrderRecord>().eq("status", constant_OrderRecordStatus.UNPAID).lt("submit_time", LocalDateTime.now().minusMinutes(10)));
+        orderRecordList.forEach(orderRecord -> {
+            EventSession eventSession = eventSessionMapper.selectById(orderRecord.getEventSessionId());
+            seatMapper.update(new UpdateWrapper<Seat>().eq("seat_map_id", eventSession.getSeatMapId()).eq("seat_id", orderRecord.getSeatId()).set("availability", true));
+            orderRecordMapper.update(new UpdateWrapper<OrderRecord>().eq("id", orderRecord.getId()).set("status", constant_OrderRecordStatus.EXPIRED));
+        });
+
         SeatMap seatMap = baseMapper.selectById(seatMapId);
         if (seatMap == null) {
             throw new ServiceException("400", "Seat map not exist");
