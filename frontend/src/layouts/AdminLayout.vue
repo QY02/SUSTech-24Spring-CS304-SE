@@ -45,12 +45,9 @@
               </template>
               <template #operations>
                 <div class="operations-container">
-                  <t-tooltip placement="bottom" content="通知">
-                    <notice></notice>
-                  </t-tooltip>
-                  <t-tooltip placement="bottom" content="用户信息">
+                  <t-tooltip placement="bottom" content="退出登录">
                     <t-button theme="default" shape="square" variant="text" @click="handleNav('user')">
-                      <UserCircleIcon class="header-menu-icon"/>
+                      <LogoutIcon class="header-menu-icon"/>
                     </t-button>
                   </t-tooltip>
                 </div>
@@ -74,14 +71,14 @@
     UserCircleIcon,
     HomeIcon,
     ViewListIcon,
-    UsergroupIcon, UserAvatarIcon, ChatBubbleErrorIcon, Calendar1Icon, ListIcon
+    UsergroupIcon, UserAvatarIcon, ChatBubbleErrorIcon, Calendar1Icon, ListIcon, LogoutIcon
   } from 'tdesign-icons-vue-next';
   import config from '@/config/style.js';
   import {onMounted, onBeforeUnmount, ref} from "vue";
   import router from '@/routers';
-  import Notice from "@/components/notification/Notice.vue";
   import Logo from "@/assets/logo.svg";
   import LogoFull from "@/assets/logo-full.svg";
+  import {MessagePlugin} from "tdesign-vue-next";
   
   const highlightItem = ref('home')
   let isSidebarCollapsed = ref(config.isSidebarCollapsed);
@@ -129,6 +126,11 @@
         break;
       case 'momentAudit':
         router.push('/admin/momentAudit');
+        break;
+      case 'user':
+        sessionStorage.removeItem('token');
+        MessagePlugin.success('退出登录成功！');
+        router.push('/login');
         break;
     }
   }
