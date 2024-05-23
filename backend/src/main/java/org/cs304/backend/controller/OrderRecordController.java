@@ -104,13 +104,13 @@ public class OrderRecordController {
         return Result.success(response, orderRecordService.getUnpaidOrderRecord(userId, eventId, mode));
     }
 
-
-    @PostMapping("/getPayResultById")
-    public Result getResult(HttpServletResponse response, HttpServletRequest request){
-        Integer orderId =  (int) request.getAttribute("id");
-        int result = orderRecordService.getPaymentById(orderId);
-        return Result.success(response, result);
-    }
+    // 暂时没用到
+    // @PostMapping("/getPayResultById")
+    // public Result getResult(HttpServletResponse response, HttpServletRequest request){
+    //     Integer orderId =  (int) request.getAttribute("id");
+    //     int result = orderRecordService.getPaymentById(orderId);
+    //     return Result.success(response, result);
+    // }
 
     @PostMapping("/prePay")
     @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, content = @Content(examples = @ExampleObject("""

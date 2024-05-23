@@ -100,7 +100,7 @@ const startPolling = () => {
     }
 
     // 每10秒请求一次
-    getPayResult(); // 执行轮询请求
+    // getPayResult(); // 执行轮询请求
   };
 
   // 每10秒请求一次
@@ -208,15 +208,15 @@ onUnmounted(() => {
   }
 });
 
-function getPayResult() {
-  axios.post("/orderRecord/getPayResultById", {id: orderId},
-      {headers: {token: sessionStorage.getItem('token')}} as AxiosRequestConfig)
-      .then(response => {
-        payResult.value = response.data.data;
-      })
-      .catch(error => {
-      });
-}
+// function getPayResult() {
+//   axios.post("/orderRecord/getPayResultById", {id: orderId},
+//       {headers: {token: sessionStorage.getItem('token')}} as AxiosRequestConfig)
+//       .then(response => {
+//         payResult.value = response.data.data;
+//       })
+//       .catch(error => {
+//       });
+// }
 
 const chosenSession = ref(0);
 watch(
