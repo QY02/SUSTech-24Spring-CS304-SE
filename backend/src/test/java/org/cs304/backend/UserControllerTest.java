@@ -205,6 +205,7 @@ public class UserControllerTest {
 
 
     @Test
+    @DisplayName("success - update Email Verify")
     public void testUpdateEmailVerifySuccess() throws Exception {
         User user = new User();
         user.setId("10000000");
@@ -229,4 +230,59 @@ public class UserControllerTest {
         result = userController.updateEmailVerify(response, request, requestBody);
         assertEquals("200", result.getCode());
     }
+
+    @Test
+    @DisplayName("success - update Email Verify with blank data")
+    public void testUpdateEmailVerifyBlank() throws Exception {
+        User user = new User();
+        user.setId("10000000");
+        user.setEmail("test@example.com");
+        user.setPassword("password");
+        user.setType(1);
+        user.setName("Test User");
+        request.setAttribute("loginUserType", 0); // 模拟管理员
+        when(userMapper.insert(user)).thenReturn(1);
+        Result result = userController.add(response, request, user);
+
+        // 模拟 Redis 返回
+        Mockito.when(redisUtil.get(Mockito.eq("valid-code"), Mockito.eq(false), Mockito.eq(true)))
+                .thenReturn("test@example.com");
+
+        // 创建请求体
+        JSONObject requestBody = new JSONObject();
+        requestBody.put("id", "10000000");
+//        requestBody.put("email", "test@example.com");
+        requestBody.put("code", "valid-code");
+        request.setAttribute("loginUserId", "10000000"); // 模拟本人
+        result = userController.updateEmailVerify(response, request, requestBody);
+        assertEquals("401", result.getCode());
+    }
+
+    @Test
+    @DisplayName("success - update Email Verify with invalid data")
+    public void testUpdateEmailVerifyInvalid() throws Exception {
+        User user = new User();
+        user.setId("10000000");
+        user.setEmail("test@example.com");
+        user.setPassword("password");
+        user.setType(1);
+        user.setName("Test User");
+        request.setAttribute("loginUserType", 0); // 模拟管理员
+        when(userMapper.insert(user)).thenReturn(1);
+        Result result = userController.add(response, request, user);
+
+        // 模拟 Redis 返回
+        Mockito.when(redisUtil.get(Mockito.eq("valid-code"), Mockito.eq(false), Mockito.eq(true)))
+                .thenReturn("test@example.com");
+
+        // 创建请求体
+        JSONObject requestBody = new JSONObject();
+        requestBody.put("id", "10000000");
+        requestBody.put("email", "test@example.com");
+        requestBody.put("code", "invalid-code");
+        request.setAttribute("loginUserId", "10000000"); // 模拟本人
+        result = userController.updateEmailVerify(response, request, requestBody);
+        assertEquals("401", result.getCode());
+    }
+
 }
