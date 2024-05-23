@@ -144,12 +144,12 @@ public class EventController {
     }
 
     @GetMapping("/getEventDetail/{eventId}")
-    public Result getEventDetail(@NotNull HttpServletRequest request, HttpServletResponse response, @PathVariable("eventId") int eventId, @RequestHeader("token") String token) {
-        int userType = (int) request.getAttribute("loginUserType");
+    public Result getEventDetail(@NotNull HttpServletRequest request, HttpServletResponse response, @PathVariable("eventId") int eventId) {
         QueryWrapper<Event> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("id", eventId);
         if (!eventService.exists(queryWrapper)) {
-            throw new ServiceException("404", "No such event");
+            return Result.error(response, "404","不存在这样的活动");
+//            throw new ServiceException("404", "No such event");
         }
         return Result.success(response, eventService.getById(eventId));
     }
