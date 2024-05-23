@@ -14,22 +14,101 @@
               @click="handleClickProduct(product)"
             />
           </t-col>
+
+          <t-col style="margin: 10px">
+          <t-card header-bordered hover-shadow>
+            <template #title>
+              <h1 style="font-size: 20px; margin: 10px">
+                活动看板
+              </h1>
+            </template>
+            <t-space :size="50" style="margin: 20px">
+              <template #separator>
+                <t-divider layout="vertical" style="height:100%" />
+              </template>
+              <t-statistic :animation="{
+        valueFrom: 0,
+        duration: 2000,
+      }" title="总活动数" :value="infoList.event" unit="个"
+                           :animation-start="start"/>
+              <t-statistic :animation="{
+        valueFrom: 0,
+        duration: 2000,
+      }" title="待审核活动数" :value="infoList.audit" unit="个" color="red"
+                           :animation-start="start">
+              </t-statistic>
+            </t-space>
+          </t-card>
+          </t-col>
+
+          <t-col style="margin: 10px">
+            <t-card header-bordered hover-shadow>
+              <template #title>
+                <h1 style="font-size: 20px; margin: 10px">
+                  用户数
+                </h1>
+              </template>
+              <t-space :size="50"  align="center" style="margin: 20px">
+                <t-icon name="usergroup" class="icon" />
+                <t-statistic  :animation="{
+        valueFrom: 0,
+        duration: 2000,
+      }"  :animation-start="start" title="总数" :value="infoList.user" unit="个" />
+              </t-space>
+            </t-card>
+          </t-col>
+
+          <t-col style="margin: 10px">
+            <t-card header-bordered hover-shadow>
+              <template #title>
+                <h1 style="font-size: 20px; margin: 10px">
+                  动态数
+                </h1>
+              </template>
+              <t-space :size="50"  align="center" style="margin: 20px">
+                <t-icon name="animation" class="icon" />
+                <t-statistic  :animation="{
+        valueFrom: 0,
+        duration: 2000,
+      }"  :animation-start="start" title="总数" :value="infoList.comment" unit="个" />
+              </t-space>
+            </t-card>
+          </t-col>
+
+          <t-col style="margin: 10px">
+            <t-card header-bordered hover-shadow>
+              <template #title>
+                <h1 style="font-size: 20px; margin: 10px">
+                  成交量
+                </h1>
+              </template>
+              <t-space :size="50"  align="center" style="margin: 20px">
+                <t-icon name="bill" class="icon" />
+                <t-statistic  :animation="{
+        valueFrom: 0,
+        duration: 2000,
+      }"  :animation-start="start" title="订单总数" :value="infoList.order" unit="笔" />
+              </t-space>
+            </t-card>
+          </t-col>
+
+
         </t-row>
       </div>
 </template>
 
-<script lang="ts">
+<script>
 export default {
   name: 'ListCard',
 };
 </script>
 
-<script setup lang="ts">
-import { ref } from 'vue';
+<script setup>
+import {onMounted, ref} from 'vue';
 
-import type { CardProductType } from './components/product-card.vue';
 import ProductCard from './components/product-card.vue';
 import router from '@/routers';
+import axios from "axios";
 
 const productList = ref([
   {
@@ -65,7 +144,30 @@ const productList = ref([
     type: 6,},
 ]);
 
-const handleClickProduct = (product: CardProductType) => {
+const infoList = ref(
+    {
+      event: 1,
+      audit: 1,
+      user: 1,
+      comment: 1,
+      order: 1,
+    });
+const start = ref(false);
+onMounted(() => {
+  axios.get(`/admin/homepage`, {
+    headers: {
+      token: sessionStorage.getItem('token'),
+    }
+  })
+      .then(response => {
+        infoList.value = response.data.data;
+        start.value = true;
+          }
+      )
+      .catch();
+});
+
+const handleClickProduct = (product) => {
   if (product.type === 1) {
     router.push('/admin/userManage');
   }
@@ -128,6 +230,14 @@ const handleClickProduct = (product: CardProductType) => {
     align-items: center;
     justify-content: center;
   }
+}
+
+.icon {
+  font-size: 32px;
+  color: var(--td-brand-color);
+  background: var(--td-brand-color-light);
+  border-radius: var(--td-radius-medium);
+  padding: 12px;
 }
 
 .card-with-margin {
