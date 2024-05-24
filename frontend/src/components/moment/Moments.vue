@@ -34,10 +34,13 @@
 
     <t-content>
       <div :style="{height: 'calc(100vh - 56px)', 'overflow-y': 'scroll' }">
-      <t-radio-group class="card-with-margin" variant="default-filled" default-value="1" @change="onTypeChange">
+        <t-space  class="card-with-margin">
+      <t-radio-group variant="default-filled" default-value="1" @change="onTypeChange">
         <t-radio-button value="1">动态</t-radio-button>
         <t-radio-button value="2">我的发布</t-radio-button>
       </t-radio-group>
+        <t-button v-if="hasUnreadMsg" theme="default" variant="outline" @click="showMsg">我的未读消息</t-button>
+        </t-space>
             <t-alert v-if="list.length===0 && radioGroupValue==='2'" class="card-with-margin" theme="info" title="您还没有发送过动态" message="欢迎分享您的感受">
               <template #operation>
                 <span @click="router.push('/newMoment');">新增动态</span>
@@ -133,7 +136,7 @@
     </t-list>
     <div style="background-color: #ffffff ;position: fixed;bottom:0;width: 40vw ;height: auto">
       <t-divider/>
-      <t-comment avatar="https://tdesign.gtimg.com/site/avatar.jpg">
+      <t-comment>
         <template #content>
           <div class="form-container">
             <t-textarea v-model="replyData" placeholder="请输入内容"/>
@@ -150,11 +153,31 @@
       :on-close="closeDelete"
       @confirm="onDeleteClickConfirm"
   />
+  <t-dialog
+      width="300px"
+      showOverlay
+      preventScrollThrough
+      header="我的未读消息"
+      destroyOnClose
+      :footer="false"
+      v-model:visible="msgVisible"
+  >
+    <t-list :split="true">
+      <t-list-item  v-for="item in unreadUser" :key="item.id">
+        <t-list-item-meta :image="avatarList[item.iconId]" :title="item.name" />
+        <template #action>
+          <t-button variant="text" shape="square" @click="chat(item.id,item.name)">
+            <chat-icon />
+          </t-button>
+        </template>
+      </t-list-item>
+    </t-list>
+  </t-dialog>
 </template>
 
 <script setup lang="jsx">
 import {Tag} from 'tdesign-vue-next';
-import {AddIcon, DeleteIcon, EditIcon, TemplateIcon} from "tdesign-icons-vue-next";
+import {AddIcon, DeleteIcon, ChatIcon} from "tdesign-icons-vue-next";
 import {onMounted, ref} from 'vue';
 import router from "@/routers/index.js";
 import axios from "axios";
@@ -162,6 +185,14 @@ import { fileServerAxios } from "@/main.js"
 import {MessagePlugin} from "tdesign-vue-next";
 
 const user = sessionStorage.getItem("uid") ? sessionStorage.getItem("uid") : '';//当前用户
+
+const avatarList = ['https://avatars.githubusercontent.com/pengyyyyy',
+  'https://tdesign.gtimg.com/site/avatar.jpg',
+  'https://avatars.githubusercontent.com/LeeJim',
+  'https://avatars.githubusercontent.com/u/7361184?v=4',
+  'https://avatars.githubusercontent.com/pattybaby110',
+  'https://avatars.githubusercontent.com/chaishi']
+
 
 // ###### 动态列表 开始 ######
 
@@ -204,6 +235,7 @@ const getMomentBatch = async (id) => {
 };
 
 onMounted(async() => {
+  await getUnreadMsg();
   await getMomentBatch(-1);
   await selectMoment(list.value[0]);
   cardWidth.value = cardRef.value.$el.offsetWidth;
@@ -214,6 +246,31 @@ const loadMore = async () => {
 };
 
 // ###### 动态列表 结束 ######
+
+// ###### 未读消息 开始 ######
+
+const hasUnreadMsg = ref(false);
+const unreadUser = ref([]);
+
+const getUnreadMsg = async () => {
+  try {
+    hasUnreadMsg.value = false;
+    unreadUser.value = [];
+    const response = await axios.get(`/chatMessage/getUnread`, {
+      headers: {
+        token: sessionStorage.getItem('token'),
+      }
+    });
+    if (response.data.data.length > 0) {
+      hasUnreadMsg.value = true;
+      unreadUser.value = response.data.data;
+    }
+  } catch (error) {
+  }
+};
+
+// ###### 未读消息 结束 ######
+
 
 // ###### 动态详情 开始 ######
 
@@ -258,13 +315,13 @@ const selectMoment = async (item) => {
         token: sessionStorage.getItem('token')
       }
     });
+    response.data.data.avatar = avatarList[response.data.data.avatar];
     momentData.value = response.data.data;
     const response2 = await axios.get(`/blog/get/${item.id}`, {
       headers: {
         token: sessionStorage.getItem('token')
       }
     });
-    momentData.value.avatar = 'https://tdesign.gtimg.com/site/avatar.jpg';
     thumbUpColor.value = response2.data.data.voteType === 1 ? 'red' : 'grey';
     thumbDownColor.value = response2.data.data.voteType === -1 ? 'blue' : 'grey';
     if (momentData.value.mediaType === false) {
@@ -337,6 +394,12 @@ const deletePost = () => {
 
 const closeDelete = () => {
   deleteVisible.value = false;
+};
+
+const msgVisible = ref(false);
+
+const showMsg = () => {
+  msgVisible.value = true;
 };
 
 const chat = (id,name) => {
@@ -424,10 +487,10 @@ const viewComment = async () => {
         token: sessionStorage.getItem('token'),
       }
     });
+    response.data.data.forEach((item) => {
+      item.avatar = avatarList[item.avatar];
+    });
     commentsData.value = response.data.data;
-    for (let i = 0; i < commentsData.value.length; i++) {
-      commentsData.value[i].avatar = 'https://tdesign.gtimg.com/site/avatar.jpg';
-    }
     commentVisible.value = true;
   } catch (error) {
   }

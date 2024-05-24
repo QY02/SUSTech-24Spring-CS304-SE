@@ -38,7 +38,8 @@ const renderMarkdown = (text) => {
 const user = sessionStorage.getItem("uid") ? sessionStorage.getItem("uid") : ''; //当前用户
 const chatPartner = ref(sessionStorage.getItem("chatUserId")); //聊天对象
 const chatPartnerName = sessionStorage.getItem("chatUserName");
-
+const chatPartnerAvatar = ref(null);
+const userAvatar = ref(null);
 
 const text = ref("");
 const historyMessages = ref([]);
@@ -63,7 +64,9 @@ const getHistoryMessage = async () => {
           },
         })
         .then(response => {
-          historyMessages.value = response.data.data;
+          historyMessages.value = response.data.data.message;
+          chatPartnerAvatar.value = avatarList[response.data.data.avatarMap[chatPartner.value]];
+          userAvatar.value = avatarList[response.data.data.avatarMap[user]];
           for (let i = 0; i < historyMessages.value.length; i++) {
             if (historyMessages.value[i]['senderId'] !== chatPartner.value) {
               createContent(null, historyMessages.value[i]['senderName'], historyMessages.value[i]['content']);
@@ -142,6 +145,14 @@ const send = () => {
   }
 };
 
+const avatarList = ['https://avatars.githubusercontent.com/pengyyyyy',
+  'https://tdesign.gtimg.com/site/avatar.jpg',
+  'https://avatars.githubusercontent.com/LeeJim',
+  'https://avatars.githubusercontent.com/u/7361184?v=4',
+  'https://avatars.githubusercontent.com/pattybaby110',
+  'https://avatars.githubusercontent.com/chaishi']
+
+
 
 const createContent = (remoteUser, nowUser, text) => {
   let html;
@@ -153,7 +164,7 @@ const createContent = (remoteUser, nowUser, text) => {
       </div>
       <div class="el-col el-col-2">
         <span class="el-avatar el-avatar--circle" style="height: 40px; width: 40px; line-height: 40px;">
-          <img src="https://cdn.pixabay.com/photo/2016/11/30/18/14/chat-1873543_1280.png" style="object-fit: cover;" alt="chat">
+          <img src="${userAvatar.value}" style="object-fit: cover;" alt="chat">
         </span>
       </div>
     </div>`;
@@ -161,7 +172,7 @@ const createContent = (remoteUser, nowUser, text) => {
     html = `<div class="el-row" style="padding: 5px 0">
       <div class="el-col el-col-2" style="text-align: right">
         <span class="el-avatar el-avatar--circle" style="height: 40px; width: 40px; line-height: 40px;">
-          <img src="https://cdn.pixabay.com/photo/2016/11/30/18/14/chat-1873543_1280.png" style="object-fit: cover;" alt="chat">
+          <img src="${chatPartnerAvatar.value}" style="object-fit: cover;" alt="chat">
         </span>
       </div>
       <div class="el-col el-col-22" style="padding-left: 10px">

@@ -98,6 +98,7 @@ public class WebSocketServer {
         msg.setReceiverId(toUserID);
         msg.setContent(text);
         msg.setSendTime(LocalDateTime.now());
+        msg.setHasRead(false);
         chatMessageService.save(msg);
     }
 

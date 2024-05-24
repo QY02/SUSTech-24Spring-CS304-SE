@@ -111,9 +111,11 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     public JSONObject getMomentById(Integer commentId) {
         Comment comment = baseMapper.selectById(commentId);
         String username = userMapper.selectById(comment.getPublisherId()).getName();
+        Integer userIcon = userMapper.selectById(comment.getPublisherId()).getIconId();
         String eventName = eventMapper.selectById(comment.getEventId()).getName();
         JSONObject jsonObject = (JSONObject) JSON.toJSON(comment);
         jsonObject.put("userName",username);
+        jsonObject.put("avatar",userIcon);
         jsonObject.put("relatedEvent",eventName);
         List<Integer> attachmentIds;
         if (comment.getMediaType()) {//video

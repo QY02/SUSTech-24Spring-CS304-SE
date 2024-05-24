@@ -24,4 +24,6 @@ public class ChatMessage {
 
     private LocalDateTime sendTime;
 
+    private Boolean hasRead;
+
 }

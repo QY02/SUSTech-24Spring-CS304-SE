@@ -17,7 +17,7 @@ import static org.cs304.backend.constant.constant_InteractionType.*;
 public class UserInteractionServiceImpl extends ServiceImpl<UserInteractionMapper, UserInteraction> implements IUserInteractionService{
     @Override
     public void changeUserInteraction(String userId, Integer eventId, Integer type, Integer action) {
-        UserInteraction userInteraction = baseMapper.selectOne(new QueryWrapper<UserInteraction>().eq("event_id",eventId).eq("user_id",userId));
+        UserInteraction userInteraction = baseMapper.selectList(new QueryWrapper<UserInteraction>().eq("event_id",eventId).eq("user_id",userId)).get(0);
         if (userInteraction == null) {
             userInteraction = new UserInteraction();
             userInteraction.setUserId(userId);

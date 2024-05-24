@@ -50,7 +50,7 @@
       </div>
       <t-list v-else :split="true">
         <t-list-item v-for="item in listData" :key="item.id">
-          <t-list-item-meta :image="avatarUrl" :title="item.title" :description="item.description" />
+          <t-list-item-meta :image="item.avatar" :title="item.title" :description="item.description" />
           <t-space direction="vertical">
             <t-text>{{ item.date }}</t-text>
             <t-text>{{ item.location }}</t-text>
@@ -214,6 +214,13 @@ const mapEventType = (type) => {
 // ###### 数据 结束 ######
 
 // ###### 获取数据 开始 ######
+const avatarList = ['https://avatars.githubusercontent.com/pengyyyyy',
+  'https://tdesign.gtimg.com/site/avatar.jpg',
+  'https://avatars.githubusercontent.com/LeeJim',
+  'https://avatars.githubusercontent.com/u/7361184?v=4',
+  'https://avatars.githubusercontent.com/pattybaby110',
+  'https://avatars.githubusercontent.com/chaishi']
+
 const loading = ref(true);
 onMounted(() => {
   loading.value = true;
@@ -235,7 +242,8 @@ onMounted(() => {
               type: mapEventType(item.type),
               status: item.status,
               publisherId: item.publisherId,
-              publishDate: item.publishDate
+              publishDate: item.publishDate,
+              avatar: avatarList[item.avatar]
             }));
             filter_list_data.value = audit_list_data.value;
             listData.value = filter_list_data.value.slice(0, pageSize.value);

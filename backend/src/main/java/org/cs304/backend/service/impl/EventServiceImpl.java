@@ -58,6 +58,8 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
     private UserFavoriteTypeMapper userFavoriteTypeMapper;
     @Resource
     private HistoryMapper historyMapper;
+    @Resource
+    private UserMapper userMapper;
 
     @Resource
     private INotificationService notificationService;
@@ -86,7 +88,8 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
                     }
                 }
                 jsonArray.getJSONObject(i).put("startTime", start_time);
-                jsonArray.getJSONObject(i).put("location", eventSessionList.get(0).getLocation());
+                jsonArray.getJSONObject(i).put("location", eventSessionList.get(0).getVenue());
+                jsonArray.getJSONObject(i).put("avatar", userMapper.selectById(jsonArray.getJSONObject(i).getString("publisherId")).getIconId());
             }
             return jsonArray;
         }
