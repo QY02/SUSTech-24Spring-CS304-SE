@@ -47,8 +47,11 @@
             </t-list-item>
         </t-list>
     </div>
-    <div v-show="commentsData.length==0">
-        <a-empty />
+    <div v-show="commentsData.length===0">
+      <div style="display: flex; justify-content: center; align-items: center; flex-direction: column">
+        <img src="https://tdesign.gtimg.com/pro-template/personal/nothing.png" alt="空"/>
+        <p>{{ '暂无评论' }}</p>
+      </div>
     </div>
     <div style="height: 40px;"></div>
 

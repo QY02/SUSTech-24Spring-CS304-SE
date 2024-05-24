@@ -261,6 +261,7 @@ const submitInfo = () => {
       token: sessionStorage.getItem('token'),
     },
   }).then(() => {
+    avatar.value = avatarList[formData.avatar]
     axios.post("/user/changeUserFavoriteType", {
       "userId": sessionStorage.getItem('uid'),
       "favType": formData.favTypes,
