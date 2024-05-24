@@ -26,11 +26,11 @@
       }">
         修改个人信息
       </t-button>
-      <t-popup content="退出登录">
+      <t-tooltip content="退出登录">
         <t-button style="position: absolute; right: 50px; top: 50px" theme="default" variant="base" @click="logout">
           <logout-icon></logout-icon>
         </t-button>
-      </t-popup>
+      </t-tooltip>
 
       <ChangePassword></ChangePassword>
     </div>

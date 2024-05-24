@@ -37,7 +37,7 @@
                   <notice></notice>
                 </t-tooltip>
 
-                <t-tooltip placement="bottom" content="用户信息">
+                <t-tooltip placement="bottom" content="用户中心">
                   <t-button theme="default" shape="square" variant="text" @click="handleNav('user')">
                     <UserCircleIcon class="header-menu-icon"/>
                   </t-button>

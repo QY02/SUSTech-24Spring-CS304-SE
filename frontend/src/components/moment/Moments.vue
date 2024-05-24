@@ -137,7 +137,7 @@
         <template #content>
           <div class="form-container">
             <t-textarea v-model="replyData" placeholder="请输入内容"/>
-            <t-button class="form-submit" @click="submitReply">回复</t-button>
+            <t-button class="form-submit" @click="submitReply">发送</t-button>
           </div>
         </template>
       </t-comment>
