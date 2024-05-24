@@ -9,6 +9,8 @@ package org.cs304.backend;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.cs304.backend.entity.*;
 import org.cs304.backend.exception.ServiceException;
 import org.cs304.backend.mapper.*;
@@ -26,8 +28,10 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 
@@ -44,7 +48,7 @@ public class EventServiceImplTest {
     @Mock
     private IAttachmentService attachmentService;
     @Mock
-    private EventMapper eventMapper;
+    EventMapper eventMapper;
     @Mock
     private EventSessionMapper eventSessionMapper;
     @Mock
@@ -67,6 +71,8 @@ public class EventServiceImplTest {
     @BeforeEach
     public void setup() {
         MockitoAnnotations.openMocks(this);
+        ReflectionTestUtils.setField(eventService, "baseMapper", eventMapper);
+
     }
 
 
@@ -244,5 +250,5 @@ public class EventServiceImplTest {
 
         assertDoesNotThrow(() -> eventService.changeAudit(publisherId, eventId, status, reason));
     }
-}
 
+}
