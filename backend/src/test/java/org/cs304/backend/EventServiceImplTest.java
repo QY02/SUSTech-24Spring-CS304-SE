@@ -32,11 +32,13 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+
 @ExtendWith(MockitoExtension.class)
 public class EventServiceImplTest {
 
@@ -249,6 +251,121 @@ public class EventServiceImplTest {
         doNothing().when(notificationService).insertEventNotPassNotification(anyString(), anyInt(), anyString());
 
         assertDoesNotThrow(() -> eventService.changeAudit(publisherId, eventId, status, reason));
+    }
+
+    @Test
+    @DisplayName("Should return an empty list if no favorite types are found")
+    public void testGetRecommendEvents_NoFavorites() {
+        when(userFavoriteTypeMapper.selectList(any(QueryWrapper.class))).thenReturn(Collections.emptyList());
+
+        List<Event> result = eventService.getRecommendEvents("userId");
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Should return recommended events including user interactions")
+    public void testGetRecommendEvents_WithInteractions() {
+        List<UserFavoriteType> favoriteTypes = Arrays.asList(new UserFavoriteType("12110141", 1), new UserFavoriteType("12110141", 2));
+        Event e1 = new Event();
+        e1.setId(1);
+        Event e2 = new Event();
+        e2.setId(2);
+        List<Event> events = Arrays.asList(e1, e2);
+        UserInteraction ui1 = new UserInteraction();
+        ui1.setEventId(1);
+        UserInteraction ui2 = new UserInteraction();
+        ui2.setEventId(2);
+        List<UserInteraction> interactions = Arrays.asList(ui1, ui2);
+
+        when(userFavoriteTypeMapper.selectList(any())).thenReturn(favoriteTypes);
+        when(userInteractionMapper.selectList(any())).thenReturn(interactions);
+        // Assume method listByIds and other mocks setup appropriately
+        when(eventService.list(any(QueryWrapper.class))).thenReturn(events);
+
+        List<Event> result = eventService.getRecommendEvents("userId");
+
+        assertFalse(result.isEmpty());
+        assertEquals(2, result.size()); // Assuming listByIds merges without duplicates
+    }
+    @Test
+    @DisplayName("Should return an empty JSONArray if no events are available")
+    public void testGetHotValue_NoEvents() {
+        when(eventService.list(any(QueryWrapper.class))).thenReturn(Collections.emptyList());
+
+        JSONArray result = eventService.getHotValue();
+
+        assertTrue(result.isEmpty());
+    }
+    @Test
+    @DisplayName("Should calculate and sort events by heat correctly")
+    public void testGetHotValue_WithEvents() {
+        // Create events and manually set properties
+        Event event1 = new Event();
+        event1.setId(1);
+        event1.setPublishDate(LocalDate.now().minusDays(2).atStartOfDay());
+        Event event2 = new Event();
+        event2.setId(2);
+        event2.setPublishDate(LocalDate.now().minusDays(10).atStartOfDay());
+        Event event3 = new Event();
+        event3.setId(3);
+        event3.setPublishDate(LocalDate.now().minusDays(100).atStartOfDay());
+
+        List<Event> events = Arrays.asList(event1, event2, event3);
+
+        // Create histories and manually set properties
+        History history1 = new History();
+        history1.setEventId(1);
+//        history1.setCount(10); // Assuming History has a count field
+        History history2 = new History();
+        history2.setEventId(2);
+//        history2.setCount(20);
+        History history3 = new History();
+        history3.setEventId(3);
+//        history3.setCount(5);
+
+        List<History> histories = Arrays.asList(history1, history2, history3);
+
+        when(eventMapper.selectList(any())).thenReturn(events);
+        when(historyMapper.selectList(any())).thenReturn(histories);
+
+        JSONArray result = eventService.getHotValue();
+
+        assertFalse(result.isEmpty());
+        assertEquals(3, result.size());
+        // Verify that the first element in the array has the highest heat
+//        System.out.println(result);
+        assertEquals(3, result.getJSONObject(0).get("id"));  // Assuming JSONObjects include an 'eventId'
+        assertTrue(result.getJSONObject(0).getDouble("heat") > result.getJSONObject(1).getDouble("heat"));
+    }
+    @Test
+    @DisplayName("Should return a list of events for a valid publisher ID")
+    public void testGetEventByPublisher_ValidId() {
+        // Arrange
+        Integer publisherId = 1;
+        List<Event> expectedEvents = Arrays.asList(new Event(), new Event());
+        when(eventMapper.selectList(any())).thenReturn(expectedEvents);
+
+        // Act
+        List<Event> events = eventService.getEventByPublisher(1, publisherId);
+
+        // Assert
+        assertNotNull(events);
+        assertEquals(2, events.size());
+        verify(eventMapper).selectList(any());
+    }
+    @Test
+    @DisplayName("Should return an empty list when no IDs are provided")
+    public void testGetBatchByIds_EmptyList() {
+        // Arrange
+        List<Integer> ids = new ArrayList<>();
+
+        // Act
+        List<Event> results = eventService.getBatchByIds(1, ids);
+
+        // Assert
+        assertNotNull(results);
+        assertTrue(results.isEmpty());
     }
 
 }

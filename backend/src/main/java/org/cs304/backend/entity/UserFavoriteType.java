@@ -14,4 +14,8 @@ public class UserFavoriteType {
     private String userId;
 
     private Integer eventType;
+
+    public UserFavoriteType(int eventType) {
+        this.eventType=eventType;
+    }
 }
