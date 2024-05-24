@@ -50,10 +50,11 @@
             <t-tag variant="light" style="margin-right: 20px">{{ EVENT_TYPE_MAP[item['type']] }}</t-tag>
           </a>
 
-
+            <t-tooltip content="详情">
             <t-button variant="text" shape="square" @click="clickEvent(item['id'])">
               <arrow-right-icon/>
             </t-button>
+            </t-tooltip>
           </template>
 
 

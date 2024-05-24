@@ -15,14 +15,14 @@
           <div class="card-4">
             <t-space size="24px">
               <!-- <div v-if="isFavorite"> -->
-              <t-popup content="收藏">
+              <t-tooltip content="收藏">
                 <t-button :loading="loading_favorite" shape="circle" theme="primary" @click="clickHeart()">
                   <template #icon>
                     <HeartFilledIcon v-show="isFavorite" />
                     <HeartIcon v-show="!isFavorite" />
                   </template>
                 </t-button>
-              </t-popup>
+              </t-tooltip>
               <!-- </div>
             <div v-else>
               <t-button :loading="loading_favorite" shape="circle" theme="primary" @click="addFavorite()">
@@ -34,11 +34,11 @@
             </t-space>
           </div>
           <div class="card-4">
-            <t-popup content="评分">
+            <t-tooltip content="评分">
               <t-tag size="large" theme="primary"><template #icon>
                 <StarFilledIcon />
               </template>{{ parentAverageScore }}</t-tag>
-            </t-popup>
+            </t-tooltip>
           </div>
           <t-badge count="试用" color="#00A870">
             <t-button @click="pushRouter('chatWithEvent')">与大模型聊天</t-button>

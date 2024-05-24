@@ -60,15 +60,21 @@
             <t-tag theme="warning" variant="light">￥{{ item.price }}起</t-tag>
           </t-space>
           <template #action>
+            <t-tooltip content="详情">
             <t-button variant="text" shape="square" @click="viewDetail(item)">
               <icon name="task-1" />
             </t-button>
+            </t-tooltip>
+            <t-tooltip content="通过">
             <t-button variant="text" shape="square" @click="onSuccess(item.id)">
               <icon name="check" color="green" />
             </t-button>
+            </t-tooltip>
+            <t-tooltip content="拒绝">
             <t-button variant="text" shape="square" @click="onDelete(item.id)">
               <icon name="close" color="red" />
             </t-button>
+            </t-tooltip>
           </template>
         </t-list-item>
       </t-list>
@@ -165,7 +171,7 @@ const filter_list_data = ref(null);
 // 当前页展示的数据
 const listData = ref([]);
 // 分页
-const pageSize = ref(8);
+const pageSize = ref(5);
 const eventType = [
   {label: '全选', checkAll: true},
   {label: '讲座', value: 0},

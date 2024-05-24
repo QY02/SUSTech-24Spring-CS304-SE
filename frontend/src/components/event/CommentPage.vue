@@ -17,16 +17,16 @@
                             <h2>{{ item.title }}</h2>
                             <div class="stars"><t-rate :default-value="item.score" allow-half disabled size="16" />
                             </div>
-                            <div v-if="userId == item.publisherId"
+                          <div v-if="userId === item.publisherId"
                                 style="margin-top: 30px; display: flex; justify-content: flex-end; margin-right:30px ;">
-                                <t-popup content="删除该评论">
+                                <t-tooltip content="删除该评论">
                                     <t-button theme="danger" @click="visibleDelete = true; deleteEventId = item.id"
                                         shape="square" variant="text">
                                         <template #icon>
                                             <DeleteIcon />
                                         </template>
                                     </t-button>
-                                </t-popup>
+                                </t-tooltip>
                             </div>
                         </t-space>
                         <div class="comment_infos">
@@ -37,7 +37,7 @@
                                 {{ item.content }}
                             </p>
                         </div>
-                        <t-space style="display: flex; width: 100%;">
+                      <t-space style="display: flex;width: fit-content;align-self:flex-end;">
                             <div class="author">
                                 — {{ item.publisherId }} {{ item.publisherNames }}
                             </div>
@@ -260,6 +260,7 @@ getComment();
 
 .comment_card {
     display: flex;
+  width: 100%;
     flex-direction: column;
     justify-content: space-between;
     background-color: rgba(255, 255, 255, 1);

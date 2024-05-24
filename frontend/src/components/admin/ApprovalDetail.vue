@@ -1,7 +1,7 @@
 <template>
     <t-space style="display: flex; width: 100%;">
         <div>
-            <div class="title">EVENT DETAILS</div>
+            <div class="title">活动细节</div>
             <div class="line"></div>
         </div>
     </t-space>
@@ -11,7 +11,7 @@
     <div v-if="event.date">
         <t-space style="display: flex; width: 100%;">
             <div>
-                <div class="title">EVENT TIME</div>
+                <div class="title">活动时间</div>
                 <div class="line"></div>
             </div>
         </t-space>
@@ -21,13 +21,13 @@
     </div>
     <t-space style="display: flex; width: 100%;">
         <div>
-            <div class="title">TICKET PRICING</div>
+            <div class="title">活动票价</div>
             <div class="line"></div>
         </div>
     </t-space>
     <div style="margin-left: 25px; margin-top: -10px;">
         <p style="  color: rgba(7, 63, 216, 1); font-size: 14px; font-weight: 700; letter-spacing: 1px;">
-            STANDARD
+          价格标准
         </p>
         <p style="  margin-top: 0.4rem; line-height: 1.625; color: rgb(70, 73, 79);;">
             门票价格：¥{{ event.lowestPrice }} - ¥{{ event.highestPrice }}
@@ -38,14 +38,14 @@
     <div v-if="event.policy">
         <t-space style="display: flex; width: 100%;">
             <div>
-                <div class="title">ADMISSION POLICY</div>
+                <div class="title">退换票规则</div>
                 <div class="line"></div>
             </div>
         </t-space>
         <div class="ticket_card" style="margin-left: 25px; margin-top: -10px;">
             <p
                 style="  margin-top: 0.4rem; color: rgb(70, 73, 79); font-size: 14px; font-weight: 700; letter-spacing: 1px;">
-                Rules
+                规则
             </p>
             <p style="  margin-top: 0.4rem; line-height: 1.625;color: rgb(70, 73, 79);;">
                 {{ event.policy }}
