@@ -17,8 +17,8 @@ spring:
   mail:
     protocol: smtp
     host: smtp.163.com
-    username: projecthelper@163.com
-    password: XJMWVPFMWJCNKZKZ
+    username: eventcentersustech@163.com
+    password: ZZSKLQLTJQTWSWBZ
     port: 25
     default-encoding: utf-8
     properties:

@@ -3,8 +3,10 @@ package org.cs304.backend; /**
  * @date 2024/5/23 23:14
  * @description
  **/
+
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson2.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.cs304.backend.controller.EventController;
@@ -20,8 +22,13 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
+
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
 public class EventControllerTest {
@@ -37,15 +44,21 @@ public class EventControllerTest {
     @Mock
     EventMapper eventMapper;
 
-    @Mock
-    private HttpServletRequest request;
+    //    @Mock
+//    private HttpServletRequest request;
+//
+//    @Mock
+//    private HttpServletResponse response;
 
-    @Mock
-    private HttpServletResponse response;
+    MockHttpServletRequest request;
+
+    MockHttpServletResponse response;
 
     @BeforeEach
-    void setUp() {
+    public void setup() {
         MockitoAnnotations.openMocks(this);
+        request = new MockHttpServletRequest();
+        response = new MockHttpServletResponse();
     }
 
     @Test
@@ -77,6 +90,52 @@ public class EventControllerTest {
         Result result = eventController.getEventDetail(request, response, 1);
         // not exist
         assertEquals("404", result.getCode()); // 验证结果
+    }
+
+    @Test
+    @DisplayName("Should return a event when getting an event by user id")
+    public void shouldReturnEventWhenGettingEventByUserId() {
+//        JSONObject jsonObject = new JSONObject();
+        request.setAttribute("loginUserType", 0);
+        when(eventMapper.selectList(new QueryWrapper<Event>().eq("publisher_id", 12110141))).thenReturn(new ArrayList<>());
+        Result result = eventController.getMyPost(request, response, 12110141);
+
+        assertNotNull(result);
+    }
+
+    @Test
+    @DisplayName("Should return a hot events when getting hot event list")
+    public void shouldReturnHotEventWhenGettingHotEvent() {
+
+//        when(eventMapper.selectList(new QueryWrapper<Event>().eq("publisher_id", 12110141))).thenReturn(new ArrayList<>());
+        Result result = eventController.getHotEvents(request, response);
+
+        assertNotNull(result);
+    }
+
+    @Test
+    @DisplayName("Should return a event when getting Recommend events by user id")
+    public void shouldReturnRecommendEventWhenGettingEvents() {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("userId", "12110141");
+//        request.setAttribute("loginUserType", 0);
+//        when(eventMapper.selectList(new QueryWrapper<Event>().eq("publisher_id", 12110141))).thenReturn(new ArrayList<>());
+        Result result = eventController.getRecommendEvents(request, response, com.alibaba.fastjson2.JSONObject.from(jsonObject));
+
+        assertEquals("200", result.getCode());
+    }
+
+    @Test
+    @DisplayName("Should return a list of events when getting event")
+    public void shouldReturnEvents() {
+        JSONObject jsonObject = new JSONObject();
+//        jsonObject.put("eventId", 1);
+        jsonObject.put("type", 0);
+        when(eventMapper.selectList(new QueryWrapper<Event>().eq("type", 0))).thenReturn(new ArrayList<>());
+
+        Result result = eventController.getAllEvents(request, response);
+
+        assertEquals("200", result.getCode());
     }
 
 }
