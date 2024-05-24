@@ -305,7 +305,7 @@ const favEvent = (eventId) => {
     })
         .then(() => {
           favColor.value[eventId] = 'red'
-          MessagePlugin.success("Add favorite successfully!");
+          MessagePlugin.success("收藏成功！");
         })
         .catch((error) => {
           // thumbUpColor.value = 'red'
@@ -329,7 +329,7 @@ const favEvent = (eventId) => {
       }
     }).then((response) => {
       favColor.value[eventId] = 'black'
-      MessagePlugin.success("Delete favorite successfully!");
+      MessagePlugin.success("取消收藏成功！");
 
     }).catch(() => {
     })
