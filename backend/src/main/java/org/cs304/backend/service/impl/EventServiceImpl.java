@@ -328,7 +328,7 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
             return new ArrayList<>();
         }
         List<Integer> typeList = userFavoriteTypeList.stream().map(UserFavoriteType::getEventType).collect(Collectors.toList());
-        QueryWrapper<Event> queryWrapper = new QueryWrapper<Event>().in("type", typeList).eq("status", constant_EventStatus.PASSED).eq("visible", true);
+        QueryWrapper<Event> queryWrapper = new QueryWrapper<Event>().in("type", typeList).eq("status", constant_EventStatus.PASSED).eq("visible", true).last("limit 5");
         List<Event> list = list(queryWrapper);
         List<UserInteraction> userInteractionList = userInteractionMapper.selectList(new QueryWrapper<UserInteraction>().eq("user_id", userId).eq("update_type", 0));
         if (userInteractionList != null && !userInteractionList.isEmpty()) {

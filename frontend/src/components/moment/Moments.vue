@@ -530,6 +530,7 @@ const submitReply = async () => {
 h1 {
   font-size: 24px;
   font-weight: bold;
+  margin: 40px;
 }
 
 </style>

@@ -1,12 +1,21 @@
 package org.cs304.backend.controller;
 
 import com.alibaba.fastjson2.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.cs304.backend.constant.constant_CommentType;
+import org.cs304.backend.constant.constant_EventStatus;
+import org.cs304.backend.entity.Comment;
+import org.cs304.backend.entity.Event;
 import org.cs304.backend.exception.ServiceException;
+import org.cs304.backend.mapper.CommentMapper;
+import org.cs304.backend.mapper.EventMapper;
+import org.cs304.backend.mapper.OrderRecordMapper;
+import org.cs304.backend.mapper.UserMapper;
 import org.cs304.backend.service.IEventService;
 import org.cs304.backend.utils.Result;
 import org.jetbrains.annotations.NotNull;
@@ -19,6 +28,18 @@ public class AdminController {
 
     @Resource
     private IEventService eventService;
+
+    @Resource
+    private EventMapper eventMapper;
+
+    @Resource
+    private UserMapper userMapper;
+
+    @Resource
+    private CommentMapper commentMapper;
+
+    @Resource
+    private OrderRecordMapper orderRecordMapper;
 
     @GetMapping("/getAuditList/{eventStatus}")
     @Operation(summary = "获取审核列表",
@@ -81,5 +102,26 @@ public class AdminController {
         String reason = requestBody.getString("reason");
         eventService.changeAudit(userId,eventId,status,reason);
         return Result.success(response);
+    }
+
+    @GetMapping("/homepage")
+    @Operation(summary = "获取首页信息",
+            description = """
+            ### 参数 ###
+            无
+            ### 返回值 ###
+            """)
+    public Result getHomepage(@NotNull HttpServletRequest request,HttpServletResponse response) {
+        int userType = (int) request.getAttribute("loginUserType");
+        if (userType != 0) {
+            throw new ServiceException("403","Only admin can alter");
+        }
+        JSONObject result = new JSONObject();
+        result.put("event",eventMapper.selectCount(null));
+        result.put("audit",eventMapper.selectCount(new QueryWrapper<Event>().eq("status", constant_EventStatus.AUDITING)));
+        result.put("user",userMapper.selectCount(null));
+        result.put("comment",commentMapper.selectCount(new QueryWrapper<Comment>().eq("type", constant_CommentType.BLOG)));
+        result.put("order",orderRecordMapper.selectCount(null));
+        return Result.success(response,result);
     }
 }

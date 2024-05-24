@@ -36,7 +36,6 @@
       <div :style="{height: 'calc( 100vh - 56px)', 'overflow-y': 'scroll' }">
       <t-card class="card-with-margin" hoverShadow>
         <t-space>
-          <t-button variant="outline" theme="success" @click="showEvent">点击跳转相关活动：{{momentData.relatedEvent}}</t-button>
           <t-button @click="deletePost" theme="danger">
             <template #icon>
               <delete-icon/>
@@ -443,6 +442,7 @@ const commentsData = ref([
 h1 {
   font-size: 24px;
   font-weight: bold;
+  margin: 40px;
 }
 
 </style>
