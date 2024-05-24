@@ -8,7 +8,7 @@
             <t-button @click="setVisible">评论</t-button>
         </div>
     </t-space>
-    <div>
+    <div v-show="commentsData.length>0">
         <t-list :split="true">
             <t-list-item v-for="(item, index) in commentsData" :key="index">
                 <template #content>
@@ -47,6 +47,9 @@
             </t-list-item>
         </t-list>
     </div>
+    <div v-show="commentsData.length==0">
+        <a-empty />
+    </div>
     <div style="height: 40px;"></div>
 
 
@@ -79,14 +82,14 @@
         </template>
     </t-dialog>
 
-    <t-dialog v-model:visible="visibleDelete" header="确认删除" width="30%" :cancel-btn=null
-    :confirm-btn=null>
-    <div style="margin-top: 40px; margin-bottom: -10px; display: flex; justify-content: flex-end;;">
-        <t-space size="20px">
-            <t-button @click="deleteComment" :loading="deleteLoading">确定删除</t-button>
-            <t-button theme="default" variant="base" :disabled="deleteLoading" type="reset" @click="() => visibleDelete = false">取消</t-button>
-        </t-space>
-    </div>
+    <t-dialog v-model:visible="visibleDelete" header="确认删除" width="30%" :cancel-btn=null :confirm-btn=null>
+        <div style="margin-top: 40px; margin-bottom: -10px; display: flex; justify-content: flex-end;;">
+            <t-space size="20px">
+                <t-button @click="deleteComment" :loading="deleteLoading">确定删除</t-button>
+                <t-button theme="default" variant="base" :disabled="deleteLoading" type="reset"
+                    @click="() => visibleDelete = false">取消</t-button>
+            </t-space>
+        </div>
     </t-dialog>
 </template>
 
@@ -174,7 +177,7 @@ const deleteComment = () => {
             token: token
         }
     }).then((response) => {
-        visibleDelete.value=false;
+        visibleDelete.value = false;
         getComment();
     }).catch(() => {
     }).finally(() => {
