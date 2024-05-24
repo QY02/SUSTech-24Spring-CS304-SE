@@ -47,7 +47,6 @@ public class HistoryController {
               "userId": "12110141"
             }""")))
     public Result getAllHistory(@NotNull HttpServletRequest request, HttpServletResponse response, @RequestBody JSONObject requestBody) {
-        int userType = (int) request.getAttribute("loginUserType");
         String userId = requestBody.getString("userId");
         return Result.success(response, historyService.getAllHistory(userId));
     }

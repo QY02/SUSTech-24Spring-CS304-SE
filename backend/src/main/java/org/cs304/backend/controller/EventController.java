@@ -99,7 +99,7 @@ public class EventController {
              无
             """)))
     public Result getAllEvents(@NotNull HttpServletRequest request, HttpServletResponse response) {
-        int userType = (int) request.getAttribute("loginUserType");
+//        int userType = (int) request.getAttribute("loginUserType");
 //        System.out.println(userType+"666666666666666666");
 //        if (userType == -1) {
 //            throw new ServiceException("403", "Permission denied");
@@ -110,34 +110,19 @@ public class EventController {
     @PostMapping("/getRecommendEvents")
     @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, content = @Content(examples = @ExampleObject("{\"userId\": \"12110141\"}")))
     public Result getRecommendEvents(@NotNull HttpServletRequest request, HttpServletResponse response, @RequestBody JSONObject requestBody) {
-        int userType = (int) request.getAttribute("loginUserType");
         return Result.success(response, eventService.getRecommendEvents(requestBody.getString("userId")));
     }
 
     @PostMapping("/getHotEvents")//按照热度从大大小返回
     @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, content = @Content(examples = @ExampleObject()))
-    public Result getHotEvents(@NotNull HttpServletRequest request, HttpServletResponse response, @RequestBody JSONObject requestBody) {
-        int userType = (int) request.getAttribute("loginUserType");
-//        System.out.println(requestBody.getString("userId"));
-
+    public Result getHotEvents(@NotNull HttpServletRequest request, HttpServletResponse response) {
         return Result.success(response, eventService.getHotValue());
-    }
-    //通过多个eventId返回多个活动
-    @PostMapping("/getBatchEventsByIds")
-    @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, content = @Content(examples = @ExampleObject("""
-            {
-              "eventIdList": [0,1,2]
-            }""")))
-    public Result getEventsByIds(HttpServletRequest request, HttpServletResponse response, @RequestBody JSONObject requestBody) {
-        int userType = (int) request.getAttribute("loginUserType");
-        List<Integer> idList = requestBody.getList("eventIdList", Integer.class);
-        return Result.success(response, eventService.getBatchByIds(userType, idList));
     }
 
 
     //获得我发布的活动
     @GetMapping("/getMyPost/{publisherId}")
-    public Result getMyPost(@NotNull HttpServletRequest request, HttpServletResponse response, @PathVariable("publisherId") int publisherId, @RequestHeader("token") String token) {
+    public Result getMyPost(@NotNull HttpServletRequest request, HttpServletResponse response, @PathVariable("publisherId") int publisherId) {
 //        System.out.println(publisherId+"hhhhhhhhh");
         int userType = (int) request.getAttribute("loginUserType");
         return Result.success(response, eventService.getEventByPublisher(userType, publisherId));
