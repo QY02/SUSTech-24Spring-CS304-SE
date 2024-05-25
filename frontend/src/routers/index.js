@@ -116,6 +116,11 @@ const routes = [
                 path: '/newMoment',
                 component: () => import('@/components/moment/createMoment/index.vue')
             },
+            {
+                name: '403forbidden',
+                path: '/forbidden',
+                component: () => import('@/components/admin/403page.vue')
+            }
         ]
     },
     {
@@ -146,9 +151,20 @@ const routes = [
                 path: '/admin/approval',
                 component: () => import('@/components/admin/EventApproval.vue')
             },
-        ]
+        ],
+        beforeEnter: (to, from, next) => {
+            if (!isAdmin()) {
+                next({ name: '403forbidden' });
+            } else {
+                next();
+            }
+        }
     },
 ];
+
+function isAdmin() {
+    return sessionStorage.getItem('role') === 'admin';
+}
 
 const router = createRouter({
     history: createWebHistory(),

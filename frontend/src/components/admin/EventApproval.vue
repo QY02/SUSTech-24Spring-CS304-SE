@@ -57,7 +57,7 @@
           </t-space>
           <t-space direction="horizontal">
             <t-tag theme="primary" variant="light">{{ item.type }}</t-tag>
-            <t-tag theme="warning" variant="light">￥{{ item.price }}起</t-tag>
+            <t-tag theme="warning" variant="light">{{ item.price }}</t-tag>
           </t-space>
           <template #action>
             <t-tooltip content="详情">
@@ -236,7 +236,7 @@ onMounted(() => {
               description: item.content,
               date: item.startTime,
               location: item.location,
-              price: item.lowestPrice,
+              price: item.lowestPrice===item.highestPrice && item.highestPrice===0?"免费":"￥"+item.lowestPrice + "起",
               highestPrice: item.highestPrice,
               policy: item.eventPolicy,
               type: mapEventType(item.type),
@@ -357,7 +357,13 @@ const onSubmitFilter = () => {
     if (eventName && !item.title.includes(eventName)) {
       return false;
     }
-    if (priceRange.length > 0 && (item.price < priceRange[0] || item.price > priceRange[1])) {
+    let real_price;
+    if (item.price === "免费") {
+      real_price = 0;
+    } else {
+      real_price = item.price.slice(1, -1);
+    }
+    if (priceRange.length >0 && (real_price < priceRange[0] || real_price > priceRange[1])) {
       return false;
     }
     if (location && !item.location.includes(location)) {

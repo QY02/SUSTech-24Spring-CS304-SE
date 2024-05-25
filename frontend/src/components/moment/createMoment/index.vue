@@ -19,7 +19,7 @@
         <t-form-item label="内容" name="comment">
           <t-textarea v-model="formData.comment" :height="200" placeholder="请输入内容"/>
         </t-form-item>
-        <t-form-item label="相关活动" name="event" @keydown.enter.prevent>
+        <t-form-item label="相关活动 (活动号-活动名)" name="event" @keydown.enter.prevent>
           <t-select-input
               :value="selectValue"
               :popup-visible="popupVisible"
@@ -242,7 +242,7 @@ onMounted(() => {
   } as AxiosRequestConfig)
       .then(response => {
         allEvents.push(...response.data.data.map((item: any) => ({
-          label: item.name,
+          label: item.id+"-"+item.name,
           value: item.id,
         })));
         loading.value = false;
@@ -256,7 +256,7 @@ const selectValue = ref<{
 if (sessionStorage.getItem('MomentName') != null) {
   // alert(sessionStorage.getItem('MomentName'))
   // alert(Number(sessionStorage.getItem('eventId')))
-  selectValue.value={ label: sessionStorage.getItem('MomentName'), value: Number(sessionStorage.getItem('eventId'))
+  selectValue.value={ label: sessionStorage.getItem('eventId')+"-"+sessionStorage.getItem('MomentName'), value: Number(sessionStorage.getItem('eventId'))
   }
   sessionStorage.removeItem('MomentName')
   sessionStorage.removeItem('eventId')
