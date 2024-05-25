@@ -16,18 +16,18 @@
 
               <!--          <t-list-item-meta :title="item.title" :description="item.content" style="display: flex; align-items: center;"/>-->
               <t-list-item-meta class="t-list-item-meta-description" :title="item.name"
-                                :description="records[index].seatId"
+                                :description="unpaidRecords[index].seatId"
                                 style="display: flex; align-items: center;">
                 <!--            <p class="t-list-item-meta-description">{{ item.content }}</p>-->
               </t-list-item-meta>
               <t-tag theme="primary" variant="light" style="display: flex; margin-left: 30px;">
-                {{ records[index].submitTime.replace('T', ' ') }}
+                {{ unpaidRecords[index].submitTime.replace('T', ' ') }}
               </t-tag>
               <t-tag theme="success" variant="light" style="display: flex; margin-left: 30px;">
-                活动开始时间： {{ records[index].eventSession.startTime.replace('T', ' ') }}
+                活动开始时间： {{ unpaidRecords[index].eventSession.startTime.replace('T', ' ') }}
               </t-tag>
               <t-tag theme="warning" variant="light" style="display: flex; margin-left: 30px;">
-                活动地点： {{ records[index].eventSession.venue.replace('T', ' ') }}
+                活动地点： {{ unpaidRecords[index].eventSession.venue.replace('T', ' ') }}
               </t-tag>
               <t-tag theme="danger" style="display: flex; margin-left: 30px;">
                未付款
@@ -36,7 +36,7 @@
             </div>
             <template #action>
               <t-popup content="前往付款">
-              <t-button variant="text" shape="square" @click="goToPay(index)">
+              <t-button variant="text" shape="square" @click.stop="goToPay(index)">
                 <arrow-right-icon/>
               </t-button>
               </t-popup>
@@ -106,7 +106,7 @@ import axios from "axios";
 import {computed, defineComponent, getCurrentInstance, inject, ref, watch} from "vue";
 import router from "@/routers/index.js";
 import heart from "tdesign-icons-vue-next/lib/components/heart.js";
-
+import {sessionInformation, bookingInformation, currentStep} from '@/components/book/Steps.vue';
 const cover = 'https://tdesign.gtimg.com/site/source/card-demo.png';
 const events = ref([]);
 const tmpEvents = ref([]);
@@ -185,6 +185,9 @@ const clickHandler = (data) => {
   MessagePlugin.success(`选中【${data.content}】 `);
 };
 const clickEvent = (index) => {
+  // console.log(index)
+  // console.log(records.value[index].id)
+  console.log(records.value[index].id)
   MessagePlugin.success(`${sessionStorage.getItem('uid')} 选中【${index}】`);
   // alert(typeof records.value)
   sessionStorage.setItem('index', JSON.stringify(records.value[index]))
@@ -192,11 +195,14 @@ const clickEvent = (index) => {
 
 };
 const goToPay = (index) => {
+  console.log(index)
   MessagePlugin.success(`${sessionStorage.getItem('uid')} 选中【${index}】`);
   // alert(typeof records.value)
-  sessionStorage.setItem('index', JSON.stringify(records.value[index]))
-  router.push('/OrderRecordDetails');
-
+  router.push('/book');
+  console.log(unpaidRecords.value[index].id)
+  let targetUrl = `http://localhost:8083/orderRecord/pay/${unpaidRecords.value[index].id}?token=${sessionStorage.getItem('token')}`;
+    // 将当前页面跳转到目标 URL
+  window.location.href = targetUrl;
 };
 // const eventType = inject('eventType')
 const eventType = ref(sessionStorage.getItem('eventType'))
