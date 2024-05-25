@@ -30,10 +30,8 @@ jobs:
           context: "{{defaultContext}}:fileServer"
           push: true
           tags: qy02/events_center_file_server
-      - name: test dir
-        run: ls
       - name: Export Docker image to tar
-        run: docker save -o fileServer/events_center_file_server.tar qy02/events_center_file_server
+        run: docker save -o events_center_file_server.tar qy02/events_center_file_server
       - name: Upload Docker image tar to tyc server
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -41,7 +39,7 @@ jobs:
           username: ${{ secrets.TYC_SERVER_USERNAME }}
           password: ${{ secrets.TYC_SERVER_PASSWORD }}
           port: ${{ secrets.TYC_SERVER_PORT }}
-          source: 'fileServer/events_center_file_server.tar'
+          source: 'events_center_file_server.tar'
           target: '/home/shadowfall/Documents/Software_Engineering/auto-deployment/docker-image-tars'
 
   build-backend-docker-image-and-upload-to-aliyun-server:
@@ -60,7 +58,7 @@ jobs:
           push: true
           tags: qy02/events_center_backend
       - name: Export Docker image to tar
-        run: docker save -o backend/events_center_backend.tar qy02/events_center_backend
+        run: docker save -o events_center_backend.tar qy02/events_center_backend
       - name: Upload Docker image tar to aliyun server
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -68,7 +66,7 @@ jobs:
           username: ${{ secrets.SERVER_USERNAME }}
           password: ${{ secrets.SERVER_PASSWORD }}
           port: ${{ secrets.SERVER_PORT }}
-          source: 'backend/events_center_backend.tar'
+          source: 'events_center_backend.tar'
           target: '/root/SE/auto-deployment/docker-image-tars'
 
   build-frontend-docker-image-and-upload-to-aliyun-server:
@@ -87,7 +85,7 @@ jobs:
           push: true
           tags: qy02/events_center_frontend
       - name: Export Docker image to tar
-        run: docker save -o backend/events_center_frontend.tar qy02/events_center_frontend
+        run: docker save -o events_center_frontend.tar qy02/events_center_frontend
       - name: Upload Docker image tar to aliyun server
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -95,7 +93,7 @@ jobs:
           username: ${{ secrets.SERVER_USERNAME }}
           password: ${{ secrets.SERVER_PASSWORD }}
           port: ${{ secrets.SERVER_PORT }}
-          source: 'frontend/events_center_frontend.tar'
+          source: 'events_center_frontend.tar'
           target: '/root/SE/auto-deployment/docker-image-tars'
 
   update-and-start-events-center-containers:
