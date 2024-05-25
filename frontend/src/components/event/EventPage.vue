@@ -166,15 +166,14 @@
         <div v-for="(session, index) in sessionInformation">
           <div class="choose-session-detail-div">
             <p v-if="session.registrationRequired" class="choose-session-detail-text">
-            <p>场次{{ index }}: </p>
+            <p>场次{{ index }}: 
             {{
-              `报名时间: ${dateToString(session.registrationStartTime)} - ${dateToString(session.registrationEndTime)}`
-            }}
+              `时间: ${dateToString(session.registrationStartTime)}`
+            }} </p>
             <br>
             </p>
             <p v-else class="choose-session-detail-text">
-            <p>场次{{ index }}: </p>
-            <p>无需报名</p>
+            <p>场次{{ index }}: 无需报名</p>
             </p>
           </div>
         </div>
@@ -206,9 +205,9 @@
         </div>
       </t-space>
       <div class="ticket_card" style="margin-left: 55px; margin-top: -10px;">
-        <p style="  margin-top: 0.4rem; color: rgb(70, 73, 79);font-weight: 600;">
+        <!-- <p style="  margin-top: 0.4rem; color: rgb(70, 73, 79);font-weight: 600;">
           Rules
-        </p>
+        </p> -->
         <p style="  margin-top: 0.4rem; line-height: 1.625;color: rgb(70, 73, 79);;">
           {{ eventDetail.eventPolicy }}
         </p>
