@@ -30,6 +30,8 @@ jobs:
           context: "{{defaultContext}}:fileServer"
           push: true
           tags: qy02/events_center_file_server
+      - name: test dir
+        run: ls -l
       - name: Export Docker image to tar
         run: docker save -o fileServer/events_center_file_server.tar qy02/events_center_file_server
       - name: Upload Docker image tar to tyc server
