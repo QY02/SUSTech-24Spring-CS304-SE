@@ -58,8 +58,8 @@ amap-security-js-code:
 
 logging:
   file:
-    name: ./logs/EventsCenter.log
-    path: ./logs
+    name: .data/logs/EventsCenter.log
+    path: .data/logs
   level:
     root: INFO
 
