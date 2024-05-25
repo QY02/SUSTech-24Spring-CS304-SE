@@ -17,7 +17,6 @@ import {CheckCircleIcon} from 'tdesign-icons-vue-next';
 import {watch} from "vue";
 import axios from "axios";
 import {sessionInformation, bookingInformation, currentStep} from '@/components/book/Steps.vue';
-
 const pushRouter = (value) => {
   sessionStorage.setItem('currentStep', 0)
   switch (value) {

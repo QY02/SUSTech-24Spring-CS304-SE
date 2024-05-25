@@ -36,7 +36,9 @@ import MyOrderRecords from "@/components/home/MyOrderRecords.vue";
 import MyFavoritesPage from "@/components/home/MyFavoritesPage.vue";
 import UserPublishedPage from "@/components/home/UserPublishedPage.vue";
 import {computed, ref} from "vue";
-sessionStorage.setItem('currentStep', 0)
+import {sessionInformation, bookingInformation, currentStep} from '@/components/book/Steps.vue';
+sessionStorage.setItem('currentStep', 0);
+currentStep.value = 0
 const TABS = [
   {
     title: "历史记录",
@@ -69,11 +71,13 @@ const value_tab = ref(TABS[0].title);
 const handlerChange = (newValue) => {
   value_tab.value = newValue;
 };
+
 const currentTab = computed(() => {
   // alert(currentTab)
   return TABS.find((tab) => tab.title === value_tab.value);
 });
 </script>
+
 
 
 <style>

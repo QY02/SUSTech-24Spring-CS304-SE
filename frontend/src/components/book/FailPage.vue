@@ -4,6 +4,11 @@
       <CloseIcon size="100px" style="color: red"/>
       <h1 class="success-prompt-finish">预定失败</h1>
       <t-space>
+        <p>如遇支付回退问题，请点击按钮前往个人页，在我的预约中查看</p>
+      </t-space>
+      <br>
+      <t-space>
+        <t-button @click="pushRouter('user')">前往个人页</t-button>
         <t-button @click="rebook">重新预约</t-button>
         <t-button theme="default" @click="pushRouter('HomePage')">返回首页</t-button>
       </t-space>
@@ -11,10 +16,18 @@
   </div>
 </template>
 
+
+
 <script setup>
 import router from '@/routers';
 import {CheckCircleIcon, CloseIcon} from 'tdesign-icons-vue-next';
 import {currentStep} from './Steps.vue';
+import { onMounted } from 'vue';
+onMounted(() => {
+  if(currentStep.value == 5){
+      sessionStorage.setItem('pay', 0);
+    }
+})
 
 const pushRouter = (value) => {
   sessionStorage.setItem('currentStep', 0)
