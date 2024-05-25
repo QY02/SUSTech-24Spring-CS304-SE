@@ -1,8 +1,8 @@
 <template>
-<!--  <h2 style="margin-left: 20px">我的发布</h2>-->
-<!--  <t-tag style="margin-left: 20px;height: 40px; margin-top: 15px;font-size: 20px" size="large" theme="default" variant="light">我的发布</t-tag>-->
+  <!--  <h2 style="margin-left: 20px">我的发布</h2>-->
+  <!--  <t-tag style="margin-left: 20px;height: 40px; margin-top: 15px;font-size: 20px" size="large" theme="default" variant="light">我的发布</t-tag>-->
 
-  <div v-if="curEvents.length===0">
+  <div v-if="curEvents.length === 0">
     <div style="display: flex; align-items: center;text-align: center;margin-left: 45%; margin-top: 10%">
       <error-circle-icon size="large"></error-circle-icon>
       <h1 style="color: #5e6066; font-size: large; margin-left: 10px;">暂无活动</h1>
@@ -10,131 +10,119 @@
   </div>
   <div v-else>
     <div id="event" v-loading="loading">
-    <t-card
-        v-for="(item,index) in curEvents"
-        :key="index"
-        :title="item['name']" :subtitle="item['content']"  :style="{ width: '400px' }" hover-shadow
-        @click="clickEvent(item['id'])">
-      <t-image
-          :src="item['cover']"
-          :style="{ width: '350px', height: '180px' }"
-          overlay-trigger="hover">
+      <t-card v-for="(item, index) in curEvents" :key="index" :title="item['name']" :subtitle="item['content']"
+        :style="{ width: '400px' }" hover-shadow @click="clickEvent(item['id'])">
+        <t-image :src="item['cover']" :style="{ width: '350px', height: '180px' }" overlay-trigger="hover">
 
-      </t-image>
-      <template #actions>
-        <!--        <t-dropdown :options="options" :min-column-width="112" @click="clickHandler">-->
-        <!--          <div class="tdesign-demo-dropdown-trigger">-->
-        <a v-if="item['type']>=0&&item['type']<=2">
-          <t-tag theme="success" variant="light" style="margin-right: 20px">{{ EVENT_TYPE_MAP[item['type']] }}</t-tag>
-        </a>
-        <a v-if="item['type']>=3&&item['type']<=5">
-          <t-tag theme="primary" variant="light" style="margin-right: 20px">{{ EVENT_TYPE_MAP[item['type']] }}</t-tag>
-        </a>
-        <a v-if="item['type']>=6&&item['type']<=8">
-          <t-tag theme="danger" variant="light" style="margin-right: 20px">{{ EVENT_TYPE_MAP[item['type']] }}</t-tag>
-        </a>
-        <a v-if="item['type']>=9&&item['type']<=12">
-          <t-tag variant="light" style="margin-right: 20px">{{ EVENT_TYPE_MAP[item['type']] }}</t-tag>
-        </a>
+        </t-image>
+        <template #actions>
+          <!--        <t-dropdown :options="options" :min-column-width="112" @click="clickHandler">-->
+          <!--          <div class="tdesign-demo-dropdown-trigger">-->
+          <a v-if="item['type'] >= 0 && item['type'] <= 2">
+            <t-tag theme="success" variant="light" style="margin-right: 20px">{{ EVENT_TYPE_MAP[item['type']] }}</t-tag>
+          </a>
+          <a v-if="item['type'] >= 3 && item['type'] <= 5">
+            <t-tag theme="primary" variant="light" style="margin-right: 20px">{{ EVENT_TYPE_MAP[item['type']] }}</t-tag>
+          </a>
+          <a v-if="item['type'] >= 6 && item['type'] <= 8">
+            <t-tag theme="danger" variant="light" style="margin-right: 20px">{{ EVENT_TYPE_MAP[item['type']] }}</t-tag>
+          </a>
+          <a v-if="item['type'] >= 9 && item['type'] <= 12">
+            <t-tag variant="light" style="margin-right: 20px">{{ EVENT_TYPE_MAP[item['type']] }}</t-tag>
+          </a>
 
-        <a v-if="item['status']===0">
-          <t-tag theme="primary" variant="light" style="margin-right: 20px">审核中</t-tag>
-        </a>
-        <a v-if="item['status']===1">
-          <t-tag theme="success" variant="light" style="margin-right: 20px">审核通过</t-tag>
-        </a>
-        <a v-if="item['status']===2">
-          <t-tag theme="danger" variant="light" style="margin-right: 20px">审核未通过</t-tag>
-        </a>
-        <!--            <t-button variant="text" shape="square">-->
-        <!--              <more-icon/>-->
-        <!--            </t-button>-->
-        <!--          </div>-->
-        <!--        </t-dropdown>-->
-      </template>
-      <template #footer>
-        <t-row :align="'middle'" justify="center" style="gap: 24px;">
-          <t-col flex="auto" style="display: inline-flex; justify-content: center;">
-            <t-tooltip content="通知">
-              <t-button variant="text" shape="square" @click.stop="publicNotic(item['id'])">
-                <t-icon name="send"/>
-              </t-button>
-            </t-tooltip>
-          </t-col>
+          <a v-if="item['status'] === 0">
+            <t-tag theme="primary" variant="light" style="margin-right: 20px">审核中</t-tag>
+          </a>
+          <a v-if="item['status'] === 1">
+            <t-tag theme="success" variant="light" style="margin-right: 20px">审核通过</t-tag>
+          </a>
+          <a v-if="item['status'] === 2">
+            <t-tag theme="danger" variant="light" style="margin-right: 20px">审核未通过</t-tag>
+          </a>
+          <!--            <t-button variant="text" shape="square">-->
+          <!--              <more-icon/>-->
+          <!--            </t-button>-->
+          <!--          </div>-->
+          <!--        </t-dropdown>-->
+        </template>
+        <template #footer>
+          <t-row :align="'middle'" justify="center" style="gap: 24px;">
+            <t-col flex="auto" style="display: inline-flex; justify-content: center;">
+              <t-tooltip content="通知">
+                <t-button variant="text" shape="square" @click.stop="publicNotic(item['id'])">
+                  <t-icon name="send" />
+                </t-button>
+              </t-tooltip>
+            </t-col>
 
-          <t-col flex="auto" style="display: inline-flex; justify-content: center">
-            <t-tooltip content="评论">
-              <t-button variant="text" shape="square" @click.stop="clickComment(item['id'])">
-                <chat-icon/>
-              </t-button>
-            </t-tooltip>
-          </t-col>
+            <t-col flex="auto" style="display: inline-flex; justify-content: center">
+              <t-tooltip content="评论">
+                <t-button variant="text" shape="square" @click.stop="clickComment(item['id'])">
+                  <chat-icon />
+                </t-button>
+              </t-tooltip>
+            </t-col>
 
-          <t-col flex="auto" style="display: inline-flex; justify-content: center">
-            <t-tooltip content="分享活动">
-              <t-button variant="text" shape="square" @click.stop="clickShare(item['id'],item['name'])">
-                <share-icon/>
-              </t-button>
-            </t-tooltip>
-          </t-col>
-        </t-row>
-      </template>
-    </t-card>
+            <t-col flex="auto" style="display: inline-flex; justify-content: center">
+              <t-tooltip content="分享活动">
+                <t-button variant="text" shape="square" @click.stop="clickShare(item['id'], item['name'])">
+                  <share-icon />
+                </t-button>
+              </t-tooltip>
+            </t-col>
+          </t-row>
+        </template>
+      </t-card>
 
 
-      <t-dialog v-model:visible="visibleNotice" attach="body" header="发布通知" destroy-on-close:true width="800px"
-                :cancel-btn=null
-    :confirm-btn=null>
-    <template #body>
-      <t-loading :loading="loadingSession">
-        <t-space direction="vertical">
-        <t-form ref="form" id="form" :data="formData" reset-type="initial" @reset="onReset" @submit="sendNotice"
-          :rules="FORM_RULES" label-width="100px" label-align="right">
-          <t-form-item name="selectSection" label="选择发送通知的场次">
-            <br>
-            <t-checkbox-group v-model="formData.selectSection" :options="sessionOptions"></t-checkbox-group>
-          </t-form-item>
-          <t-form-item name="title" label="标题">
-            <t-input v-model="formData.title" clearable:true placeholder="请输入标题">
-            </t-input>
-          </t-form-item>
-          <t-form-item name="content" label="内容">
-            <t-input v-model="formData.content" clearable:true placeholder="请输入内容">
-            </t-input>
-          </t-form-item>
-          <t-form-item>
-            <t-space size="20px">
-              <t-button theme="default" variant="base" type="reset" :disabled="loadingNotice">重置</t-button>
-              <t-button theme="success" type="submit" :loading="loadingNotice">提交</t-button>
+      <t-dialog v-model:visible="visibleNotice" attach="body" header="向指定场次发布通知" destroy-on-close:true width="800px"
+        :cancel-btn=null :confirm-btn=null>
+        <template #body>
+          <t-loading :loading="loadingSession">
+            <t-space direction="vertical">
+              <t-form ref="form" :data="formData" reset-type="initial" @reset="onReset" @submit="sendNotice"
+                :rules="FORM_RULES" label-width="100px" label-align="right">
+                <t-form-item name="selectSection" label="选择场次">
+                  <br>
+                  <t-checkbox-group v-model="formData.selectSection" :options="sessionOptions"></t-checkbox-group>
+                </t-form-item>
+                <t-form-item name="title" label="标题">
+                  <t-input v-model="formData.title" clearable:true placeholder="请输入标题">
+                  </t-input>
+                </t-form-item>
+                <t-form-item name="content" label="内容">
+                  <t-input v-model="formData.content" clearable:true placeholder="请输入内容">
+                  </t-input>
+                </t-form-item>
+                <t-form-item>
+                  <t-space size="20px">
+                    <t-button theme="default" variant="base" type="reset" :disabled="loadingNotice">重置</t-button>
+                    <t-button theme="success" type="submit" :loading="loadingNotice">提交</t-button>
+                                            <!-- <t-button theme="default" variant="base" @click="handleClear">清空校验结果</t-button> -->
+                  </t-space>
+                </t-form-item>
+              </t-form>
             </t-space>
-          </t-form-item>
-        </t-form>
-      </t-space>
-      </t-loading>
-    </template>
-  </t-dialog>
+          </t-loading>
+        </template>
+      </t-dialog>
 
 
+    </div>
+    <!--  <t-popup content="返回上一页">-->
+    <!--    <t-button shape="circle" theme="primary" size="large" style="position: fixed;right: 30px;bottom: 40px"-->
+    <!--              @click="router.push('/user');">-->
+    <!--      <template #icon>-->
+    <!--        <rollback-icon/>-->
+    <!--      </template>-->
+
+    <!--    </t-button>-->
+    <!--  </t-popup>-->
   </div>
-<!--  <t-popup content="返回上一页">-->
-<!--    <t-button shape="circle" theme="primary" size="large" style="position: fixed;right: 30px;bottom: 40px"-->
-<!--              @click="router.push('/user');">-->
-<!--      <template #icon>-->
-<!--        <rollback-icon/>-->
-<!--      </template>-->
-
-<!--    </t-button>-->
-<!--  </t-popup>-->
-  </div>
-  <t-dialog
-      v-model:visible="visible"
-      header="评论"
-      body="自定义底部按钮，直接传入文字"
-      :top="'50px'"
-      :confirm-btn="null"
-      :cancel-btn="null"
-  >
-    <a v-if="visible===true">
+  <t-dialog v-model:visible="visible" header="评论" body="自定义底部按钮，直接传入文字" :top="'50px'" :confirm-btn="null"
+    :cancel-btn="null">
+    <a v-if="visible === true">
       <CommentPage></CommentPage>
     </a>
 
@@ -143,14 +131,14 @@
 
 <script setup>
 
-import {ThumbUpIcon, ChatIcon, ShareIcon, MoreIcon, RollbackIcon, ErrorCircleIcon} from 'tdesign-icons-vue-next';
-import {MessagePlugin} from 'tdesign-vue-next';
+import { ThumbUpIcon, ChatIcon, ShareIcon, MoreIcon, RollbackIcon, ErrorCircleIcon } from 'tdesign-icons-vue-next';
+import { MessagePlugin } from 'tdesign-vue-next';
 import axios from "axios";
-import {computed, defineComponent, getCurrentInstance, inject, ref, watch, reactive, onMounted} from "vue";
+import { computed, defineComponent, getCurrentInstance, inject, ref, watch, reactive, onMounted } from "vue";
 import router from "@/routers/index.js";
-import {ENTITY_TYPE, EVENT_TYPE_MAP} from "@/constants/index.js";
+import { ENTITY_TYPE, EVENT_TYPE_MAP } from "@/constants/index.js";
 import CommentPage from "@/components/event/CommentPage.vue";
-import {fileServerAxios} from "@/main.js";
+import { fileServerAxios } from "@/main.js";
 import { sessionInformation } from '@/components/book/Steps.vue';
 
 const cover = 'https://tdesign.gtimg.com/site/source/card-demo.png';
@@ -164,103 +152,113 @@ const visible = ref(false);
 const fetchSessionInformation = async (id) => {
   try {
     loadingSession.value = true
-    let response = await axios.post("/event/getEventSessionsByEventId", {eventId: id}, {headers: {token: sessionStorage.getItem('token')}});
-    sessionOptions.value = response.data.data.map((item) => (
-        `活动时间：${dateToString(new Date(item.startTime))} - ${dateToString(new Date(item.endTime))}`
-    ));
+    let response = await axios.post("/event/getEventSessionsByEventId", { eventId: id }, { headers: { token: sessionStorage.getItem('token') } });
+    // sessionOptions.value = response.data.data.map((item) => (
+    //     `活动时间：${dateToString(new Date(item.startTime))} - ${dateToString(new Date(item.endTime))}`
+    // ));
+    sessionOptions.value = response.data.data.map((item, index) => ({
+      label: `${dateToString(new Date(item.startTime))} - ${dateToString(new Date(item.endTime))}`,
+      value: index
+    }));
+    handleClear();
     loadingSession.value = false
   } catch (error) {
+    handleClear();
     loadingSession.value = false
   }
 }
 
+const form = ref(null);
+const formData = reactive({
+  title: '',
+  content: '',
+  selectSection: [],
+});
 
-const publicNotic = (id) => {
+const publicNotic = async(id) => {
+  formData.title = ''
+  formData.content = ''
+  formData.selectSection = []
   visibleNotice.value = true;
   fetchSessionInformation(id);
 }
 
-const publisherId=sessionStorage.getItem('uid')
+
+const handleClear = () => {
+    form.value.clearValidate();
+};
+
+const publisherId = sessionStorage.getItem('uid')
 axios.get(`/event/getMyPost/${publisherId}`, {
   params: {},
   headers: {
     token: sessionStorage.getItem('token')
   }
 })
-    .then((response) => {
-      // alert(response)
-      events.value = response.data.data
-      curEvents.value = events.value
-      tmpEvents.value = events.value
-      // alert(JSON.stringify(events.value))
-      for (let i = 0; i < events.value.length; i++) {//获取每个活动的海报
-        // for (let i = 0; i < 1; i++) {//获取每个活动的海报
-        let id = events.value[i]['id'];
-        axios.post(`/favorite/isFavorite`, {
-          "eventId": id,
-          "userId": sessionStorage.getItem('uid')
-        }, {
-          headers: {
-            token: sessionStorage.getItem('token')
-          }
-        }).then((response) => {
+  .then((response) => {
+    // alert(response)
+    events.value = response.data.data
+    curEvents.value = events.value
+    tmpEvents.value = events.value
+    // alert(JSON.stringify(events.value))
+    for (let i = 0; i < events.value.length; i++) {//获取每个活动的海报
+      // for (let i = 0; i < 1; i++) {//获取每个活动的海报
+      let id = events.value[i]['id'];
+      axios.post(`/favorite/isFavorite`, {
+        "eventId": id,
+        "userId": sessionStorage.getItem('uid')
+      }, {
+        headers: {
+          token: sessionStorage.getItem('token')
+        }
+      }).then((response) => {
+        // alert(JSON.stringify(response.data.data))
+        if (response.data.data === 1) {
+          favColor.value[id] = 'red'
+        } else {
+          favColor.value[id] = 'black'
+        }
+      }).catch(() => {
+      })
+      // favColor.value[i] = isFavorite.value;
+
+      // alert(id)
+
+      axios.post(`/postAttachmentRelation/getAttachment`, {
+        "entity_type": ENTITY_TYPE.EVENT,
+        "entity_id": id,
+        "attachment_type": 0,
+      }, {
+        params: {},
+        headers: {
+          token: sessionStorage.getItem('token')
+        }
+      })
+        .then((response) => {
+          attachToken.value = response.data.data['filePath']
           // alert(JSON.stringify(response.data.data))
-          if (response.data.data === 1) {
-            favColor.value[id] = 'red'
-          } else {
-            favColor.value[id] = 'black'
-          }
-        }).catch(() => {
-        })
-        // favColor.value[i] = isFavorite.value;
+          let attachToken1 = attachToken.value
+          // alert(attachToken1)
+          // 47.107.113.54:25572 文件服务器地址
+          fileServerAxios.get(`/file/download`, {
+            params: {},
+            headers: {
+              token: attachToken1
+            },
+            responseType: 'blob'
+          })
+            .then((response) => {//
+              // alert(JSON.stringify(response.data))
+              // 将图片 URL 赋值给 cover 变量
+              const blob = new Blob([response.data], { type: 'application/octet-stream' });
 
-        // alert(id)
+              // 创建一个 Blob 对象的 URL
+              const imageUrl = URL.createObjectURL(blob);
+              events.value[i]['cover'] = imageUrl
+              loading.value = false;
+              // 将图片 URL 赋值给 cover 变量
+              // cover.value = imageUrl;
 
-        axios.post(`/postAttachmentRelation/getAttachment`, {
-          "entity_type": ENTITY_TYPE.EVENT,
-          "entity_id": id,
-          "attachment_type": 0,
-        }, {
-          params: {},
-          headers: {
-            token: sessionStorage.getItem('token')
-          }
-        })
-            .then((response) => {
-              attachToken.value = response.data.data['filePath']
-              // alert(JSON.stringify(response.data.data))
-              let attachToken1 = attachToken.value
-              // alert(attachToken1)
-              // 47.107.113.54:25572 文件服务器地址
-              fileServerAxios.get(`/file/download`, {
-                params: {},
-                headers: {
-                  token: attachToken1
-                },
-                responseType: 'blob'
-              })
-                  .then((response) => {//
-                    // alert(JSON.stringify(response.data))
-                    // 将图片 URL 赋值给 cover 变量
-                    const blob = new Blob([response.data], {type: 'application/octet-stream'});
-
-                    // 创建一个 Blob 对象的 URL
-                    const imageUrl = URL.createObjectURL(blob);
-                    events.value[i]['cover'] = imageUrl
-                    loading.value=false;
-                    // 将图片 URL 赋值给 cover 变量
-                    // cover.value = imageUrl;
-
-                  })
-                  .catch((error) => {
-                    if (error.response) {
-                      // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-                      // MessagePlugin.warning(error.response.data.msg);
-                    } else {
-                      // 一些错误是在设置请求的时候触发
-                      // MessagePlugin.warning(error.message);
-                    }
-                  });
             })
             .catch((error) => {
               if (error.response) {
@@ -271,20 +269,30 @@ axios.get(`/event/getMyPost/${publisherId}`, {
                 // MessagePlugin.warning(error.message);
               }
             });
-        // events.value[i].imageUrl =
-        // alert(id)
-      }
+        })
+        .catch((error) => {
+          if (error.response) {
+            // 请求已发出，但服务器响应的状态码不在 2xx 范围内
+            // MessagePlugin.warning(error.response.data.msg);
+          } else {
+            // 一些错误是在设置请求的时候触发
+            // MessagePlugin.warning(error.message);
+          }
+        });
+      // events.value[i].imageUrl =
+      // alert(id)
+    }
 
-    })
-    .catch((error) => {
-      if (error.response) {
-        // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-        MessagePlugin.warning(error.response.data.msg);
-      } else {
-        // 一些错误是在设置请求的时候触发
-        MessagePlugin.warning(error.message);
-      }
-    });
+  })
+  .catch((error) => {
+    if (error.response) {
+      // 请求已发出，但服务器响应的状态码不在 2xx 范围内
+      MessagePlugin.warning(error.response.data.msg);
+    } else {
+      // 一些错误是在设置请求的时候触发
+      MessagePlugin.warning(error.message);
+    }
+  });
 
 const clickComment = (eventId) => {
   sessionStorage.setItem('eventId', eventId)
@@ -312,18 +320,18 @@ const clickEvent = (eventId) => {
       token: sessionStorage.getItem('token')
     }
   })
-      .then((response) => {
+    .then((response) => {
 
-      })
-      .catch((error) => {
-        if (error.response) {
-          // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-          MessagePlugin.warning(error.response.data.msg);
-        } else {
-          // 一些错误是在设置请求的时候触发
-          MessagePlugin.warning(error.message);
-        }
-      });
+    })
+    .catch((error) => {
+      if (error.response) {
+        // 请求已发出，但服务器响应的状态码不在 2xx 范围内
+        MessagePlugin.warning(error.response.data.msg);
+      } else {
+        // 一些错误是在设置请求的时候触发
+        MessagePlugin.warning(error.message);
+      }
+    });
 };
 // const eventType = inject('eventType')
 const eventType = ref(sessionStorage.getItem('eventType'))
@@ -349,13 +357,7 @@ function getSearchNew(message) {
   // curEvents.value = tmpEvents.value.filter(tmpEvents => tmpEvents['content'].includes(message) || tmpEvents['eventPolicy'].includes(message));
 }
 
-defineExpose({getSearchNew});
-
-const formData = reactive({
-  title: '',
-  content: '',
-  selectSection: [],
-});
+defineExpose({ getSearchNew });
 
 const FORM_RULES = ref({
   title: [{ required: true, message: '标题不可为空' }],
@@ -378,27 +380,29 @@ const onReset = () => {
   MessagePlugin.success('重置成功');
 };
 
-const sendNotice = ({validateResult, firstError}) => {
+const sendNotice = ({ validateResult, firstError }) => {
   if (validateResult === true) {
-    loadingNotice.value=true
-    console.log(formData.selectSection)
-    axios.post(`/notification/sessions`,{
+    loadingNotice.value = true
+    // console.log([...formData.selectSection])
+    axios.post(`/notification/sessions`, {
     }, {
       headers: {
         token: sessionStorage.getItem('token')
       },
-      params:{
+      params: {
         "title": formData.title,
-      "content": formData.content,
-      "selectSection": formData.selectSection
+        "content": formData.content,
+        "selectSection": [...formData.selectSection]
       }
     }).then(() => {
       MessagePlugin.info("已发送");
-      visibleNotice.value=false;
-      loadingNotice.value=false;
-    }).catch(()=>{loadingNotice.value=false;})
+      visibleNotice.value = false;
+      loadingNotice.value = false;
+    }).catch(() => { 
+      loadingNotice.value = false; })
   } else {
     console.log('错误: ', firstError, validateResult);
+    console.log(selectSection)
     MessagePlugin.warning(firstError);
   }
 }
