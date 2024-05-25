@@ -3,7 +3,6 @@ FROM maven:3.9.6-amazoncorretto-17-debian AS build
 WORKDIR /build
 
 COPY pom.xml .
-COPY PMD_rules.xml .
 COPY src ./src
 
 RUN mvn package
