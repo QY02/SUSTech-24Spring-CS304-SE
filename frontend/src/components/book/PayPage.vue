@@ -158,7 +158,7 @@ const checkUrl = () => {
       sessionStorage.setItem('currentStep', currentStep.value);
     }
     else if(currentStep.value == 3){
-      currentStep = 0;
+      currentStep.value = 0;
       sessionStorage.setItem('currentStep', 0);
     }
   }

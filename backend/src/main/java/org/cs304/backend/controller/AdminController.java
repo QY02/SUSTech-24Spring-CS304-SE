@@ -110,6 +110,17 @@ public class AdminController {
             ### 参数 ###
             无
             ### 返回值 ###
+            {
+              "code": "200",
+              "msg": "Request Success",
+              "data": {
+                "event": 28,
+                "audit": 4,
+                "user": 12,
+                "comment": 19,
+                "order": 27
+              }
+            }
             """)
     public Result getHomepage(@NotNull HttpServletRequest request,HttpServletResponse response) {
         int userType = (int) request.getAttribute("loginUserType");
