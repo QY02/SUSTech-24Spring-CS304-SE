@@ -66,7 +66,7 @@
     <div :id="`${path}#events`" style="height: 60px;"></div>
 
     <!-- button part -->
-    <t-space style="display: flex; width: 100%; margin-left: 24px;">
+    <t-space style="display: f2lex; width: 100%; margin-left: 24px;">
       <div>
         <div class="title">活动场次</div>
         <div class="line"></div>
@@ -74,9 +74,9 @@
       <div style="margin-top: 30px; display: flex; justify-content: flex-end; margin-right:79px ;">
         <div v-if="show_event_type">
           <t-space>
-            <t-button theme="primary" shape="square" variant="base" @click="onClickEventType(true)">
+            <!-- <t-button theme="primary" shape="square" variant="base" @click="onClickEventType(true)">
               <list-icon slot="icon" />
-            </t-button>
+            </t-button> -->
             <!-- <t-button shape="square" variant="outline" @click="onClickEventType(false)">
               <table-icon slot="icon" />
             </t-button> -->
@@ -208,8 +208,11 @@
         <!-- <p style="  margin-top: 0.4rem; color: rgb(70, 73, 79);font-weight: 600;">
           Rules
         </p> -->
-        <p style="  margin-top: 0.4rem; line-height: 1.625;color: rgb(70, 73, 79);;">
+        <p v-if="eventDetail.eventPolicy" style="  margin-top: 0.4rem; line-height: 1.625;color: rgb(70, 73, 79);;">
           {{ eventDetail.eventPolicy }}
+        </p>
+        <p v-else style="  margin-top: 0.4rem; line-height: 1.625;color: rgb(70, 73, 79);;">
+          暂无
         </p>
       </div>
       <div style="height: 40px;"></div>
@@ -533,6 +536,7 @@ const path = computed(() => get(appContext, '$route.path', ''));
 }
 
 .card-1 {
+  max-height: 60vh;
   width: 40%;
   margin-right: 15px;
   border-radius: 0.75rem;

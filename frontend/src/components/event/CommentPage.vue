@@ -31,7 +31,7 @@
                         </t-space>
                         <div class="comment_infos">
                             <p class="date-time">
-                                {{ item.publishDate }}
+                                {{`${dateToString(item.publishDate)}`}}
                             </p>
                             <p class="description">
                                 {{ item.content }}
@@ -173,6 +173,11 @@ const handleClear = () => {
     form.value.clearValidate();
 };
 
+const dateToString = (date) => {
+  const localeDateStringArray = date.toLocaleString().split('T');
+  const result = `${localeDateStringArray[0]} ${localeDateStringArray[1]}`;
+  return result;
+}
 const deleteComment = () => {
     deleteLoading.value = true;
     axios.get(`/comment/delete/${deleteEventId.value}`, {
@@ -218,7 +223,8 @@ const computeAverageScore = () => {
     if (commentsData.value.length !== 0) {
         const totalScore = commentsData.value.reduce((sum, item) => sum + item.score, 0);
         // console.log(totalScore)
-        averageScore.value = Math.round(totalScore / commentsData.value.length);
+        averageScore.value = (totalScore / commentsData.value.length).toFixed(1);
+        console.log(totalScore / commentsData.value.length)
     }
 }
 
