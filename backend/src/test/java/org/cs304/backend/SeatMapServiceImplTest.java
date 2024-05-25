@@ -1,5 +1,7 @@
 package org.cs304.backend;
 
+import com.alibaba.fastjson2.JSONArray;
+import com.alibaba.fastjson2.JSONObject;
 import org.cs304.backend.constant.constant_User;
 import org.cs304.backend.entity.EventSession;
 import org.cs304.backend.entity.OrderRecord;
@@ -131,5 +133,21 @@ public class SeatMapServiceImplTest {
 
         SeatMap result = seatMapService.getSeatMapWithSeatsById(userType, seatMapId);
         assertEquals(seatMapId, result.getId());
+    }
+
+    @Test
+    @DisplayName("Test getAllSeatMapTemplate")
+    public void testGetAllSeatMapTemplate() {
+        SeatMap seatMap0 = new SeatMap(1, 0, "三教/111", "aaa", "", new JSONObject());
+        SeatMap seatMap1 = new SeatMap(2, 0, "三教/211/B", "aab", "", new JSONObject());
+        SeatMap seatMap2 = new SeatMap(3, 0, "三教/211/A", "aca", "", new JSONObject());
+        List<SeatMap> seatMapList = new ArrayList<>();
+        seatMapList.add(seatMap0);
+        seatMapList.add(seatMap1);
+        seatMapList.add(seatMap2);
+        when(seatMapMapper.selectList(any())).thenReturn(seatMapList);
+
+        JSONArray result = seatMapService.getAllSeatMapTemplate();
+        assertNotNull(result);
     }
 }
