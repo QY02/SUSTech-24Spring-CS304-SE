@@ -18,8 +18,8 @@
     </t-descriptions>
     <div class="input-information-button-div">
       <t-space size="medium">
-        <t-button theme="default" @click="currentStep--">上一步</t-button>
-        <t-button @click="prePay">前往付款</t-button>
+        <t-button theme="default" @click="currentStep--" disabled="loadingPay">上一步</t-button>
+        <t-button @click="prePay" :loading="loadingPay">前往付款</t-button>
       </t-space>
     </div>
   </div>
@@ -40,6 +40,7 @@ const dateToString = (date: Date) => {
   return result;
 }
 
+const loadingPay = ref(false)
 
 const eventDetail = ref({
   name: ''
@@ -58,6 +59,7 @@ getEventDetail();
 const result = ref(0);
 const orderId = ref(-1)
 const prePay = async () => {
+  loadingPay.value=true
   axios.post("/orderRecord/prePay", {
     eventId: bookingInformation.eventId,
     eventSessionId: sessionInformation[bookingInformation.chosenSession].eventSessionId,
@@ -72,13 +74,16 @@ const prePay = async () => {
     MessagePlugin.success('提交支付信息成功');
     // alert(orderId.value)
     // 构建跳转的 URL
+    sessionStorage.setItem('pay',1)
     let targetUrl = `http://47.107.113.54:25571/orderRecord/pay/${orderId.value}?token=${sessionStorage.getItem('token')}`;
+    loadingPay.value=false
     // 将当前页面跳转到目标 URL
     window.location.href = targetUrl;
     // startPolling();
     // currentStep.value++;
   })
       .catch(error => {
+        loadingPay.value=false;
       })
 }
 
@@ -140,55 +145,60 @@ const checkUrl = () => {
       }).then((response) => {
         console.log('next')
         MessagePlugin.success('支付成功');
-        toNextStep();
-        window.location.href = 'http://47.107.113.54:5173/book';
+        sessionStorage.setItem('pay',0)
+        currentStep.value=4;
+        window.location.href = 'http://47.107.113.54:25577/book';
       }).catch(() => {
       })
     }
   } else {
     console.log(currentStep.value == 3)
-    if (!bookingInformation.chosenSeat && currentStep.value == 3) {
+    if (sessionStorage.getItem('pay')=='1' && !bookingInformation.chosenSeat && currentStep.value == 3) {
       currentStep.value += 2;
       sessionStorage.setItem('currentStep', currentStep.value);
+    }
+    else if(currentStep.value == 3){
+      currentStep = 0;
+      sessionStorage.setItem('currentStep', 0);
     }
   }
 }
 
 onMounted(() => {
   checkUrl();
-  watch(currentUrl, (newUrl, oldUrl) => {
-    console.log('inini')
-    const urlParams = new URLSearchParams(window.location.search);
-    const newTimestamp = urlParams.get('timestamp');
-    // const urlParams = new URLSearchParams(newUrl.split('?')[1]); // 获取查询参数部分
-    // const newTimestamp = urlParams.get('timestamp'); // 获取timestamp参数的值
-    timestamp.value = newTimestamp; // 更新timestamp的值
+  // watch(currentUrl, (newUrl, oldUrl) => {
+  //   console.log('inini')
+  //   const urlParams = new URLSearchParams(window.location.search);
+  //   const newTimestamp = urlParams.get('timestamp');
+  //   // const urlParams = new URLSearchParams(newUrl.split('?')[1]); // 获取查询参数部分
+  //   // const newTimestamp = urlParams.get('timestamp'); // 获取timestamp参数的值
+  //   timestamp.value = newTimestamp; // 更新timestamp的值
 
-    if (newTimestamp) {
-      const dateObj = new Date(newTimestamp.replace(/\+/g, ' ')); // 将带有+号的时间戳字符串转换成Date对象
-      formattedDateTime.value = formatDate(dateObj); // 转换成指定格式的日期时间字符串
-      axios.post(`/orderRecord/payResult`, {
-        'orderId': parseInt(sessionStorage.getItem('orderId')),
-        'time': formattedDateTime.value,
-        'result': 1
-      }, {
-        headers: {
-          token: sessionStorage.getItem('token')
-        }
-      }).then((response) => {
-        console.log('next')
-        MessagePlugin.success('支付成功');
-        toNextStep();
-        window.location.href = 'http://47.107.113.54:5173/book';
-      }).catch(() => {
-      })
-    }
-    // if (newUrl !== 'http://47.107.113.54:5173/book') {
-    //   const urlParams = new URLSearchParams(newUrl.split('?')[1]); // 获取查询参数部分
-    //   const newId = urlParams.get('id'); // 获取id参数的值
-    //   id.value = newId; // 更新id的值
-    // }
-  });
+  //   if (newTimestamp) {
+  //     const dateObj = new Date(newTimestamp.replace(/\+/g, ' ')); // 将带有+号的时间戳字符串转换成Date对象
+  //     formattedDateTime.value = formatDate(dateObj); // 转换成指定格式的日期时间字符串
+  //     axios.post(`/orderRecord/payResult`, {
+  //       'orderId': parseInt(sessionStorage.getItem('orderId')),
+  //       'time': formattedDateTime.value,
+  //       'result': 1
+  //     }, {
+  //       headers: {
+  //         token: sessionStorage.getItem('token')
+  //       }
+  //     }).then((response) => {
+  //       console.log('next')
+  //       MessagePlugin.success('支付成功');
+  //       toNextStep();
+  //       window.location.href = 'http://localhost:5173/book';
+  //     }).catch(() => {
+  //     })
+  //   }
+  //   // if (newUrl !== 'http://localhost:5173/book') {
+  //   //   const urlParams = new URLSearchParams(newUrl.split('?')[1]); // 获取查询参数部分
+  //   //   const newId = urlParams.get('id'); // 获取id参数的值
+  //   //   id.value = newId; // 更新id的值
+  //   // }
+  // });
 });
 
 const formatDate = (dateObj) => {
