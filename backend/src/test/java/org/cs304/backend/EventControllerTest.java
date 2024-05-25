@@ -4,21 +4,24 @@ package org.cs304.backend; /**
  * @description
  **/
 
-import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.cs304.backend.constant.constant_User;
 import org.cs304.backend.controller.EventController;
 import org.cs304.backend.controller.AdminController;
 import org.cs304.backend.entity.Comment;
 import org.cs304.backend.entity.Event;
+import org.cs304.backend.entity.OrderRecord;
 import org.cs304.backend.mapper.EventMapper;
 import org.cs304.backend.service.IEventService;
 import org.cs304.backend.utils.Result;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatcher;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -29,6 +32,8 @@ import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 public class EventControllerTest {
@@ -138,5 +143,45 @@ public class EventControllerTest {
         assertEquals("200", result.getCode());
     }
 
+    @Test
+    @DisplayName("Should return success when submitting booking data")
+    public void shouldReturnSuccessWhenSubmittingBookingData() {
+        request.setAttribute("loginUserType", constant_User.USER);
+        request.setAttribute("loginUserId", "12111111");
+        OrderRecord orderRecord = new OrderRecord();
+        doNothing().when(eventService).submitBookingData(anyInt(), anyString(), any(OrderRecord.class));
+        Result result = eventController.submitBookingData(response, request, orderRecord);
+        assertEquals("200", result.getCode());
+    }
+
+    @Test
+    @DisplayName("Should return a list of event sessions when getting event sessions by event id")
+    public void shouldReturnEventSessionsWhenGettingEventSessionsByEventId() {
+        request.setAttribute("loginUserType", constant_User.USER);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("eventId", 1);
+        when(eventService.getEventSessionsByEventId(constant_User.USER, 1)).thenReturn(new ArrayList<>());
+        Result result = eventController.getEventSessionsByEventId(response, request, jsonObject);
+        assertEquals("200", result.getCode());
+    }
+
+    @Test
+    @DisplayName("Should return attachment path when getting photo by id")
+    public void shouldReturnAttachmentPathWhenGettingPhotoById() {
+        when(eventService.getAttachment(1)).thenReturn("");
+        Result result = eventController.getPhotoById(response, 1);
+        assertEquals("200", result.getCode());
+    }
+
+    @Test
+    @DisplayName("Test getEventDetail")
+    public void testGetEventDetail() {
+        when(eventService.exists(any())).thenReturn(false);
+        Result result = eventController.getEventDetail(request, response, 1);
+        assertEquals("404", result.getCode());
+        when(eventService.exists(any())).thenReturn(true);
+        result = eventController.getEventDetail(request, response, 1);
+        assertEquals("200", result.getCode());
+    }
 }
 

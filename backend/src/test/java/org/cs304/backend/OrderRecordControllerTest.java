@@ -1,4 +1,5 @@
 package org.cs304.backend;
+
 import static org.mockito.Mockito.*;
 
 import org.cs304.backend.config.AliPayConfig;
@@ -361,6 +362,18 @@ public class OrderRecordControllerTest {
         requestBody.put("result", 0);
         result = orderRecordController.payResult(response, requestBody);
 
+        assertEquals("200", result.getCode());
+    }
+
+    @Test
+    @DisplayName("Test getMyOrderRecord")
+    public void testGetMyOrderRecord() {
+        request.setAttribute("loginUserId", "12111111");
+        JSONObject requestBody = new JSONObject();
+        requestBody.put("eventId", 1);
+        requestBody.put("mode", 0);
+        when(orderRecordService.getMyOrderRecord(anyString(), anyInt(), anyInt())).thenReturn(new Object());
+        Result result = orderRecordController.getMyOrderRecord(response, request, requestBody);
         assertEquals("200", result.getCode());
     }
 
