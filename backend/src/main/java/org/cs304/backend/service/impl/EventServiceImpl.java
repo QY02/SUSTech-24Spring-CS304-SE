@@ -28,7 +28,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import static org.cs304.backend.constant.constant_AttachmentType.IMAGE;
-import static org.cs304.backend.constant.constant_EntityType.COMMENT;
 import static org.cs304.backend.constant.constant_EntityType.EVENT;
 import static org.cs304.backend.constant.constant_OrderRecordStatus.*;
 import static org.cs304.backend.constant.constant_User.ADMIN;

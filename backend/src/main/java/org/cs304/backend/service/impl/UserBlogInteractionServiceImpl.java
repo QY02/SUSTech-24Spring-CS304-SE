@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import org.cs304.backend.entity.Comment;
 import org.cs304.backend.entity.UserBlogInteraction;
-import org.cs304.backend.entity.UserInteraction;
 import org.cs304.backend.mapper.CommentMapper;
 import org.cs304.backend.mapper.UserBlogInteractionMapper;
 import org.cs304.backend.service.IUserBlogInteractionService;

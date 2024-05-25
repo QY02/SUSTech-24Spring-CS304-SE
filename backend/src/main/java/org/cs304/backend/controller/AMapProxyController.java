@@ -1,6 +1,7 @@
 package org.cs304.backend.controller;
 
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -24,11 +25,11 @@ import java.util.stream.Collectors;
  * tool: GitHub Copilot
  * version: latest
  * usage: 我问Copilot如何用springboot实现类似Nginx
- *     # Web服务API 代理
- *     location /_AMapService/ {
- *       set $args "$args&jscode=你的安全密钥";
- *       proxy_pass https://restapi.amap.com/;
- *     }
+ * # Web服务API 代理
+ * location /_AMapService/ {
+ * set $args "$args&jscode=你的安全密钥";
+ * proxy_pass https://restapi.amap.com/;
+ * }
  * 的功能，我在生成的代码基础上使用@Value从配置文件里读取了安全代码并将安全代码拼接到请求参数中，同时修了很多bug
  */
 
@@ -41,6 +42,21 @@ public class AMapProxyController {
     private final RestTemplate restTemplate = new RestTemplate();
 
     @RequestMapping(value = "/_AMapService/**")
+    @Operation(summary = "高德地图服务代理", description =
+    """
+    代理高德地图服务API
+    ### 参数 ###
+    无
+    ### 返回值 ###
+    {
+      "status": 200,
+      "message": "OK",
+      "data": "高德地图服务API返回的数据"
+    }
+    ### 实现逻辑 ###
+    1. 代理高德地图服务API
+    2. 返回高德地图服务API返回的数据
+    """)
     public ResponseEntity<byte[]> proxy(HttpServletRequest request) throws IOException {
         String path = request.getRequestURI().substring("/_AMapService".length());
         String query = request.getQueryString();

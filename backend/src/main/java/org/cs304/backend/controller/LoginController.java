@@ -1,7 +1,12 @@
 package org.cs304.backend.controller;
 
-import com.alibaba.fastjson2.*;
-import org.cs304.backend.constant.constant_EventStatus;
+import cn.hutool.core.util.StrUtil;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
+import io.swagger.v3.oas.annotations.Operation;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.cs304.backend.constant.constant_User;
 import org.cs304.backend.entity.User;
 import org.cs304.backend.entity.UserFavoriteType;
@@ -12,17 +17,12 @@ import org.cs304.backend.service.IUserService;
 import org.cs304.backend.utils.Encryption;
 import org.cs304.backend.utils.RedisUtil;
 import org.cs304.backend.utils.Result;
-import jakarta.annotation.Resource;
-//import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.web.bind.annotation.*;
-import cn.hutool.core.util.StrUtil;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
-
-import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Objects;
 
 
@@ -54,6 +54,19 @@ public class LoginController {
      * @return 成功
      */
     @PostMapping("/login")
+    @Operation(summary = "登录",
+            description = """
+                    ### 参数 ###
+                    id(String): 用户ID
+                    password(String): 用户密码
+                    ### 返回值 ###
+                    1. 二次验证状态
+                    2. 用户信息
+                    ### 实现逻辑 ###
+                    1. 根据用户ID和密码查询数据库，如果不存在则返回错误信息
+                    2. 返回用户信息
+                    3. 如果开启了二次验证，则返回二次验证状态
+                    """)
     public Result login(@NotNull HttpServletResponse response, @RequestBody User user) {
         try {
             if (StrUtil.isBlank(user.getId()) || StrUtil.isBlank(user.getPassword())) {
@@ -77,6 +90,15 @@ public class LoginController {
      * @return 是否开启二次验证
      */
     @PostMapping("/twoFactorAuthentication")
+    @Operation(summary = "二次验证",
+            description = """
+                    ### 参数 ###
+                    id(String): 用户ID
+                    ### 返回值 ###
+                    1. 二次验证状态
+                    ### 实现逻辑 ###
+                    1. 根据用户ID查询数据库，返回二次验证状态
+                    """)
     public Result twoFactorAuthentication(@NotNull HttpServletResponse response, @RequestBody User user) {
         user = userMapper.selectById(user.getId());
         if (user.getTwoFactorAuthentication()) {
@@ -91,6 +113,18 @@ public class LoginController {
      * @return 成功
      */
     @PostMapping("/register")
+    @Operation(summary = "注册",
+            description = """
+                    ### 参数 ###
+                    user(Object): 用户信息
+                    favType(String): 用户喜好类型
+                    ### 返回值 ###
+                    无
+                    ### 实现逻辑 ###
+                    1. 检查用户ID和密码是否为空，如果为空则返回错误信息
+                    2. 查询是否重复注册，如果重复注册则返回错误信息
+                    3. 发送邮箱验证码
+                    """)
     public Result register(@NotNull HttpServletResponse response, @RequestBody JSONObject data) {
         JSONObject userData = data.getJSONObject("user");
 //        String favType = data.getString("favType");
@@ -138,6 +172,19 @@ public class LoginController {
      * @return user 用户信息
      */
     @PostMapping("/registerEmailVerify")
+    @Operation(summary = "验证注册邮箱",
+            description = """
+                    ### 参数 ###
+                    email(String): 邮箱
+                    code(String): 验证码
+                    ### 返回值 ###
+                    1. 用户信息
+                    ### 实现逻辑 ###
+                    1. 检查邮箱和验证码是否为空，如果为空则返回错误信息
+                    2. 检查验证码是否正确，如果不正确则返回错误信息
+                    3. 将用户信息插入数据库
+                    4. 返回用户信息
+                    """)
     public Result registerEmailVerify(@NotNull HttpServletResponse response, @RequestBody JSONObject emailVerify) {
         try {
             if (StrUtil.isBlank(emailVerify.getString("email")) || StrUtil.isBlank(emailVerify.getString("code"))) {
@@ -192,6 +239,18 @@ public class LoginController {
      * @return user 用户信息
      */
     @PostMapping("/loginWithEmail")
+    @Operation(summary = "通过邮箱登录",
+            description = """
+                    ### 参数 ###
+                    email(String): 邮箱
+                    code(String): 验证码
+                    ### 返回值 ###
+                    1. 用户信息
+                    ### 实现逻辑 ###
+                    1. 检查邮箱和验证码是否为空，如果为空则返回错误信息
+                    2. 检查验证码是否正确，如果不正确则返回错误信息
+                    3. 返回用户信息
+                    """)
     public Result loginWithEmail(@NotNull HttpServletResponse response, @RequestBody JSONObject emailVerify) {
         if (StrUtil.isBlank(emailVerify.getString("email")) || StrUtil.isBlank(emailVerify.getString("code"))) {
             log.error("Invalid Input");
@@ -209,6 +268,16 @@ public class LoginController {
      * @return 成功或失败
      */
     @PostMapping("/sendEmail/{email}")
+    @Operation(summary = "发送邮箱验证码",
+            description = """
+                    ### 参数 ###
+                    email(String): 邮箱
+                    ### 返回值 ###
+                    无
+                    ### 实现逻辑 ###
+                    1. 检查邮箱是否为空，如果为空则返回错误信息
+                    2. 发送邮箱验证码
+                    """)
     public Result sendEmail(HttpServletResponse response, @PathVariable("email") String email) {
         if (StrUtil.isBlank(email)) {
             log.error("Invalid Input");
