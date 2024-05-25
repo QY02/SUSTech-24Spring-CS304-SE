@@ -1,9 +1,7 @@
 package org.cs304.backend.service;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import org.cs304.backend.entity.Favorite;
-import org.cs304.backend.entity.OrderRecord;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.cs304.backend.entity.OrderRecord;
 
 public interface IOrderRecordService extends IService<OrderRecord> {
 

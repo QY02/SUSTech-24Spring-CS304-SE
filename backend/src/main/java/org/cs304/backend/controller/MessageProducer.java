@@ -1,6 +1,7 @@
 package org.cs304.backend.controller;
 
 import com.alibaba.fastjson2.JSONObject;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletResponse;
 import org.cs304.backend.utils.Result;
 import org.jetbrains.annotations.NotNull;
@@ -19,6 +20,18 @@ public class MessageProducer {
     RabbitTemplate rabbitTemplate;
 
     @GetMapping("/sendDirectMessage")
+    @Operation(summary = "发送消息",
+            description = """
+                    ### 参数 ###
+                    无
+                    ### 返回值 ###
+                    无
+                    ### 实现逻辑 ###
+                    1. 发送消息到消息队列
+                    2. 返回成功信息
+                    ### 注意事项 ###
+                    测试用！生产不使用
+                    """)
     public Result sendMessage(@NotNull HttpServletResponse response) {
         String session_ID = "123456";
         String query = "你好，我想了解一下南方科技大学的音乐会信息。";

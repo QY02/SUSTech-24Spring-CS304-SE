@@ -28,7 +28,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import static org.cs304.backend.constant.constant_AttachmentType.IMAGE;
-import static org.cs304.backend.constant.constant_EntityType.COMMENT;
 import static org.cs304.backend.constant.constant_EntityType.EVENT;
 import static org.cs304.backend.constant.constant_OrderRecordStatus.*;
 import static org.cs304.backend.constant.constant_User.ADMIN;
@@ -50,6 +49,8 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
     private EntityAttachmentRelationMapper entityAttachmentRelationMapper;
     @Resource
     private SeatMapper seatMapper;
+    @Resource
+    private SeatMapMapper seatMapMapper;
     @Resource
     private OrderRecordMapper orderRecordMapper;
     @Resource
@@ -231,11 +232,30 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
 
     private void insertSessions(int id, JSONArray eventSessionData) {
         if (eventSessionData != null && !eventSessionData.isEmpty()) {
+            int highestPrice = -1;
+            int lowestPrice = -1;
             int dataSize = eventSessionData.size();
             for (int i = 0; i < dataSize; i++) {
                 JSONObject sessionData = eventSessionData.getJSONObject(i);
                 eventSessionService.insertEventSession(id, sessionData);
+
+                int seatMapId = sessionData.getInteger("seat_map_id");
+                SeatMap seatMap = seatMapMapper.selectById(seatMapId);
+                JSONObject seatMapData = JSONObject.parseObject(seatMap.getData());
+                JSONArray seatDataJSONArray = seatMapData.getJSONArray("seats");
+                for (Object seat: seatDataJSONArray) {
+                    JSONObject seatDataJSONObject = (JSONObject) seat;
+                    String seatId = seatDataJSONObject.getString("id");
+                    Integer price = seatMapper.selectOne(new QueryWrapper<Seat>().eq("seat_map_id", seatMapId).eq("seat_id", seatId)).getPrice();
+                    if ((highestPrice == -1 || price > highestPrice)) {
+                        highestPrice = price;
+                    }
+                    if (lowestPrice == -1 || price < lowestPrice) {
+                        lowestPrice = price;
+                    }
+                }
             }
+            eventMapper.update(new UpdateWrapper<Event>().eq("id", id).set("highest_price", highestPrice).set("lowest_price", lowestPrice));
         } else {
             throw new ServiceException("400", "eventSessionData is null or empty.");
         }
