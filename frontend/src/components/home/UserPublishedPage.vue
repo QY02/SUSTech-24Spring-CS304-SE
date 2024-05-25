@@ -56,7 +56,7 @@
         <t-row :align="'middle'" justify="center" style="gap: 24px;">
           <t-col flex="auto" style="display: inline-flex; justify-content: center;">
             <t-tooltip content="通知">
-              <t-button variant="text" shape="square" @click="()=>{visibleNotice=true; fetchSessionInformation(item['id']);}">
+              <t-button variant="text" shape="square" @click.stop="publicNotic(item['id'])">
                 <t-icon name="send"/>
               </t-button>
             </t-tooltip>
@@ -82,7 +82,8 @@
     </t-card>
 
 
-    <t-dialog v-model:visible="visibleNotice" attach="body" header="发布通知" destroy-on-close:true width="450px" :cancel-btn=null
+      <t-dialog v-model:visible="visibleNotice" attach="body" header="发布通知" destroy-on-close:true width="800px"
+                :cancel-btn=null
     :confirm-btn=null>
     <template #body>
       <t-loading :loading="loadingSession">
@@ -90,6 +91,7 @@
         <t-form ref="form" id="form" :data="formData" reset-type="initial" @reset="onReset" @submit="sendNotice"
           :rules="FORM_RULES" label-width="100px" label-align="right">
           <t-form-item name="selectSection" label="选择发送通知的场次">
+            <br>
             <t-checkbox-group v-model="formData.selectSection" :options="sessionOptions"></t-checkbox-group>
           </t-form-item>
           <t-form-item name="title" label="标题">
@@ -144,7 +146,7 @@
 import {ThumbUpIcon, ChatIcon, ShareIcon, MoreIcon, RollbackIcon, ErrorCircleIcon} from 'tdesign-icons-vue-next';
 import {MessagePlugin} from 'tdesign-vue-next';
 import axios from "axios";
-import {computed, defineComponent, getCurrentInstance, inject, ref, watch} from "vue";
+import {computed, defineComponent, getCurrentInstance, inject, ref, watch, reactive, onMounted} from "vue";
 import router from "@/routers/index.js";
 import {ENTITY_TYPE, EVENT_TYPE_MAP} from "@/constants/index.js";
 import CommentPage from "@/components/event/CommentPage.vue";
@@ -159,7 +161,24 @@ const curEvents = ref([]);
 const favColor = ref({});
 const loading = ref(false);
 const visible = ref(false);
+const fetchSessionInformation = async (id) => {
+  try {
+    loadingSession.value = true
+    let response = await axios.post("/event/getEventSessionsByEventId", {eventId: id}, {headers: {token: sessionStorage.getItem('token')}});
+    sessionOptions.value = response.data.data.map((item) => (
+        `活动时间：${dateToString(new Date(item.startTime))} - ${dateToString(new Date(item.endTime))}`
+    ));
+    loadingSession.value = false
+  } catch (error) {
+    loadingSession.value = false
+  }
+}
 
+
+const publicNotic = (id) => {
+  visibleNotice.value = true;
+  fetchSessionInformation(id);
+}
 
 const publisherId=sessionStorage.getItem('uid')
 axios.get(`/event/getMyPost/${publisherId}`, {
@@ -362,6 +381,7 @@ const onReset = () => {
 const sendNotice = ({validateResult, firstError}) => {
   if (validateResult === true) {
     loadingNotice.value=true
+    console.log(formData.selectSection)
     axios.post(`/notification/sessions`,{
     }, {
       headers: {
@@ -391,19 +411,6 @@ const dateToString = (date) => {
 }
 
 
-const fetchSessionInformation = async (id) => {
-  try {
-    loadingSession=true
-    let response = await axios.post("/event/getEventSessionsByEventId", { eventId: id }, { headers: { token: sessionStorage.getItem('token') } });
-    sessionOptions = response.data.data.map((item) => (
-      `活动时间：${dateToString(new Date(item.startTime))} - ${dateToString(new Date(item.endTime))}`
-    ));
-    loadingSession=false
-  }
-  catch (error) {
-    loadingSession=false
-  }
-}
 
 // const {colors} = useColors();
 // colors.primary = sessionStorage.getItem('primary-color')
