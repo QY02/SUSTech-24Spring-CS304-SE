@@ -9,15 +9,9 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import org.cs304.backend.constant.constant_NotificationStatus;
 import org.cs304.backend.constant.constant_NotificationType;
-import org.cs304.backend.entity.Event;
-import org.cs304.backend.entity.EventSession;
-import org.cs304.backend.entity.Notification;
-import org.cs304.backend.entity.User;
+import org.cs304.backend.entity.*;
 import org.cs304.backend.exception.ServiceException;
-import org.cs304.backend.mapper.EventMapper;
-import org.cs304.backend.mapper.EventSessionMapper;
-import org.cs304.backend.mapper.NotificationMapper;
-import org.cs304.backend.mapper.UserMapper;
+import org.cs304.backend.mapper.*;
 import org.cs304.backend.service.INotificationService;
 import org.springframework.stereotype.Service;
 
@@ -45,6 +39,9 @@ public class NotificationServiceImpl extends ServiceImpl<NotificationMapper, Not
 
     @Resource
     private EventSessionMapper eventSessionMapper;
+
+    @Resource
+    OrderRecordMapper orderRecordMapper;
 
     @Resource
     private EmailService emailService;
@@ -208,6 +205,36 @@ public class NotificationServiceImpl extends ServiceImpl<NotificationMapper, Not
                         eventTitle, formatDateTime(startTime), formatDateTime(endTime), comment);
                 insertImmediateNotification(publisherId, userId, title, content, constant_NotificationType.CANCEL);
 
+            }
+        }
+    }
+    @Override
+    public void insertListOfEventSessionsNotification(List<Integer> sessionIds, String title, String content) {
+            for(Integer o : sessionIds){
+                insertEventSessionNotification(o,title,content);
+            }
+    }
+
+     private void insertEventSessionNotification(int sessionId, String title,String content) {
+        EventSession eventSession = eventSessionMapper.selectById(sessionId);
+        if (eventSession == null) {
+            throw new ServiceException("Event session not found");
+        } else {
+            QueryWrapper<OrderRecord> queryWrapper = new QueryWrapper<OrderRecord>().eq("event_session_id", sessionId);
+            List<OrderRecord> orderRecordList = orderRecordMapper.selectList(queryWrapper);
+            for (OrderRecord order : orderRecordList){
+                String userId=order.getUserId();
+                int eventId = eventSession.getEventId();
+                Event event = eventMapper.selectById(eventId);
+                if (event == null) {
+                    throw new ServiceException("Event not found");
+                } else {
+                    String publisherId = event.getPublisherId();
+                    String eventTitle = event.getName();
+                    String content_sent = String.format("您好！\n以下是来自活动'%s'发布者的通知：\n\n%s",
+                            eventTitle, content);
+                    insertImmediateNotification(publisherId, userId, title, content_sent, constant_NotificationType.MODIFY);
+                }
             }
         }
     }

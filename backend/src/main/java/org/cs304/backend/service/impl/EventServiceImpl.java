@@ -132,16 +132,6 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
         for (String ignored : fileList) {
             fileDirList.add("event/" + "uuid");
         }
-
-//        System.out.println("fileList");
-//        System.out.println(fileList);
-//        System.out.println("fileDirList");
-//        System.out.println(fileDirList);
-
-        // 打印 Event 对象的属性值
-//        System.out.println("Event Object: " + event);
-//        insertSessions(1, eventSessionData);
-
         return attachmentService.uploadBatchStart(ADMIN, fileDirList, fileList, requestData);
     }
 

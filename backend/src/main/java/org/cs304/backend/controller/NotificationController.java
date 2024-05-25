@@ -1,6 +1,8 @@
 package org.cs304.backend.controller;
 
+import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -9,15 +11,20 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.cs304.backend.constant.constant_User;
+import org.cs304.backend.entity.Event;
+import org.cs304.backend.entity.EventSession;
 import org.cs304.backend.entity.Notification;
-import org.cs304.backend.exception.ServiceException;
+import org.cs304.backend.entity.OrderRecord;
+import org.cs304.backend.mapper.EventMapper;
+import org.cs304.backend.mapper.EventSessionMapper;
 import org.cs304.backend.mapper.NotificationMapper;
+import org.cs304.backend.mapper.OrderRecordMapper;
 import org.cs304.backend.service.INotificationService;
 import org.cs304.backend.service.impl.EmailService;
 import org.cs304.backend.utils.Result;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -35,7 +42,9 @@ public class NotificationController {
     private NotificationMapper notificationMapper;
 
     @Resource
-    EmailService emailService;
+    private EventSessionMapper eventSessionMapper;
+    @Resource
+    private EventMapper eventMapper;
 
 
 //    @PostMapping("/h")
@@ -66,6 +75,29 @@ public class NotificationController {
         notificationService.insertEventNotPassNotification(userId, eventId, data.getString("comment"));
         return Result.success(response);
     }
+
+    @PostMapping("/sessions")
+    @Operation(summary = "给session list中的每一个订阅用户发送通知", description = "传入需要发送通知的场次list和标题、内容")
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, content = @Content(examples = @ExampleObject("""
+            {
+              "comment": "取消原因"
+            }
+            """)))
+    public Result postEvenCancel(HttpServletResponse response, HttpServletRequest request, @RequestParam List<Integer> selectSession, @RequestParam String title, @RequestParam String content) {
+        String userId = (String) request.getAttribute("loginUserId");
+        if (!selectSession.isEmpty()){
+            EventSession session = eventSessionMapper.selectById(selectSession.get(0));
+            Event event =eventMapper.selectById(session.getEventId());
+            String pid=event.getPublisherId();
+            if (!Objects.equals(userId, pid)){
+                return Result.error(response,"只有该活动的创建者才能发送通知");
+            }
+            notificationService.insertListOfEventSessionsNotification(selectSession, title, content);
+            return Result.success(response);
+        }else return Result.error(response,"场次为空");
+
+    }
+
 
 
 //    @PostMapping("/eventCancel/{eventId}")
