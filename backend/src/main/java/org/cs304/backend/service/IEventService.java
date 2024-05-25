@@ -26,6 +26,10 @@ public interface IEventService extends IService<Event> {
     List<Event> getBatchByIds(int userType,List<Integer> idList);
     JSONArray getAuditList(String eventStatus);
 
+    JSONObject updateEventStart(JSONObject data);
+
+    JSONObject updateEventFinish(JSONObject requestData);
+
     List<EventSession> getEventSessionsByEventId(int userType, Integer eventId);
 
 //    Event getEventByEventId(int userType, Integer eventId);

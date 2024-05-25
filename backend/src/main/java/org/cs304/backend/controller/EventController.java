@@ -51,6 +51,24 @@ public class EventController {
         return Result.success(response,fileUrl);
     }
 
+    @PostMapping("/update")
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, content = @Content(examples = @ExampleObject("""
+            {
+             "event":{
+             "name": "zyp",
+             "content": "",
+             "type": 0,
+             "publisher_id": "12112003",
+             "poster": [ { "url": "https://tdesign.gtimg.com/site/avatar.jpg" } ]
+             } ,
+             "sessions":[
+             { "key": 1, "registration_required": false, "registration_time_range": [], "event_time_range": [ "2024-03-25 11:36:11", "2024-03-31 11:36:11" ], "count_range_of_people": [ "1", "11" ], "seat_map_id": "", "venue": "12", "location": "啊大苏打", "visible": false } ]
+             }""")))
+    public Result updateEvent(HttpServletResponse response, @RequestBody JSONObject event) {
+        JSONObject fileUrl=eventService.updateEventStart(event);
+//        System.out.println(fileUrl);
+        return Result.success(response,fileUrl);
+    }
     @PostMapping("/getEventSessionsByEventId")
     @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, content = @Content(examples = @ExampleObject("{\"eventId\": 1}")))
     public Result getEventSessionsByEventId(HttpServletResponse response, HttpServletRequest request, @RequestBody JSONObject requestBody) {

@@ -74,6 +74,11 @@ const routes = [
                 component: () => import('@/components/event/ApplyForEvent.vue')
             },
             {
+                name: 'fixEvent',
+                path: '/fixEvent',
+                component: () => import('@/components/event/FixEvent.vue')
+            },
+            {
                 name: 'event',
                 path: '/event',
                 component: () => import('@/components/event/EventPage.vue')
