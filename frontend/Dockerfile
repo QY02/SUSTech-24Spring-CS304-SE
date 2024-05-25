@@ -1,6 +1,6 @@
-FROM node:lts-alpine
+FROM node:lts-alpine AS build
 
-WORKDIR /app
+WORKDIR /build
 
 COPY package*.json ./
 
@@ -12,7 +12,7 @@ RUN npm run build
 
 FROM nginx:stable-alpine
 
-COPY --from=0 /app/dist /usr/share/nginx/html
+COPY --from=build /build/dist /usr/share/nginx/html
 
 EXPOSE 80
 
