@@ -31,7 +31,9 @@ jobs:
           push: true
           tags: qy02/events_center_file_server
       - name: Export Docker image to tar
-        run: docker save -o events_center_file_server.tar qy02/events_center_file_server
+        run: |
+          docker save -o events_center_file_server.tar qy02/events_center_file_server
+          chmod 777 events_center_file_server.tar
       - name: Upload Docker image tar to tyc server
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -58,7 +60,9 @@ jobs:
           push: true
           tags: qy02/events_center_backend
       - name: Export Docker image to tar
-        run: docker save -o events_center_backend.tar qy02/events_center_backend
+        run: |
+          docker save -o events_center_backend.tar qy02/events_center_backend
+          chmod 777 events_center_backend.tar
       - name: Upload Docker image tar to aliyun server
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -85,7 +89,9 @@ jobs:
           push: true
           tags: qy02/events_center_frontend
       - name: Export Docker image to tar
-        run: docker save -o events_center_frontend.tar qy02/events_center_frontend
+        run: |
+          docker save -o events_center_frontend.tar qy02/events_center_frontend
+          chmod 777 events_center_frontend.tar
       - name: Upload Docker image tar to aliyun server
         uses: appleboy/scp-action@v0.1.7
         with:
