@@ -72,7 +72,7 @@ const prePay = async () => {
     MessagePlugin.success('提交支付信息成功');
     // alert(orderId.value)
     // 构建跳转的 URL
-    let targetUrl = `http://localhost:8083/orderRecord/pay/${orderId.value}?token=${sessionStorage.getItem('token')}`;
+    let targetUrl = `http://47.107.113.54:25571/orderRecord/pay/${orderId.value}?token=${sessionStorage.getItem('token')}`;
     // 将当前页面跳转到目标 URL
     window.location.href = targetUrl;
     // startPolling();
@@ -117,7 +117,7 @@ const formattedDateTime = ref(null);
 
 const checkUrl = () => {
   console.log('checking')
-  if (currentUrl.value !== 'http://localhost:5173/book') {
+  if (currentUrl.value !== 'http://47.107.113.54:5173/book') {
     console.log('differnet')
     const urlParams = new URLSearchParams(currentUrl.value.split('?')[1]); // 获取查询参数部分
     const newTimestamp = urlParams.get('timestamp'); // 获取timestamp参数的值
@@ -141,7 +141,7 @@ const checkUrl = () => {
         console.log('next')
         MessagePlugin.success('支付成功');
         toNextStep();
-        window.location.href = 'http://localhost:5173/book';
+        window.location.href = 'http://47.107.113.54:5173/book';
       }).catch(() => {
       })
     }
@@ -179,11 +179,11 @@ onMounted(() => {
         console.log('next')
         MessagePlugin.success('支付成功');
         toNextStep();
-        window.location.href = 'http://localhost:5173/book';
+        window.location.href = 'http://47.107.113.54:5173/book';
       }).catch(() => {
       })
     }
-    // if (newUrl !== 'http://localhost:5173/book') {
+    // if (newUrl !== 'http://47.107.113.54:5173/book') {
     //   const urlParams = new URLSearchParams(newUrl.split('?')[1]); // 获取查询参数部分
     //   const newId = urlParams.get('id'); // 获取id参数的值
     //   id.value = newId; // 更新id的值
