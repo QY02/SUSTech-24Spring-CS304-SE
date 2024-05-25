@@ -22,7 +22,7 @@ backend:
 
 logging:
   file:
-    name: .data/logs/EventsCenterFileServer.log
-    path: .data/logs
+    name: ./data/logs/EventsCenterFileServer.log
+    path: ./data/logs
   level:
     root: INFO
