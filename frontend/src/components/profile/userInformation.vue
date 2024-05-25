@@ -151,6 +151,7 @@ const favType = ref({});
 const showModalCode = ref(false)
 const logout = () => {
   sessionStorage.removeItem('token');
+  sessionStorage.removeItem('role');
   MessagePlugin.success('退出登录成功！');
   router.push('/login');
 }

@@ -131,8 +131,10 @@ const handleSubmit = ({validateResult}) => {
           MessagePlugin.success("Welcome! " + rd);
           // alert(sessionStorage.getItem('token'));
           if (type === 0) {//管理员
+            sessionStorage.setItem('role', 'admin');
             router.push("/admin/homepage");
           } else {//正常用户
+            sessionStorage.setItem('role', 'user');
             router.push("/HomePage");
           }
         }).catch(() => {

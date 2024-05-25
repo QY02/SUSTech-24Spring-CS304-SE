@@ -129,6 +129,7 @@
         break;
       case 'user':
         sessionStorage.removeItem('token');
+        sessionStorage.removeItem('role');
         MessagePlugin.success('退出登录成功！');
         router.push('/login');
         break;
