@@ -59,7 +59,7 @@ import {MessagePlugin} from 'tdesign-vue-next';
 import {FileDownloadIcon} from 'tdesign-icons-vue-next';
 import MarkdownIt from 'markdown-it';
 
-
+const eventId = sessionStorage.getItem('eventId');
 const md = new MarkdownIt();
 const renderMarkdown = (text) => {
   return md.render(text);
@@ -187,7 +187,7 @@ const send = () => {
         query: text.value,
         LLM_type: chatModel.value,
         api_key: api_key.value,
-        tmp_event: 1};
+        tmp_event: eventId};
       socket.send(JSON.stringify(message));
       messages.value.push({role: "user", content: text.value});
       createContent(null, user, text.value);
@@ -246,7 +246,7 @@ const createContent = (remoteUser, nowUser, text) => {
 };
 </script>
 
-<style scoped>
+<style>
 .tip {
   padding: 0 10px;
   border-radius: 10px;

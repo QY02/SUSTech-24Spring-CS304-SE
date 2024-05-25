@@ -43,6 +43,7 @@ public class ReplyController {
         List<JSONObject> replyList = replyMapper.selectList(new QueryWrapper<Reply>().eq("comment_id", commentId).orderByDesc("publish_date")).stream().map(reply -> {
             JSONObject jsonObject = (JSONObject) JSON.toJSON(reply);
             jsonObject.put("author", userMapper.selectById(reply.getPublisherId()).getName());
+            jsonObject.put("avatar", userMapper.selectById(reply.getPublisherId()).getIconId());
             return jsonObject;
         }).toList();
         return Result.success(response, replyList);

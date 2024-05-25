@@ -94,11 +94,12 @@
     <div class="form-submit-container">
       <div class="form-submit-sub">
         <div class="form-submit-left">
-          <t-button theme="primary" style="margin: 5px" type="submit">
-            确认提交
-          </t-button>
+
           <t-button type="reset" style="margin: 5px" theme="default" variant="base">
             取消
+          </t-button>
+          <t-button theme="success" style="margin: 5px" type="submit">
+            提交
           </t-button>
         </div>
       </div>

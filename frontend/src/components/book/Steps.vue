@@ -69,6 +69,16 @@ import axios, {AxiosRequestConfig} from 'axios';
 import {useRoute} from "vue-router";
 import {globalProperties} from '@/main';
 
+Object.assign(bookingInformation, {
+      eventId: null,
+      chosenSession: null,
+      chosenSeat: null,
+      additionalInformation: []
+    }
+)
+
+bookingInformation.eventId = Number(sessionStorage.getItem('eventId'));
+
 const stepChange = (current: number, previous: number) => {
   if ((previous !== 3) && (current !== 3)) {
     if (!((previous === 0) && (bookingInformation.chosenSession === null))) {
@@ -85,11 +95,6 @@ const removeClickableOnFinishStepItem = () => {
     parentDiv.firstElementChild.classList.remove('t-steps-item--clickable');
   }
 }
-
-const route = useRoute();
-// bookingInformation.eventId = Number(route.query.eventId);
-
-bookingInformation.eventId = Number(sessionStorage.getItem('eventId'));
 const fetchSessionInformation = async () => {
   fetchSessionInformationStatus.value = 0;
   try {
@@ -127,7 +132,6 @@ const fetchSessionInformation = async () => {
 onMounted(() => {
   removeClickableOnFinishStepItem();
   fetchSessionInformation()
-
 });
 
 watch(
@@ -136,6 +140,10 @@ watch(
     console.log('change')
   }
 );
+
+watch(currentStep, (newValue) => {
+  sessionStorage.setItem('currentStep', newValue);
+})
 
 </script>
 
@@ -148,11 +156,13 @@ import {useRoute} from "vue-router";
 
 
 export let currentStep = ref(parseInt(sessionStorage.getItem('currentStep')));
+if ((currentStep.value != 3) && (currentStep.value != 4) && (currentStep.value != 5)) {
+  currentStep.value = 0;
+}
 
 
 export function toNextStep() {
   currentStep.value++;
-  sessionStorage.setItem('currentStep', currentStep.value);
 }
 
 export let fetchSessionInformationStatus = ref(0);

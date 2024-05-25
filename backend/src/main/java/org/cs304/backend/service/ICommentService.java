@@ -11,6 +11,8 @@ public interface ICommentService extends IService<Comment> {
 
     List<JSONObject> getAllMoment(Integer momentId, Integer viewType,String userId);
 
+    List<JSONObject> getEventMoment(Integer eventId);
+
     JSONObject getMomentById(Integer commentId);
 
     @Transactional(rollbackFor = {Exception.class})

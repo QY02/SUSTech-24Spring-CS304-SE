@@ -15,12 +15,14 @@
           <div class="card-4">
             <t-space size="24px">
               <!-- <div v-if="isFavorite"> -->
-              <t-button :loading="loading_favorite" shape="circle" theme="primary" @click="clickHeart()">
-                <template #icon>
-                  <HeartFilledIcon v-show="isFavorite" />
-                  <HeartIcon v-show="!isFavorite" />
-                </template>
-              </t-button>
+              <t-tooltip content="收藏">
+                <t-button :loading="loading_favorite" shape="circle" theme="primary" @click="clickHeart()">
+                  <template #icon>
+                    <HeartFilledIcon v-show="isFavorite" />
+                    <HeartIcon v-show="!isFavorite" />
+                  </template>
+                </t-button>
+              </t-tooltip>
               <!-- </div>
             <div v-else>
               <t-button :loading="loading_favorite" shape="circle" theme="primary" @click="addFavorite()">
@@ -31,11 +33,16 @@
             </div> -->
             </t-space>
           </div>
-          <div class="card-4" style="margin-left: 30px ">
-            <t-tag size="large" theme="primary"><template #icon>
+          <div class="card-4">
+            <t-tooltip content="评分">
+              <t-tag size="large" theme="primary"><template #icon>
                 <StarFilledIcon />
               </template>{{ parentAverageScore }}</t-tag>
+            </t-tooltip>
           </div>
+          <t-badge count="试用" color="#00A870">
+            <t-button @click="pushRouter('chatWithEvent')">与大模型聊天</t-button>
+          </t-badge>
         </div>
       </div>
     </div>
@@ -93,7 +100,7 @@
       style="height: auto; padding: 5px;  max-width: 100% ; margin-right: 30px; margin-left: 30px; margin-bottom: 40px;">
       <div v-if="show_event_type"
         style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
-        <t-space direction="vertical" style="margin-top: 20px; ">
+        <t-space direction="vertical" style="margin-top: 20px; " v-show="sessionInformation.length > 0">
           <t-collapse style="width: 50vw">
             <t-collapse-panel v-for="(session, index) in sessionInformation"
               :header="`${dateToString(session.startTime)} - ${dateToString(session.endTime)} ${session.venue}`">
@@ -109,8 +116,10 @@
           </t-collapse>
         </t-space>
         <br>
-        <t-button @click="pushRouter('book')">前往报名</t-button>
-
+        <t-button @click="pushRouter('book')" v-show="sessionInformation.length > 0">前往报名</t-button>
+        <div v-show="sessionInformation.length == 0">
+          <p>暂无场次信息，敬请关注</p>
+        </div>
         <!-- <EventTicketTable></EventTicketTable> -->
       </div>
       <div v-else>
@@ -149,33 +158,37 @@
       <p style="  color: rgba(7, 63, 216, 1); font-size: 18px; font-weight: 700; letter-spacing: 1px;">
         贩卖信息
       </p>
-      <p style="  margin-top: 0.4rem; color: rgb(70, 73, 79);font-weight: 600;">
-        开始日期
-      </p>
-      <p style=" margin-top: -5px; line-height: 1.625; color: rgb(70, 73, 79);">
-      <div v-for="(session, index) in sessionInformation">
-        <div class="choose-session-detail-div">
-          <p v-if="session.registrationRequired" class="choose-session-detail-text">
-          <p>场次{{ index }}: </p>
-          {{
-            `报名时间: ${dateToString(session.registrationStartTime)} - ${dateToString(session.registrationEndTime)}`
-          }}
-          <br>
-          </p>
-          <p v-else class="choose-session-detail-text">
-          <p>场次{{ index }}: </p>
-          <p>无需报名</p>
-          </p>
+      <div v-show="sessionInformation.length > 0">
+        <p style="  margin-top: 0.4rem; color: rgb(70, 73, 79);font-weight: 600;">
+          开始日期
+        </p>
+        <p style=" margin-top: -5px; line-height: 1.625; color: rgb(70, 73, 79);">
+        <div v-for="(session, index) in sessionInformation">
+          <div class="choose-session-detail-div">
+            <p v-if="session.registrationRequired" class="choose-session-detail-text">
+            <p>场次{{ index }}: 
+            {{
+              `时间: ${dateToString(session.registrationStartTime)}`
+            }} </p>
+            <br>
+            </p>
+            <p v-else class="choose-session-detail-text">
+            <p>场次{{ index }}: 无需报名</p>
+            </p>
+          </div>
         </div>
+        </p>
+        <el-divider />
+        <p style="  color: rgba(7, 63, 216, 1); font-size: 18px; font-weight: 700; letter-spacing: 1px;">
+          价格标准
+        </p>
+        <p style="  margin-top: 0.4rem; line-height: 1.625; color: rgb(70, 73, 79);;">
+          门票价格：¥{{ eventDetail.lowestPrice }} - ¥{{ eventDetail.highestPrice }}
+        </p>
       </div>
-      </p>
-      <el-divider />
-      <p style="  color: rgba(7, 63, 216, 1); font-size: 18px; font-weight: 700; letter-spacing: 1px;">
-        价格标准
-      </p>
-      <p style="  margin-top: 0.4rem; line-height: 1.625; color: rgb(70, 73, 79);;">
-        门票价格：¥{{ eventDetail.lowestPrice }} - ¥{{ eventDetail.highestPrice }}
-      </p>
+      <div v-show="sessionInformation.length == 0">
+        <p>暂无贩卖信息，敬请关注</p>
+      </div>
     </div>
     <div style="height: 20px;"></div>
     <div style="height: 20px;"></div>
@@ -192,9 +205,9 @@
         </div>
       </t-space>
       <div class="ticket_card" style="margin-left: 55px; margin-top: -10px;">
-        <p style="  margin-top: 0.4rem; color: rgb(70, 73, 79);font-weight: 600;">
+        <!-- <p style="  margin-top: 0.4rem; color: rgb(70, 73, 79);font-weight: 600;">
           Rules
-        </p>
+        </p> -->
         <p style="  margin-top: 0.4rem; line-height: 1.625;color: rgb(70, 73, 79);;">
           {{ eventDetail.eventPolicy }}
         </p>
@@ -262,7 +275,7 @@ import SkeletonPage from './SkeletonPage.vue';
 import CommentPage from './CommentPage.vue';
 
 sessionStorage.setItem('currentStep', 0)
-currentStep.value=0;
+currentStep.value = 0;
 const value_lable = ref('events');
 
 const show_event_type = ref(true);
@@ -359,6 +372,9 @@ const pushRouter = (value) => {
       break;
     case 'book':
       router.push('/book');
+      break;
+    case 'chatWithEvent':
+      router.push('/chatWithEvent');
       break;
   }
 }
@@ -467,6 +483,7 @@ const fetchSessionInformation = async () => {
     }));
     sessionInformation.length = 0;
     sessionInformation.push(...dataConverted);
+    console.log("sessionInformation" + sessionInformation.length)
   }
   catch (error) {
   }

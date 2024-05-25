@@ -36,7 +36,6 @@
       <div :style="{height: 'calc( 100vh - 56px)', 'overflow-y': 'scroll' }">
       <t-card class="card-with-margin" hoverShadow>
         <t-space>
-          <t-button variant="outline" theme="success" @click="showEvent">点击跳转相关活动：{{momentData.relatedEvent}}</t-button>
           <t-button @click="deletePost" theme="danger">
             <template #icon>
               <delete-icon/>
@@ -50,10 +49,10 @@
         <t-comment :author="momentData.userName" :datetime="momentData.publishDate"
                    :content="momentData.content">
           <template #avatar>
-            <t-avatar v-if="momentData.publisherId===user" size="60px" :image="momentData.avatar"/>
-            <t-popconfirm v-if="momentData.publisherId!==user" content="与ta聊天" :cancel-btn="null" @confirm="chat(momentData.publisherId,momentData.userName)">
-              <t-avatar size="60px" :image="momentData.avatar"/>
-            </t-popconfirm>
+            <t-avatar size="60px" :image="momentData.avatar"/>
+<!--            <t-popconfirm v-if="momentData.publisherId!==user" content="与ta聊天" :cancel-btn="null" @confirm="chat(momentData.publisherId,momentData.userName)">-->
+<!--              <t-avatar size="60px" :image="momentData.avatar"/>-->
+<!--            </t-popconfirm>-->
           </template>
           <template #actions>
             <t-space key="thumbUp" :size="10">
@@ -157,6 +156,14 @@ import router from "@/routers/index.js";
 import axios from "axios";
 import { fileServerAxios } from "@/main.js"
 import {MessagePlugin} from "tdesign-vue-next";
+const user = sessionStorage.getItem("uid") ? sessionStorage.getItem("uid") : '';//当前用户
+
+const avatarList = ['https://avatars.githubusercontent.com/pengyyyyy',
+  'https://tdesign.gtimg.com/site/avatar.jpg',
+  'https://avatars.githubusercontent.com/LeeJim',
+  'https://avatars.githubusercontent.com/u/7361184?v=4',
+  'https://avatars.githubusercontent.com/pattybaby110',
+  'https://avatars.githubusercontent.com/chaishi']
 
 // ###### 动态列表 开始 ######
 
@@ -173,7 +180,7 @@ const getMomentBatch = async (id) => {
         token: sessionStorage.getItem('token'),
       }
     });
-    if (response.data.data.length < 20) {
+    if (response.data.data.length <= 20) {
       noMoreImage.value = true;
     }
     for (let i = 0; i < response.data.data.length; i++) {
@@ -253,8 +260,8 @@ const selectMoment = async (item) => {
         token: sessionStorage.getItem('token')
       }
     });
+    response.data.data.avatar = avatarList[response.data.data.avatar];
     momentData.value = response.data.data;
-    momentData.value.avatar = 'https://tdesign.gtimg.com/site/avatar.jpg';
     if (momentData.value.mediaType === false) {
       for (let i = 0; i < momentData.value.mediaUrl.length; i++) {
         const fileServerResponse = await fileServerAxios.get(`/file/download`, {
@@ -382,10 +389,10 @@ const viewComment = async () => {
         token: sessionStorage.getItem('token'),
       }
     });
+    response.data.data.forEach((item) => {
+      item.avatar = avatarList[item.avatar];
+    });
     commentsData.value = response.data.data;
-    for (let i = 0; i < commentsData.value.length; i++) {
-      commentsData.value[i].avatar = 'https://tdesign.gtimg.com/site/avatar.jpg';
-    }
     commentVisible.value = true;
   } catch (error) {
   }
@@ -443,6 +450,7 @@ const commentsData = ref([
 h1 {
   font-size: 24px;
   font-weight: bold;
+  margin: 40px;
 }
 
 </style>

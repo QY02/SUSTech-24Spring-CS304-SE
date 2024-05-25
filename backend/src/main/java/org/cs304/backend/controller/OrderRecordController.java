@@ -1,6 +1,10 @@
 package org.cs304.backend.controller;
 
-import ch.qos.logback.core.util.TimeUtil;
+import com.alibaba.fastjson2.JSONObject;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import java.io.IOException;
+
 import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson2.JSONObject;
 import com.alipay.api.AlipayApiException;
@@ -10,9 +14,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.cs304.backend.config.AliPayConfig;
 import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.internal.util.AlipaySignature;
-import com.alipay.api.request.AlipayTradeCreateRequest;
 import com.alipay.api.request.AlipayTradePagePayRequest;
-import com.alipay.api.response.AlipayTradeCreateResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -20,9 +22,10 @@ import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.cs304.backend.constant.constant_OrderRecordStatus;
-import org.cs304.backend.entity.Favorite;
 import org.cs304.backend.entity.OrderRecord;
 import org.cs304.backend.exception.ServiceException;
+import org.cs304.backend.mapper.EventSessionMapper;
+import org.cs304.backend.mapper.SeatMapper;
 import org.cs304.backend.service.IEventService;
 import org.cs304.backend.service.IOrderRecordService;
 import org.cs304.backend.utils.Result;
@@ -36,6 +39,8 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 //import static com.alipay.api.AlipayConstants.FORMAT;
 //import static com.alipay.api.AlipayConstants.CHARSET;
@@ -53,8 +58,17 @@ public class OrderRecordController {
     @Resource
     private AliPayConfig aliPayConfig;
 
+    @Value("${alipay.alipayPublicKey:}")
+    private String alipayPublicKey;
+
     @Resource
     private IEventService eventService;
+
+    @Resource
+    private EventSessionMapper eventSessionMapper;
+
+    @Resource
+    private SeatMapper seatMapper;
 
     @PostMapping("/getMyOrderRecord")
     @Operation(description = """
@@ -98,13 +112,13 @@ public class OrderRecordController {
         return Result.success(response, orderRecordService.getUnpaidOrderRecord(userId, eventId, mode));
     }
 
-
-    @PostMapping("/getPayResultById")
-    public Result getResult(HttpServletResponse response, HttpServletRequest request, @RequestBody JSONObject requestBody){
-        Integer orderId =  (int) request.getAttribute("id");
-        int result = orderRecordService.getPaymentById(orderId);
-        return Result.success(response, result);
-    }
+    // 暂时没用到
+    // @PostMapping("/getPayResultById")
+    // public Result getResult(HttpServletResponse response, HttpServletRequest request){
+    //     Integer orderId =  (int) request.getAttribute("id");
+    //     int result = orderRecordService.getPaymentById(orderId);
+    //     return Result.success(response, result);
+    // }
 
     @PostMapping("/prePay")
     @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, content = @Content(examples = @ExampleObject("""
@@ -129,7 +143,7 @@ public class OrderRecordController {
     }
 
     @GetMapping("/pay/{orderId}")
-    public Result pay(HttpServletResponse httpResponse, HttpServletRequest httpRequest, @PathVariable int orderId) throws AlipayApiException, IOException {
+    public Result pay(HttpServletResponse httpResponse, @PathVariable int orderId) throws IOException {
         AlipayClient alipayClient = new DefaultAlipayClient("https://openapi-sandbox.dl.alipaydev.com/gateway.do",
                 aliPayConfig.getAppId(), aliPayConfig.getAppPrivateKey(),FORMAT,CHARSET,
                 aliPayConfig.getAlipayPublicKey(), SIGN_TYPE);
@@ -173,16 +187,19 @@ public class OrderRecordController {
             }
             String sign = params.get("sign");
             String content = AlipaySignature.getSignCheckContentV1(params);
-            boolean checkSignature = AlipaySignature.rsa256CheckContent(content, sign, aliPayConfig.getAlipayPublicKey(), "GBK");// 支付宝验签
+            if(alipayPublicKey==null){
+                alipayPublicKey="MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtVLxz/P63j250D6sT7ocEBVUs3og8gMrDkylyYVrE4ReJ7sk1RYwIiXUn/2l1irnUEAZGeMS+hklBEssNAQsUAXazDr1xcvmZ8V9Gu7y2JpnMMcCQpKfrIcKf++6XRskz3Mj239mUvitWd/VD18+P9hoLlI9ipjFTFfk1zUcRz2/TkfqpngOxioc3ik1WkgVbdlYZkCR/368JsRbx4WnLPw/tNmQyS5P329+h58gybfIgHJew28hGtxvSlFyqcgafWk1JCm19N8FcYPMDjTDslA0ZOJz4xxXXyAGlD+ATY04pfO47/owr4wTAIrWxkEIoHohvzkHCmsNQKgBEP5UPwIDAQAB";
+            }
+            boolean checkSignature = AlipaySignature.rsa256CheckContent(content, sign, alipayPublicKey, "GBK");// 支付宝验签
             if (checkSignature){
-                System.out.println("交易名称:"+ params.get("subject"));
+//                System.out.println("交易名称:"+ params.get("subject"));
                 System.out.println("交易状态:"+ params.get("trade_status"));
-                System.out.println("支付宝交易凭证号:"+ params.get("trade_no"));
+//                System.out.println("支付宝交易凭证号:"+ params.get("trade_no"));
                 System.out.println("商户订单号:"+ params.get("out_trade_no"));
-                System.out.println("交易金额:"+ params.get("total_amount"));
-                System.out.println("买家在支付宝唯一id:"+ params.get("buyer_id"));
+//                System.out.println("交易金额:"+ params.get("total_amount"));
+//                System.out.println("买家在支付宝唯一id:"+ params.get("buyer_id"));
                 System.out.println("买家付款时间:"+ params.get("gmt_payment"));
-                System.out.println("买家付款金额:"+ params.get("buyer_pay_amount"));
+//                System.out.println("买家付款金额:"+ params.get("buyer_pay_amount"));
 
                 String orderId = params.get("out_trade_no");
                 String gmtPayment = params.get("gmt_payment");
@@ -192,7 +209,7 @@ public class OrderRecordController {
                 LocalDateTime payTime = DateUtil.toLocalDateTime(dt2);
                 //换成PAID！！！
                 OrderRecord orderRecord = orderRecordService.getOne(new QueryWrapper<OrderRecord>().eq("id", orderId));
-                if(gmtPayment.equals("TRADE_CLOSED")){
+                if(gmtPayment.equals("TRADE_SUCCESS")){
                     orderRecord.setPaymentTime(payTime);
                     orderRecord.setStatus(constant_OrderRecordStatus.PAID);
                 }
@@ -205,7 +222,7 @@ public class OrderRecordController {
     }
 
     @PostMapping("/payResult")
-    public Result payResult(HttpServletResponse response, HttpServletRequest request, @RequestBody JSONObject requestBody) {
+    public Result payResult(HttpServletResponse response, @RequestBody JSONObject requestBody) {
         String time = requestBody.getString("time");
         Integer orderId = requestBody.getInteger("orderId");
         System.out.println("orderId:" + orderId);

@@ -8,7 +8,7 @@
             <t-button @click="setVisible">评论</t-button>
         </div>
     </t-space>
-    <div>
+    <div v-show="commentsData.length>0">
         <t-list :split="true">
             <t-list-item v-for="(item, index) in commentsData" :key="index">
                 <template #content>
@@ -17,16 +17,16 @@
                             <h2>{{ item.title }}</h2>
                             <div class="stars"><t-rate :default-value="item.score" allow-half disabled size="16" />
                             </div>
-                            <div v-if="userId == item.publisherId"
+                          <div v-if="userId === item.publisherId"
                                 style="margin-top: 30px; display: flex; justify-content: flex-end; margin-right:30px ;">
-                                <t-popup content="删除该评论">
+                                <t-tooltip content="删除该评论">
                                     <t-button theme="danger" @click="visibleDelete = true; deleteEventId = item.id"
                                         shape="square" variant="text">
                                         <template #icon>
                                             <DeleteIcon />
                                         </template>
                                     </t-button>
-                                </t-popup>
+                                </t-tooltip>
                             </div>
                         </t-space>
                         <div class="comment_infos">
@@ -37,15 +37,21 @@
                                 {{ item.content }}
                             </p>
                         </div>
-                        <t-space style="display: flex; width: 100%;">
+                      <t-space style="display: flex;width: fit-content;align-self:flex-end;">
                             <div class="author">
-                                — {{ item.publisherId }}  {{ item.publisherNames }}
+                                — {{ item.publisherId }} {{ item.publisherNames }}
                             </div>
                         </t-space>
                     </div>
                 </template>
             </t-list-item>
         </t-list>
+    </div>
+    <div v-show="commentsData.length===0">
+      <div style="display: flex; justify-content: center; align-items: center; flex-direction: column">
+        <img src="https://tdesign.gtimg.com/pro-template/personal/nothing.png" alt="空"/>
+        <p>{{ '暂无评论' }}</p>
+      </div>
     </div>
     <div style="height: 40px;"></div>
 
@@ -79,7 +85,14 @@
         </template>
     </t-dialog>
 
-    <t-dialog v-model:visible="visibleDelete" header="确认删除" width="40%" :on-close="close" :on-confirm="deleteComment">
+    <t-dialog v-model:visible="visibleDelete" header="确认删除" width="30%" :cancel-btn=null :confirm-btn=null>
+        <div style="margin-top: 40px; margin-bottom: -10px; display: flex; justify-content: flex-end;;">
+            <t-space size="20px">
+                <t-button @click="deleteComment" :loading="deleteLoading">确定删除</t-button>
+                <t-button theme="default" variant="base" :disabled="deleteLoading" type="reset"
+                    @click="() => visibleDelete = false">取消</t-button>
+            </t-space>
+        </div>
     </t-dialog>
 </template>
 
@@ -89,7 +102,7 @@ import { ref, reactive, computed, watch } from 'vue';
 import { DeleteIcon } from 'tdesign-icons-vue-next';
 import { MessagePlugin } from 'tdesign-vue-next';
 import axios from "axios";
-const emits = defineEmits([ 'update:averageScore' ]);
+const emits = defineEmits(['update:averageScore']);
 const form = ref(null);
 const userId = ref(sessionStorage.getItem('uid'))
 const commentsData = ref([]);
@@ -167,6 +180,8 @@ const deleteComment = () => {
             token: token
         }
     }).then((response) => {
+        visibleDelete.value = false;
+        getComment();
     }).catch(() => {
     }).finally(() => {
         deleteLoading.value = false;
@@ -203,7 +218,7 @@ const computeAverageScore = () => {
     if (commentsData.value.length !== 0) {
         const totalScore = commentsData.value.reduce((sum, item) => sum + item.score, 0);
         // console.log(totalScore)
-        averageScore.value = totalScore / commentsData.value.length;
+        averageScore.value = Math.round(totalScore / commentsData.value.length);
     }
 }
 
@@ -245,6 +260,7 @@ getComment();
 
 .comment_card {
     display: flex;
+  width: 100%;
     flex-direction: column;
     justify-content: space-between;
     background-color: rgba(255, 255, 255, 1);

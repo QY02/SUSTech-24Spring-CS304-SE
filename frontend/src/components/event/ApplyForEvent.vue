@@ -54,10 +54,10 @@
         <div>
           <t-form-item style="margin-top: 30px;display: flex; justify-content: right; align-items: center;">
             <t-space>
-              <t-button theme="success" type="submit">提交</t-button>
               <t-tooltip content="仅重置活动相关信息，场次信息不重置" theme="warning">
                 <t-button variant="outline" type="reset">重置</t-button>
               </t-tooltip>
+              <t-button theme="success" type="submit">提交</t-button>
             </t-space>
           </t-form-item>
         </div>

@@ -54,28 +54,28 @@
         <template #footer>
           <t-row :align="'middle'" justify="center" style="gap: 24px;">
             <t-col flex="auto" style="display: inline-flex; justify-content: center;">
-              <t-popup content="收藏活动">
+              <t-tooltip content="收藏">
                 <t-button variant="text" shape="square" @click.stop="favEvent(item['id'])">
 
                   <t-icon name="heart" :color="favColor[item['id']]"/>
                 </t-button>
-              </t-popup>
+              </t-tooltip>
             </t-col>
 
             <t-col flex="auto" style="display: inline-flex; justify-content: center">
-              <t-popup content="评论">
+              <t-tooltip content="评论">
                 <t-button variant="text" shape="square" @click.stop="clickComment(item['id'])">
                   <chat-icon/>
                 </t-button>
-              </t-popup>
+              </t-tooltip>
             </t-col>
 
             <t-col flex="auto" style="display: inline-flex; justify-content: center">
-              <t-popup content="分享活动">
+              <t-tooltip content="分享">
                 <t-button variant="text" shape="square" @click.stop="clickShare(item['id'],item['name'])">
                   <share-icon/>
                 </t-button>
-              </t-popup>
+              </t-tooltip>
             </t-col>
           </t-row>
         </template>
@@ -299,7 +299,7 @@ const favEvent = (eventId) => {
     })
         .then(() => {
           favColor.value[eventId] = 'red'
-          MessagePlugin.success("Add favorite successfully!");
+          MessagePlugin.success("收藏成功！");
         })
         .catch((error) => {
           // thumbUpColor.value = 'red'
@@ -323,7 +323,7 @@ const favEvent = (eventId) => {
       }
     }).then((response) => {
       favColor.value[eventId] = 'black'
-      MessagePlugin.success("Delete favorite successfully!");
+      MessagePlugin.success("取消收藏成功！");
 
     }).catch(() => {
     })

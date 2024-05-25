@@ -1,6 +1,6 @@
 <template>
   <t-card :bordered="false" shadow class="card-with-margin">
-    <t-button class="button-right" size="small" theme="success" variant="base" @click="viewHistory">审核历史</t-button>
+    <t-button class="button-right" size="medium" theme="primary" variant="base" @click="viewHistory">审核历史</t-button>
     <h1 class="title"> 审核 </h1>
     <t-divider/>
     <t-collapse borderless="true" expand-mutex>
@@ -37,8 +37,8 @@
               multiple
           />
           <t-space direction="horizontal">
-            <t-button @click="onResetFilter">重置</t-button>
-            <t-button @click="onSubmitFilter">提交</t-button>
+            <t-button @click="onResetFilter" theme="default">重置</t-button>
+            <t-button @click="onSubmitFilter">查询</t-button>
           </t-space>
         </t-space>
       </t-collapse-panel>
@@ -50,7 +50,7 @@
       </div>
       <t-list v-else :split="true">
         <t-list-item v-for="item in listData" :key="item.id">
-          <t-list-item-meta :image="avatarUrl" :title="item.title" :description="item.description" />
+          <t-list-item-meta :image="item.avatar" :title="item.title" :description="item.description" />
           <t-space direction="vertical">
             <t-text>{{ item.date }}</t-text>
             <t-text>{{ item.location }}</t-text>
@@ -60,15 +60,21 @@
             <t-tag theme="warning" variant="light">￥{{ item.price }}起</t-tag>
           </t-space>
           <template #action>
+            <t-tooltip content="详情">
             <t-button variant="text" shape="square" @click="viewDetail(item)">
               <icon name="task-1" />
             </t-button>
+            </t-tooltip>
+            <t-tooltip content="通过">
             <t-button variant="text" shape="square" @click="onSuccess(item.id)">
               <icon name="check" color="green" />
             </t-button>
+            </t-tooltip>
+            <t-tooltip content="拒绝">
             <t-button variant="text" shape="square" @click="onDelete(item.id)">
               <icon name="close" color="red" />
             </t-button>
+            </t-tooltip>
           </template>
         </t-list-item>
       </t-list>
@@ -165,7 +171,7 @@ const filter_list_data = ref(null);
 // 当前页展示的数据
 const listData = ref([]);
 // 分页
-const pageSize = ref(8);
+const pageSize = ref(5);
 const eventType = [
   {label: '全选', checkAll: true},
   {label: '讲座', value: 0},
@@ -208,6 +214,13 @@ const mapEventType = (type) => {
 // ###### 数据 结束 ######
 
 // ###### 获取数据 开始 ######
+const avatarList = ['https://avatars.githubusercontent.com/pengyyyyy',
+  'https://tdesign.gtimg.com/site/avatar.jpg',
+  'https://avatars.githubusercontent.com/LeeJim',
+  'https://avatars.githubusercontent.com/u/7361184?v=4',
+  'https://avatars.githubusercontent.com/pattybaby110',
+  'https://avatars.githubusercontent.com/chaishi']
+
 const loading = ref(true);
 onMounted(() => {
   loading.value = true;
@@ -229,7 +242,8 @@ onMounted(() => {
               type: mapEventType(item.type),
               status: item.status,
               publisherId: item.publisherId,
-              publishDate: item.publishDate
+              publishDate: item.publishDate,
+              avatar: avatarList[item.avatar]
             }));
             filter_list_data.value = audit_list_data.value;
             listData.value = filter_list_data.value.slice(0, pageSize.value);

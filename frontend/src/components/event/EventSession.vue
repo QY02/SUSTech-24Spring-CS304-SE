@@ -111,8 +111,8 @@
 
           <t-form-item class="confirm-reset-btns">
             <t-space size="small">
-              <t-button theme="success" type="submit">提交</t-button>
               <t-button theme="default" variant="base" type="reset">重置</t-button>
+              <t-button theme="success" type="submit">提交</t-button>
               <!--              <t-button theme="default" variant="base" @click="handleClear">清空校验结果</t-button>-->
             </t-space>
           </t-form-item>

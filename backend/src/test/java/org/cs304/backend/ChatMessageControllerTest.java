@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.cs304.backend.controller.ChatMessageController;
 import org.cs304.backend.entity.ChatMessage;
 import org.cs304.backend.entity.User;
+import org.cs304.backend.mapper.ChatMessageMapper;
+import org.cs304.backend.mapper.UserMapper;
 import org.cs304.backend.service.IChatMessageService;
 import org.cs304.backend.service.IUserService;
 import org.cs304.backend.utils.Result;
@@ -28,10 +30,13 @@ public class ChatMessageControllerTest {
     ChatMessageController chatMessageController;
 
     @Mock
-    IChatMessageService chatMessageService;
+    ChatMessageMapper chatMessageMapper;
 
     @Mock
     IUserService userService;
+
+    @Mock
+    UserMapper userMapper;
 
     MockHttpServletRequest request;
     MockHttpServletResponse response;
@@ -47,12 +52,15 @@ public class ChatMessageControllerTest {
     @DisplayName("Should return chat messages when valid users are provided")
     public void shouldReturnChatMessagesWhenValidUsersAreProvided() {
         request.setAttribute("loginUserId", "1");
-        when(userService.getById("1")).thenReturn(new User());
-        when(userService.getById("2")).thenReturn(new User());
+        User user = new User();
+        user.setName("user1");
+        user.setIconId(1);
+        when(userMapper.selectById("2")).thenReturn(user);
+        when(userMapper.selectById("1")).thenReturn(user);
 
         List<ChatMessage> chatMessages = new ArrayList<>();
         chatMessages.add(new ChatMessage());
-        when(chatMessageService.list(new QueryWrapper<ChatMessage>().eq("receiver_id", "1").eq("sender_id", "2").or().eq("receiver_id", "2").eq("sender_id", "1").orderByDesc("send_time").last("LIMIT 50"))).thenReturn(chatMessages);
+        when(chatMessageMapper.selectList(new QueryWrapper<ChatMessage>().eq("receiver_id", "1").eq("sender_id", "2").or().eq("receiver_id", "2").eq("sender_id", "1").orderByDesc("send_time").last("LIMIT 50"))).thenReturn(chatMessages);
 
         Result result = chatMessageController.onLogin(request, response, "2");
 
