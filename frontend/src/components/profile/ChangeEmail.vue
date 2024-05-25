@@ -91,7 +91,7 @@ const updateEmail = ({validateResult, firstError}) => {
       location.reload()
     }).catch(()=>{})
   } else {
-    console.log('Validate Errors: ', firstError, validateResult);
+    console.log('错误: ', firstError, validateResult);
     MessagePlugin.warning(firstError);
   }
 }

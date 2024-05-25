@@ -55,32 +55,62 @@
       <template #footer>
         <t-row :align="'middle'" justify="center" style="gap: 24px;">
           <t-col flex="auto" style="display: inline-flex; justify-content: center;">
-            <t-popup content="收藏活动">
-              <t-button variant="text" shape="square" @click.stop="favEvent(item['id'])">
-
-                <t-icon name="heart" :color="favColor[item['id']]"/>
+            <t-tooltip content="通知">
+              <t-button variant="text" shape="square" @click="()=>{visibleNotice=true; fetchSessionInformation(item['id']);}">
+                <t-icon name="send"/>
               </t-button>
-            </t-popup>
+            </t-tooltip>
           </t-col>
 
           <t-col flex="auto" style="display: inline-flex; justify-content: center">
-            <t-popup content="评论">
+            <t-tooltip content="评论">
               <t-button variant="text" shape="square" @click.stop="clickComment(item['id'])">
                 <chat-icon/>
               </t-button>
-            </t-popup>
+            </t-tooltip>
           </t-col>
 
           <t-col flex="auto" style="display: inline-flex; justify-content: center">
-            <t-popup content="分享活动">
+            <t-tooltip content="分享活动">
               <t-button variant="text" shape="square" @click.stop="clickShare(item['id'],item['name'])">
                 <share-icon/>
               </t-button>
-            </t-popup>
+            </t-tooltip>
           </t-col>
         </t-row>
       </template>
     </t-card>
+
+
+    <t-dialog v-model:visible="visibleNotice" attach="body" header="发布通知" destroy-on-close:true width="450px" :cancel-btn=null
+    :confirm-btn=null>
+    <template #body>
+      <t-loading :loading="loadingSession">
+        <t-space direction="vertical">
+        <t-form ref="form" id="form" :data="formData" reset-type="initial" @reset="onReset" @submit="sendNotice"
+          :rules="FORM_RULES" label-width="100px" label-align="right">
+          <t-form-item name="selectSection" label="选择发送通知的场次">
+            <t-checkbox-group v-model="formData.selectSection" :options="sessionOptions"></t-checkbox-group>
+          </t-form-item>
+          <t-form-item name="title" label="标题">
+            <t-input v-model="formData.title" clearable:true placeholder="请输入标题">
+            </t-input>
+          </t-form-item>
+          <t-form-item name="content" label="内容">
+            <t-input v-model="formData.content" clearable:true placeholder="请输入内容">
+            </t-input>
+          </t-form-item>
+          <t-form-item>
+            <t-space size="20px">
+              <t-button theme="default" variant="base" type="reset" :disabled="loadingNotice">重置</t-button>
+              <t-button theme="success" type="submit" :loading="loadingNotice">提交</t-button>
+            </t-space>
+          </t-form-item>
+        </t-form>
+      </t-space>
+      </t-loading>
+    </template>
+  </t-dialog>
 
 
   </div>
@@ -119,6 +149,7 @@ import router from "@/routers/index.js";
 import {ENTITY_TYPE, EVENT_TYPE_MAP} from "@/constants/index.js";
 import CommentPage from "@/components/event/CommentPage.vue";
 import {fileServerAxios} from "@/main.js";
+import { sessionInformation } from '@/components/book/Steps.vue';
 
 const cover = 'https://tdesign.gtimg.com/site/source/card-demo.png';
 const events = ref([]);
@@ -246,49 +277,6 @@ const clickShare = (eventId, eventName) => {
   router.push('/newMoment');
 }
 
-const favEvent = (eventId) => {
-  // MessagePlugin.success(`${sessionStorage.getItem('uid')} 喜欢【${eventId}】`);
-  if (favColor.value[eventId] === 'black') {//妹收藏过
-    axios.post(`/favorite/add`, {
-      "eventId": eventId,
-      "userId": sessionStorage.getItem('uid'),
-    }, {
-      headers: {
-        token: sessionStorage.getItem('token')
-      }
-    })
-        .then(() => {
-          favColor.value[eventId] = 'red'
-          MessagePlugin.success("收藏成功！");
-        })
-        .catch((error) => {
-          // thumbUpColor.value = 'red'
-          if (error.response) {
-
-            // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-            // MessagePlugin.warning(error.response.data.msg);
-          } else {
-            // 一些错误是在设置请求的时候触发
-            MessagePlugin.warning(error.message);
-          }
-        });
-  } else {
-    // alert('hhh')
-    axios.post(`/favorite/delete`, {
-      "eventId": eventId,
-      "userId": sessionStorage.getItem('uid')
-    }, {
-      headers: {
-        token: sessionStorage.getItem('token')
-      }
-    }).then((response) => {
-      favColor.value[eventId] = 'black'
-      MessagePlugin.success("取消收藏成功！");
-
-    }).catch(() => {
-    })
-  }
-};
 
 
 const clickEvent = (eventId) => {
@@ -344,9 +332,78 @@ function getSearchNew(message) {
 
 defineExpose({getSearchNew});
 
+const formData = reactive({
+  title: '',
+  content: '',
+  selectSection: [],
+});
+
+const FORM_RULES = ref({
+  title: [{ required: true, message: '标题不可为空' }],
+  content: [{
+    required: true,
+    message: '内容不可为空',
+  }],
+  selectSection: [
+    { required: true, message: '场次不可为空' }
+  ]
+});
+
+const visibleNotice = ref(false);
+const loadingNotice = ref(false);
+const loadingSession = ref(false);
+const sessionOptions = ref([]);
 
 
+const onReset = () => {
+  MessagePlugin.success('重置成功');
+};
 
+const sendNotice = ({validateResult, firstError}) => {
+  if (validateResult === true) {
+    loadingNotice.value=true
+    axios.post(`/notification/sessions`,{
+    }, {
+      headers: {
+        token: sessionStorage.getItem('token')
+      },
+      params:{
+        "title": formData.title,
+      "content": formData.content,
+      "selectSection": formData.selectSection
+      }
+    }).then(() => {
+      MessagePlugin.info("已发送");
+      visibleNotice.value=false;
+      loadingNotice.value=false;
+    }).catch(()=>{loadingNotice.value=false;})
+  } else {
+    console.log('错误: ', firstError, validateResult);
+    MessagePlugin.warning(firstError);
+  }
+}
+const dateToString = (date) => {
+  const dayNameArray = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+  const dayName = dayNameArray[date.getDay()];
+  const localeDateStringArray = date.toLocaleString().split(' ');
+  const result = `${localeDateStringArray[0]} ${dayName} ${localeDateStringArray[1]}`;
+  return result;
+}
+
+
+const fetchSessionInformation = async (id) => {
+  try {
+    loadingSession=true
+    let response = await axios.post("/event/getEventSessionsByEventId", { eventId: id }, { headers: { token: sessionStorage.getItem('token') } });
+    sessionOptions = response.data.data.map((item) => (
+      `活动时间：${dateToString(new Date(item.startTime))} - ${dateToString(new Date(item.endTime))}`
+    ));
+    loadingSession=false
+  }
+  catch (error) {
+    loadingSession=false
+  }
+}
 
 // const {colors} = useColors();
 // colors.primary = sessionStorage.getItem('primary-color')
