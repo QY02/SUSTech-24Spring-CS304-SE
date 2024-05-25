@@ -132,7 +132,18 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
         for (String ignored : fileList) {
             fileDirList.add("event/" + "uuid");
         }
+
+//        System.out.println("fileList");
+//        System.out.println(fileList);
+//        System.out.println("fileDirList");
+//        System.out.println(fileDirList);
+
+        // 打印 Event 对象的属性值
+//        System.out.println("Event Object: " + event);
+//        insertSessions(1, eventSessionData);
+
         return attachmentService.uploadBatchStart(ADMIN, fileDirList, fileList, requestData);
+//        return null;
     }
 
     @Override
@@ -153,6 +164,64 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
             entityAttachmentRelation.setAttachmentType(constant_AttachmentType.IMAGE);
             entityAttachmentRelation.setAttachmentId(attachment.getId());
             entityAttachmentRelationMapper.insert(entityAttachmentRelation);
+        });
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("eventId", eventId);
+        return jsonObject;
+    }
+    @Override
+    public JSONObject updateEventStart(JSONObject data) {
+        JSONObject eventData = data.getJSONObject("event");
+        JSONArray eventSessionData = data.getJSONArray("sessions");
+
+        Event event=eventMapper.selectById(eventData.getInteger("eventId"));
+//        event.setId(eventData.getInteger("eventId"));
+        event.setName(eventData.getString("name"));
+        event.setContent(eventData.getString("content"));
+        event.setType(eventData.getInteger("type"));
+        event.setPublisherId(eventData.getString("publisher_id"));
+        event.setPublishDate(LocalDateTime.now());
+        event.setStatus(constant_EventStatus.AUDITING);
+        event.setEventPolicy(eventData.getString("event_policy"));
+        event.setVisible(eventData.getBoolean("visible"));
+        JSONObject requestData = JSONObject.from(event);
+        requestData.put("serviceClassName", this.getClass().getName());
+        requestData.put("serviceMethodName", "updateEventFinish");
+        requestData.put("eventSessionData", eventSessionData);
+        List<String> fileList = data.getJSONArray("poster").toJavaList(String.class);
+
+        List<String> fileDirList = new ArrayList<>();
+        for (String ignored : fileList) {
+            fileDirList.add("event/" + "uuid");
+        }
+
+        return attachmentService.uploadBatchStart(ADMIN, fileDirList, fileList, requestData);
+//        return null;
+    }
+
+    @Override
+    public JSONObject updateEventFinish(JSONObject requestData) {
+        List<Attachment> attachmentList = requestData.getList("fileInfoList", Attachment.class);
+
+        Event event = requestData.toJavaObject(Event.class);
+        eventMapper.updateById(event);
+        Integer eventId = event.getId();
+
+        QueryWrapper<EventSession> queryWrapper = new QueryWrapper<EventSession>().eq("event_id", eventId);
+//        queryWrapper.orderByDesc("publish_date");
+        List<EventSession> list = eventSessionMapper.selectList(queryWrapper);
+        eventSessionMapper.deleteBatchIds(list);
+
+        JSONArray eventSessionData = requestData.getJSONArray("eventSessionData");
+        insertSessions(eventId, eventSessionData);
+
+        attachmentList.forEach(attachment -> {
+            EntityAttachmentRelation entityAttachmentRelation = new EntityAttachmentRelation();
+            entityAttachmentRelation.setEntityType(EVENT);
+            entityAttachmentRelation.setEntityId(eventId);
+            entityAttachmentRelation.setAttachmentType(constant_AttachmentType.IMAGE);
+            entityAttachmentRelation.setAttachmentId(attachment.getId());
+            entityAttachmentRelationMapper.updateById(entityAttachmentRelation);
         });
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("eventId", eventId);
@@ -182,7 +251,10 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
         if (event == null) {
             throw new ServiceException("400", "Event not exist");
         }
-        if ((userType != constant_User.ADMIN) && ((event.getStatus() != constant_EventStatus.PASSED) || (!event.getVisible()))) {
+//        if ((userType != constant_User.ADMIN) && ((event.getStatus() != constant_EventStatus.PASSED) || (!event.getVisible()))) {
+//            throw new ServiceException("400", "Event not exist");
+//        }
+        if ((userType != constant_User.ADMIN) && (!event.getVisible())) {
             throw new ServiceException("400", "Event not exist");
         }
         return eventSessionMapper.selectList(new QueryWrapper<EventSession>().eq("event_id", eventId)).stream().filter(eventSession -> (userType == constant_User.ADMIN) || (eventSession.getVisible())).collect(Collectors.toList());

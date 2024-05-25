@@ -10,34 +10,40 @@
   </div>
   <div v-else>
     <div id="event" v-loading="loading">
-      <t-card v-for="(item, index) in curEvents" :key="index" :title="item['name']" :subtitle="item['content']"
-        :style="{ width: '400px' }" hover-shadow @click="clickEvent(item['id'])">
-        <t-image :src="item['cover']" :style="{ width: '350px', height: '180px' }" overlay-trigger="hover">
+      <t-card
+          v-for="(item,index) in curEvents"
+          :key="index"
+          :title="item['name']" :subtitle="item['content']" :style="{ width: '400px' }" hover-shadow
+          @click="clickEvent(item['id'],item['status'])">
+        <t-image
+            :src="item['cover']"
+            :style="{ width: '350px', height: '180px' }"
+            overlay-trigger="hover">
 
         </t-image>
         <template #actions>
           <!--        <t-dropdown :options="options" :min-column-width="112" @click="clickHandler">-->
           <!--          <div class="tdesign-demo-dropdown-trigger">-->
-          <a v-if="item['type'] >= 0 && item['type'] <= 2">
+          <a v-if="item['type']>=0&&item['type']<=2">
             <t-tag theme="success" variant="light" style="margin-right: 20px">{{ EVENT_TYPE_MAP[item['type']] }}</t-tag>
           </a>
-          <a v-if="item['type'] >= 3 && item['type'] <= 5">
+          <a v-if="item['type']>=3&&item['type']<=5">
             <t-tag theme="primary" variant="light" style="margin-right: 20px">{{ EVENT_TYPE_MAP[item['type']] }}</t-tag>
           </a>
-          <a v-if="item['type'] >= 6 && item['type'] <= 8">
+          <a v-if="item['type']>=6&&item['type']<=8">
             <t-tag theme="danger" variant="light" style="margin-right: 20px">{{ EVENT_TYPE_MAP[item['type']] }}</t-tag>
           </a>
-          <a v-if="item['type'] >= 9 && item['type'] <= 12">
+          <a v-if="item['type']>=9&&item['type']<=12">
             <t-tag variant="light" style="margin-right: 20px">{{ EVENT_TYPE_MAP[item['type']] }}</t-tag>
           </a>
 
-          <a v-if="item['status'] === 0">
+          <a v-if="item['status']===0">
             <t-tag theme="primary" variant="light" style="margin-right: 20px">审核中</t-tag>
           </a>
-          <a v-if="item['status'] === 1">
+          <a v-if="item['status']===1">
             <t-tag theme="success" variant="light" style="margin-right: 20px">审核通过</t-tag>
           </a>
-          <a v-if="item['status'] === 2">
+          <a v-if="item['status']===2">
             <t-tag theme="danger" variant="light" style="margin-right: 20px">审核未通过</t-tag>
           </a>
           <!--            <t-button variant="text" shape="square">-->
@@ -47,31 +53,47 @@
           <!--        </t-dropdown>-->
         </template>
         <template #footer>
-          <t-row :align="'middle'" justify="center" style="gap: 24px;">
-            <t-col flex="auto" style="display: inline-flex; justify-content: center;">
-              <t-tooltip content="通知">
-                <t-button variant="text" shape="square" @click.stop="publicNotic(item['id'])">
-                  <t-icon name="send" />
-                </t-button>
-              </t-tooltip>
-            </t-col>
+          <div v-if="item['status']===2">
+            <t-row :align="'middle'" justify="center">
 
-            <t-col flex="auto" style="display: inline-flex; justify-content: center">
-              <t-tooltip content="评论">
-                <t-button variant="text" shape="square" @click.stop="clickComment(item['id'])">
-                  <chat-icon />
-                </t-button>
-              </t-tooltip>
-            </t-col>
+              <t-col style="justify-content: center">
+                <t-tooltip content="修改活动">
+                  <t-button variant="text" shape="square" @click.stop="fixEvent(item['id'])">
+                    <tools-icon/>
+                  </t-button>
+                </t-tooltip>
+              </t-col>
+            </t-row>
+          </div>
 
-            <t-col flex="auto" style="display: inline-flex; justify-content: center">
-              <t-tooltip content="分享活动">
-                <t-button variant="text" shape="square" @click.stop="clickShare(item['id'], item['name'])">
-                  <share-icon />
-                </t-button>
-              </t-tooltip>
-            </t-col>
-          </t-row>
+          <div v-else>
+            <t-row :align="'middle'" justify="center" style="gap: 24px;">
+              <t-col flex="auto" style="display: inline-flex; justify-content: center;">
+                <t-tooltip content="通知">
+                  <t-button variant="text" shape="square"
+                            @click="()=>{visibleNotice=true; fetchSessionInformation(item['id']);}">
+                    <t-icon name="send"/>
+                  </t-button>
+                </t-tooltip>
+              </t-col>
+
+              <t-col flex="auto" style="display: inline-flex; justify-content: center">
+                <t-tooltip content="评论">
+                  <t-button variant="text" shape="square" @click.stop="clickComment(item['id'])">
+                    <chat-icon/>
+                  </t-button>
+                </t-tooltip>
+              </t-col>
+
+              <t-col flex="auto" style="display: inline-flex; justify-content: center">
+                <t-tooltip content="分享活动">
+                  <t-button variant="text" shape="square" @click.stop="clickShare(item['id'],item['name'])">
+                    <share-icon/>
+                  </t-button>
+                </t-tooltip>
+              </t-col>
+            </t-row>
+          </div>
         </template>
       </t-card>
 
@@ -109,20 +131,26 @@
       </t-dialog>
 
 
-    </div>
-    <!--  <t-popup content="返回上一页">-->
-    <!--    <t-button shape="circle" theme="primary" size="large" style="position: fixed;right: 30px;bottom: 40px"-->
-    <!--              @click="router.push('/user');">-->
-    <!--      <template #icon>-->
-    <!--        <rollback-icon/>-->
-    <!--      </template>-->
-
-    <!--    </t-button>-->
-    <!--  </t-popup>-->
   </div>
-  <t-dialog v-model:visible="visible" header="评论" body="自定义底部按钮，直接传入文字" :top="'50px'" :confirm-btn="null"
-    :cancel-btn="null">
-    <a v-if="visible === true">
+<!--  <t-popup content="返回上一页">-->
+<!--    <t-button shape="circle" theme="primary" size="large" style="position: fixed;right: 30px;bottom: 40px"-->
+<!--              @click="router.push('/user');">-->
+<!--      <template #icon>-->
+<!--        <rollback-icon/>-->
+<!--      </template>-->
+
+<!--    </t-button>-->
+<!--  </t-popup>-->
+  </div>
+  <t-dialog
+      v-model:visible="visible"
+      header="评论"
+      body="自定义底部按钮，直接传入文字"
+      :top="'50px'"
+      :confirm-btn="null"
+      :cancel-btn="null"
+  >
+    <a v-if="visible===true">
       <CommentPage></CommentPage>
     </a>
 
@@ -136,9 +164,9 @@ import { MessagePlugin } from 'tdesign-vue-next';
 import axios from "axios";
 import { computed, defineComponent, getCurrentInstance, inject, ref, watch, reactive, onMounted } from "vue";
 import router from "@/routers/index.js";
-import { ENTITY_TYPE, EVENT_TYPE_MAP } from "@/constants/index.js";
+import {ENTITY_TYPE, EVENT_TYPE_MAP} from "@/constants/index.js";
 import CommentPage from "@/components/event/CommentPage.vue";
-import { fileServerAxios } from "@/main.js";
+import {fileServerAxios} from "@/main.js";
 import { sessionInformation } from '@/components/book/Steps.vue';
 
 const cover = 'https://tdesign.gtimg.com/site/source/card-demo.png';
@@ -222,35 +250,35 @@ axios.get(`/event/getMyPost/${publisherId}`, {
       })
       // favColor.value[i] = isFavorite.value;
 
-      // alert(id)
+        // alert(id)
 
-      axios.post(`/postAttachmentRelation/getAttachment`, {
-        "entity_type": ENTITY_TYPE.EVENT,
-        "entity_id": id,
-        "attachment_type": 0,
-      }, {
-        params: {},
-        headers: {
-          token: sessionStorage.getItem('token')
-        }
-      })
-        .then((response) => {
-          attachToken.value = response.data.data['filePath']
-          // alert(JSON.stringify(response.data.data))
-          let attachToken1 = attachToken.value
-          // alert(attachToken1)
-          // 47.107.113.54:25572 文件服务器地址
-          fileServerAxios.get(`/file/download`, {
-            params: {},
-            headers: {
-              token: attachToken1
-            },
-            responseType: 'blob'
-          })
-            .then((response) => {//
-              // alert(JSON.stringify(response.data))
-              // 将图片 URL 赋值给 cover 变量
-              const blob = new Blob([response.data], { type: 'application/octet-stream' });
+        axios.post(`/postAttachmentRelation/getAttachment`, {
+          "entity_type": ENTITY_TYPE.EVENT,
+          "entity_id": id,
+          "attachment_type": 0,
+        }, {
+          params: {},
+          headers: {
+            token: sessionStorage.getItem('token')
+          }
+        })
+            .then((response) => {
+              attachToken.value = response.data.data['filePath']
+              // alert(JSON.stringify(response.data.data))
+              let attachToken1 = attachToken.value
+              // alert(attachToken1)
+              // 47.107.113.54:25572 文件服务器地址
+              fileServerAxios.get(`/file/download`, {
+                params: {},
+                headers: {
+                  token: attachToken1
+                },
+                responseType: 'blob'
+              })
+                  .then((response) => {//
+                    // alert(JSON.stringify(response.data))
+                    // 将图片 URL 赋值给 cover 变量
+                    const blob = new Blob([response.data], {type: 'application/octet-stream'});
 
               // 创建一个 Blob 对象的 URL
               const imageUrl = URL.createObjectURL(blob);
@@ -259,6 +287,16 @@ axios.get(`/event/getMyPost/${publisherId}`, {
               // 将图片 URL 赋值给 cover 变量
               // cover.value = imageUrl;
 
+                  })
+                  .catch((error) => {
+                    if (error.response) {
+                      // 请求已发出，但服务器响应的状态码不在 2xx 范围内
+                      // MessagePlugin.warning(error.response.data.msg);
+                    } else {
+                      // 一些错误是在设置请求的时候触发
+                      // MessagePlugin.warning(error.message);
+                    }
+                  });
             })
             .catch((error) => {
               if (error.response) {
@@ -269,58 +307,9 @@ axios.get(`/event/getMyPost/${publisherId}`, {
                 // MessagePlugin.warning(error.message);
               }
             });
-        })
-        .catch((error) => {
-          if (error.response) {
-            // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-            // MessagePlugin.warning(error.response.data.msg);
-          } else {
-            // 一些错误是在设置请求的时候触发
-            // MessagePlugin.warning(error.message);
-          }
-        });
-      // events.value[i].imageUrl =
-      // alert(id)
-    }
-
-  })
-  .catch((error) => {
-    if (error.response) {
-      // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-      MessagePlugin.warning(error.response.data.msg);
-    } else {
-      // 一些错误是在设置请求的时候触发
-      MessagePlugin.warning(error.message);
-    }
-  });
-
-const clickComment = (eventId) => {
-  sessionStorage.setItem('eventId', eventId)
-  visible.value = true
-}
-const clickShare = (eventId, eventName) => {
-  sessionStorage.setItem('eventId', eventId)
-  sessionStorage.setItem('MomentName', eventName)
-  router.push('/newMoment');
-}
-
-
-
-const clickEvent = (eventId) => {
-  MessagePlugin.success(`${sessionStorage.getItem('uid')} 选中【${eventId}】`);
-  sessionStorage.setItem('eventId', eventId)
-  router.push('/event');
-  // router.push('/event');
-  axios.post(`/history/add`, {
-    "eventId": eventId,
-    "userId": sessionStorage.getItem('uid')
-  }, {
-    params: {},
-    headers: {
-      token: sessionStorage.getItem('token')
-    }
-  })
-    .then((response) => {
+        // events.value[i].imageUrl =
+        // alert(id)
+      }
 
     })
     .catch((error) => {
@@ -332,6 +321,50 @@ const clickEvent = (eventId) => {
         MessagePlugin.warning(error.message);
       }
     });
+
+const clickComment = (eventId) => {
+  sessionStorage.setItem('eventId', eventId)
+  visible.value = true
+}
+const fixEvent = (eventId) => {
+  sessionStorage.setItem('eventId', eventId)
+  router.push('/fixEvent')
+}
+const clickShare = (eventId, eventName) => {
+  sessionStorage.setItem('eventId', eventId)
+  sessionStorage.setItem('MomentName', eventName)
+  router.push('/newMoment');
+}
+
+
+const clickEvent = (eventId, status) => {
+  if (status !== 2) {//除了审核未通过
+    MessagePlugin.success(`${sessionStorage.getItem('uid')} 选中【${eventId}】`);
+    sessionStorage.setItem('eventId', eventId)
+    router.push('/event');
+    // router.push('/event');
+    axios.post(`/history/add`, {
+      "eventId": eventId,
+      "userId": sessionStorage.getItem('uid')
+    }, {
+      params: {},
+      headers: {
+        token: sessionStorage.getItem('token')
+      }
+    })
+        .then((response) => {
+
+        })
+        .catch((error) => {
+          if (error.response) {
+            // 请求已发出，但服务器响应的状态码不在 2xx 范围内
+            MessagePlugin.warning(error.response.data.msg);
+          } else {
+            // 一些错误是在设置请求的时候触发
+            MessagePlugin.warning(error.message);
+          }
+        });
+  }
 };
 // const eventType = inject('eventType')
 const eventType = ref(sessionStorage.getItem('eventType'))
@@ -360,13 +393,13 @@ function getSearchNew(message) {
 defineExpose({ getSearchNew });
 
 const FORM_RULES = ref({
-  title: [{ required: true, message: '标题不可为空' }],
+  title: [{required: true, message: '标题不可为空'}],
   content: [{
     required: true,
     message: '内容不可为空',
   }],
   selectSection: [
-    { required: true, message: '场次不可为空' }
+    {required: true, message: '场次不可为空'}
   ]
 });
 
@@ -398,11 +431,10 @@ const sendNotice = ({ validateResult, firstError }) => {
       MessagePlugin.info("已发送");
       visibleNotice.value = false;
       loadingNotice.value = false;
-    }).catch(() => { 
+    }).catch(() => {
       loadingNotice.value = false; })
   } else {
     console.log('错误: ', firstError, validateResult);
-    console.log(selectSection)
     MessagePlugin.warning(firstError);
   }
 }
