@@ -56,7 +56,7 @@
         <t-tab-panel value="about" label="活动细节"></t-tab-panel>
         <t-tab-panel value="price" label="活动票价"></t-tab-panel>
         <t-tab-panel value="policy" label="退换票规则"></t-tab-panel>
-        <t-tab-panel value="gallery" label="动态"></t-tab-panel>
+        <t-tab-panel value="gallery" label="相关动态"></t-tab-panel>
         <t-tab-panel value="reviews" label="评论"></t-tab-panel>
       </t-tabs>
     </el-affix>
@@ -224,7 +224,7 @@
     <div :id="`${path}#gallery`" style="height: 60px;"></div>
     <t-space style="display: flex; width: 100%; margin-left: 24px;">
       <div>
-        <div class="title">动态</div>
+        <div class="title">相关动态</div>
         <div class="line"></div>
       </div>
     </t-space>

@@ -1,6 +1,6 @@
-create database if not exists events_center;
+create database if not exists events_center_pre;
 
-use events_center;
+use events_center_pre;
 
 create table if not exists user
 (
@@ -8,7 +8,7 @@ create table if not exists user
     name                      varchar(50) not null,
     type                      int         not null,
     two_factor_authentication boolean     not null,
-    password                  varchar(50) not null,
+    password                  varchar(150) not null,
     email                     varchar(50) not null,
     phone_number              varchar(20),
     department                varchar(50) not null,
@@ -169,4 +169,11 @@ create table user_favorite_type
 (
     user_id VARCHAR(8) NOT NULL ,
     event_type INT NOT NULL
+);
+create table user_interaction
+(
+    user_id     varchar(8) not null,
+    event_id    int        not null,
+    update_type int        null,
+    rating      int        null
 );
