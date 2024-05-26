@@ -69,7 +69,7 @@
         <t-space :size="30">
           <t-image :src="avatarList[formData.avatar]" v-model="formData.avatar"
             :style="{ width: '120px', height: '120px' }" />
-          <t-button @click="() => visibleAvator = true">修改头像</t-button>
+          <t-button @click="() => visibleAvator = true">修改头像{{ formData.avatar }}</t-button>
         </t-space>
         <!-- <t-upload v-model="formData.avatar"
                   action="https://service-bv448zsw-1257786608.gz.apigw.tencentcs.com/api/upload-demo" theme="image"
@@ -163,10 +163,8 @@ const onChange = (checkedValues) => {
 };
 
 const changeFormAvatar = () => {
-  if (tempAvatar.value !== 0) {
-    formData.avatar = tempAvatar.value;
-    tempAvatar.value = 0;
-  }
+  formData.avatar = tempAvatar.value;
+  console.log(formData.avatar)
   visibleAvator.value = false;
 }
 
@@ -256,7 +254,7 @@ const submitInfo = () => {
     "name": formData.name,
     "phoneNumber": formData.phoneNumber,
     "department": formData.department,
-    "iconId": formData.avatar+1,//跨过注销头像
+    "iconId": Number(formData.avatar) + 1,//跨过注销头像
   }, {
     headers: {
       token: sessionStorage.getItem('token'),
@@ -274,7 +272,6 @@ const submitInfo = () => {
       .then(() => {
         MessagePlugin.success('提交成功');
         temp.value = formData.favTypes.map(type => EVENT_TYPE_MAP[type]).join(', ')
-        console.log(formData.avatar)
         editYes.value = false;
         loadingg.value = false;
       })
