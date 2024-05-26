@@ -52,7 +52,7 @@ public class UserBlogInteractionServiceImplTest {
 
         when(userBlogInteractionMapper.selectList(any())).thenReturn(List.of(userBlogInteraction));
 
-        JSONObject result = userBlogInteractionService.getBlog(commentId);
+        JSONObject result = userBlogInteractionService.getBlog(commentId, "1");
 
         assertEquals(UPVOTE, result.get("voteType"));
     }

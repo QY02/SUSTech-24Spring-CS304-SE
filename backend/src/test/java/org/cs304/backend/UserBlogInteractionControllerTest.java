@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -25,10 +26,13 @@ public class UserBlogInteractionControllerTest {
 
     MockHttpServletResponse response;
 
+    MockHttpServletRequest request;
+
     @BeforeEach
     public void setup() {
         MockitoAnnotations.openMocks(this);
         response = new MockHttpServletResponse();
+        request = new MockHttpServletRequest();
     }
 
     @Test
@@ -37,9 +41,9 @@ public class UserBlogInteractionControllerTest {
         JSONObject blog = new JSONObject();
         blog.put("commentId", 1);
 
-        when(userBlogInteractionService.getBlog(1)).thenReturn(blog);
+        when(userBlogInteractionService.getBlog(1,"1")).thenReturn(blog);
 
-        Result result = userBlogInteractionController.getBlog(response, 1);
+        Result result = userBlogInteractionController.getBlog(request,response, 1);
 
         assertEquals("200", result.getCode());
     }
