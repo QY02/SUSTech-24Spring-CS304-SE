@@ -200,7 +200,7 @@ const goToPay = (index) => {
   // alert(typeof records.value)
   router.push('/book');
   console.log(unpaidRecords.value[index].id)
-  let targetUrl = `http://localhost:8083/orderRecord/pay/${unpaidRecords.value[index].id}?token=${sessionStorage.getItem('token')}`;
+  let targetUrl = axios.defaults.baseURL + `/orderRecord/pay/${orderId.value}?token=${sessionStorage.getItem('token')}`;
     // 将当前页面跳转到目标 URL
   window.location.href = targetUrl;
 };

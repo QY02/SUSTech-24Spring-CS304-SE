@@ -69,7 +69,7 @@
         <t-space :size="30">
           <t-image :src="avatarList[formData.avatar]" v-model="formData.avatar"
             :style="{ width: '120px', height: '120px' }" />
-          <t-button @click="() => visibleAvator = true">修改头像{{ formData.avatar }}</t-button>
+          <t-button @click="() => visibleAvator = true">修改头像</t-button>
         </t-space>
         <!-- <t-upload v-model="formData.avatar"
                   action="https://service-bv448zsw-1257786608.gz.apigw.tencentcs.com/api/upload-demo" theme="image"
@@ -139,7 +139,6 @@ const avatarList = ['https://avatars.githubusercontent.com/pengyyyyy',
   'https://avatars.githubusercontent.com/u/7361184?v=4',
   'https://avatars.githubusercontent.com/pattybaby110',
   'https://avatars.githubusercontent.com/chaishi']
-
 
 
 const visibleEmail = ref(false)
