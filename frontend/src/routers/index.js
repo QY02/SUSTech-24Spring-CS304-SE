@@ -12,14 +12,15 @@ const routes = [
         component: () => import('@/components/login/registerForm.vue')
     },
     {
+        name: 'OuterHome',
+        path: '/',
+        component: () => import('@/components/OuterHome.vue')
+    },
+    {
         path: '/',
         component: () => import('@/layouts/MainLayout.vue'),
         children: [
-            {
-                name: 'OuterHome',
-                path: '/',
-                component: () => import('@/components/OuterHome.vue')
-            },
+
 
             {
                 name: 'home',
