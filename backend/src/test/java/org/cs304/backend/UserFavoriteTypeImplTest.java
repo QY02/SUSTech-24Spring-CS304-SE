@@ -1,38 +1,24 @@
 package org.cs304.backend;
 
 import com.alibaba.fastjson2.JSONArray;
-import com.alibaba.fastjson2.JSONObject;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import org.cs304.backend.entity.Event;
-import org.cs304.backend.entity.History;
 import org.cs304.backend.entity.UserFavoriteType;
 import org.cs304.backend.mapper.EventMapper;
-import org.cs304.backend.mapper.HistoryMapper;
 import org.cs304.backend.mapper.UserFavoriteTypeMapper;
-import org.cs304.backend.mapper.UserMapper;
-import org.cs304.backend.service.IAttachmentService;
 import org.cs304.backend.service.impl.UserFavoriteTypeServiceImpl;
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
-import org.cs304.backend.service.IEventSessionService;
-import org.cs304.backend.service.INotificationService;
-import org.cs304.backend.service.impl.EventServiceImpl;
-import org.cs304.backend.service.impl.HistoryServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.mockito.ArgumentCaptor;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 public class UserFavoriteTypeImplTest {
     @Mock
@@ -69,6 +55,7 @@ public class UserFavoriteTypeImplTest {
         assertTrue(result.contains(1));
         assertTrue(result.contains(2));
     }
+
     @Test
     @DisplayName("Successfully changes user's favorite types")
     public void testChangeType() {

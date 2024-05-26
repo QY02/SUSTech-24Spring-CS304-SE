@@ -6,20 +6,11 @@ import org.cs304.backend.entity.Event;
 import org.cs304.backend.entity.History;
 import org.cs304.backend.mapper.EventMapper;
 import org.cs304.backend.mapper.HistoryMapper;
-import org.cs304.backend.service.IAttachmentService;
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
 import org.cs304.backend.service.IEventSessionService;
-import org.cs304.backend.service.INotificationService;
-import org.cs304.backend.service.impl.EventServiceImpl;
 import org.cs304.backend.service.impl.HistoryServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -29,7 +20,11 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.locks.Lock;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 public class HistoryServiceImplTest {
     @Mock

@@ -1,23 +1,13 @@
 package org.cs304.backend;
 
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson2.JSON;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import org.cs304.backend.controller.AttachmentController;
 import org.cs304.backend.controller.EntityAttachmentRelationController;
-import org.cs304.backend.controller.EventController;
-import org.cs304.backend.controller.AdminController;
 import org.cs304.backend.entity.Attachment;
-import org.cs304.backend.entity.Comment;
-import org.cs304.backend.entity.Event;
 import org.cs304.backend.mapper.EventMapper;
 import org.cs304.backend.service.IEntityAttachmentRelationService;
 import org.cs304.backend.service.IEventService;
 import org.cs304.backend.utils.Result;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -25,10 +15,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-import java.util.ArrayList;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 

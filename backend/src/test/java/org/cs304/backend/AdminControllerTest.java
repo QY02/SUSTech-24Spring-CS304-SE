@@ -3,8 +3,8 @@ package org.cs304.backend;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import org.cs304.backend.constant.constant_EventStatus;
 import org.cs304.backend.constant.constant_CommentType;
+import org.cs304.backend.constant.constant_EventStatus;
 import org.cs304.backend.controller.AdminController;
 import org.cs304.backend.entity.Comment;
 import org.cs304.backend.entity.Event;
@@ -101,21 +101,21 @@ public class AdminControllerTest {
     }
 
     @Test
-@DisplayName("Should return homepage info when user is admin")
-public void shouldReturnHomepageInfoWhenUserIsAdmin() {
-    request.setAttribute("loginUserType", 0);
-    when(eventMapper.selectCount(null)).thenReturn(10L);
-    when(eventMapper.selectCount(new QueryWrapper<Event>().eq("status", constant_EventStatus.AUDITING))).thenReturn(2L);
-    when(userMapper.selectCount(any())).thenReturn(5L);
+    @DisplayName("Should return homepage info when user is admin")
+    public void shouldReturnHomepageInfoWhenUserIsAdmin() {
+        request.setAttribute("loginUserType", 0);
+        when(eventMapper.selectCount(null)).thenReturn(10L);
+        when(eventMapper.selectCount(new QueryWrapper<Event>().eq("status", constant_EventStatus.AUDITING))).thenReturn(2L);
+        when(userMapper.selectCount(any())).thenReturn(5L);
         when(commentMapper.selectCount(new QueryWrapper<Comment>().eq("type", constant_CommentType.BLOG))).thenReturn(3L);
-    when(orderRecordMapper.selectCount(null)).thenReturn(7L);
+        when(orderRecordMapper.selectCount(null)).thenReturn(7L);
 
-    Result result = adminController.getHomepage(request, response);
+        Result result = adminController.getHomepage(request, response);
 
-    assertEquals("200", result.getCode());
-    JSONObject data = (JSONObject) result.getData();
-    assertEquals(10, data.getInteger("event"));
-    assertEquals(5, data.getInteger("user"));
-    assertEquals(7, data.getInteger("order"));
-}
+        assertEquals("200", result.getCode());
+        JSONObject data = (JSONObject) result.getData();
+        assertEquals(10, data.getInteger("event"));
+        assertEquals(5, data.getInteger("user"));
+        assertEquals(7, data.getInteger("order"));
+    }
 }

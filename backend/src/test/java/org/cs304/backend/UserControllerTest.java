@@ -2,11 +2,9 @@ package org.cs304.backend;
 
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import jakarta.servlet.http.HttpServletResponse;
+import org.cs304.backend.constant.constant_User;
 import org.cs304.backend.controller.UserController;
 import org.cs304.backend.entity.User;
-import org.cs304.backend.entity.Favorite;
 import org.cs304.backend.mapper.UserMapper;
 import org.cs304.backend.service.IUserFavoriteTypeService;
 import org.cs304.backend.service.IUserService;
@@ -19,27 +17,18 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.cs304.backend.constant.constant_User;
 import org.springframework.test.web.servlet.MockMvc;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 public class UserControllerTest {
     @InjectMocks
@@ -508,6 +497,7 @@ public class UserControllerTest {
         // 验证是否成功发送密码重置邮件
         assertEquals("200", result.getCode());
     }
+
     @Test
     @DisplayName("成功验证忘记密码邮件")
     public void testForgetPassEmailVerify_Success() {
@@ -577,6 +567,7 @@ public class UserControllerTest {
         // 验证是否成功删除用户
         assertEquals("200", result.getCode());
     }
+
     @Test
     @DisplayName("成功获取所有用户")
     public void testListAll_Success() {

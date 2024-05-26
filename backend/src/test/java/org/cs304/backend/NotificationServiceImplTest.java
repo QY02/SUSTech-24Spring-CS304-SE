@@ -7,7 +7,6 @@ package org.cs304.backend;
  **/
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.cs304.backend.constant.constant_NotificationStatus;
 import org.cs304.backend.entity.Event;
 import org.cs304.backend.entity.EventSession;

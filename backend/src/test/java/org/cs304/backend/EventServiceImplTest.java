@@ -8,8 +8,6 @@ package org.cs304.backend;
 
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.cs304.backend.entity.*;
 import org.cs304.backend.exception.ServiceException;
@@ -288,6 +286,7 @@ public class EventServiceImplTest {
         assertFalse(result.isEmpty());
         assertEquals(2, result.size()); // Assuming listByIds merges without duplicates
     }
+
     @Test
     @DisplayName("Should return an empty JSONArray if no events are available")
     public void testGetHotValue_NoEvents() {
@@ -297,6 +296,7 @@ public class EventServiceImplTest {
 
         assertTrue(result.isEmpty());
     }
+
     @Test
     @DisplayName("Should calculate and sort events by heat correctly")
     public void testGetHotValue_WithEvents() {
@@ -338,6 +338,7 @@ public class EventServiceImplTest {
         assertEquals(3, result.getJSONObject(0).get("id"));  // Assuming JSONObjects include an 'eventId'
         assertTrue(result.getJSONObject(0).getDouble("heat") > result.getJSONObject(1).getDouble("heat"));
     }
+
     @Test
     @DisplayName("Should return a list of events for a valid publisher ID")
     public void testGetEventByPublisher_ValidId() {
@@ -354,6 +355,7 @@ public class EventServiceImplTest {
         assertEquals(2, events.size());
         verify(eventMapper).selectList(any());
     }
+
     @Test
     @DisplayName("Should return an empty list when no IDs are provided")
     public void testGetBatchByIds_EmptyList() {

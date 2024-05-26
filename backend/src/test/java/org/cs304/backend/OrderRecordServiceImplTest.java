@@ -1,13 +1,13 @@
 package org.cs304.backend;
 
-import com.alibaba.fastjson2.JSONArray;
-import com.alibaba.fastjson2.JSONObject;
-import org.cs304.backend.constant.constant_User;
-import org.cs304.backend.entity.*;
+import org.cs304.backend.entity.Event;
+import org.cs304.backend.entity.EventSession;
+import org.cs304.backend.entity.OrderRecord;
 import org.cs304.backend.exception.ServiceException;
-import org.cs304.backend.mapper.*;
+import org.cs304.backend.mapper.EventMapper;
+import org.cs304.backend.mapper.EventSessionMapper;
+import org.cs304.backend.mapper.OrderRecordMapper;
 import org.cs304.backend.service.impl.OrderRecordServiceImpl;
-import org.cs304.backend.service.impl.SeatMapServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

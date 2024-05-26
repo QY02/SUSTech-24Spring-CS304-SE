@@ -6,7 +6,6 @@ import org.cs304.backend.entity.ChatMessage;
 import org.cs304.backend.entity.User;
 import org.cs304.backend.mapper.ChatMessageMapper;
 import org.cs304.backend.mapper.UserMapper;
-import org.cs304.backend.service.IChatMessageService;
 import org.cs304.backend.service.IUserService;
 import org.cs304.backend.utils.Result;
 import org.junit.jupiter.api.BeforeEach;
