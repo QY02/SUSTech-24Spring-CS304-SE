@@ -28,7 +28,7 @@
               :status="apiTips ? 'error' : ''"
               :onChange="apiValidate"
           />
-          <t-button @click="initChat">开启新的对话</t-button>
+          <t-button @click="resetChat">开启新的对话</t-button>
           <t-tooltip content="下载聊天记录">
             <t-button shape="circle" theme="primary" @click="downloadTxtFile">
               <template #icon> <file-download-icon /></template>
@@ -162,6 +162,12 @@ const initChat = async () => {
   }
 };
 
+const resetChat = () => {
+  loading.value = false;
+  content.value = '<br>';
+  messages.value = [];
+  disableSend.value = false;
+};
 
 const send = () => {
   if (!chatModel.value) {

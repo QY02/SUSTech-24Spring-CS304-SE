@@ -1,6 +1,7 @@
 package org.cs304.backend.controller;
 
 
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,7 +33,7 @@ import java.util.stream.Collectors;
  * }
  * 的功能，我在生成的代码基础上使用@Value从配置文件里读取了安全代码并将安全代码拼接到请求参数中，同时修了很多bug
  */
-
+@Hidden
 @RestController
 public class AMapProxyController {
 
