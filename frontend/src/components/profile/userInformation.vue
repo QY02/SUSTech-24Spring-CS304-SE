@@ -179,8 +179,8 @@ axios.post(`/user/get/${sessionStorage.getItem('uid')}`, {}, {
   .then((response) => {
     info.value = response.data.data;
     console.log(info.value.iconId);
-    avatar.value = avatarList[info.value.iconId];
-    formData.avatar = info.value.iconId;
+    avatar.value = avatarList[info.value.iconId-1];//抹去注销头像
+    formData.avatar = info.value.iconId-1;//抹去注销头像
     formData.name = info.value.name;
     formData.email = info.value.email;
     formData.phoneNumber = info.value.phoneNumber;
@@ -256,7 +256,7 @@ const submitInfo = () => {
     "name": formData.name,
     "phoneNumber": formData.phoneNumber,
     "department": formData.department,
-    "iconId": formData.avatar,
+    "iconId": formData.avatar+1,//跨过注销头像
   }, {
     headers: {
       token: sessionStorage.getItem('token'),

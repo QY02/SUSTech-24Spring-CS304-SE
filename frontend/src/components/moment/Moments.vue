@@ -186,7 +186,9 @@ import {MessagePlugin} from "tdesign-vue-next";
 
 const user = sessionStorage.getItem("uid") ? sessionStorage.getItem("uid") : '';//当前用户
 
-const avatarList = ['https://avatars.githubusercontent.com/pengyyyyy',
+const avatarList = [
+  'https://imgs.design006.com/Upload/test/Design006_20200905085032928.png',
+  'https://avatars.githubusercontent.com/pengyyyyy',
   'https://tdesign.gtimg.com/site/avatar.jpg',
   'https://avatars.githubusercontent.com/LeeJim',
   'https://avatars.githubusercontent.com/u/7361184?v=4',
