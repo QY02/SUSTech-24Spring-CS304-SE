@@ -40,7 +40,7 @@ const notify = () => {
 }
 // onUnmounted(() => notify())
 watch(currentStep, (newValue) => {
-  if (newValue === 3) {
+  if (newValue === 4) {
     notify()
   }
 })

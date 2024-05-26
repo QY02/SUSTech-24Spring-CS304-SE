@@ -4,14 +4,16 @@
     <t-descriptions column="1">
       <t-descriptions-item label="活动名称">{{ eventDetail.name }}</t-descriptions-item>
       <t-descriptions-item label="该场次报名时间">
-        {{ `${dateToString(sessionInformation[chosenSession].registrationStartTime)} - ${dateToString(sessionInformation[chosenSession].registrationEndTime)}` }}
+        {{ `${dateToString(sessionInformation[chosenSession].registrationStartTime)} -
+        ${dateToString(sessionInformation[chosenSession].registrationEndTime)}` }}
       </t-descriptions-item>
       <t-descriptions-item label="活动时间">
-        {{ `${dateToString(sessionInformation[chosenSession].startTime)} - ${dateToString(sessionInformation[chosenSession].startTime)}` }}
+        {{ `${dateToString(sessionInformation[chosenSession].startTime)} -
+        ${dateToString(sessionInformation[chosenSession].startTime)}` }}
       </t-descriptions-item>
       <t-descriptions-item label="活动场地">{{
-          sessionInformation[chosenSession].venue
-        }}
+        sessionInformation[chosenSession].venue
+      }}
       </t-descriptions-item>
       <t-descriptions-item label="座位">{{ bookingInformation.chosenSeat }}</t-descriptions-item>
       <t-descriptions-item label="价格">{{ bookingInformation.seatPrice }}</t-descriptions-item>
@@ -26,11 +28,11 @@
 
 </template>
 <script setup lang="ts">
-import axios, {AxiosRequestConfig} from 'axios';
-import {currentStep, submitData, toNextStep} from '@/components/book/Steps.vue';
-import {onMounted, onUnmounted, reactive, Ref, ref, watch} from "vue";
-import {sessionInformation, bookingInformation} from '@/components/book/Steps.vue';
-import {MessagePlugin, NotifyPlugin} from "tdesign-vue-next";
+import axios, { AxiosRequestConfig } from 'axios';
+import { currentStep, submitData, toNextStep } from '@/components/book/Steps.vue';
+import { onMounted, onUnmounted, reactive, Ref, ref, watch } from "vue";
+import { sessionInformation, bookingInformation } from '@/components/book/Steps.vue';
+import { MessagePlugin, NotifyPlugin } from "tdesign-vue-next";
 
 const dateToString = (date: Date) => {
   const dayNameArray = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
@@ -58,8 +60,9 @@ const getEventDetail = () => {
 getEventDetail();
 const result = ref(0);
 const orderId = ref(-1)
-const prePay = async () => {
-  loadingPay.value=true
+const prePay = () => {
+  loadingPay.value = true
+  console.log('startPay')
   axios.post("/orderRecord/prePay", {
     eventId: bookingInformation.eventId,
     eventSessionId: sessionInformation[bookingInformation.chosenSession].eventSessionId,
@@ -69,22 +72,24 @@ const prePay = async () => {
       nameEng: item.nameEng,
       value: item.value
     })))
-  }, {headers: {token: sessionStorage.getItem('token')}} as AxiosRequestConfig).then((response) => {
-    orderId.value = response.data.data;
-    MessagePlugin.success('提交支付信息成功');
-    // alert(orderId.value)
-    // 构建跳转的 URL
-    sessionStorage.setItem('pay',1)
-    let targetUrl = `http://localhost:8083/orderRecord/pay/${orderId.value}?token=${sessionStorage.getItem('token')}`;
-    loadingPay.value=false
-    // 将当前页面跳转到目标 URL
-    window.location.href = targetUrl;
-    // startPolling();
-    // currentStep.value++;
-  })
-      .catch(error => {
-        loadingPay.value=false;
-      })
+  }, { headers: { token: sessionStorage.getItem('token') } } )
+    .then((response) => {
+      orderId.value = response.data.data;
+      MessagePlugin.success('提交支付信息成功');
+      // alert(orderId.value)
+      // 构建跳转的 URL
+      sessionStorage.setItem('pay', 1)
+      let targetUrl = axios.defaults.baseURL + `/orderRecord/pay/${orderId.value}?token=${sessionStorage.getItem('token')}`;
+      loadingPay.value = false
+      // 将当前页面跳转到目标 URL
+      window.location.href = targetUrl;
+      // startPolling();
+      // currentStep.value++;
+    })
+    .catch((error) => {
+      loadingPay.value = false;
+    })
+    console.log('endpay')
 }
 
 const payResult = ref(0);
@@ -145,19 +150,19 @@ const checkUrl = () => {
       }).then((response) => {
         console.log('next')
         MessagePlugin.success('支付成功');
-        sessionStorage.setItem('pay',0)
-        currentStep.value=4;
+        sessionStorage.setItem('pay', 0)
+        currentStep.value = 4;
         window.location.href = 'http://localhost:5173/book';
       }).catch(() => {
       })
     }
   } else {
     console.log(currentStep.value == 3)
-    if (sessionStorage.getItem('pay')=='1' && !bookingInformation.chosenSeat && currentStep.value == 3) {
+    if (sessionStorage.getItem('pay') == '1' && !bookingInformation.chosenSeat && currentStep.value == 3) {
       currentStep.value += 2;
       sessionStorage.setItem('currentStep', currentStep.value);
     }
-    else if(currentStep.value == 3){
+    else if (currentStep.value == 3) {
       currentStep.value = 0;
       sessionStorage.setItem('currentStep', 0);
     }
@@ -230,10 +235,10 @@ onUnmounted(() => {
 
 const chosenSession = ref(0);
 watch(
-    () => bookingInformation.chosenSession,
-    (newSession, oldSession) => {
-      chosenSession.value = newSession
-    }
+  () => bookingInformation.chosenSession,
+  (newSession, oldSession) => {
+    chosenSession.value = newSession
+  }
 );
 
 </script>
