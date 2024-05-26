@@ -12,7 +12,7 @@
     <t-card
         v-for="(item,index) in curEvents"
         :key="index"
-        :title="item['name']" :subtitle="item.content.length > 20 ? item.content.substring(0, 18) + '...' : item.content" :style="{ width: '400px' }" hover-shadow
+        :title="item['name']" :subtitle="item.content.length > 18 ? item.content.substring(0, 18) + '...' : item.content" :style="{ width: '400px' }" hover-shadow
         @click="clickEvent(item['id'])">
       <template #actions>
         <!--        <t-dropdown :options="options" :min-column-width="112" @click="clickHandler">-->

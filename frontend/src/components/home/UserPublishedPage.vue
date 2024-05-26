@@ -13,7 +13,7 @@
       <t-card
           v-for="(item,index) in curEvents"
           :key="index"
-          :title="item['name']" :subtitle="item.content.length > 20 ? item.content.substring(0, 18) + '...' : item.content" :style="{ width: '400px' }" hover-shadow
+          :title="item['name']" :subtitle="item.content.length > 12 ? item.content.substring(0, 12) + '...' : item.content" :style="{ width: '400px' }" hover-shadow
           @click="clickEvent(item['id'],item['status'])">
         <t-image
             :src="item['cover']"
