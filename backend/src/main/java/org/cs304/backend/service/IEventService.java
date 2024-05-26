@@ -30,6 +30,8 @@ public interface IEventService extends IService<Event> {
 
     JSONObject updateEventFinish(JSONObject requestData);
 
+    void insertSessions(int id, JSONArray eventSessionData);
+
     List<EventSession> getEventSessionsByEventId(int userType, Integer eventId);
 
 //    Event getEventByEventId(int userType, Integer eventId);

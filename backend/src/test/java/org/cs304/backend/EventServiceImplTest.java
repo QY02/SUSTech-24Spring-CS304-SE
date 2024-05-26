@@ -9,6 +9,7 @@ package org.cs304.backend;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import org.cs304.backend.constant.constant_User;
 import org.cs304.backend.entity.*;
 import org.cs304.backend.exception.ServiceException;
 import org.cs304.backend.mapper.*;
@@ -23,6 +24,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -40,6 +42,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class EventServiceImplTest {
 
+    @Spy
     @InjectMocks
     private EventServiceImpl eventService;
 
@@ -117,9 +120,7 @@ public class EventServiceImplTest {
     @DisplayName("Should create event finish and return event ID")
     public void shouldCreateEventFinish() {
         JSONObject requestData = new JSONObject();
-        Event event = new Event();
-        event.setId(1);
-        requestData.put("id", event.getId());
+        requestData.put("name", "test");
 
         JSONArray sessionData = new JSONArray();
         JSONObject session1 = new JSONObject();
@@ -138,6 +139,7 @@ public class EventServiceImplTest {
             arg.setId(1);  // Set ID after insert
             return 1;
         });
+        doNothing().when(eventService).insertSessions(anyInt(), any(JSONArray.class));
 
         JSONObject result = eventService.createEventFinish(requestData);
         assertNotNull(result);
@@ -160,20 +162,43 @@ public class EventServiceImplTest {
     @Test
     @DisplayName("Should get event sessions by event ID")
     public void shouldGetEventSessionsByEventId() {
-        int userType = 1;
+        int userType = constant_User.USER;
         int eventId = 1;
+
+        Exception exception = assertThrows(ServiceException.class, () -> {
+            eventService.getEventSessionsByEventId(userType, null);
+        });
+        assertEquals("Invalid event id", exception.getMessage());
+
+        when(eventMapper.selectById(eventId)).thenReturn(null);
+
+        exception = assertThrows(ServiceException.class, () -> {
+            eventService.getEventSessionsByEventId(userType, 1);
+        });
+        assertEquals("Event not exist", exception.getMessage());
+
         Event event = new Event();
         event.setId(eventId);
         event.setStatus(1);
-        event.setVisible(true);
+        event.setVisible(false);
+        when(eventMapper.selectById(eventId)).thenReturn(event);
 
+        exception = assertThrows(ServiceException.class, () -> {
+            eventService.getEventSessionsByEventId(userType, 1);
+        });
+        assertEquals("Event not exist", exception.getMessage());
+
+        event = new Event();
+        event.setId(eventId);
+        event.setStatus(1);
+        event.setVisible(true);
         when(eventMapper.selectById(eventId)).thenReturn(event);
 
         List<EventSession> sessionList = new ArrayList<>();
         EventSession session = new EventSession();
         session.setEventId(eventId);
+        session.setVisible(true);
         sessionList.add(session);
-
         when(eventSessionMapper.selectList(any())).thenReturn(sessionList);
 
         List<EventSession> result = eventService.getEventSessionsByEventId(userType, eventId);

@@ -1,46 +1,35 @@
 package org.cs304.backend;
 
-import org.cs304.backend.controller.EntityAttachmentRelationController;
-import org.cs304.backend.entity.Attachment;
-import org.cs304.backend.entity.EntityAttachmentRelation;
-import org.cs304.backend.mapper.EntityAttachmentRelationMapper;
-import org.cs304.backend.service.IEntityAttachmentRelationService;
+import org.cs304.backend.service.impl.EntityAttachmentRelationServiceImpl;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.cs304.backend.entity.*;
+import org.cs304.backend.mapper.*;
+import org.cs304.backend.service.IAttachmentService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class EntityAttachmentRelationServiceImplTest {
-    @Mock
-    private IEntityAttachmentRelationService entityAttachmentRelationService;
-
     @InjectMocks
-    private EntityAttachmentRelationController entityAttachmentRelationController;
+    private EntityAttachmentRelationServiceImpl entityAttachmentRelationService;
+
+    @Mock
+    private IAttachmentService attachmentService;
 
     @Mock
     private EntityAttachmentRelationMapper entityAttachmentRelationMapper;
 
-
-    MockHttpServletRequest request;
-
-    MockHttpServletResponse response;
-
     @BeforeEach
     public void setup() {
         MockitoAnnotations.openMocks(this);
-//        ReflectionTestUtils.setField(entityAttachmentRelationService, "baseMapper", entityAttachmentRelationMapper);
-
     }
 
     @Test
@@ -63,18 +52,10 @@ public class EntityAttachmentRelationServiceImplTest {
         Attachment attachment = new Attachment();
         attachment.setId(1);
         attachment.setFilePath("TestAttachment");
-//        when(entityAttachmentRelationService.getById(anyInt())).thenReturn(attachment);
-        when(entityAttachmentRelationService.getById(anyInt())).thenAnswer(invocation -> {
-            Serializable id = invocation.getArgument(0);
-            return entityAttachmentRelationService.getById(id);
-        });
+        when(attachmentService.getById(anyInt(), anyInt())).thenReturn(attachment);
 
         // 执行被测试的方法
         Attachment result = entityAttachmentRelationService.getAttachment(userType, entity_type, entity_id, attachment_type);
-
-        assertNull(result);
-
+        assertNotNull(result);
     }
-
-
 }

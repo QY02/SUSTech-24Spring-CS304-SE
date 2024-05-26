@@ -230,7 +230,7 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
     }
 
 
-    private void insertSessions(int id, JSONArray eventSessionData) {
+    public void insertSessions(int id, JSONArray eventSessionData) {
         if (eventSessionData != null && !eventSessionData.isEmpty()) {
             int highestPrice = -1;
             int lowestPrice = -1;
