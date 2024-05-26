@@ -159,7 +159,15 @@
 
 <script setup>
 
-import { ThumbUpIcon, ChatIcon, ShareIcon, MoreIcon, RollbackIcon, ErrorCircleIcon } from 'tdesign-icons-vue-next';
+import {
+  ThumbUpIcon,
+  ChatIcon,
+  ShareIcon,
+  MoreIcon,
+  RollbackIcon,
+  ErrorCircleIcon,
+  ToolsIcon
+} from 'tdesign-icons-vue-next';
 import { MessagePlugin } from 'tdesign-vue-next';
 import axios from "axios";
 import { computed, defineComponent, getCurrentInstance, inject, ref, watch, reactive, onMounted } from "vue";
