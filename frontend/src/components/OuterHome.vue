@@ -24,8 +24,8 @@ const go_to_login = () => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100%;
-  width: 100%;
+  height: 100vh;
+  width: 100vw;
   background-image: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url("@/assets/outer-home-background.jpg");
   background-repeat: no-repeat;
   background-size: cover;
@@ -36,6 +36,7 @@ const go_to_login = () => {
   display: flex;
   flex-direction: column;
   align-items: center;
+  color: var(--td-text-color-primary);
 }
 
 .outer-home-title {

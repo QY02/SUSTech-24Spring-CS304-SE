@@ -61,7 +61,7 @@ export const NOTIFICATION_TYPES = {
     1: '审核通过',
     2: '审核未通过',
     3: '成功参加活动',
-    4: '活动修改',
+    4: '活动通知',
     5: '活动取消'
 };
 // 定义 ADDITIONAL_INFO 数组

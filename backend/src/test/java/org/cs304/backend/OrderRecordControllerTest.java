@@ -1,20 +1,11 @@
 package org.cs304.backend;
 
-import static org.mockito.Mockito.*;
-
-import org.cs304.backend.config.AliPayConfig;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.context.SpringBootTest;
 import com.alibaba.fastjson2.JSONObject;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import org.cs304.backend.config.AliPayConfig;
 import org.cs304.backend.controller.OrderRecordController;
 import org.cs304.backend.entity.Event;
 import org.cs304.backend.entity.EventSession;
+import org.cs304.backend.entity.OrderRecord;
 import org.cs304.backend.entity.Seat;
 import org.cs304.backend.mapper.EventMapper;
 import org.cs304.backend.mapper.EventSessionMapper;
@@ -22,20 +13,21 @@ import org.cs304.backend.mapper.OrderRecordMapper;
 import org.cs304.backend.mapper.SeatMapper;
 import org.cs304.backend.service.IEventService;
 import org.cs304.backend.service.IOrderRecordService;
-import org.cs304.backend.entity.OrderRecord;
 import org.cs304.backend.utils.Result;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Random;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class OrderRecordControllerTest {
 

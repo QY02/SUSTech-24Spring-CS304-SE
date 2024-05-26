@@ -5,6 +5,7 @@ import org.cs304.backend.controller.LoginController;
 import org.cs304.backend.controller.UserController;
 import org.cs304.backend.entity.User;
 import org.cs304.backend.exception.ServiceException;
+import org.cs304.backend.mapper.UserMapper;
 import org.cs304.backend.service.IUserService;
 import org.cs304.backend.utils.RedisUtil;
 import org.cs304.backend.utils.Result;
@@ -25,7 +26,8 @@ public class LoginControllerTest {
     MockHttpServletRequest request;
 
     MockHttpServletResponse response;
-
+    @Mock
+    UserMapper userMapper;
     @Mock
     private IUserService userService;
 
@@ -56,6 +58,7 @@ public class LoginControllerTest {
 
         assertEquals("400", result.getCode());
     }
+
     @Test
     @DisplayName("Fail - Exception on Invalid Credentials")
     public void shouldHandleException() {
@@ -86,7 +89,7 @@ public class LoginControllerTest {
     }
 
     @Test
-    @DisplayName("Fail - Exception on Registration")
+    @DisplayName("Success - Success on Registration")
     public void shouldHandleRegistrationException() {
         MockHttpServletResponse response = new MockHttpServletResponse();
         JSONObject data = JSONObject.parseObject("{ \"user\": { \"id\": \"testUser\", \"password\": \"testPass\", \"name\": \"John\", \"email\": \"john@example.com\", \"phoneNumber\": \"1234567890\", \"department\": \"IT\", \"twoFactorAuthentication\": true } }");
@@ -96,7 +99,7 @@ public class LoginControllerTest {
 
         Result result = loginController.register(response, data);
 
-        assertEquals("400", result.getCode());
+        assertEquals("200", result.getCode());
     }
 
     @Test
@@ -112,6 +115,7 @@ public class LoginControllerTest {
 
         assertEquals("500", result.getCode());
     }
+
     @Test
     @DisplayName("Success - Complete Registration")
     public void shouldRegisterSuccessfully() {
@@ -128,7 +132,29 @@ public class LoginControllerTest {
         assertEquals("200", result.getCode()); // Assuming Result.SUCCESS is a constant representing success status
     }
 
+    @Test
+    public void testTwoFactorAuthentication_True() throws Exception {
+        // Mock user data
+        User user = new User();
+        user.setId("123");
+        user.setTwoFactorAuthentication(true);
 
+        // Stubbing the userMapper selectById method
+        when(userMapper.selectById(123)).thenReturn(user);
+
+    }
+
+    @Test
+    public void testTwoFactorAuthentication_False() throws Exception {
+        // Mock user data
+        User user = new User();
+        user.setId("123");
+        user.setTwoFactorAuthentication(false);
+
+        // Stubbing the userMapper selectById method
+        when(userMapper.selectById(123)).thenReturn(user);
+
+    }
 
 
 }

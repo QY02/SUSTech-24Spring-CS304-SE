@@ -5,8 +5,8 @@ package org.cs304.backend;
  * @date 2024/5/23 22:58
  * @description
  **/
+
 import org.cs304.backend.service.impl.EmailService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -14,8 +14,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-
-import java.time.LocalDateTime;
 
 import static org.mockito.Mockito.*;
 

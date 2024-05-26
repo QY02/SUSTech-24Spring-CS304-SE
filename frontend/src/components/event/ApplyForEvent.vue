@@ -42,9 +42,9 @@
             >
             </t-upload>
           </t-form-item>
-          <t-form-item label="是否可见" name="visible_event">
-            <t-switch v-model="formData.visible" :label="['是', '否']"></t-switch>
-          </t-form-item>
+<!--          <t-form-item label="是否可见" name="visible_event">-->
+<!--            <t-switch v-model="formData.visible" :label="['是', '否']"></t-switch>-->
+<!--          </t-form-item>-->
           <t-form-item label="退换票规则" name="event_policy">
             <t-textarea v-model="formData.event_policy" placeholder="请简单描述项目退换票规则" clearable/>
           </t-form-item>

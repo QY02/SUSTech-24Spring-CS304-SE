@@ -149,54 +149,54 @@ public class UserController {
     /**
      * 批量新增用户
      */
-    @PostMapping("/add/batch")
-    @Operation(summary = "批量新增用户", description = """
-            ### 参数 ###
-            [
-              {
-                "id": "12110141",
-                "name": "张三",
-                "password": "123456
-                },
-                {
-                "id": "12110142",
-                "name": "李四",
-                "password": "123456
-                }
-            ]
-            ### 返回值 ###
-            无
-            ### 实现逻辑 ###
-            1. 批量新增用户
-            2. 返回成功信息
-            """)
-    public Result addBatch(HttpServletRequest request, HttpServletResponse response, @RequestBody List<User> users) {
-        try {
-            int userType = (int) request.getAttribute("loginUserType");
-            if (userType != constant_User.ADMIN) {
-                log.error("Only admin can alter");
-                return Result.error(response, "403", "Only admin can alter");
-            }
-            saveUser(users);
-            userService.saveBatch(users);
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            if (e instanceof DuplicateKeyException) {
-                if (e.getMessage().contains("User already exists")) {
-                    return Result.error(response, "400", e.getMessage());
-                }
-                return Result.error(response, "400", "User already exists");
-            } else {
-                return Result.error(response, "400", "System error");
-            }
-        }
-        for (User user : users) {
-            log.info("新增用户: " + user.getId());
-        }
-        return Result.success(response);
-    }
+//    @PostMapping("/add/batch")
+//    @Operation(summary = "批量新增用户", description = """
+//            ### 参数 ###
+//            [
+//              {
+//                "id": "12110141",
+//                "name": "张三",
+//                "password": "123456
+//                },
+//                {
+//                "id": "12110142",
+//                "name": "李四",
+//                "password": "123456
+//                }
+//            ]
+//            ### 返回值 ###
+//            无
+//            ### 实现逻辑 ###
+//            1. 批量新增用户
+//            2. 返回成功信息
+//            """)
+//    public Result addBatch(HttpServletRequest request, HttpServletResponse response, @RequestBody List<User> users) {
+//        try {
+//            int userType = (int) request.getAttribute("loginUserType");
+//            if (userType != constant_User.ADMIN) {
+//                log.error("Only admin can alter");
+//                return Result.error(response, "403", "Only admin can alter");
+//            }
+//            saveUser(users);
+//            userService.saveBatch(users);
+//        } catch (Exception e) {
+//            log.error(e.getMessage());
+//            if (e instanceof DuplicateKeyException) {
+//                if (e.getMessage().contains("User already exists")) {
+//                    return Result.error(response, "400", e.getMessage());
+//                }
+//                return Result.error(response, "400", "User already exists");
+//            } else {
+//                return Result.error(response, "400", "System error");
+//            }
+//        }
+//        for (User user : users) {
+//            log.info("新增用户: " + user.getId());
+//        }
+//        return Result.success(response);
+//    }
 
-    private void saveUser(@RequestBody List<User> users) {
+    public void saveUser(@RequestBody List<User> users) {
         users.forEach(user -> {
             if (user.getDepartment() == null) {
                 user.setDepartment("");
@@ -592,37 +592,37 @@ public class UserController {
     /**
      * 自行销户
      */
-    @PostMapping("/delete/self")
-    @Operation(summary = "自行销户", description = """
-            ### 参数 ###
-            {
-              "id": "12110141",
-                "password": "123456"
-            }
-            ### 返回值 ###
-            无
-            ### 实现逻辑 ###
-            1. 删除用户
-            2. 返回成功信息
-            3. 若密码错误，返回错误信息
-            """)
-    public Result deleteSelf(HttpServletRequest request, HttpServletResponse response, @RequestBody User user) {
-        if (!request.getAttribute("loginUserId").equals(user.getId())) {
-            log.error("You can only delete your own account");
-            return Result.error(response, "403", "You can only delete your own account");
-        }
-        if (userService.getOne(new QueryWrapper<User>().eq("id", user.getId()).eq("password", Encryption.encrypt(user.getPassword()))) == null) {
-            log.error("Password error");
-            return Result.error(response, "401", "Password error");
-        }
-        try {
-            userService.deleteUser(user.getId());
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            return Result.error(response, "400", "Delete user failed");
-        }
-        return Result.success(response);
-    }
+//    @PostMapping("/delete/self")
+//    @Operation(summary = "自行销户", description = """
+//            ### 参数 ###
+//            {
+//              "id": "12110141",
+//                "password": "123456"
+//            }
+//            ### 返回值 ###
+//            无
+//            ### 实现逻辑 ###
+//            1. 删除用户
+//            2. 返回成功信息
+//            3. 若密码错误，返回错误信息
+//            """)
+//    public Result deleteSelf(HttpServletRequest request, HttpServletResponse response, @RequestBody User user) {
+//        if (!request.getAttribute("loginUserId").equals(user.getId())) {
+//            log.error("You can only delete your own account");
+//            return Result.error(response, "403", "You can only delete your own account");
+//        }
+//        if (userService.getOne(new QueryWrapper<User>().eq("id", user.getId()).eq("password", Encryption.encrypt(user.getPassword()))) == null) {
+//            log.error("Password error");
+//            return Result.error(response, "401", "Password error");
+//        }
+//        try {
+//            userService.deleteUser(user.getId());
+//        } catch (Exception e) {
+//            log.error(e.getMessage());
+//            return Result.error(response, "400", "Delete user failed");
+//        }
+//        return Result.success(response);
+//    }
 
 
     /**

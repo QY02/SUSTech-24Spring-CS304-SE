@@ -8,9 +8,8 @@ package org.cs304.backend;
 
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import org.cs304.backend.constant.constant_User;
 import org.cs304.backend.entity.*;
 import org.cs304.backend.exception.ServiceException;
 import org.cs304.backend.mapper.*;
@@ -25,6 +24,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -42,6 +42,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class EventServiceImplTest {
 
+    @Spy
     @InjectMocks
     private EventServiceImpl eventService;
 
@@ -119,9 +120,7 @@ public class EventServiceImplTest {
     @DisplayName("Should create event finish and return event ID")
     public void shouldCreateEventFinish() {
         JSONObject requestData = new JSONObject();
-        Event event = new Event();
-        event.setId(1);
-        requestData.put("id", event.getId());
+        requestData.put("name", "test");
 
         JSONArray sessionData = new JSONArray();
         JSONObject session1 = new JSONObject();
@@ -140,6 +139,7 @@ public class EventServiceImplTest {
             arg.setId(1);  // Set ID after insert
             return 1;
         });
+        doNothing().when(eventService).insertSessions(anyInt(), any(JSONArray.class));
 
         JSONObject result = eventService.createEventFinish(requestData);
         assertNotNull(result);
@@ -162,20 +162,43 @@ public class EventServiceImplTest {
     @Test
     @DisplayName("Should get event sessions by event ID")
     public void shouldGetEventSessionsByEventId() {
-        int userType = 1;
+        int userType = constant_User.USER;
         int eventId = 1;
+
+        Exception exception = assertThrows(ServiceException.class, () -> {
+            eventService.getEventSessionsByEventId(userType, null);
+        });
+        assertEquals("Invalid event id", exception.getMessage());
+
+        when(eventMapper.selectById(eventId)).thenReturn(null);
+
+        exception = assertThrows(ServiceException.class, () -> {
+            eventService.getEventSessionsByEventId(userType, 1);
+        });
+        assertEquals("Event not exist", exception.getMessage());
+
         Event event = new Event();
         event.setId(eventId);
         event.setStatus(1);
-        event.setVisible(true);
+        event.setVisible(false);
+        when(eventMapper.selectById(eventId)).thenReturn(event);
 
+        exception = assertThrows(ServiceException.class, () -> {
+            eventService.getEventSessionsByEventId(userType, 1);
+        });
+        assertEquals("Event not exist", exception.getMessage());
+
+        event = new Event();
+        event.setId(eventId);
+        event.setStatus(1);
+        event.setVisible(true);
         when(eventMapper.selectById(eventId)).thenReturn(event);
 
         List<EventSession> sessionList = new ArrayList<>();
         EventSession session = new EventSession();
         session.setEventId(eventId);
+        session.setVisible(true);
         sessionList.add(session);
-
         when(eventSessionMapper.selectList(any())).thenReturn(sessionList);
 
         List<EventSession> result = eventService.getEventSessionsByEventId(userType, eventId);
@@ -248,7 +271,7 @@ public class EventServiceImplTest {
         when(eventMapper.selectById(eventId)).thenReturn(event);
 
         doNothing().when(notificationService).insertEventPassNotification(anyString(), anyInt());
-        doNothing().when(notificationService).insertEventNotPassNotification(anyString(), anyInt(), anyString());
+//        doNothing().when(notificationService).insertEventNotPassNotification(anyString(), anyInt(), anyString());
 
         assertDoesNotThrow(() -> eventService.changeAudit(publisherId, eventId, status, reason));
     }
@@ -288,6 +311,7 @@ public class EventServiceImplTest {
         assertFalse(result.isEmpty());
         assertEquals(2, result.size()); // Assuming listByIds merges without duplicates
     }
+
     @Test
     @DisplayName("Should return an empty JSONArray if no events are available")
     public void testGetHotValue_NoEvents() {
@@ -297,6 +321,7 @@ public class EventServiceImplTest {
 
         assertTrue(result.isEmpty());
     }
+
     @Test
     @DisplayName("Should calculate and sort events by heat correctly")
     public void testGetHotValue_WithEvents() {
@@ -338,6 +363,7 @@ public class EventServiceImplTest {
         assertEquals(3, result.getJSONObject(0).get("id"));  // Assuming JSONObjects include an 'eventId'
         assertTrue(result.getJSONObject(0).getDouble("heat") > result.getJSONObject(1).getDouble("heat"));
     }
+
     @Test
     @DisplayName("Should return a list of events for a valid publisher ID")
     public void testGetEventByPublisher_ValidId() {
@@ -354,6 +380,7 @@ public class EventServiceImplTest {
         assertEquals(2, events.size());
         verify(eventMapper).selectList(any());
     }
+
     @Test
     @DisplayName("Should return an empty list when no IDs are provided")
     public void testGetBatchByIds_EmptyList() {

@@ -5,6 +5,7 @@ package org.cs304.backend;
  * @date 2024/5/23 23:04
  * @description
  **/
+
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -101,6 +103,7 @@ public class NotificationControllerTest {
 
         assertEquals("200", result.getCode());
     }
+
     @Test
     @DisplayName("Should return success when posting admin notification")
     public void shouldReturnErrWhenPostingAdminNotification() {
@@ -115,6 +118,7 @@ public class NotificationControllerTest {
 
         assertEquals("403", result.getCode());
     }
+
     @Test
     public void shouldReturnAllNotificationsOfOneUserForAdmin() throws InstantiationException, IllegalAccessException {
         String userId = "testUserId";
@@ -159,6 +163,7 @@ public class NotificationControllerTest {
         assertEquals("200", result.getCode());
         verify(notificationService).getAllNotificationsOfOneUser(userId);
     }
+
     @Test
     public void testDeleteMyNotification_Admin_Success() {
         String notificationId = "notificationId";
@@ -176,6 +181,7 @@ public class NotificationControllerTest {
         assertEquals("200", result.getCode());
         verify(notificationService).deleteNotification(notificationId);
     }
+
     @Test
     public void testDeleteMyNotification_Admin_Err() {
         String notificationId = "notificationId";
@@ -192,6 +198,7 @@ public class NotificationControllerTest {
 
         assertEquals("403", result.getCode());
     }
+
     @Test
     public void testDeleteMyNotification_Admin_Null() {
         String notificationId = "notificationId";
@@ -225,6 +232,7 @@ public class NotificationControllerTest {
         assertEquals("200", result.getCode());
         verify(notificationService).updateReadStatus(notificationId, read);
     }
+
     @Test
     public void testUpdateReadStatus_Admin_Err() {
         int notificationId = 123;
@@ -242,6 +250,7 @@ public class NotificationControllerTest {
 
         assertEquals("403", result.getCode());
     }
+
     @Test
     public void testUpdateReadStatus_Admin_Null() {
         int notificationId = 123;

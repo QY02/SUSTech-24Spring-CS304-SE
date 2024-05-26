@@ -1,39 +1,29 @@
 package org.cs304.backend;
 
 import com.alibaba.fastjson2.JSONArray;
-import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.cs304.backend.entity.Event;
 import org.cs304.backend.entity.Favorite;
-import org.cs304.backend.entity.History;
 import org.cs304.backend.exception.ServiceException;
 import org.cs304.backend.mapper.EventMapper;
 import org.cs304.backend.mapper.FavoriteMapper;
-import org.cs304.backend.mapper.HistoryMapper;
-import org.cs304.backend.service.IAttachmentService;
 import org.cs304.backend.service.impl.FavoriteServiceImpl;
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
-import org.cs304.backend.service.IEventSessionService;
-import org.cs304.backend.service.INotificationService;
-import org.cs304.backend.service.impl.EventServiceImpl;
-import org.cs304.backend.service.impl.HistoryServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.mockito.ArgumentCaptor;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class FavoriteServiceImplTest {
     @Mock
@@ -67,6 +57,7 @@ public class FavoriteServiceImplTest {
         // Assert
         verify(favoriteMapper).delete((Wrapper<Favorite>) any(QueryWrapper.class));  // Verify that delete was actually called
     }
+
     @Test
     @DisplayName("Throws ServiceException when deleting with invalid data")
     public void testDeleteFavorite_InvalidData() {

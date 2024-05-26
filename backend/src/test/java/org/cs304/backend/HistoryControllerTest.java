@@ -1,9 +1,8 @@
 package org.cs304.backend;
 
+import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import jakarta.annotation.Resource;
 import org.cs304.backend.controller.HistoryController;
-import org.cs304.backend.entity.Event;
 import org.cs304.backend.entity.History;
 import org.cs304.backend.mapper.HistoryMapper;
 import org.cs304.backend.service.IHistoryService;
@@ -17,11 +16,10 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-import com.alibaba.fastjson2.JSONObject;
+
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
 public class HistoryControllerTest {
@@ -51,7 +49,7 @@ public class HistoryControllerTest {
     @DisplayName("Should return history event when getting history by user id")
     public void shouldReturnEventWhenGettingEventByUserId() {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("userId","12110141");
+        jsonObject.put("userId", "12110141");
         request.setAttribute("loginUserType", 0);
         when(historyMapper.selectList(new QueryWrapper<History>().eq("user_id", "12110141"))).thenReturn(new ArrayList<>());
         Result result = historyController.getAllHistory(request, response, jsonObject);
@@ -65,8 +63,8 @@ public class HistoryControllerTest {
     public void shouldReturnSuccessWhenAddingNewHistory() {
         com.alibaba.fastjson.JSONObject history = new com.alibaba.fastjson.JSONObject();
         // 设置事件的相关属性
-        history.put("userId","12110141");
-        history.put("eventId",80);
+        history.put("userId", "12110141");
+        history.put("eventId", 80);
         Result result = historyController.addEventHistory(response, com.alibaba.fastjson2.JSONObject.from(history));
 
         assertEquals("200", result.getCode()); // 验证结果
