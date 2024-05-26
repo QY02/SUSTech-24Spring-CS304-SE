@@ -2,6 +2,11 @@ import {createRouter, createWebHistory} from 'vue-router';
 
 const routes = [
     {
+        name: 'OuterHome',
+        path: '/',
+        component: () => import('@/components/OuterHome.vue')
+    },
+    {
         // 此处的‘@’表示src目录
         name:'login',
         path: '/login',
@@ -16,29 +21,10 @@ const routes = [
         component: () => import('@/layouts/MainLayout.vue'),
         children: [
             {
-                name: 'OuterHome',
-                path: '/',
-                component: () => import('@/components/OuterHome.vue')
-            },
-
-            {
                 name: 'home',
                 path: '/HomePage',
                 component: () => import('@/components/home/HomePage.vue')
             },
-            // {
-            //     path: '/homeHot',
-            //     component: () => import('@/components/home/HomeHot.vue')
-            // },
-            // {
-            //     path: '/homeNew',
-            //     component: () => import('@/components/home/HomeNew.vue')
-            // },
-            // {
-            //     path: '/homeRecommend',
-            //     component: () => import('@/components/home/HomeRecommend.vue')
-            // },
-
             {
                 path: '/historyEvents',
                 component: () => import('@/components/home/UserHistory.vue')
