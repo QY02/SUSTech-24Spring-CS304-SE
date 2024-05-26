@@ -3,6 +3,7 @@ package org.cs304.backend.controller;
 import com.alibaba.fastjson2.JSONObject;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.cs304.backend.service.IUserBlogInteractionService;
@@ -31,8 +32,9 @@ public class UserBlogInteractionController {
                     1. 根据评论ID查询动态的点赞情况
                     2. 返回动态的点赞情况
                     """)
-    public Result getBlog(HttpServletResponse response, @PathVariable("commentId") Integer commentId) {
-        JSONObject userBlogInteraction = userBlogInteractionService.getBlog(commentId);
+    public Result getBlog(HttpServletRequest request,HttpServletResponse response, @PathVariable("commentId") Integer commentId) {
+        String userID = (String) request.getAttribute("loginUserId");
+        JSONObject userBlogInteraction = userBlogInteractionService.getBlog(commentId, userID);
         return Result.success(response, userBlogInteraction);
     }
 
