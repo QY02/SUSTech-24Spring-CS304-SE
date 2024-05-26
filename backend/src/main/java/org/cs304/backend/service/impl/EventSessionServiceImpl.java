@@ -88,6 +88,7 @@ public class EventSessionServiceImpl extends ServiceImpl<EventSessionMapper, Eve
         session.setSeatMapId(seatMap.getId());
         session.setVenue(sessionData.getString("venue"));
 
+
         // location 数组去除最外面的括号
         // 数组可以直接当str读，保留中括号
         String location_arr=sessionData.getString("location");

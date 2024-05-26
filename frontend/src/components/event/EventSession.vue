@@ -105,9 +105,9 @@
             <t-checkbox-group v-model="Data.additional_information_required" :options="ADDITIONAL_INFO" lazy-load/>
           </t-form-item>
 
-          <t-form-item label="是否可见" name="visible">
-            <t-switch v-model="Data.visible" :label="['是', '否']"></t-switch>
-          </t-form-item>
+<!--          <t-form-item label="是否可见" name="visible">-->
+<!--            <t-switch v-model="Data.visible" :label="['是', '否']"></t-switch>-->
+<!--          </t-form-item>-->
 
           <t-form-item class="confirm-reset-btns">
             <t-space size="small">
@@ -257,7 +257,7 @@ const columns = computed(() => [
   },
   {
     title: '座位', colKey: 'seat_map_id',
-    width: 100, align: 'center',
+    width: 200, align: 'center',
     cell: (h, {row}) => {
       const x = row.seat_map_id.split('.');
       const displayValue=x[x.length-1]
@@ -307,11 +307,11 @@ const columns = computed(() => [
       return re;
     }
   },
-  {
-    title: '是否可见', colKey: 'visible',
-    align: 'center',
-    cell: (h, {row}) => row.visible === true ? '是' : '否',
-  },
+  // {
+  //   title: '是否可见', colKey: 'visible',
+  //   align: 'center',
+  //   cell: (h, {row}) => row.visible === true ? '是' : '否',
+  // },
   {
     title: '操作栏',
     colKey: 'operation',
