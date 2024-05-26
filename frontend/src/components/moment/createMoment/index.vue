@@ -136,7 +136,7 @@ const fileUrl = ref('');
 const videoCover = ref([]);
 
 const onSubmit = async (ctx: SubmitContext) => {
-  if (!allEvents.some(event => event.value === formData.value.event.value)) {
+  if (!allEvents.some(event => event.value === Number(formData.value.event.value))) {
     await MessagePlugin.error('请选择一个有效的活动');
     return;
   }
@@ -256,8 +256,8 @@ const selectValue = ref<{
 if (sessionStorage.getItem('MomentName') != null) {
   // alert(sessionStorage.getItem('MomentName'))
   // alert(Number(sessionStorage.getItem('eventId')))
-  selectValue.value={ label: sessionStorage.getItem('eventId')+"-"+sessionStorage.getItem('MomentName'), value: Number(sessionStorage.getItem('eventId'))
-  }
+  selectValue.value={ label: sessionStorage.getItem('eventId')+"-"+sessionStorage.getItem('MomentName'), value: Number(sessionStorage.getItem('eventId'))}
+  formData.value.event.value= sessionStorage.getItem('eventId')
   sessionStorage.removeItem('MomentName')
   sessionStorage.removeItem('eventId')
 }
