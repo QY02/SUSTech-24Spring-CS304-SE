@@ -248,7 +248,7 @@ public class EventServiceImplTest {
         when(eventMapper.selectById(eventId)).thenReturn(event);
 
         doNothing().when(notificationService).insertEventPassNotification(anyString(), anyInt());
-        doNothing().when(notificationService).insertEventNotPassNotification(anyString(), anyInt(), anyString());
+//        doNothing().when(notificationService).insertEventNotPassNotification(anyString(), anyInt(), anyString());
 
         assertDoesNotThrow(() -> eventService.changeAudit(publisherId, eventId, status, reason));
     }

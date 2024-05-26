@@ -2,8 +2,17 @@ package org.cs304.backend;
 
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import org.cs304.backend.constant.constant_EventStatus;
+import org.cs304.backend.constant.constant_CommentType;
 import org.cs304.backend.controller.AdminController;
+import org.cs304.backend.entity.Comment;
+import org.cs304.backend.entity.Event;
 import org.cs304.backend.exception.ServiceException;
+import org.cs304.backend.mapper.CommentMapper;
+import org.cs304.backend.mapper.EventMapper;
+import org.cs304.backend.mapper.OrderRecordMapper;
+import org.cs304.backend.mapper.UserMapper;
 import org.cs304.backend.service.IEventService;
 import org.cs304.backend.utils.Result;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +26,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 public class AdminControllerTest {
@@ -26,6 +36,18 @@ public class AdminControllerTest {
 
     @Mock
     IEventService eventService;
+
+    @Mock
+    EventMapper eventMapper;
+
+    @Mock
+    UserMapper userMapper;
+
+    @Mock
+    CommentMapper commentMapper;
+
+    @Mock
+    OrderRecordMapper orderRecordMapper;
 
     MockHttpServletRequest request;
     MockHttpServletResponse response;
@@ -78,4 +100,22 @@ public class AdminControllerTest {
         assertEquals("200", result.getCode());
     }
 
+    @Test
+@DisplayName("Should return homepage info when user is admin")
+public void shouldReturnHomepageInfoWhenUserIsAdmin() {
+    request.setAttribute("loginUserType", 0);
+    when(eventMapper.selectCount(null)).thenReturn(10L);
+    when(eventMapper.selectCount(new QueryWrapper<Event>().eq("status", constant_EventStatus.AUDITING))).thenReturn(2L);
+    when(userMapper.selectCount(any())).thenReturn(5L);
+        when(commentMapper.selectCount(new QueryWrapper<Comment>().eq("type", constant_CommentType.BLOG))).thenReturn(3L);
+    when(orderRecordMapper.selectCount(null)).thenReturn(7L);
+
+    Result result = adminController.getHomepage(request, response);
+
+    assertEquals("200", result.getCode());
+    JSONObject data = (JSONObject) result.getData();
+    assertEquals(10, data.getInteger("event"));
+    assertEquals(5, data.getInteger("user"));
+    assertEquals(7, data.getInteger("order"));
+}
 }

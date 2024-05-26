@@ -6,13 +6,13 @@
     <span>4、模型实际性能取决于第三方提供商，本站不对模型性能负责。</span>
   </t-alert>
   <div style="display: flex; justify-content: center; align-items: center;">
-    <div style="width: 650px; background-color: #f0f0f0;
+    <div v-loading="loading" style="width: 650px; background-color: #f0f0f0;
                     border-radius: 10px; box-shadow: 0 0 20px #a8b1c9"
          class="card-with-margin">
       <div style="text-align: center; line-height: 50px;font-weight: bold;font-size: large">
         Chat With Event (beta)
       </div>
-      <div v-loading="loading" style="height: 55vh; overflow:auto; border-top: 1px solid #a8b1c9;" v-html="content"></div>
+      <div style="height: 55vh; overflow:auto; border-top: 1px solid #a8b1c9;" v-html="content"></div>
       <div style="padding: 18px 15px;">
         <t-space>
           <t-select
@@ -167,6 +167,7 @@ const resetChat = () => {
   content.value = '<br>';
   messages.value = [];
   disableSend.value = false;
+  createContent(chatModel, null, "你好，我是校园活动与娱乐中心的AI助手。你有什么问题需要帮助吗？")
 };
 
 const send = () => {
