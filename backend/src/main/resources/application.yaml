@@ -4,7 +4,7 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://47.107.113.54:3306/events_center
+    url: jdbc:mysql://47.107.113.54:3306/events_center_pre
     username: root
     password: me#u6236kuGfsv
   data:
