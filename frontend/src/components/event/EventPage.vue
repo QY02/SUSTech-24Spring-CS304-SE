@@ -325,7 +325,7 @@ const dateToString = (date) => {
 }
 
 const attachmentPath = ref('');
-const photo = ref('https://tdesign.gtimg.com/demo/demo-image-1.png');
+const photo = ref('');
 const photoUrl = ref('https://tdesign.gtimg.com/demo/demo-image-1.png');
 const getAttachment = () => {
   axios.get(`/event/getPhotoById?eventId=${eventId}`, {

@@ -200,7 +200,7 @@ window.addEventListener('setItem', () => {
 })
 
 const clickEvent = (eventId) => {
-  MessagePlugin.success(`${sessionStorage.getItem('uid')} 选中【${eventId}】`);
+  // MessagePlugin.success(`${sessionStorage.getItem('uid')} 选中【${eventId}】`);
   sessionStorage.setItem('eventId', eventId)
   router.push('/event');
   // router.push('/event');
