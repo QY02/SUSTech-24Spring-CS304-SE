@@ -11,7 +11,7 @@
     <t-card
         v-for="(item,index) in curEvents"
         :key="index"
-        :title="item['name']"  :subtitle="item.content.length > 18 ? item.content.substring(0, 18) + '...' : item.content" :style="{ width: '400px' }"
+        :title="item['name']"  :subtitle="item.content.length > 18 ? item.content.substring(0, 18) + '...' : item.content" :style="{ width: '445px' }"
         hover-shadow
         @click="clickEvent(item['id'])"
         lazy-load
@@ -19,7 +19,7 @@
 
       <t-image
           :src="item['cover']"
-          :style="{ width: '350px', height: '180px' }"
+          :style="{ width: '395px', height: '210px' }"
           overlay-trigger="hover">
 
       </t-image>

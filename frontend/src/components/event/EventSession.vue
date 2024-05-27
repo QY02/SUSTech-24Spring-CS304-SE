@@ -69,7 +69,7 @@
             />
           </t-form-item>
 
-          <t-form-item label="人数" name="count_range_of_people">
+          <t-form-item label="人数" name="count_range_of_people" :required-mark="true">
             <t-input-number
                 v-model="Data.min_cnt"
                 theme="column"
@@ -87,16 +87,16 @@
                 style="width: 150px"
             ></t-input-number>
           </t-form-item>
-          <t-form-item label="是否需要选座" name="seat_required">
+          <t-form-item label="是否需要选座" name="seat_required" v-show="Data.registration_required">
             <t-switch v-model="Data.seat_required" :label="['是', '否']"></t-switch>
           </t-form-item>
-          <t-form-item label="座位图" name="seat_map_id" v-show="Data.seat_required">
+          <t-form-item label="座位图" name="seat_map_id" v-show="Data.seat_required&&Data.registration_required">
             <t-cascader v-model="Data.seat_map_id" :options="seat_map_options" clearable/>
           </t-form-item>
-          <t-form-item label="是否需要收费" name="price_required" v-show="!Data.seat_required">
+          <t-form-item label="是否需要收费" name="price_required" v-show="!Data.seat_required&&Data.registration_required">
             <t-switch v-model="Data.price_required" :label="['是', '否']"></t-switch>
           </t-form-item>
-          <t-form-item label="价格" name="price" v-show="Data.price_required &&  !Data.seat_required">
+          <t-form-item label="价格" name="price" v-show="Data.price_required && !Data.seat_required&&Data.registration_required">
             <t-input v-model="Data.price"></t-input>
           </t-form-item>
           <t-form-item label="地址" name="venue">
@@ -110,7 +110,7 @@
               {{ Data.location === null ? "选择位置" : `${Data.location[0]}, ${Data.location[1]}` }}
             </t-button>
           </t-form-item>
-          <t-form-item label="所需额外信息" name="additional_information_required">
+          <t-form-item label="所需额外信息" name="additional_information_required"  v-show="Data.registration_required">
             <t-checkbox-group v-model="Data.additional_information_required" :options="ADDITIONAL_INFO" lazy-load/>
           </t-form-item>
 
@@ -166,14 +166,12 @@ const INITIAL_DATA = {
   seat_required: true,
   seat_map_id: '',
   price_required: true,
-  price: 1,
+  price: 100,
   venue: '',
   location: null,
   additional_information_required: [],
   visible: true,
 }
-const newData = ref({...INITIAL_DATA});
-const modifyData = ref({...INITIAL_DATA});
 const Data = ref({...INITIAL_DATA});
 let state = 0 //0 -> add ; 1 -> modify
 const props = defineProps({
@@ -271,16 +269,16 @@ const columns = computed(() => [
     title: '座位/价格信息', colKey: 'seat_map_id',
     width: 200, align: 'center',
     cell: (h, {row}) => {
-      if(row.seat_required){
+      if (row.seat_required && row.registration_required) {
         const x = row.seat_map_id.split('.');
       const displayValue=x[x.length-1]
       return `${displayValue}`
-      }
-      else if(row.price_required){
+      } else if (row.price_required && row.registration_required &&!row.seat_required ) {
         return  `价格: ${row.price} 元`
-      }
-      else{
+      } else if(!row.price_required && row.registration_required&&!row.seat_required){
         return `无需支付`
+      }else if (!row.registration_required) {
+        return '无需支付'
       }
     
     },
@@ -382,10 +380,18 @@ const FORM_RULES = ref({
   ],
   venue: [{required: true, message: '地址必填'}],
   location: [{required: true, message: '地址必填'}],
-  seat_map_id: [{required: computed(() => Data.value.seat_required), message: '座位图必选'}],
+  seat_map_id: [{
+    required: computed(() => Data.value.seat_required && Data.value.registration_required),
+    message: '座位图必选'
+  }],
   price:
   [
-    { required: computed(() => Data.value.price_required), message: '价格必填', type: 'error', trigger: 'blur' },
+    {
+      required: computed(() => Data.value.price_required && Data.value.registration_required && !Data.value.seat_required),
+      message: '价格必填',
+      type: 'error',
+      trigger: 'blur'
+    },
     { required: true, message: '价格必填', type: 'error', trigger: 'change' },
     { whitespace: true, message: '价格不能为空' },
     { validator: (val) => val >= 1, message: '价格应为正数', type: 'error', trigger: 'blur' },

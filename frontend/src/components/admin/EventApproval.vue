@@ -161,6 +161,7 @@ import {MessagePlugin} from 'tdesign-vue-next';
 import axios from 'axios';
 import {SearchIcon, MoneyIcon} from 'tdesign-icons-vue-next';
 import ApprovalDetail from './ApprovalDetail.vue';
+import {avatarList} from "@/constants/index.js"
 const appConfig = ref(getCurrentInstance().appContext.config.globalProperties).value;
 
 // ###### 数据 开始 ######
@@ -214,12 +215,6 @@ const mapEventType = (type) => {
 // ###### 数据 结束 ######
 
 // ###### 获取数据 开始 ######
-const avatarList = ['https://avatars.githubusercontent.com/pengyyyyy',
-  'https://tdesign.gtimg.com/site/avatar.jpg',
-  'https://avatars.githubusercontent.com/LeeJim',
-  'https://avatars.githubusercontent.com/u/7361184?v=4',
-  'https://avatars.githubusercontent.com/pattybaby110',
-  'https://avatars.githubusercontent.com/chaishi']
 
 const loading = ref(true);
 onMounted(() => {
