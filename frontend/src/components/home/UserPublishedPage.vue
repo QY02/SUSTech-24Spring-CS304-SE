@@ -78,6 +78,14 @@
               </t-col>
 
               <t-col flex="auto" style="display: inline-flex; justify-content: center">
+                <t-tooltip content="预定">
+                  <t-button variant="text" shape="square" @click.stop="clickBook(item['id'])">
+                    <data-display-icon/>
+                  </t-button>
+                </t-tooltip>
+              </t-col>
+
+              <t-col flex="auto" style="display: inline-flex; justify-content: center">
                 <t-tooltip content="评论">
                   <t-button variant="text" shape="square" @click.stop="clickComment(item['id'])">
                     <chat-icon/>
@@ -162,6 +170,7 @@
 import {
   ThumbUpIcon,
   ChatIcon,
+    DataDisplayIcon,
   ShareIcon,
   MoreIcon,
   RollbackIcon,
@@ -334,6 +343,12 @@ const clickComment = (eventId) => {
   sessionStorage.setItem('eventId', eventId)
   visible.value = true
 }
+
+const clickBook = (eventId) => {
+  sessionStorage.setItem('eventId', eventId)
+  router.push('/orderRecord');
+}
+
 const fixEvent = (eventId) => {
   sessionStorage.setItem('eventId', eventId)
   router.push('/fixEvent')

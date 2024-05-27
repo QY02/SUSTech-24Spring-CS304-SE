@@ -1,6 +1,7 @@
 package org.cs304.backend.controller;
 
 import cn.hutool.core.date.DateUtil;
+import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
@@ -120,7 +121,7 @@ public class OrderRecordController {
             ### 参数 ###
             eventId: 根据eventId查询预订记录, 可不填
             mode = 0: 只返回eventSessionId
-            mode = 1: 返回orderRecord的所有数据   
+            mode = 1: 返回orderRecord的所有数据
             mode = 2: 返回orderRecord和eventSession的所有数据                     
             mode = 3: 返回orderRecord, eventSession和event的所有数据
             ### 返回值 ###
@@ -346,4 +347,10 @@ public class OrderRecordController {
         }
         return Result.success(response);
     }
+
+    @GetMapping("/getEventOrderRecord/{eventId}")
+    public Result getEventOrderRecord(HttpServletResponse response, HttpServletRequest request, @PathVariable Integer eventId) {
+        return Result.success(response, orderRecordService.getEventOrderRecord(eventId));
+    }
+
 }
