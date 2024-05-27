@@ -6,11 +6,11 @@
       <div class="input-information-button-div">
         <t-space size="medium">
           <t-button theme="default" @click="currentStep--">上一步</t-button>
-          <t-button theme="primary" @click="chooseNext">下一步</t-button>
+          <t-button theme="primary" @click="onSubmit">下一步</t-button>
         </t-space>
       </div>
     </div>
-    <t-form v-show="additionalInformation.length !== 0" ref="form" :rules="FORM_RULES" :data="formData" :colon="true" @submit="chooseNext">
+    <t-form v-show="additionalInformation.length !== 0" ref="form" :rules="FORM_RULES" :data="formData" :colon="true" @submit="onSubmit">
       <t-form-item v-for="information in additionalInformation" :label="information.name" :name="information.nameEng">
         <t-input v-model="formData[information.nameEng]" :placeholder="`请输入${information.name}`"></t-input>
       </t-form-item>
@@ -82,7 +82,7 @@ const onSubmit: FormProps['onSubmit'] = ({validateResult, firstError}) => {
     for (let i = 0; i < bookingInformation.additionalInformation.length; i++) {
       bookingInformation.additionalInformation[i].value = formData[bookingInformation.additionalInformation[i].nameEng];
     }
-    toNextStep();
+    chooseNext();
   } else {
     MessagePlugin.warning(firstError);
   }
