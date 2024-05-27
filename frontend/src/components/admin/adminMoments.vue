@@ -71,7 +71,7 @@
           </template>
         </t-comment>
         <t-divider />
-        <video v-if="momentData.mediaType===true" :src="video" controls :style="{ width: 900 + 'px', height: 450+ 'px' }"/>
+        <video v-if="momentData.mediaType===true" :src="video" controls :style="{ width: 900 + 'px', height: 600+ 'px' }"/>
         <t-swiper v-if="momentData.mediaType===false"
             class="tdesign-demo-block--swiper"
             :autoplay="false"
@@ -81,7 +81,7 @@
             <t-image-viewer :key="0" v-model:visible="photoPreviewVisible" :current="currentPic" :images="photoUrlList">
               <template #trigger>
             <t-image @click="photoPreviewVisible = true"
-                     :style="{height:450+'px'}"
+                     :style="{height:600+'px'}"
                      :src=item
                 fit="cover"
                 shape="round"
