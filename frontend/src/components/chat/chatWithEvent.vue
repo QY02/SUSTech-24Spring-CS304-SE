@@ -79,13 +79,13 @@ const chatModels = ref([
   {value: 'TEST', label: '图灵机器人'},
 ]);
 const chatModelLogos = ref([
-  {value: 'GPT3.5', label: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTwBl5CgMuFP51OU_N49Ukp20IR7RayImCwgttcpQwhNg&s'},
+  {value: 'GPT3.5', label: 'https://img0.baidu.com/it/u=807317164,677012324&fm=253&fmt=auto&app=138&f=PNG?w=500&h=500'},
   {value: 'GPT4', label: 'https://chatgptdemo.ai/wp-content/uploads/2023/08/cropped-chatgptdemo.png'},
   {value: 'GOOGLE', label: 'https://logowik.com/content/uploads/images/google-ai-gemini91216.logowik.com.webp'},
   {value: 'ZHIPU', label: 'https://k.sinaimg.cn/n/spider20230423/226/w750h276/20230423/2525-d42245b5d574b217e01e27328655db81.png/w300h300z1l10t10q100041.jpg'},
   {value: 'TONGYI', label: 'http://img3.downza.cn/capmobile/202401/180751-65ae3e77cab7a.png'},
   {value: 'TEST', label: 'https://img.freepik.com/free-vector/robotic-artificial-intelligence-technology-smart-lerning-from-bigdata_1150-48136.jpg?w=1480'},
-  {value: 'BAICHUAN', label: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ-Pc85w70xJsdvgqzwVMatR7oIdWoDoY6bMtiZ3n7V9w&s'},
+  {value: 'BAICHUAN', label: 'https://gbres.dfcfw.com/Files/iimage/20231101/8BFA471C1B992DB77EC75577B3E9D5A1_w900h506.png'},
   {value: 'WENXIN', label: 'https://pp.myapp.com/ma_icon/0/icon_54318686_1713316741/256'},
 ]);
 const api_key = ref('test');
