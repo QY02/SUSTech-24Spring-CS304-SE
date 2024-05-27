@@ -7,6 +7,7 @@ import org.cs304.backend.exception.ServiceException;
 import org.cs304.backend.mapper.EventMapper;
 import org.cs304.backend.mapper.EventSessionMapper;
 import org.cs304.backend.mapper.OrderRecordMapper;
+import org.cs304.backend.mapper.UserMapper;
 import org.cs304.backend.service.impl.OrderRecordServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -33,6 +34,9 @@ public class OrderRecordServiceImplTest {
 
     @Mock
     private EventMapper eventMapper;
+
+    @Mock
+    private UserMapper userMapper;
 
     @Mock
     private EventSessionMapper eventSessionMapper;
@@ -140,4 +144,26 @@ public class OrderRecordServiceImplTest {
 
         assertEquals(1, orderRecordService.getPaymentById(1));
     }
+
+    @Test
+    @DisplayName("Test getEventOrderRecord with valid event id")
+    public void getEventOrderRecord_ValidEventId() {
+        Integer eventId = 1;
+        when(orderRecordMapper.selectList(any())).thenReturn(new ArrayList<>());
+        when(eventMapper.selectById(anyInt())).thenReturn(new Event());
+
+        Object result = orderRecordService.getEventOrderRecord(eventId);
+        assertNotNull(result);
+    }
+
+    @Test
+    @DisplayName("Test getEventOrderRecord with invalid event id")
+    public void getEventOrderRecord_InvalidEventId() {
+        Integer eventId = 999; // Non-existing event id
+        when(orderRecordMapper.selectList(any())).thenReturn(new ArrayList<>());
+
+        Object result = orderRecordService.getEventOrderRecord(eventId);
+        assertNotNull(result);
+    }
+
 }

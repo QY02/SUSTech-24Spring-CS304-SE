@@ -349,6 +349,44 @@ public class OrderRecordController {
     }
 
     @GetMapping("/getEventOrderRecord/{eventId}")
+    @Operation(summary = "获取活动的预订记录",
+            description = """
+            ### 参数 ###
+            eventId(Integer): 活动ID
+            ### 返回值 ###
+            {
+              "id": 1,
+              "userId": "string",
+              "eventId": 0,
+              "eventSessionId": 0,
+              "seatId": "string",
+              "additionalInformation": "string",
+              "status": 0,
+              "price": 0,
+              "paymentTime": "2021-09-29T07:00:00",
+              "eventSession": {
+                "id": 0,
+                "eventId": 0,
+                "startTime": "2021-09-29T07:00:00",
+                "endTime": "2021-09-29T07:00:00",
+                "seatMap": "string",
+                "price": 0,
+                "status": 0
+              },
+              "event": {
+                "id": 0,
+                "name": "string",
+                "description": "string",
+                "startTime": "2021-09-29T07:00:00",
+                "endTime": "2021-09-29T07:00:00",
+                "location": "string",
+                "status": 0
+              }
+            }
+            ### 实现逻辑 ###
+            1. 根据eventId查询活动的预订记录
+            2. 返回结果
+            """)
     public Result getEventOrderRecord(HttpServletResponse response, HttpServletRequest request, @PathVariable Integer eventId) {
         return Result.success(response, orderRecordService.getEventOrderRecord(eventId));
     }

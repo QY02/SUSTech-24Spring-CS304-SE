@@ -99,10 +99,10 @@
     <t-list :split="true" v-loading="commentLoading">
       <t-list-item v-for="(item, index) in commentsData" :key="index">
         <template #content>
-          <t-comment style="margin-bottom: 5px" :avatar="item.avatar" :author="item.author" :datetime="item.publishDate"
+          <t-comment style="margin-bottom: 5px;white-space: pre-wrap;word-wrap: anywhere;" :avatar="item.avatar" :author="item.author" :datetime="item.publishDate.replace('T',' ')"
                      :content="item.content">
             <template #actions>
-              <t-space key="delete" :size="6" @click="deleteComment(item)">
+              <t-space key="delete" :size="6" @click="deleteComment(item)" style="color: red">
                 <t-icon name="delete" />
                 <span>删除</span>
               </t-space>
@@ -127,8 +127,8 @@
              :status="deleteTips ? 'error' : ''"
              @change="onDeleteChange"/>
     <template #footer>
+      <t-button @click="closeDelete" theme="default">取消</t-button>
       <t-button theme="danger" @click="onDeleteClickConfirm">确定</t-button>
-      <t-button @click="closeDelete">取消</t-button>
     </template>
   </t-dialog>
   <t-dialog
@@ -146,8 +146,8 @@
              :status="commentDeleteTips ? 'error' : ''"
              @change="onCommentDeleteChange"/>
     <template #footer>
+      <t-button @click="closeCommentDelete" theme="default">取消</t-button>
       <t-button theme="danger" @click="onCommentDeleteClickConfirm">确定</t-button>
-      <t-button @click="closeCommentDelete">取消</t-button>
     </template>
   </t-dialog>
 </template>
@@ -160,15 +160,9 @@ import router from "@/routers/index.js";
 import axios from "axios";
 import { fileServerAxios } from "@/main.js"
 import {MessagePlugin} from "tdesign-vue-next";
+import {avatarList} from "@/constants/index.js"
+
 const user = sessionStorage.getItem("uid") ? sessionStorage.getItem("uid") : '';//当前用户
-
-const avatarList = ['https://avatars.githubusercontent.com/pengyyyyy',
-  'https://tdesign.gtimg.com/site/avatar.jpg',
-  'https://avatars.githubusercontent.com/LeeJim',
-  'https://avatars.githubusercontent.com/u/7361184?v=4',
-  'https://avatars.githubusercontent.com/pattybaby110',
-  'https://avatars.githubusercontent.com/chaishi']
-
 // ###### 动态列表 开始 ######
 
 const list = ref([]);// 左侧动态列表

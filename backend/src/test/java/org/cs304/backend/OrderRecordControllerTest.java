@@ -369,4 +369,16 @@ public class OrderRecordControllerTest {
         assertEquals("200", result.getCode());
     }
 
+    @Test
+    @DisplayName("Get event order record successfully")
+    public void getEventOrderRecord_Success() {
+        Integer eventId = 1;
+        Object expectedOrderRecord = new Object(); // Replace with actual expected object
+        when(orderRecordService.getEventOrderRecord(eventId)).thenReturn(expectedOrderRecord);
+
+        Result result = orderRecordController.getEventOrderRecord(response, request, eventId);
+
+        assertEquals("200", result.getCode());
+        assertEquals(expectedOrderRecord, result.getData());
+    }
 }
