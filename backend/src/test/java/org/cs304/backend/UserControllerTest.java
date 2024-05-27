@@ -29,6 +29,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import java.util.Arrays;
 
 public class UserControllerTest {
     @InjectMocks
@@ -629,5 +630,183 @@ public class UserControllerTest {
 
         return userList;
     }
+
+    @Test
+@DisplayName("Should delete user successfully when user is admin")
+public void shouldDeleteUserSuccessfullyWhenUserIsAdmin() {
+    String userId = "testUserId";
+
+    request.setAttribute("loginUserType", constant_User.ADMIN);
+
+    doNothing().when(userService).deleteUser(userId);
+
+    Result result = userController.delete(request, response, userId);
+
+    assertNotNull(result);
+    assertEquals("200", result.getCode());
+    verify(userService, times(1)).deleteUser(userId);
+}
+
+@Test
+@DisplayName("Should not delete user when user is not admin")
+public void shouldNotDeleteUserWhenUserIsNotAdmin() {
+    String userId = "testUserId";
+
+    request.setAttribute("loginUserType", constant_User.USER);
+
+    Result result = userController.delete(request, response, userId);
+
+    assertNotNull(result);
+    assertEquals("403", result.getCode());
+    verify(userService, times(0)).deleteUser(userId);
+}
+
+@Test
+@DisplayName("Should return error when exception is thrown during deletion")
+public void shouldReturnErrorWhenExceptionIsThrownDuringDeletion() {
+    String userId = "testUserId";
+
+    request.setAttribute("loginUserType", constant_User.ADMIN);
+
+    doThrow(new RuntimeException("Delete user failed")).when(userService).deleteUser(userId);
+
+    Result result = userController.delete(request, response, userId);
+
+    assertNotNull(result);
+    assertEquals("400", result.getCode());
+    assertEquals("Delete user failed", result.getMsg());
+}
+@Test
+@DisplayName("Should return user successfully when user is found")
+public void shouldReturnUserSuccessfullyWhenUserIsFound() {
+    String userId = "testUserId";
+    User user = new User();
+    user.setId(userId);
+    user.setEmail("test@example.com");
+    user.setIconId(1);
+
+    when(userService.getById(userId)).thenReturn(user);
+
+    Result result = userController.get(response, userId);
+
+    assertNotNull(result);
+    assertEquals("200", result.getCode());
+    assertNull(((User)result.getData()).getPassword());
+}
+@Test
+@DisplayName("Should return user list successfully when user ids are provided")
+public void shouldReturnUserListSuccessfullyWhenUserIdsAreProvided() {
+    List<String> userIds = Arrays.asList("testUserId1", "testUserId2");
+
+    User user1 = new User();
+    user1.setId("testUserId1");
+    user1.setEmail("test1@example.com");
+    user1.setIconId(1);
+
+    User user2 = new User();
+    user2.setId("testUserId2");
+    user2.setEmail("test2@example.com");
+    user2.setIconId(2);
+
+    List<User> users = Arrays.asList(user1, user2);
+
+    when(userService.listByIds(userIds)).thenReturn(users);
+
+    Result result = userController.list(response, userIds);
+
+    assertNotNull(result);
+    assertEquals("200", result.getCode());
+    List<User> resultList = (List<User>) result.getData();
+    assertEquals(2, resultList.size());
+    assertNull(resultList.get(0).getPassword());
+    assertNull(resultList.get(1).getPassword());
+}
+
+@Test
+@DisplayName("Should return error when exception is thrown during listing all users")
+public void shouldReturnErrorWhenExceptionIsThrownDuringListingAllUsers() {
+    request.setAttribute("loginUserType", constant_User.ADMIN);
+
+    doThrow(new RuntimeException("Get users failed")).when(userService).list();
+
+    Result result = userController.listAll(response, request);
+
+    assertNotNull(result);
+    assertEquals("400", result.getCode());
+    assertEquals("获取用户失败", result.getMsg());
+}
+@Test
+@DisplayName("Should return error when exception is thrown during listing users")
+public void shouldReturnErrorWhenExceptionIsThrownDuringListingUsers() {
+    List<String> userIds = Arrays.asList("testUserId1", "testUserId2");
+
+    doThrow(new RuntimeException("Get users failed")).when(userService).listByIds(userIds);
+
+    Result result = userController.list(response, userIds);
+
+    assertNotNull(result);
+    assertEquals("400", result.getCode());
+    assertEquals("获取用户失败", result.getMsg());
+}
+@Test
+@DisplayName("Should delete users successfully when user is admin")
+public void shouldDeleteUsersSuccessfullyWhenUserIsAdmin() {
+    List<String> userIds = Arrays.asList("testUserId1", "testUserId2");
+
+    request.setAttribute("loginUserType", constant_User.ADMIN);
+
+    doNothing().when(userService).deleteUsers(userIds);
+
+    Result result = userController.deleteBatch(request, response, userIds);
+
+    assertNotNull(result);
+    assertEquals("200", result.getCode());
+    verify(userService, times(1)).deleteUsers(userIds);
+}
+
+@Test
+@DisplayName("Should not delete users when user is not admin")
+public void shouldNotDeleteUsersWhenUserIsNotAdmin() {
+    List<String> userIds = Arrays.asList("testUserId1", "testUserId2");
+
+    request.setAttribute("loginUserType", constant_User.USER);
+
+    Result result = userController.deleteBatch(request, response, userIds);
+
+    assertNotNull(result);
+    assertEquals("403", result.getCode());
+    verify(userService, times(0)).deleteUsers(userIds);
+}
+
+@Test
+@DisplayName("Should return error when exception is thrown during deletion")
+public void shouldReturnErrorWhenExceptionIsThrownDuringDeletion2() {
+    List<String> userIds = Arrays.asList("testUserId1", "testUserId2");
+
+    request.setAttribute("loginUserType", constant_User.ADMIN);
+
+    doThrow(new RuntimeException("Delete users failed")).when(userService).deleteUsers(userIds);
+
+    Result result = userController.deleteBatch(request, response, userIds);
+
+    assertNotNull(result);
+    assertEquals("400", result.getCode());
+    assertEquals("删除失败", result.getMsg());
+}
+
+@Test
+@DisplayName("Should return success when no user ids are provided")
+public void shouldReturnSuccessWhenNoUserIdsAreProvided() {
+    List<String> userIds = new ArrayList<>();
+
+    request.setAttribute("loginUserType", constant_User.ADMIN);
+
+    Result result = userController.deleteBatch(request, response, userIds);
+
+    assertNotNull(result);
+    assertEquals("200", result.getCode());
+    verify(userService, times(0)).deleteUsers(userIds);
+}
+
 
 }

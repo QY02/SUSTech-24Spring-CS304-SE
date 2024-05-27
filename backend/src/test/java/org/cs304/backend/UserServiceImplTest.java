@@ -6,7 +6,7 @@ package org.cs304.backend;
  * @description
  **/
 
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSONObject;
 import org.cs304.backend.entity.User;
 import org.cs304.backend.exception.ServiceException;
 import org.cs304.backend.mapper.UserMapper;
@@ -26,6 +26,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -184,6 +185,147 @@ public class UserServiceImplTest {
 
         assertThrows(ServiceException.class, () -> userService.deleteUsers(List.of(userId1, userId2)));
     }
+    @Test
+@DisplayName("Should delete user successfully")
+public void shouldDeleteUserSuccessfully() {
+    String userId = "testUserId";
+    User user = new User();
+    user.setId(userId);
+    user.setIconId(1);
+
+    when(userMapper.selectOne(any())).thenReturn(user);
+
+    userService.deleteUser(userId);
+
+    verify(userMapper, times(1)).updateById(any());
+}
+
+@Test
+@DisplayName("Should throw ServiceException when deleting already deactivated user")
+public void shouldThrowServiceExceptionWhenDeletingAlreadyDeactivatedUser() {
+    String userId = "testUserId";
+    User user = new User();
+    user.setId(userId);
+    user.setIconId(0);
+
+    when(userMapper.selectOne(any())).thenReturn(user);
+
+    assertThrows(ServiceException.class, () -> userService.deleteUser(userId));
+}
+
+@Test
+@DisplayName("Should delete multiple users successfully")
+public void shouldDeleteMultipleUsersSuccessfully() {
+    String userId1 = "testUserId1";
+    String userId2 = "testUserId2";
+    User user1 = new User();
+    user1.setId(userId1);
+    user1.setIconId(1);
+    User user2 = new User();
+    user2.setId(userId2);
+    user2.setIconId(1);
+
+    when(userMapper.selectOne(any())).thenReturn(user1).thenReturn(user2);
+
+    userService.deleteUsers(List.of(userId1, userId2));
+
+    verify(userMapper, times(2)).updateById(any());
+}
+
+@Test
+@DisplayName("Should throw ServiceException when deleting multiple users with at least one already deactivated user")
+public void shouldThrowServiceExceptionWhenDeletingMultipleUsersWithAtLeastOneAlreadyDeactivatedUser() {
+    String userId1 = "testUserId1";
+    String userId2 = "testUserId2";
+    User user1 = new User();
+    user1.setId(userId1);
+    user1.setIconId(1);
+    User user2 = new User();
+    user2.setId(userId2);
+    user2.setIconId(0);
+
+    when(userMapper.selectOne(any())).thenReturn(user1).thenReturn(user2);
+
+    assertThrows(ServiceException.class, () -> userService.deleteUsers(List.of(userId1, userId2)));
+}
+
+@Test
+@DisplayName("Should send email successfully when user is found and account is active")
+public void shouldSendEmailSuccessfullyWhenUserIsFoundAndAccountIsActive() {
+    String email = "test@example.com";
+    User user = new User();
+    user.setEmail(email);
+    user.setIconId(1);
+
+    when(userMapper.selectOne(any())).thenReturn(user);
+
+    userService.verifyAndSendEmail(email);
+
+}
+
+@Test
+@DisplayName("Should throw ServiceException when user is not found")
+public void shouldThrowServiceExceptionWhenUserIsNotFound() {
+    String email = "test@example.com";
+
+    when(userMapper.selectOne(any())).thenReturn(null);
+
+    assertThrows(ServiceException.class, () -> userService.verifyAndSendEmail(email));
+}
+
+@Test
+@DisplayName("Should throw ServiceException when user account is already deactivated")
+public void shouldThrowServiceExceptionWhenUserAccountIsAlreadyDeactivated() {
+    String email = "test@example.com";
+    User user = new User();
+    user.setEmail(email);
+    user.setIconId(0);
+
+    when(userMapper.selectOne(any())).thenReturn(user);
+
+    assertThrows(ServiceException.class, () -> userService.verifyAndSendEmail(email));
+}
+@Test
+@DisplayName("Should login with email successfully when verification code is correct and account is active")
+public void shouldLoginWithEmailSuccessfullyWhenVerificationCodeIsCorrectAndAccountIsActive() {
+    JSONObject jsonObject = new JSONObject();
+    jsonObject.put("code", "123456");
+    jsonObject.put("email", "test@example.com");
+    User user = new User();
+    user.setEmail("test@example.com");
+    user.setIconId(1);
+
+    when(redisUtil.get("123456", false, true)).thenReturn("test@example.com");
+    when(userMapper.selectOne(any())).thenReturn(user);
+    when(redisUtil.generateToken(user)).thenReturn(user);
+
+    User result = userService.loginWithEmail(jsonObject);
+    assertNotNull(result);
+}
+
+@Test
+@DisplayName("Should throw ServiceException when verification code is incorrect")
+public void shouldThrowServiceExceptionWhenVerificationCodeIsIncorrect() {
+    JSONObject jsonObject = new JSONObject();
+    jsonObject.put("code", "123456");
+    jsonObject.put("email", "test@example.com");
+
+    when(redisUtil.get("123456", false, true)).thenReturn("wrong@example.com");
+
+    assertThrows(ServiceException.class, () -> userService.loginWithEmail(jsonObject));
+}
+
+@Test
+@DisplayName("Should throw ServiceException when registering with duplicate email")
+public void shouldThrowServiceExceptionWhenRegisteringWithDuplicateEmail2() {
+    User user = new User();
+    user.setId("testUserId");
+    user.setEmail("test@example.com");
+
+    when(userMapper.selectOne(any())).thenReturn(user);
+
+    assertThrows(ServiceException.class, () -> userService.registerSearch(user));
+}
 
 }
 

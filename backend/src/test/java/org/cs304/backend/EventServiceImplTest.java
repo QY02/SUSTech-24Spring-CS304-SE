@@ -8,6 +8,7 @@ package org.cs304.backend;
 
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.cs304.backend.constant.constant_User;
 import org.cs304.backend.entity.*;
@@ -70,6 +71,8 @@ public class EventServiceImplTest {
     private INotificationService notificationService;
     @Mock
     private Lock submitBookingDataLock;
+    @Mock
+    private UserMapper userMapper;
 
     @BeforeEach
     public void setup() {
@@ -395,4 +398,64 @@ public class EventServiceImplTest {
         assertTrue(results.isEmpty());
     }
 
+    @Test
+    @DisplayName("Test getAuditList with valid event status")
+    public void getAuditList_ValidEventStatus() {
+        String eventStatus = "1,2,3";
+        when(eventMapper.selectList(any())).thenReturn(new ArrayList<>());
+
+        JSONArray result = eventService.getAuditList(eventStatus);
+        assertNotNull(result);
+    }
+
+    @Test
+    @DisplayName("Test getAuditList with null event list")
+    public void getAuditList_NullEventList() {
+        String eventStatus = "1,2,3";
+        when(eventMapper.selectList(any())).thenReturn(null);
+
+        JSONArray result = eventService.getAuditList(eventStatus);
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Test getAuditList with empty event list")
+    public void getAuditList_EmptyEventList() {
+        String eventStatus = "1,2,3";
+        when(eventMapper.selectList(any())).thenReturn(new ArrayList<>());
+
+        JSONArray result = eventService.getAuditList(eventStatus);
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+    @Test
+@DisplayName("Test getAuditList with valid event sessions")
+public void getAuditList_ValidEventSessions() {
+    String eventStatus = "1,2,3";
+    List<Event> eventList = new ArrayList<>();
+    Event event = new Event();
+    event.setId(1);
+    event.setPublisherId("publisher123");
+    eventList.add(event);
+    when(eventMapper.selectList(any())).thenReturn(eventList);
+
+    List<EventSession> eventSessionList = new ArrayList<>();
+    EventSession eventSession = new EventSession();
+    eventSession.setEventId(1);
+    eventSession.setStartTime(LocalDateTime.now());
+    eventSession.setVenue("Test Venue");
+    eventSessionList.add(eventSession);
+    when(eventSessionService.list((Wrapper<EventSession>) any())).thenReturn(eventSessionList);
+
+    User user = new User();
+    user.setIconId(1);
+    when(userMapper.selectById(anyString())).thenReturn(user);
+
+    JSONArray result = eventService.getAuditList(eventStatus);
+    assertNotNull(result);
+    assertEquals(1, result.size());
+    assertEquals("Test Venue", result.getJSONObject(0).get("location"));
+    assertEquals(1, result.getJSONObject(0).get("avatar"));
+}
 }
