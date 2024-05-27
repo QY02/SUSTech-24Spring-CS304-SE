@@ -65,7 +65,14 @@
               </t-col>
             </t-row>
           </div>
+          <div v-else-if="item['status']===0">
+            <t-row :align="'middle'" justify="center">
 
+              <t-col style="justify-content: center">
+
+              </t-col>
+            </t-row>
+          </div>
           <div v-else>
             <t-row :align="'middle'" justify="center" style="gap: 24px;">
               <t-col flex="auto" style="display: inline-flex; justify-content: center;">
@@ -109,6 +116,10 @@
       <t-dialog v-model:visible="visibleNotice" attach="body" header="向指定场次发布通知" destroy-on-close:true width="800px"
         :cancel-btn=null :confirm-btn=null>
         <template #body>
+<!--          <t-space style="width: 100%">-->
+            <t-alert theme="info" title="提示" message="该操作将向指定场次所有订阅者发布通通知" style="width: 100%;margin-bottom: 20px;margin-top: 10px">
+            </t-alert>
+<!--          </t-space>-->
           <t-loading :loading="loadingSession">
             <t-space direction="vertical">
               <t-form ref="form" :data="formData" reset-type="initial" @reset="onReset" @submit="sendNotice"
