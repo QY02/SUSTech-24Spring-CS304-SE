@@ -217,12 +217,7 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
         insertSessions(eventId, eventSessionData);
 
         attachmentList.forEach(attachment -> {
-            EntityAttachmentRelation entityAttachmentRelation = new EntityAttachmentRelation();
-            entityAttachmentRelation.setEntityType(EVENT);
-            entityAttachmentRelation.setEntityId(eventId);
-            entityAttachmentRelation.setAttachmentType(constant_AttachmentType.IMAGE);
-            entityAttachmentRelation.setAttachmentId(attachment.getId());
-            entityAttachmentRelationMapper.updateById(entityAttachmentRelation);
+            entityAttachmentRelationMapper.update(new UpdateWrapper<EntityAttachmentRelation>().eq("entity_type", EVENT).eq("entity_id", eventId).eq("attachment_type", constant_AttachmentType.IMAGE).set("attachment_id", attachment.getId()));
         });
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("eventId", eventId);
