@@ -159,7 +159,7 @@ jobs:
 
 
   update-and-start-events-center-containers:
-    needs: [build-file-server-docker-image-and-upload-to-tyc-server, build-backend-docker-image-and-upload-to-aliyun-server, build-frontend-docker-image-and-upload-to-aliyun-server, build-llm-service-docker-image-and-upload-to-aliyun-server, build-recommend-service-docker-image-and-upload-to-aliyun-server]
+    needs: [build-file-server-docker-image-and-upload-to-tyc-server, build-backend-docker-image-and-upload-to-aliyun-server, build-frontend-docker-image-and-upload-to-aliyun-server, build-llm-service-docker-image-and-upload-to-tyc-server, build-recommend-service-docker-image-and-upload-to-tyc-server]
     runs-on: ubuntu-latest
     environment: deploy-to-aliyun
     steps:
