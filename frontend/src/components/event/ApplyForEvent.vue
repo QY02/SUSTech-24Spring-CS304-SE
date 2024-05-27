@@ -131,10 +131,10 @@ const sendEvent = async () => {
       eventSession.seat_map_id = x[x.length - 2]
       console.log(eventSession)
     }else{
-      console.log('before', eventSession.seat_map_id)
+      // console.log('before', eventSession.seat_map_id)
 
       eventSession.seat_map_id = -1;
-      console.log('after', eventSession.seat_map_id)
+      // console.log('after', eventSession.seat_map_id)
       if(!eventSession.price_required){
         eventSession.price =0 ;
       }

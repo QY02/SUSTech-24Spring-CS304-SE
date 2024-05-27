@@ -144,8 +144,19 @@ const sendEvent = async () => {
     eventSession.additional_information_required = eventSession.additional_information_required.map((information) => {
       return JSON.parse(information);
     });
-    const x = eventSession.seat_map_id.split('.');
-    eventSession.seat_map_id = x[x.length - 2]
+    if (eventSession.seat_required && eventSession.registration_required) {
+      const x = eventSession.seat_map_id.split('.');
+      eventSession.seat_map_id = x[x.length - 2]
+      console.log(eventSession)
+    }else{
+      // console.log('before', eventSession.seat_map_id)
+
+      eventSession.seat_map_id = -1;
+      // console.log('after', eventSession.seat_map_id)
+      if(!eventSession.price_required){
+        eventSession.price =0 ;
+      }
+    }
   })
   console.log(eventSessionData)
   formData.value.eventId = sessionStorage.getItem('eventId')
