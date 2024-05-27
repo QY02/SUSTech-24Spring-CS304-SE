@@ -306,15 +306,21 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
         if (eventSession.getCurrentSize() >= eventSession.getMaxSize()) {
             throw new ServiceException("401", "This session is full");
         }
-        Seat seat = seatMapper.selectOne(new QueryWrapper<Seat>().eq("seat_map_id", eventSession.getSeatMapId()).eq("seat_id", orderRecord.getSeatId()));
-        if (seat == null) {
-            throw new ServiceException("400", "Seat not exist");
+        if(eventSession.getSeatMapId()!=-1){
+            Seat seat = seatMapper.selectOne(new QueryWrapper<Seat>().eq("seat_map_id", eventSession.getSeatMapId()).eq("seat_id", orderRecord.getSeatId()));
+            if (seat == null) {
+                throw new ServiceException("400", "Seat not exist");
+            }
+            if (!seat.getAvailability()) {
+                throw new ServiceException("409", "The seat is not available");
+            }
+            seat.setAvailability(false);
+            seatMapper.update(seat, new UpdateWrapper<Seat>().eq("seat_map_id", eventSession.getSeatMapId()).eq("seat_id", orderRecord.getSeatId()));
+            orderRecord.setPrice(seat.getPrice());
         }
-        if (!seat.getAvailability()) {
-            throw new ServiceException("409", "The seat is not available");
+        else{
+            orderRecord.setPrice(orderRecord.getPrice());
         }
-        seat.setAvailability(false);
-        seatMapper.update(seat, new UpdateWrapper<Seat>().eq("seat_map_id", eventSession.getSeatMapId()).eq("seat_id", orderRecord.getSeatId()));
         List<Integer> statuses = Arrays.asList(PAID, UNPAID, SUBMITTED);
         OrderRecord order = orderRecordMapper.selectOne(new QueryWrapper<OrderRecord>().eq("user_id", userId).eq("event_id", orderRecord.getEventId()).eq("event_session_id", orderRecord.getEventSessionId())
                 .in("status", statuses));
@@ -343,7 +349,7 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
 //            throw new ServiceException("400", "The order record already exist");
 //        }
         orderRecord.setUserId(userId);
-        orderRecord.setPrice(seat.getPrice());
+        // orderRecord.setPrice(seat.getPrice());
         orderRecord.setStatus(SUBMITTED);
         orderRecord.setSubmitTime(LocalDateTime.now());
         orderRecord.setPaymentTime(null);

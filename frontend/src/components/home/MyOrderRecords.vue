@@ -188,7 +188,7 @@ const clickEvent = (index) => {
   // console.log(index)
   // console.log(records.value[index].id)
   console.log(records.value[index].id)
-  MessagePlugin.success(`${sessionStorage.getItem('uid')} 选中【${index}】`);
+  // MessagePlugin.success(`${sessionStorage.getItem('uid')} 选中【${index}】`);
   // alert(typeof records.value)
   sessionStorage.setItem('index', JSON.stringify(records.value[index]))
   router.push('/OrderRecordDetails');
@@ -196,7 +196,7 @@ const clickEvent = (index) => {
 };
 const goToPay = (index) => {
   console.log(index)
-  MessagePlugin.success(`${sessionStorage.getItem('uid')} 选中【${index}】`);
+  // MessagePlugin.success(`${sessionStorage.getItem('uid')} 选中【${index}】`);
   // alert(typeof records.value)
   router.push('/book');
   console.log(unpaidRecords.value[index].id)

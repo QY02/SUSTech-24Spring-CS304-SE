@@ -47,7 +47,8 @@ import {
   sessionInformation,
   bookingInformation,
   toNextStep,
-  fetchSessionInformationStatus
+  fetchSessionInformationStatus,
+  currentStep
 } from '@/components/book/Steps.vue';
 import {AMap} from "@/main";
 import {onUnmounted, ref} from "vue";
@@ -72,9 +73,17 @@ const dateToString = (date: Date) => {
   return result;
 }
 
+
 const choose = (index: number) => {
   bookingInformation.chosenSession = index;
-  toNextStep();
+  if(sessionInformation[index].seatMapId!=-1){
+    toNextStep();
+  }
+  else{
+    bookingInformation.seatPrice = sessionInformation[index].price;
+    bookingInformation.chosenSeat = "活动门票"
+    toNextStep();
+  }
 }
 
 const getChooseButtonStatus = (index: number) => {

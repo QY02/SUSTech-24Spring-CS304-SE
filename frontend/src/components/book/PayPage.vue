@@ -15,13 +15,17 @@
         sessionInformation[chosenSession].venue
       }}
       </t-descriptions-item>
-      <t-descriptions-item label="座位">{{ bookingInformation.chosenSeat }}</t-descriptions-item>
-      <t-descriptions-item label="价格">{{ bookingInformation.seatPrice }}</t-descriptions-item>
+      <t-descriptions-item label="座位" v-if="bookingInformation.chosenSeat">{{ bookingInformation.chosenSeat }}</t-descriptions-item>
+      <div v-show="bookingInformation.seatPrice>0" >
+        <t-descriptions-item label="价格">{{ bookingInformation.seatPrice }}</t-descriptions-item>
+      </div>
     </t-descriptions>
+    <br>
     <div class="input-information-button-div">
       <t-space size="medium">
-        <t-button theme="default" @click="currentStep--" disabled="loadingPay">上一步</t-button>
-        <t-button @click="prePay" :loading="loadingPay">前往付款</t-button>
+        <t-button theme="default" @click="backToPrev" disabled="loadingPay">上一步</t-button>
+        <t-button @click="prePay" :loading="loadingPay" v-if="bookingInformation.seatPrice>0">前往付款</t-button>
+        <t-button @click="bookEvent" :loading="loadingSubmit" v-else>确认报名</t-button>
       </t-space>
     </div>
   </div>
@@ -43,7 +47,7 @@ const dateToString = (date: Date) => {
 }
 
 const loadingPay = ref(false)
-
+const loadingSubmit = ref(false)
 const eventDetail = ref({
   name: ''
 })
@@ -90,6 +94,40 @@ const prePay = () => {
       loadingPay.value = false;
     })
     console.log('endpay')
+}
+
+const bookEvent = () => {
+  loadingSubmit.value = true
+  console.log('startPay')
+  axios.post("/event/submitBookingData", {
+    eventId: bookingInformation.eventId,
+    eventSessionId: sessionInformation[bookingInformation.chosenSession].eventSessionId,
+    seatId: bookingInformation.chosenSeat,
+    additionalInformation: JSON.stringify(bookingInformation.additionalInformation.map(item => ({
+      name: item.name,
+      nameEng: item.nameEng,
+      value: item.value
+    })))
+  }, { headers: { token: sessionStorage.getItem('token') } } )
+    .then((response) => {
+      MessagePlugin.success('提交支付信息成功');
+      loadingSubmit.value = false;
+      toNextStep();
+    })
+    .catch((error) => {
+      loadingSubmit.value = false;
+    })
+    console.log('endpay')
+}
+
+
+const backToPrev = ()=>{
+  if(sessionInformation[bookingInformation.chosenSession].seatMapId!=-1){
+    currentStep.value--;
+  }
+  else{
+    currentStep.value -=2;
+  }
 }
 
 const payResult = ref(0);

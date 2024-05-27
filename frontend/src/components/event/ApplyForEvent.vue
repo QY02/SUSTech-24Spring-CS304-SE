@@ -45,8 +45,8 @@
 <!--          <t-form-item label="是否可见" name="visible_event">-->
 <!--            <t-switch v-model="formData.visible" :label="['是', '否']"></t-switch>-->
 <!--          </t-form-item>-->
-          <t-form-item label="退换票规则" name="event_policy">
-            <t-textarea v-model="formData.event_policy" placeholder="请简单描述项目退换票规则" clearable/>
+          <t-form-item label="活动规则" name="event_policy">
+            <t-textarea v-model="formData.event_policy" placeholder="请简单描述项目活动规则" clearable/>
           </t-form-item>
           <event-session v-model:sessionData="eventSessionData"></event-session>
         </div>
@@ -125,8 +125,15 @@ const sendEvent = async () => {
     eventSession.additional_information_required = eventSession.additional_information_required.map((information) => {
       return JSON.parse(information);
     });
-    const x = eventSession.seat_map_id.split('.');
-    eventSession.seat_map_id = x[x.length - 2]
+    if(eventSession.seat_required){
+      const x = eventSession.seat_map_id.split('.');
+      eventSession.seat_map_id = x[x.length - 2]
+    }else{
+      eventSession.seat_map_id = -1;
+      if(!eventSession.price_required){
+        eventSession.price =0 ;
+      }
+    }
   })
   console.log(eventSessionData)
   await axios.post(`/event/add`, {

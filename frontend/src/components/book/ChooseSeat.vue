@@ -347,7 +347,9 @@ const fetchSessionInformation = async () => {
 watch(() => bookingInformation.chosenSession, (newSession, oldSession) => {
   bookingInformation.chosenSeat = null;
   if ((oldSession === null) || (newSession === null) || (sessionInformation[oldSession].seatMapId !== sessionInformation[newSession].seatMapId)) {
-    fetchSessionInformation();
+    if(sessionInformation[newSession].seatMapId!=-1){
+      fetchSessionInformation();
+    }
   }
 })
 </script>
