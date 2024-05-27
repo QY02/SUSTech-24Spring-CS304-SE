@@ -87,8 +87,17 @@
                 style="width: 150px"
             ></t-input-number>
           </t-form-item>
-          <t-form-item label="座位图" name="seat_map_id">
+          <t-form-item label="是否需要选座" name="seat_required">
+            <t-switch v-model="Data.seat_required" :label="['是', '否']"></t-switch>
+          </t-form-item>
+          <t-form-item label="座位图" name="seat_map_id" v-show="Data.seat_required">
             <t-cascader v-model="Data.seat_map_id" :options="seat_map_options" clearable/>
+          </t-form-item>
+          <t-form-item label="是否需要收费" name="price_required" v-show="!Data.seat_required">
+            <t-switch v-model="Data.price_required" :label="['是', '否']"></t-switch>
+          </t-form-item>
+          <t-form-item label="价格" name="price" v-show="Data.price_required &&  !Data.seat_required">
+            <t-input v-model="Data.price"></t-input>
           </t-form-item>
           <t-form-item label="地址" name="venue">
             <t-input v-model="Data.venue">地址</t-input>
@@ -154,7 +163,10 @@ const INITIAL_DATA = {
   event_time_range: [],
   min_cnt: 10,
   max_cnt: 200,
+  seat_required: true,
   seat_map_id: '',
+  price_required: true,
+  price: 1,
   venue: '',
   location: null,
   additional_information_required: [],
@@ -256,12 +268,21 @@ const columns = computed(() => [
     },
   },
   {
-    title: '座位', colKey: 'seat_map_id',
+    title: '座位/价格信息', colKey: 'seat_map_id',
     width: 200, align: 'center',
     cell: (h, {row}) => {
-      const x = row.seat_map_id.split('.');
+      if(row.seat_required){
+        const x = row.seat_map_id.split('.');
       const displayValue=x[x.length-1]
       return `${displayValue}`
+      }
+      else if(row.price_required){
+        return  `价格: ${row.price} 元`
+      }
+      else{
+        return `无需支付`
+      }
+    
     },
   },
   {
@@ -361,7 +382,18 @@ const FORM_RULES = ref({
   ],
   venue: [{required: true, message: '地址必填'}],
   location: [{required: true, message: '地址必填'}],
-  seat_map_id: [{required: true, message: '座位图必选'}],
+  seat_map_id: [{required: computed(() => Data.value.seat_required), message: '座位图必选'}],
+  price:
+  [
+    { required: computed(() => Data.value.price_required), message: '价格必填', type: 'error', trigger: 'blur' },
+    { required: true, message: '价格必填', type: 'error', trigger: 'change' },
+    { whitespace: true, message: '价格不能为空' },
+    { validator: (val) => val >= 1, message: '价格应为正数', type: 'error', trigger: 'blur' },
+  ],
+  // [
+  //   {required: computed(() => Data.value.price_required), message:'票价必填'}, 
+  //   {min: 1, message: '价格应为正数'},
+  //   { max: 1000, message: '价格应为不大于1000', type: 'error', trigger: 'blur' }]
 });
 const dialogHeader = ref('请填写场次信息');
 

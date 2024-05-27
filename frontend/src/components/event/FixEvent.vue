@@ -120,69 +120,7 @@ const getEventDetail = () => {
   })
 }
 getEventDetail()
-const fetchSessionInformation = async () => {
-  try {
-    let response = await axios.post("/event/getEventSessionsByEventId", {eventId: sessionStorage.getItem('eventId')}, {headers: {token: sessionStorage.getItem('token')}});
-    // alert(JSON.stringify(response.data.data))
-    const dataConverted = response.data.data.map((item) => ({
-      ...item,
-      // startTime: new Date(item.startTime),
-      // endTime: new Date(item.endTime),
-      // registrationStartTime: new Date(item.registrationStartTime),
-      // registrationEndTime: new Date(item.registrationEndTime),
-      location: item.location.split(",").map(Number),
-      registration_time_range: [new Date(item.registrationStartTime), new Date(item.registrationEndTime)],
-      key: 0,
-      registration_required: item.registration_required,
-      event_time_range: [new Date(item.startTime), new Date(item.endTime)],
-      min_cnt: item.minSize,
-      max_cnt: item.maxSize,
-      seat_map_id:item.seatMapId
 
-    }));
-    session.length = 0;
-    session.push(...dataConverted);
-    // session.push("registration_time_range", [new Date(item.registrationStartTime), new Date(item.registrationEndTime)])
-    alert(JSON.stringify(session))
-
-    console.log("sessionInformation" + session.length)
-  } catch (error) {
-  }
-}
-
-// fetchSessionInformation()
-const attachmentPath = ref('');
-const getAttachment = () => {
-  axios.get(`/event/getPhotoById?eventId=${eventId}`, {
-    headers: {
-      token: token
-    }
-  }).then((response) => {
-    attachmentPath.value = response.data.data
-    // console.log(attachmentPath.value)
-    if (attachmentPath.value !== null && attachmentPath.value !== undefined && attachmentPath.value !== '')
-      getPhoto();
-  }).catch(() => { })
-}
-const getPhoto = async () => {
-  try {
-    if (attachmentPath.value) {
-      // console.log('yes')
-      const fileServerResponse = await fileServerAxios.get(`/file/download`, {
-        responseType: 'blob',
-        headers: {
-          token: attachmentPath.value,
-        }
-      });
-      const image = fileServerResponse.data;
-      // alert(JSON.stringify(image))
-      formData.value.poster = image;
-    }
-  } catch (error) {
-
-  }
-}
-// getAttachment()
 
 // #### 数据 END ##########################################
 

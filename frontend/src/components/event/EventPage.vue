@@ -55,7 +55,7 @@
         <t-tab-panel value="events" label="活动场次"></t-tab-panel>
         <t-tab-panel value="about" label="活动细节"></t-tab-panel>
         <t-tab-panel value="price" label="活动票价"></t-tab-panel>
-        <t-tab-panel value="policy" label="退换票规则"></t-tab-panel>
+        <t-tab-panel value="policy" label="额外信息"></t-tab-panel>
         <t-tab-panel value="gallery" label="相关动态"></t-tab-panel>
         <t-tab-panel value="reviews" label="评论"></t-tab-panel>
       </t-tabs>
@@ -160,17 +160,16 @@
       </p>
       <div v-show="sessionInformation.length > 0">
         <p style="  margin-top: 0.4rem; color: rgb(70, 73, 79);font-weight: 600;">
-          开始日期
+          
         </p>
         <p style=" margin-top: -5px; line-height: 1.625; color: rgb(70, 73, 79);">
         <div v-for="(session, index) in sessionInformation">
           <div class="choose-session-detail-div">
             <p v-if="session.registrationRequired" class="choose-session-detail-text">
-            <p>场次{{ index }}: 
+            <p>场次{{ Number(index+1) }}: 
             {{
               `时间: ${dateToString(session.registrationStartTime)}`
             }} </p>
-            <br>
             </p>
             <p v-else class="choose-session-detail-text">
             <p>场次{{ index }}: 无需报名</p>
@@ -200,7 +199,7 @@
     <div class="card" style="flex-direction: column;">
       <t-space style="display: flex; width: 100%;">
         <div>
-          <div class="title">退换票规则</div>
+          <div class="title">额外信息</div>
           <div class="line"></div>
         </div>
       </t-space>

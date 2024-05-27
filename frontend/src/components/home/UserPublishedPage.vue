@@ -122,8 +122,8 @@
                   </t-input>
                 </t-form-item>
                 <t-form-item name="content" label="内容">
-                  <t-input v-model="formData.content" clearable:true placeholder="请输入内容">
-                  </t-input>
+                  <t-textarea v-model="formData.content" clearable:true placeholder="请输入内容">
+                  </t-textarea>
                 </t-form-item>
                 <t-form-item>
                   <t-space size="20px">

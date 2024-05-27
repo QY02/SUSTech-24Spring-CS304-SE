@@ -6,7 +6,7 @@
       <div class="input-information-button-div">
         <t-space size="medium">
           <t-button theme="default" @click="currentStep--">上一步</t-button>
-          <t-button theme="primary" @click="currentStep++">下一步</t-button>
+          <t-button theme="primary" @click="chooseNext">下一步</t-button>
         </t-space>
       </div>
     </div>
@@ -87,6 +87,15 @@ const onSubmit: FormProps['onSubmit'] = ({validateResult, firstError}) => {
     MessagePlugin.warning(firstError);
   }
 };
+
+const chooseNext = ()=>{
+  if(sessionInformation[bookingInformation.chosenSession].seatMapId != -1){
+    toNextStep();
+  }
+  else{
+    currentStep.value = currentStep.value + 2;
+  }
+}
 </script>
 
 <script lang="ts" >
