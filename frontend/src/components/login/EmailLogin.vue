@@ -50,11 +50,6 @@ import {MessagePlugin} from 'tdesign-vue-next';
 import {DesktopIcon, LockOnIcon} from 'tdesign-icons-vue-next';
 import axios from "axios";
 import router from "@/routers";
-const globalProperties = getCurrentInstance().appContext.config.globalProperties;
-const apiBaseUrl = globalProperties.$apiBaseUrl;
-
-axios.defaults.baseURL = apiBaseUrl;
-
 const formData = reactive({
   email: '',
   code: '',

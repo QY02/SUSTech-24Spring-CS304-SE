@@ -1,7 +1,7 @@
 <template>
   <div class="steps-main-div">
 
-    <t-steps style="width: 70%" :current="currentStep" readonly @change="stepChange" v-show="bookingInformation.chosenSession!== null && sessionInformation[bookingInformation.chosenSession].seatMapId != -1">
+    <t-steps style="width: 70%" :current="stepCurrent" readonly @change="stepChange" v-show="bookingInformation.chosenSession!== null && sessionInformation[bookingInformation.chosenSession].seatMapId != -1">
       <t-step-item title="选择场次">
         <template #icon>
           <TimeIcon size="24" class="icon-margin" />
@@ -34,7 +34,7 @@
       </t-step-item>
     </t-steps>
 
-    <t-steps style="width: 70%" :current="currentStep" readonly @change="stepChange" v-show="bookingInformation.chosenSession=== null||(bookingInformation.chosenSession!== null && sessionInformation[bookingInformation.chosenSession].seatMapId == -1)">
+    <t-steps style="width: 70%" :current="stepCurrent" readonly @change="stepChange" v-show="bookingInformation.chosenSession=== null||(bookingInformation.chosenSession!== null && sessionInformation[bookingInformation.chosenSession].seatMapId == -1)">
       <t-step-item title="选择场次">
         <template #icon>
           <TimeIcon size="24" class="icon-margin" />
@@ -111,7 +111,9 @@ bookingInformation.eventId = Number(sessionStorage.getItem('eventId'));
 const stepChange = (current: number, previous: number) => {
   if ((previous !== 3) && (current !== 3)) {
     if (!((previous === 0) && (bookingInformation.chosenSession === null))) {
+      console.log(currentStep.value)
       currentStep.value = current;
+      console.log(current)
     } else {
       MessagePlugin.warning('请选择一个场次');
     }
@@ -173,6 +175,17 @@ watch(
 
 watch(currentStep, (newValue) => {
   sessionStorage.setItem('currentStep', newValue);
+  if(bookingInformation.chosenSession!== null && sessionInformation[bookingInformation.chosenSession].seatMapId == -1){
+    if(newValue>=3){
+      console.log(newValue)
+      console.log(currentStep)
+      stepCurrent.value = newValue-1
+      console.log(currentStep)
+    }
+  }
+  else{
+    stepCurrent.value = newValue
+  }
 })
 
 </script>
@@ -186,6 +199,7 @@ import { useRoute } from "vue-router";
 
 
 export let currentStep = ref(parseInt(sessionStorage.getItem('currentStep')));
+let stepCurrent =  ref(parseInt(sessionStorage.getItem('currentStep')));
 if ((currentStep.value != 3) && (currentStep.value != 4) && (currentStep.value != 5)) {
   currentStep.value = 0;
 }
