@@ -160,7 +160,7 @@ jobs:
             docker rm events_center_recommend_service || true
             docker rmi qy02/events_center_recommend_service || true
             docker pull qy02/events_center_recommend_service
-            docker run -d --name events_center_recommend_service qy02/events_center_recommend_service
+            docker run -d --name events_center_recommend_service -e TZ=Asia/Shanghai qy02/events_center_recommend_service
 
   update-and-start-events-center-containers:
     needs: [build-file-server-docker-image-and-upload-to-tyc-server, build-backend-docker-image-and-upload-to-aliyun-server, build-frontend-docker-image-and-upload-to-aliyun-server, build-llm-service-docker-image-and-upload-to-tyc-server]
@@ -179,7 +179,7 @@ jobs:
             docker rm events_center_file_server || true
             docker rmi qy02/events_center_file_server || true
             docker load -i /home/shadowfall/Documents/Software_Engineering/auto-deployment/docker-image-tars/events_center_file_server.tar
-            docker run -d --name events_center_file_server -p 25572:25572 -v /home/shadowfall/Documents/Software_Engineering/auto-deployment/fileServerData:/app/data qy02/events_center_file_server    steps:
+            docker run -d --name events_center_file_server -p 25572:25572 -e TZ=Asia/Shanghai -v /home/shadowfall/Documents/Software_Engineering/auto-deployment/fileServerData:/app/data qy02/events_center_file_server    steps:
       - name: update-and-start-events-center-backend
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -192,7 +192,7 @@ jobs:
             docker rm events_center_backend || true
             docker rmi qy02/events_center_backend || true
             docker load -i /root/SE/auto-deployment/docker-image-tars/events_center_backend.tar
-            docker run -d --name events_center_backend -p 25571:25571 -v /root/SE/auto-deployment/backendData:/app/data qy02/events_center_backend
+            docker run -d --name events_center_backend -p 25571:25571 -e TZ=Asia/Shanghai -v /root/SE/auto-deployment/backendData:/app/data qy02/events_center_backend
       - name: update-and-start-events-center-frontend
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -205,7 +205,7 @@ jobs:
             docker rm events_center_frontend || true
             docker rmi qy02/events_center_frontend || true
             docker load -i /root/SE/auto-deployment/docker-image-tars/events_center_frontend.tar
-            docker run -d --name events_center_frontend -p 25577:80 qy02/events_center_frontend
+            docker run -d --name events_center_frontend -p 25577:80 -e TZ=Asia/Shanghai qy02/events_center_frontend
       - name: update-and-start-events-center-llm-service
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -218,4 +218,4 @@ jobs:
             docker rm events_center_llm_service || true
             docker rmi events_center_llm_service || true
             docker load -i /home/shadowfall/Documents/Software_Engineering/auto-deployment/docker-image-tars/events_center_llm_service.tar
-            docker run -d --name events_center_llm_service --env-file /home/shadowfall/.llmrc events_center_llm_service
+            docker run -d --name events_center_llm_service -e TZ=Asia/Shanghai --env-file /home/shadowfall/.llmrc events_center_llm_service
