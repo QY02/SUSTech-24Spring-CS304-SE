@@ -32,8 +32,9 @@
       </t-space>
     </t-aside>
 
-    <t-content>
-      <div :style="{height: 'calc( 100vh - 56px)', 'overflow-y': 'scroll' }">
+    <t-content :style="{ display: 'flex', 'justify-content': 'center'}">
+      <div :style="{height: 'calc(100vh - 56px)', width: '1000px', 'overflow-y': 'scroll', 'scrollbar-width': 'none', '-ms-overflow-style': 'none'}">
+        <t-space size="small" direction="vertical">
       <t-card class="card-with-margin" hoverShadow>
         <t-space>
           <t-button @click="deletePost" theme="danger">
@@ -46,8 +47,8 @@
         <h1>
         {{momentData.title}}
         </h1>
-        <t-comment :author="momentData.userName" :datetime="momentData.publishDate"
-                   :content="momentData.content">
+        <t-comment :author="momentData.userName" :datetime="momentData.publishDate.replace('T',' ')"
+                   :content="momentData.content" style=" width:900px;white-space: pre-wrap;word-wrap: anywhere;">
           <template #avatar>
             <t-avatar size="60px" :image="momentData.avatar"/>
 <!--            <t-popconfirm v-if="momentData.publisherId!==user" content="与ta聊天" :cancel-btn="null" @confirm="chat(momentData.publisherId,momentData.userName)">-->
@@ -69,17 +70,19 @@
             </t-space>
           </template>
         </t-comment>
-        <div class="spacing"></div>
-        <video v-if="momentData.mediaType===true" :src="video" controls :style="{ width: cardWidth - 60 + 'px' }"/>
+        <t-divider />
+        <video v-if="momentData.mediaType===true" :src="video" controls :style="{ width: 900 + 'px', height: 450+ 'px' }"/>
         <t-swiper v-if="momentData.mediaType===false"
             class="tdesign-demo-block--swiper"
             :autoplay="false"
+             style="width:900px"
         >
-          <t-swiper-item v-for="item in photoList" :key="item" >
-            <t-image-viewer :key="item" v-model:visible="photoPreviewVisible" :default-index="0" :images="photoUrlList">
+          <t-swiper-item v-for="item in photoList" :key="0">
+            <t-image-viewer :key="0" v-model:visible="photoPreviewVisible" :current="currentPic" :images="photoUrlList">
               <template #trigger>
             <t-image @click="photoPreviewVisible = true"
-                :src=item
+                     :style="{height:450+'px'}"
+                     :src=item
                 fit="cover"
                 shape="round"
             />
@@ -88,6 +91,7 @@
           </t-swiper-item>
         </t-swiper>
       </t-card>
+        </t-space>
       </div>
     </t-content>
   </t-layout>
@@ -208,7 +212,6 @@ const getMomentBatch = async (id) => {
 onMounted(async() => {
   await getMomentBatch(-1);
   await selectMoment(list.value[0]);
-  cardWidth.value = cardRef.value.$el.offsetWidth;
 });
 
 const loadMore = async () => {
@@ -220,7 +223,6 @@ const loadMore = async () => {
 // ###### 动态详情 开始 ######
 
 const cardRef = ref(null);
-let cardWidth = ref(0);
 
 const momentData = ref({
   id: 'A',
@@ -423,7 +425,7 @@ const commentsData = ref([
 <style scoped>
 
 .card-with-margin {
-  margin: 20px;
+  margin: 10px 20px;
   height: max-content;
   display: flex;
 }
@@ -453,4 +455,7 @@ h1 {
   margin: 40px;
 }
 
+&::-webkit-scrollbar {
+  display: none;
+}
 </style>
