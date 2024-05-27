@@ -102,7 +102,7 @@
           <t-comment style="margin-bottom: 5px;white-space: pre-wrap;word-wrap: anywhere;" :avatar="item.avatar" :author="item.author" :datetime="item.publishDate.replace('T',' ')"
                      :content="item.content">
             <template #actions>
-              <t-space key="delete" :size="6" @click="deleteComment(item)">
+              <t-space key="delete" :size="6" @click="deleteComment(item)" style="color: red">
                 <t-icon name="delete" />
                 <span>删除</span>
               </t-space>
@@ -127,8 +127,8 @@
              :status="deleteTips ? 'error' : ''"
              @change="onDeleteChange"/>
     <template #footer>
+      <t-button @click="closeDelete" theme="default">取消</t-button>
       <t-button theme="danger" @click="onDeleteClickConfirm">确定</t-button>
-      <t-button @click="closeDelete">取消</t-button>
     </template>
   </t-dialog>
   <t-dialog
@@ -146,8 +146,8 @@
              :status="commentDeleteTips ? 'error' : ''"
              @change="onCommentDeleteChange"/>
     <template #footer>
+      <t-button @click="closeCommentDelete" theme="default">取消</t-button>
       <t-button theme="danger" @click="onCommentDeleteClickConfirm">确定</t-button>
-      <t-button @click="closeCommentDelete">取消</t-button>
     </template>
   </t-dialog>
 </template>
