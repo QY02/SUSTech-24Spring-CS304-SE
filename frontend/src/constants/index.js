@@ -92,6 +92,13 @@ export const ENTITY_TYPE = {
 };
 export const DEPARTMENT_OPTIONS = ['计算机系','物理系','数学系'];
 export const emailSuffix = ['@qq.com', '@163.com', '@gmail.com','@mail.sustech.edu.cn'];
-
+export const avatarList = [
+    'https://imgs.design006.com/Upload/test/Design006_20200905085032928.png',
+    'https://avatars.githubusercontent.com/pengyyyyy',
+    'https://tdesign.gtimg.com/site/avatar.jpg',
+    'https://avatars.githubusercontent.com/LeeJim',
+    'https://avatars.githubusercontent.com/u/7361184?v=4',
+    'https://avatars.githubusercontent.com/pattybaby110',
+    'https://avatars.githubusercontent.com/chaishi']
 
 

@@ -188,17 +188,11 @@ import {onMounted, ref} from 'vue';
 import router from "@/routers/index.js";
 import axios from "axios";
 import {fileServerAxios} from "@/main.js"
+import {avatarList} from "@/constants/index.js"
 
 const user = sessionStorage.getItem("uid") ? sessionStorage.getItem("uid") : '';//当前用户
 
-const avatarList = [
-  'https://imgs.design006.com/Upload/test/Design006_20200905085032928.png',
-  'https://avatars.githubusercontent.com/pengyyyyy',
-  'https://tdesign.gtimg.com/site/avatar.jpg',
-  'https://avatars.githubusercontent.com/LeeJim',
-  'https://avatars.githubusercontent.com/u/7361184?v=4',
-  'https://avatars.githubusercontent.com/pattybaby110',
-  'https://avatars.githubusercontent.com/chaishi']
+
 
 
 // ###### 动态列表 开始 ######
