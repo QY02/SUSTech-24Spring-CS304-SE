@@ -44,7 +44,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/orderRecord")
 public class OrderRecordController {
-    private static final String CHARSET = "GBK";
+    private static final String CHARSET = "UTF-8";
     private static final String FORMAT = "JSON";
     private static final String SIGN_TYPE = "RSA2";
     @Resource

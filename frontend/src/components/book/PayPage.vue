@@ -110,7 +110,7 @@ const bookEvent = () => {
     })))
   }, { headers: { token: sessionStorage.getItem('token') } } )
     .then((response) => {
-      MessagePlugin.success('提交支付信息成功');
+      MessagePlugin.success('提交预定成功');
       loadingSubmit.value = false;
       toNextStep();
     })
