@@ -90,14 +90,14 @@ public class ChatMessageController {
             avatarMap.put(userID, userAvatar.toString());
             avatarMap.put(toUserID, toUserAvatar.toString());
             List<ChatMessage> allMessages = chatMessageMapper.selectList(new QueryWrapper<ChatMessage>().eq("receiver_id", userID).eq("sender_id", toUserID).or().eq("receiver_id", toUserID).eq("sender_id", userID).orderByDesc("send_time").last("LIMIT 50"));
-            if (!allMessages.isEmpty()) {
-                chatMessageMapper.update(new UpdateWrapper<ChatMessage>().in("id", allMessages.stream().filter(chatMessage -> {
-                                if (chatMessage.getReceiverId().equals(userID)) {
-                                    return !chatMessage.getHasRead();
-                                }
-                                return false;
-                        }
-                    ).map(ChatMessage::getId).toList()).set("has_read", true));
+            List<ChatMessage> updateMessages = allMessages.stream().filter(chatMessage -> {
+                if (chatMessage.getReceiverId().equals(userID)) {
+                    return !chatMessage.getHasRead();
+                }
+                return false;
+            }).toList();
+            if (!updateMessages.isEmpty()) {
+                chatMessageMapper.update(new UpdateWrapper<ChatMessage>().in("id", updateMessages.stream().map(ChatMessage::getId).toList()).set("has_read", true));
             }
             allMessages.sort(Comparator.comparing(ChatMessage::getSendTime));
             List<JSONObject> allMessages0 = allMessages.stream().map(s -> {

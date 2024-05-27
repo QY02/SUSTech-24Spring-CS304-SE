@@ -40,7 +40,7 @@
             <t-radio-button value="1">动态</t-radio-button>
             <t-radio-button value="2">我的发布</t-radio-button>
           </t-radio-group>
-          <t-button theme="default" variant="outline" @click="showMsg">我的未读消息</t-button>
+          <t-button theme="default" variant="outline" @click="showMsg">我的消息</t-button>
         </t-space>
         <t-alert v-if="list.length===0 && radioGroupValue==='2'" class="card-with-margin" theme="info" style="width:600px"
                  title="您还没有发送过动态" message="欢迎分享您的感受">
@@ -163,7 +163,7 @@
       width="300px"
       showOverlay
       preventScrollThrough
-      header="我的未读消息"
+      header="我的消息"
       destroyOnClose
       :footer="false"
       v-model:visible="msgVisible"
@@ -257,7 +257,7 @@ const loadMore = async () => {
 
 // ###### 动态列表 结束 ######
 
-// ###### 未读消息 开始 ######
+// ###### 消息 开始 ######
 
 const unreadUser = ref([]);
 const readUser = ref([]);
@@ -277,7 +277,7 @@ const getUnreadMsg = async () => {
   }
 };
 
-// ###### 未读消息 结束 ######
+// ###### 消息 结束 ######
 
 
 // ###### 动态详情 开始 ######
