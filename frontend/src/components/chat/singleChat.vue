@@ -28,6 +28,7 @@ import {ref, getCurrentInstance, onMounted} from 'vue';
 import axios from 'axios';
 import {MessagePlugin} from 'tdesign-vue-next';
 import MarkdownIt from 'markdown-it';
+import {avatarList} from '@/constants/index.js';
 
 
 const md = new MarkdownIt();
@@ -95,6 +96,7 @@ const initChat = async () => {
     content.value = '<br>';
 
     socket.onopen = function () {
+      content.value = '<br>';
       console.log("websocket已打开");
       getHistoryMessage();
     };
@@ -102,9 +104,9 @@ const initChat = async () => {
     socket.onmessage = function (msg) {
       console.log("收到数据====" + msg.data);
       if (msg.data === "USER ALREADY EXISTS") {
-        console.log("用户已存在");
-        content.value = '<br>';
-        initChat();
+        // alert("用户已存在");
+        // content.value = '<br>';
+        // initChat();
         return;
       }
       createContent(chatPartner.value, null, msg.data.text);
@@ -144,14 +146,6 @@ const send = () => {
     }
   }
 };
-
-const avatarList = ['https://avatars.githubusercontent.com/pengyyyyy',
-  'https://tdesign.gtimg.com/site/avatar.jpg',
-  'https://avatars.githubusercontent.com/LeeJim',
-  'https://avatars.githubusercontent.com/u/7361184?v=4',
-  'https://avatars.githubusercontent.com/pattybaby110',
-  'https://avatars.githubusercontent.com/chaishi']
-
 
 
 const createContent = (remoteUser, nowUser, text) => {

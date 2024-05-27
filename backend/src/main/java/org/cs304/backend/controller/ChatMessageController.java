@@ -91,7 +91,13 @@ public class ChatMessageController {
             avatarMap.put(toUserID, toUserAvatar.toString());
             List<ChatMessage> allMessages = chatMessageMapper.selectList(new QueryWrapper<ChatMessage>().eq("receiver_id", userID).eq("sender_id", toUserID).or().eq("receiver_id", toUserID).eq("sender_id", userID).orderByDesc("send_time").last("LIMIT 50"));
             if (!allMessages.isEmpty()) {
-                chatMessageMapper.update(new UpdateWrapper<ChatMessage>().in("id", allMessages.stream().map(ChatMessage::getId).toList()).set("has_read", true));
+                chatMessageMapper.update(new UpdateWrapper<ChatMessage>().in("id", allMessages.stream().filter(chatMessage -> {
+                                if (chatMessage.getReceiverId().equals(userID)) {
+                                    return !chatMessage.getHasRead();
+                                }
+                                return false;
+                        }
+                    ).map(ChatMessage::getId).toList()).set("has_read", true));
             }
             allMessages.sort(Comparator.comparing(ChatMessage::getSendTime));
             List<JSONObject> allMessages0 = allMessages.stream().map(s -> {
@@ -135,13 +141,23 @@ public class ChatMessageController {
                     """)
     public Result getUnread(HttpServletRequest request, HttpServletResponse response) {
         try {
+            JSONObject returnObj = new JSONObject();
             String userID = (String) request.getAttribute("loginUserId");
             List<String> users = chatMessageMapper.selectList(new QueryWrapper<ChatMessage>().select("sender_id").eq("receiver_id", userID).eq("has_read", false).groupBy("sender_id")).stream().map(ChatMessage::getSenderId).toList();
             if (users.isEmpty()) {
-                return Result.success(response);
+                returnObj.put("unread", List.of());
+            }else {
+                List<User> userList = userMapper.selectBatchIds(users);
+                returnObj.put("unread", userList);
             }
-            List<User> userList = userMapper.selectBatchIds(users);
-            return Result.success(response, userList);
+            users = chatMessageMapper.selectList(new QueryWrapper<ChatMessage>().select("sender_id").eq("receiver_id", userID).eq("has_read", true).groupBy("sender_id")).stream().map(ChatMessage::getSenderId).toList();
+            if (users.isEmpty()) {
+                returnObj.put("read", List.of());
+            }else {
+                List<User> userList = userMapper.selectBatchIds(users);
+                returnObj.put("read", userList);
+            }
+            return Result.success(response, returnObj);
         } catch (Exception e) {
             log.error(e.getMessage());
             return Result.error(response, "fail to get unread message");

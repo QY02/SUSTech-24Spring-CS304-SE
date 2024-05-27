@@ -40,7 +40,7 @@
             <t-radio-button value="1">动态</t-radio-button>
             <t-radio-button value="2">我的发布</t-radio-button>
           </t-radio-group>
-          <t-button v-if="hasUnreadMsg" theme="default" variant="outline" @click="showMsg">我的未读消息</t-button>
+          <t-button theme="default" variant="outline" @click="showMsg">我的未读消息</t-button>
         </t-space>
         <t-alert v-if="list.length===0 && radioGroupValue==='2'" class="card-with-margin" theme="info" style="width:600px"
                  title="您还没有发送过动态" message="欢迎分享您的感受">
@@ -173,6 +173,16 @@
         <t-list-item-meta :image="avatarList[item.iconId]" :title="item.name"/>
         <template #action>
           <t-button variant="text" shape="square" @click="chat(item.id,item.name)">
+            <t-badge dot :count="2">
+            <chat-icon/>
+            </t-badge>
+          </t-button>
+        </template>
+      </t-list-item>
+      <t-list-item v-for="item in readUser" :key="item.id">
+        <t-list-item-meta :image="avatarList[item.iconId]" :title="item.name"/>
+        <template #action>
+          <t-button variant="text" shape="square" @click="chat(item.id,item.name)">
             <chat-icon/>
           </t-button>
         </template>
@@ -249,22 +259,20 @@ const loadMore = async () => {
 
 // ###### 未读消息 开始 ######
 
-const hasUnreadMsg = ref(false);
 const unreadUser = ref([]);
+const readUser = ref([]);
 
 const getUnreadMsg = async () => {
   try {
-    hasUnreadMsg.value = false;
     unreadUser.value = [];
+    readUser.value = [];
     const response = await axios.get(`/chatMessage/getUnread`, {
       headers: {
         token: sessionStorage.getItem('token'),
       }
     });
-    if (response.data.data.length > 0) {
-      hasUnreadMsg.value = true;
-      unreadUser.value = response.data.data;
-    }
+      unreadUser.value = response.data.data.unread;
+      readUser.value = response.data.data.read;
   } catch (error) {
   }
 };
