@@ -69,7 +69,7 @@
             />
           </t-form-item>
 
-          <t-form-item label="人数" name="count_range_of_people" required-mark="">
+          <t-form-item label="人数" name="count_range_of_people" :required-mark="true">
             <t-input-number
                 v-model="Data.min_cnt"
                 theme="column"
