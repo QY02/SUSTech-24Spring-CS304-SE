@@ -26,9 +26,15 @@
         </div>
     </t-space>
     <div style="margin-left: 25px; margin-top: -10px;">
-        <p style="  margin-top: 0.4rem; line-height: 1.625; color: rgb(70, 73, 79);;">
-            门票价格：¥{{ event.lowestPrice }} - ¥{{ event.highestPrice }}
+        <p style="  margin-top: 0.4rem; line-height: 1.625; color: rgb(70, 73, 79);;" v-show="event.highestPrice!=0">
+            不需要购买
         </p>
+      <p style="  margin-top: 0.4rem; line-height: 1.625; color: rgb(70, 73, 79);;" v-show="event.highestPrice>0&& event.highestPrice!==event.lowestPrice">
+        门票价格：¥{{ event.lowestPrice }}
+      </p>
+      <p style="  margin-top: 0.4rem; line-height: 1.625; color: rgb(70, 73, 79);;" v-show="event.highestPrice>0 && event.highestPrice===event.lowestPrice">
+        门票价格：¥{{ event.lowestPrice }} - ¥{{ event.highestPrice }}
+      </p>
     </div>
     <div style="height: 20px;"></div>
     <div style="height: 20px;"></div>

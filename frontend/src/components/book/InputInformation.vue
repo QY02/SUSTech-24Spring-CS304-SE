@@ -10,7 +10,7 @@
         </t-space>
       </div>
     </div>
-    <t-form v-show="additionalInformation.length !== 0" ref="form" :rules="FORM_RULES" :data="formData" :colon="true" @submit="onSubmit">
+    <t-form v-show="additionalInformation.length !== 0" ref="form" :rules="FORM_RULES" :data="formData" :colon="true" @submit="chooseNext">
       <t-form-item v-for="information in additionalInformation" :label="information.name" :name="information.nameEng">
         <t-input v-model="formData[information.nameEng]" :placeholder="`请输入${information.name}`"></t-input>
       </t-form-item>
@@ -89,6 +89,8 @@ const onSubmit: FormProps['onSubmit'] = ({validateResult, firstError}) => {
 };
 
 const chooseNext = ()=>{
+  // console.log("priny")
+  // console.log(sessionInformation[bookingInformation.chosenSession].seatMapId)
   if(sessionInformation[bookingInformation.chosenSession].seatMapId != -1){
     toNextStep();
   }
