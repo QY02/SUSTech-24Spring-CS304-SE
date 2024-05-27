@@ -139,7 +139,7 @@
           <div class="line"></div>
         </div>
       </t-space>
-      <div style="margin-left: 25px;margin-right: 25px; margin-bottom: 40px;">
+      <div style="margin-left: 25px;margin-right: 25px; margin-bottom: 40px;white-space: pre-wrap;word-wrap: anywhere;">
         {{ eventDetail.content }}
       </div>
     </div>
@@ -208,7 +208,7 @@
         <!-- <p style="  margin-top: 0.4rem; color: rgb(70, 73, 79);font-weight: 600;">
           Rules
         </p> -->
-        <p v-if="eventDetail.eventPolicy" style="  margin-top: 0.4rem; line-height: 1.625;color: rgb(70, 73, 79);;">
+        <p v-if="eventDetail.eventPolicy" style="  margin-top: 0.4rem; line-height: 1.625;color: rgb(70, 73, 79);white-space: pre-wrap;word-wrap: anywhere;">
           {{ eventDetail.eventPolicy }}
         </p>
         <p v-else style="  margin-top: 0.4rem; line-height: 1.625;color: rgb(70, 73, 79);;">
