@@ -75,17 +75,22 @@ public class EventSessionServiceImpl extends ServiceImpl<EventSessionMapper, Eve
 
         session.setCurrentSize(0);
         Integer seatMapTemplateId = sessionData.getInteger("seat_map_id");
+        if (seatMapTemplateId == -1) {
+            session.setSeatMapId(seatMapTemplateId);
+            session.setPrice(sessionData.getInteger("price"));
+        } else {
+            SeatMap seatMap = seatMapMapper.selectById(seatMapTemplateId);
+            seatMap.setId(null);
+            seatMap.setType(constant_SeatMapType.INSTANCE);
+            seatMapMapper.insert(seatMap);
+            List<Seat> seatList = seatMapper.selectList(new QueryWrapper<Seat>().eq("seat_map_id", seatMapTemplateId));
+            seatList.forEach(seat -> {
+                seat.setSeatMapId(seatMap.getId());
+                seatMapper.insert(seat);
+            });
+            session.setSeatMapId(seatMap.getId());
+        }
 
-        SeatMap seatMap = seatMapMapper.selectById(seatMapTemplateId);
-        seatMap.setId(null);
-        seatMap.setType(constant_SeatMapType.INSTANCE);
-        seatMapMapper.insert(seatMap);
-        List<Seat> seatList = seatMapper.selectList(new QueryWrapper<Seat>().eq("seat_map_id", seatMapTemplateId));
-        seatList.forEach(seat -> {
-            seat.setSeatMapId(seatMap.getId());
-            seatMapper.insert(seat);
-        });
-        session.setSeatMapId(seatMap.getId());
         session.setVenue(sessionData.getString("venue"));
 
 

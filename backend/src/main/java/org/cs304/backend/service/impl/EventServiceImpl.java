@@ -235,18 +235,28 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
                 eventSessionService.insertEventSession(id, sessionData);
 
                 int seatMapId = sessionData.getInteger("seat_map_id");
-                SeatMap seatMap = seatMapMapper.selectById(seatMapId);
-                JSONObject seatMapData = JSONObject.parseObject(seatMap.getData());
-                JSONArray seatDataJSONArray = seatMapData.getJSONArray("seats");
-                for (Object seat: seatDataJSONArray) {
-                    JSONObject seatDataJSONObject = (JSONObject) seat;
-                    String seatId = seatDataJSONObject.getString("id");
-                    Integer price = seatMapper.selectOne(new QueryWrapper<Seat>().eq("seat_map_id", seatMapId).eq("seat_id", seatId)).getPrice();
+                if (seatMapId == -1) {
+                    int price = sessionData.getInteger("price");
                     if ((highestPrice == -1 || price > highestPrice)) {
                         highestPrice = price;
                     }
                     if (lowestPrice == -1 || price < lowestPrice) {
                         lowestPrice = price;
+                    }
+                } else {
+                    SeatMap seatMap = seatMapMapper.selectById(seatMapId);
+                    JSONObject seatMapData = JSONObject.parseObject(seatMap.getData());
+                    JSONArray seatDataJSONArray = seatMapData.getJSONArray("seats");
+                    for (Object seat : seatDataJSONArray) {
+                        JSONObject seatDataJSONObject = (JSONObject) seat;
+                        String seatId = seatDataJSONObject.getString("id");
+                        Integer price = seatMapper.selectOne(new QueryWrapper<Seat>().eq("seat_map_id", seatMapId).eq("seat_id", seatId)).getPrice();
+                        if ((highestPrice == -1 || price > highestPrice)) {
+                            highestPrice = price;
+                        }
+                        if (lowestPrice == -1 || price < lowestPrice) {
+                            lowestPrice = price;
+                        }
                     }
                 }
             }
