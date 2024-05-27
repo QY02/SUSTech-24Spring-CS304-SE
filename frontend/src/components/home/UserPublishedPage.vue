@@ -71,7 +71,7 @@
               <t-col flex="auto" style="display: inline-flex; justify-content: center;">
                 <t-tooltip content="通知">
                   <t-button variant="text" shape="square"
-                            @click="()=>{visibleNotice=true; fetchSessionInformation(item['id']);}">
+                            @click.stop="()=>{visibleNotice=true; fetchSessionInformation(item['id']);}">
                     <t-icon name="send"/>
                   </t-button>
                 </t-tooltip>
