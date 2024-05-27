@@ -126,10 +126,7 @@ const options = [
 ];
 
 // 获取全局变量 $apiBaseUrl
-const globalProperties = getCurrentInstance().appContext.config.globalProperties;
-const apiBaseUrl = globalProperties.$apiBaseUrl;
-// alert(apiBaseUrl)
-axios.defaults.baseURL = apiBaseUrl;
+
 const publisherId = sessionStorage.getItem('uid')
 axios.post(`/orderRecord/getMyOrderRecord`, {
   "mode": 3,
@@ -199,9 +196,11 @@ const goToPay = (index) => {
   // MessagePlugin.success(`${sessionStorage.getItem('uid')} 选中【${index}】`);
   // alert(typeof records.value)
   router.push('/book');
-  console.log(unpaidRecords.value[index].id)
-  let targetUrl = axios.defaults.baseURL + `/orderRecord/pay/${orderId.value}?token=${sessionStorage.getItem('token')}`;
+  console.log(unpaidRecords.value[index].id) //6
+  console.log( axios.defaults.baseURL + `/orderRecord/pay/${unpaidRecords.value[index].id}?token=${sessionStorage.getItem('token')}`)
+  let targetUrl = axios.defaults.baseURL + `/orderRecord/pay/${unpaidRecords.value[index].id}?token=${sessionStorage.getItem('token')}`;
     // 将当前页面跳转到目标 URL
+  console.log(targetUrl)
   window.location.href = targetUrl;
 };
 // const eventType = inject('eventType')

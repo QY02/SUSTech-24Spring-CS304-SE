@@ -89,7 +89,7 @@ public class OrderRecordServiceImpl extends ServiceImpl<OrderRecordMapper, Order
             queryWrapper.eq("event_id", eventId);
         }
         List<OrderRecord> orderRecordList = baseMapper.selectList(queryWrapper);
-
+//        System.out.println(orderRecordList.stream().toList());
         Map<Boolean, List<OrderRecord>> expiredAndNonExpiredOrders = orderRecordList.stream()
                 .collect(Collectors.partitioningBy(orderRecord -> {
                     LocalDateTime submitDateTime = orderRecord.getSubmitTime();

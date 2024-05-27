@@ -52,6 +52,7 @@ app.use(
 
 
 axios.defaults.baseURL = 'http://47.107.113.54:25571'
+// axios.defaults.baseURL = 'http://localhost:8083'
 // 添加响应拦截器
 axios.interceptors.response.use(function (response) {
     // console.log(response)
@@ -98,14 +99,8 @@ AMapLoader.load({
 });
 
 app.use(router);
-// 初始化全局变量 $userRole、$apiBaseUr
-app.config.globalProperties.$userRole = null;
-app.config.globalProperties.$userId = null;
-app.config.globalProperties.$token = "a";
-app.config.globalProperties.$apiBaseUrl = 'http://47.107.113.54:25571';
+
 app.config.globalProperties.$webSocketBaseUrl = 'ws://47.107.113.54:25571';
-// app.config.globalProperties.$apiBaseUrl = 'http://localhost:8083';
-// app.config.globalProperties.$webSocketBaseUrl = 'ws://localhost:8083';
 app.component("vue-draggable-resizable", VueDraggableResizable);
 app.mount('#app');
 

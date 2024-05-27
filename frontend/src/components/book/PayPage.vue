@@ -1,7 +1,7 @@
 <template>
   <div class="input-information-main-div">
     <h1 class="input-information-title">预定信息</h1>
-    <t-descriptions column="1">
+    <t-descriptions v-show="bookingInformation.seatPrice>0" column="1">
       <t-descriptions-item label="活动名称">{{ eventDetail.name }}</t-descriptions-item>
       <t-descriptions-item label="该场次报名时间">
         {{ `${dateToString(sessionInformation[chosenSession].registrationStartTime)} -
@@ -16,9 +16,23 @@
       }}
       </t-descriptions-item>
       <t-descriptions-item label="座位" v-if="bookingInformation.chosenSeat">{{ bookingInformation.chosenSeat }}</t-descriptions-item>
-      <div v-show="bookingInformation.seatPrice>0" >
-        <t-descriptions-item label="价格">{{ bookingInformation.seatPrice }}</t-descriptions-item>
-      </div>
+      <t-descriptions-item label="价格">{{ bookingInformation.seatPrice }}</t-descriptions-item>
+    </t-descriptions>
+    <t-descriptions v-show="bookingInformation.seatPrice===0" column="1">
+      <t-descriptions-item label="活动名称">{{ eventDetail.name }}</t-descriptions-item>
+      <t-descriptions-item label="该场次报名时间">
+        {{ `${dateToString(sessionInformation[chosenSession].registrationStartTime)} -
+        ${dateToString(sessionInformation[chosenSession].registrationEndTime)}` }}
+      </t-descriptions-item>
+      <t-descriptions-item label="活动时间">
+        {{ `${dateToString(sessionInformation[chosenSession].startTime)} -
+        ${dateToString(sessionInformation[chosenSession].startTime)}` }}
+      </t-descriptions-item>
+      <t-descriptions-item label="活动场地">{{
+          sessionInformation[chosenSession].venue
+        }}
+      </t-descriptions-item>
+      <t-descriptions-item label="座位" v-if="bookingInformation.chosenSeat">{{ bookingInformation.chosenSeat }}</t-descriptions-item>
     </t-descriptions>
     <br>
     <div class="input-information-button-div">
