@@ -69,7 +69,7 @@
             />
           </t-form-item>
 
-          <t-form-item label="人数" name="count_range_of_people">
+          <t-form-item label="人数" name="count_range_of_people" required-mark="">
             <t-input-number
                 v-model="Data.min_cnt"
                 theme="column"
@@ -269,16 +269,16 @@ const columns = computed(() => [
     title: '座位/价格信息', colKey: 'seat_map_id',
     width: 200, align: 'center',
     cell: (h, {row}) => {
-      if(row.seat_required){
+      if (row.seat_required && row.registration_required) {
         const x = row.seat_map_id.split('.');
       const displayValue=x[x.length-1]
       return `${displayValue}`
-      }
-      else if(row.price_required){
+      } else if (row.price_required && row.registration_required &&!row.seat_required ) {
         return  `价格: ${row.price} 元`
-      }
-      else{
+      } else if(!row.price_required && row.registration_required&&!row.seat_required){
         return `无需支付`
+      }else if (!row.registration_required) {
+        return '无需支付'
       }
     
     },
@@ -380,10 +380,18 @@ const FORM_RULES = ref({
   ],
   venue: [{required: true, message: '地址必填'}],
   location: [{required: true, message: '地址必填'}],
-  seat_map_id: [{required: computed(() => Data.value.seat_required), message: '座位图必选'}],
+  seat_map_id: [{
+    required: computed(() => Data.value.seat_required && Data.value.registration_required),
+    message: '座位图必选'
+  }],
   price:
   [
-    { required: computed(() => Data.value.price_required), message: '价格必填', type: 'error', trigger: 'blur' },
+    {
+      required: computed(() => Data.value.price_required && Data.value.registration_required && !Data.value.seat_required),
+      message: '价格必填',
+      type: 'error',
+      trigger: 'blur'
+    },
     { required: true, message: '价格必填', type: 'error', trigger: 'change' },
     { whitespace: true, message: '价格不能为空' },
     { validator: (val) => val >= 1, message: '价格应为正数', type: 'error', trigger: 'blur' },
