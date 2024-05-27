@@ -9,6 +9,7 @@ import org.cs304.backend.exception.ServiceException;
 import org.cs304.backend.mapper.EventMapper;
 import org.cs304.backend.mapper.EventSessionMapper;
 import org.cs304.backend.mapper.OrderRecordMapper;
+import org.cs304.backend.mapper.UserMapper;
 import org.cs304.backend.service.IOrderRecordService;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +31,8 @@ public class OrderRecordServiceImpl extends ServiceImpl<OrderRecordMapper, Order
     private EventSessionMapper eventSessionMapper;
     @Resource
     private OrderRecordMapper orderRecordMapper;
+    @Resource
+    private UserMapper userMapper;
 
     @Override
     public Object getMyOrderRecord(String userId, Integer eventId, Integer mode) {
@@ -57,6 +60,23 @@ public class OrderRecordServiceImpl extends ServiceImpl<OrderRecordMapper, Order
             }
         }).collect(Collectors.toList());
     }
+
+    @Override
+    public Object getEventOrderRecord(Integer eventId) {
+        QueryWrapper<OrderRecord> queryWrapper = new QueryWrapper<OrderRecord>().eq("event_id", eventId).eq("status", PAID);
+        List<OrderRecord> orderRecordList = baseMapper.selectList(queryWrapper);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("event", eventMapper.selectById(eventId));
+        jsonObject.put("orderRecordList", orderRecordList.stream().map(orderRecord -> {
+                    JSONObject jsonObject0 = JSONObject.from(orderRecord);
+                    jsonObject0.put("eventSession", eventSessionMapper.selectById(orderRecord.getEventSessionId()));
+                    jsonObject0.put("user", userMapper.selectById(orderRecord.getUserId()));
+                    return jsonObject0;
+                }
+        ).collect(Collectors.toList()));
+        return jsonObject;
+    }
+
 
     @Override
     public Object getUnpaidOrderRecord(String userId, Integer eventId, Integer mode) {

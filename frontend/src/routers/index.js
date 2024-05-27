@@ -111,6 +111,11 @@ const routes = [
                 name: '403forbidden',
                 path: '/forbidden',
                 component: () => import('@/components/admin/403page.vue')
+            },
+            {
+                name: 'orderRecord',
+                path: '/orderRecord',
+                component: () => import('@/components/event/OrderRecord.vue')
             }
         ]
     },

@@ -44,4 +44,6 @@ public class EventSession {
     private String additionalInformationRequired;
 
     private Boolean visible;
+
+    private Integer price;
 }

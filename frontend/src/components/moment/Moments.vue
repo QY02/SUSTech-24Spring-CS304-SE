@@ -1,5 +1,5 @@
 <template>
-  <t-loading :loading="loading" text="加载中..." fullscreen />
+  <t-loading :loading="loading" text="加载中..." fullscreen/>
   <t-layout>
     <t-aside v-if="list.length>0">
       <t-space :break-line="true" class="card-with-margin scroll-container" align="center"
@@ -32,20 +32,22 @@
       </t-space>
     </t-aside>
 
-    <t-content>
-      <div :style="{height: 'calc(100vh - 56px)', 'overflow-y': 'scroll' }">
-        <t-space  class="card-with-margin">
-      <t-radio-group variant="default-filled" default-value="1" @change="onTypeChange">
-        <t-radio-button value="1">动态</t-radio-button>
-        <t-radio-button value="2">我的发布</t-radio-button>
-      </t-radio-group>
-        <t-button v-if="hasUnreadMsg" theme="default" variant="outline" @click="showMsg">我的未读消息</t-button>
+    <t-content :style="{ display: 'flex', 'justify-content': 'center'}">
+      <div :style="{height: 'calc(100vh - 56px)', width: '1000px', 'overflow-y': 'scroll', 'scrollbar-width': 'none', '-ms-overflow-style': 'none'}">
+        <t-space size="small" direction="vertical">
+          <t-space class="card-with-margin">
+            <t-radio-group variant="default-filled" default-value="1" @change="onTypeChange">
+            <t-radio-button value="1">动态</t-radio-button>
+            <t-radio-button value="2">我的发布</t-radio-button>
+          </t-radio-group>
+          <t-button v-if="hasUnreadMsg" theme="default" variant="outline" @click="showMsg">我的未读消息</t-button>
         </t-space>
-            <t-alert v-if="list.length===0 && radioGroupValue==='2'" class="card-with-margin" theme="info" title="您还没有发送过动态" message="欢迎分享您的感受">
-              <template #operation>
-                <span @click="router.push('/newMoment');">新增动态</span>
-              </template>
-            </t-alert>
+        <t-alert v-if="list.length===0 && radioGroupValue==='2'" class="card-with-margin" theme="info" style="width:600px"
+                 title="您还没有发送过动态" message="欢迎分享您的感受">
+          <template #operation>
+            <span @click="router.push('/newMoment');">新增动态</span>
+          </template>
+        </t-alert>
         <t-card v-if="list.length>0" class="card-with-margin" hoverShadow ref="cardRef">
         <t-space>
           <t-button variant="outline" theme="success" @click="showEvent">点击跳转相关活动：{{momentData.relatedEvent}}</t-button>
@@ -66,7 +68,7 @@
         {{momentData.title}}
         </h1>
         <t-comment :author="momentData.userName" :datetime="momentData.publishDate.replace('T',' ')"
-                   :content="momentData.content" style="white-space: pre-wrap;word-wrap: anywhere;">
+                   :content="momentData.content" style=" width:900px;white-space: pre-wrap;word-wrap: anywhere;">
 
           <template #avatar>
             <t-avatar v-if="momentData.publisherId===user" size="60px" :image="momentData.avatar"/>
@@ -89,16 +91,18 @@
             </t-space>
           </template>
         </t-comment>
-        <div class="spacing"></div>
-        <video v-if="momentData.mediaType===true" :src="video" controls :style="{ width: cardWidth - 60 + 'px' }"/>
+          <t-divider />
+        <video v-if="momentData.mediaType===true" :src="video" controls :style="{ width: 900 + 'px', height: 450+ 'px' }"/>
         <t-swiper v-if="momentData.mediaType===false"
             class="tdesign-demo-block--swiper"
             :autoplay="false"
+            style="width:900px"
         >
-          <t-swiper-item v-for="item in photoList" :key="item" >
-            <t-image-viewer :key="item" v-model:visible="photoPreviewVisible" :default-index="0" :images="photoUrlList">
+          <t-swiper-item v-for="item in photoList" :key="0">
+            <t-image-viewer :key="0" v-model:visible="photoPreviewVisible" :current="currentPic" :images="photoUrlList">
               <template #trigger>
             <t-image @click="photoPreviewVisible = true"
+                     :style="{height:450+'px'}"
                 :src=item
                 fit="cover"
                 shape="round"
@@ -108,6 +112,7 @@
           </t-swiper-item>
         </t-swiper>
       </t-card>
+       </t-space>
       </div>
     </t-content>
   </t-layout>
@@ -164,11 +169,11 @@
       v-model:visible="msgVisible"
   >
     <t-list :split="true">
-      <t-list-item  v-for="item in unreadUser" :key="item.id">
-        <t-list-item-meta :image="avatarList[item.iconId]" :title="item.name" />
+      <t-list-item v-for="item in unreadUser" :key="item.id">
+        <t-list-item-meta :image="avatarList[item.iconId]" :title="item.name"/>
         <template #action>
           <t-button variant="text" shape="square" @click="chat(item.id,item.name)">
-            <chat-icon />
+            <chat-icon/>
           </t-button>
         </template>
       </t-list-item>
@@ -177,13 +182,12 @@
 </template>
 
 <script setup lang="jsx">
-import {Tag} from 'tdesign-vue-next';
-import {AddIcon, DeleteIcon, ChatIcon} from "tdesign-icons-vue-next";
+import {MessagePlugin, Tag} from 'tdesign-vue-next';
+import {AddIcon, ChatIcon, DeleteIcon} from "tdesign-icons-vue-next";
 import {onMounted, ref} from 'vue';
 import router from "@/routers/index.js";
 import axios from "axios";
-import { fileServerAxios } from "@/main.js"
-import {MessagePlugin} from "tdesign-vue-next";
+import {fileServerAxios} from "@/main.js"
 
 const user = sessionStorage.getItem("uid") ? sessionStorage.getItem("uid") : '';//当前用户
 
@@ -223,11 +227,11 @@ const getMomentBatch = async (id) => {
         }
       });
       const image = fileServerResponse.data;
-        list.value.push({
-          id: response.data.data[i].comment_id,
-          img: image,
-          name: response.data.data[i].publisher_id,
-        });
+      list.value.push({
+        id: response.data.data[i].comment_id,
+        img: image,
+        name: response.data.data[i].publisher_id,
+      });
     }
     if (list.value.length > 0) {
       lastId.value = response.data.data[response.data.data.length - 1].comment_id;
@@ -237,11 +241,10 @@ const getMomentBatch = async (id) => {
   }
 };
 
-onMounted(async() => {
+onMounted(async () => {
   await getUnreadMsg();
   await getMomentBatch(-1);
   await selectMoment(list.value[0]);
-  cardWidth.value = cardRef.value.$el.offsetWidth;
 });
 
 const loadMore = async () => {
@@ -278,7 +281,7 @@ const getUnreadMsg = async () => {
 // ###### 动态详情 开始 ######
 
 const cardRef = ref(null);
-let cardWidth = ref(0);
+const currentPic = ref(0);
 
 const momentData = ref({
   id: 'A',
@@ -302,12 +305,13 @@ const photoUrlList = ref([]);
 const photoPreviewVisible = ref(false);
 
 const showEvent = () => {
-  sessionStorage.setItem('eventId',momentData.value.eventId);
+  sessionStorage.setItem('eventId', momentData.value.eventId);
   router.push('/event');
 };
 
 const selectMoment = async (item) => {
   try {
+    currentPic.value = 0;
     loading.value = true;
     photoList.value = [];
     photoUrlList.value = [];
@@ -338,8 +342,8 @@ const selectMoment = async (item) => {
         const image = fileServerResponse.data;
         photoList.value.push(image);
         photoUrlList.value.push(URL.createObjectURL(image));
-        }
-    }else {
+      }
+    } else {
       const fileServerResponse = await fileServerAxios.get(`/file/download`, {
         responseType: 'blob',
         headers: {
@@ -405,9 +409,9 @@ const showMsg = () => {
   msgVisible.value = true;
 };
 
-const chat = (id,name) => {
-  sessionStorage.setItem('chatUserId',id);
-  sessionStorage.setItem('chatUserName',name);
+const chat = (id, name) => {
+  sessionStorage.setItem('chatUserId', id);
+  sessionStorage.setItem('chatUserName', name);
   router.push('/chat');
 };
 
@@ -421,27 +425,27 @@ const thumbDownColor = ref('grey');
 const thumbUp = async () => {
   try {
     loading.value = true;
-  if (thumbUpColor.value === 'grey') {
-    thumbUpColor.value = 'red';
-    await axios.get(`/blog/change/${momentData.value.id}/${user}/1`, {
-      headers: {
-        token: sessionStorage.getItem('token'),
+    if (thumbUpColor.value === 'grey') {
+      thumbUpColor.value = 'red';
+      await axios.get(`/blog/change/${momentData.value.id}/${user}/1`, {
+        headers: {
+          token: sessionStorage.getItem('token'),
+        }
+      });
+      if (thumbDownColor.value === 'blue') {
+        thumbDownColor.value = 'grey';
+        momentData.value.downVote--;
       }
-    });
-    if (thumbDownColor.value === 'blue') {
-      thumbDownColor.value = 'grey';
-      momentData.value.downVote--;
+      momentData.value.upVote++;
+    } else {
+      thumbUpColor.value = 'grey';
+      await axios.get(`/blog/change/${momentData.value.id}/${user}/0`, {
+        headers: {
+          token: sessionStorage.getItem('token'),
+        }
+      });
+      momentData.value.upVote--;
     }
-    momentData.value.upVote++;
-  } else {
-    thumbUpColor.value = 'grey';
-    await axios.get(`/blog/change/${momentData.value.id}/${user}/0`, {
-      headers: {
-        token: sessionStorage.getItem('token'),
-      }
-    });
-    momentData.value.upVote--;
-  }
     loading.value = false;
   } catch (error) {
   }
@@ -558,7 +562,7 @@ const submitReply = async () => {
 <style scoped>
 
 .card-with-margin {
-  margin: 20px;
+  margin: 10px 20px;
   height: max-content;
   display: flex;
 }
@@ -599,4 +603,7 @@ h1 {
   margin: 40px;
 }
 
+&::-webkit-scrollbar {
+ display: none;
+}
 </style>

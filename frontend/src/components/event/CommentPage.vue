@@ -57,7 +57,7 @@
 
 
 
-    <t-dialog v-model:visible="visibleComment" attach="body" header="评论" destroy-on-close:true width="500px"
+    <t-dialog v-model:visible="visibleComment" attach="body" header="评论" destroy-on-close:true width="500px" placement="center"
         :confirm-btn="null" :cancel-btn="null">
         <template #body>
             <t-form ref="form" :rules="FORM_RULES" :data="commentForm" :colon="true" @reset="onReset"
@@ -74,23 +74,24 @@
                 </t-form-item>
                 <t-form-item>
                     <t-space size="medium">
-                        <t-button theme="primary" type="submit" :loading="loading">提交</t-button>
+                      <t-button theme="default" variant="base" @click="visibleComment = false"
+                                :disabled="loading">取消</t-button>
                         <t-button theme="default" variant="base" type="reset" :disabled="loading">重置</t-button>
-                        <t-button theme="default" variant="base" @click="visibleComment = false"
-                            :disabled="loading">取消</t-button>
-                        <!-- <t-button theme="default" variant="base" @click="handleClear">清空校验结果</t-button> -->
+                      <t-button theme="primary" type="submit" :loading="loading">提交</t-button>
+
+                      <!-- <t-button theme="default" variant="base" @click="handleClear">清空校验结果</t-button> -->
                     </t-space>
                 </t-form-item>
             </t-form>
         </template>
     </t-dialog>
 
-    <t-dialog v-model:visible="visibleDelete" header="确认删除" width="30%" :cancel-btn=null :confirm-btn=null>
+    <t-dialog v-model:visible="visibleDelete" header="确认删除" width="30%" placement="center" :cancel-btn=null :confirm-btn=null>
         <div style="margin-top: 40px; margin-bottom: -10px; display: flex; justify-content: flex-end;;">
             <t-space size="20px">
-                <t-button @click="deleteComment" :loading="deleteLoading">确定删除</t-button>
                 <t-button theme="default" variant="base" :disabled="deleteLoading" type="reset"
                     @click="() => visibleDelete = false">取消</t-button>
+              <t-button @click="deleteComment" :loading="deleteLoading">确定删除</t-button>
             </t-space>
         </div>
     </t-dialog>

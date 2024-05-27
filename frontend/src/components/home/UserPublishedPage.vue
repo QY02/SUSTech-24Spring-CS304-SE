@@ -71,8 +71,16 @@
               <t-col flex="auto" style="display: inline-flex; justify-content: center;">
                 <t-tooltip content="通知">
                   <t-button variant="text" shape="square"
-                            @click="()=>{visibleNotice=true; fetchSessionInformation(item['id']);}">
+                            @click.stop="()=>{visibleNotice=true; fetchSessionInformation(item['id']);}">
                     <t-icon name="send"/>
+                  </t-button>
+                </t-tooltip>
+              </t-col>
+
+              <t-col flex="auto" style="display: inline-flex; justify-content: center">
+                <t-tooltip content="预定">
+                  <t-button variant="text" shape="square" @click.stop="clickBook(item['id'])">
+                    <data-display-icon/>
                   </t-button>
                 </t-tooltip>
               </t-col>
@@ -162,6 +170,7 @@
 import {
   ThumbUpIcon,
   ChatIcon,
+    DataDisplayIcon,
   ShareIcon,
   MoreIcon,
   RollbackIcon,
@@ -334,6 +343,12 @@ const clickComment = (eventId) => {
   sessionStorage.setItem('eventId', eventId)
   visible.value = true
 }
+
+const clickBook = (eventId) => {
+  sessionStorage.setItem('eventId', eventId)
+  router.push('/orderRecord');
+}
+
 const fixEvent = (eventId) => {
   sessionStorage.setItem('eventId', eventId)
   router.push('/fixEvent')
@@ -347,7 +362,7 @@ const clickShare = (eventId, eventName) => {
 
 const clickEvent = (eventId, status) => {
   if (status !== 2) {//除了审核未通过
-    MessagePlugin.success(`${sessionStorage.getItem('uid')} 选中【${eventId}】`);
+    // MessagePlugin.success(`${sessionStorage.getItem('uid')} 选中【${eventId}】`);
     sessionStorage.setItem('eventId', eventId)
     router.push('/event');
     // router.push('/event');

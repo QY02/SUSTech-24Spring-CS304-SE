@@ -11,4 +11,5 @@ public interface IOrderRecordService extends IService<OrderRecord> {
 
     int getPaymentById(Integer orderId);
 
+    Object getEventOrderRecord(Integer eventId);
 }
