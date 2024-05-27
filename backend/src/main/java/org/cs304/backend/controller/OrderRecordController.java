@@ -44,7 +44,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/orderRecord")
 public class OrderRecordController {
-    private static final String CHARSET = "UTF-8";
+    private static final String CHARSET = "GBK";
     private static final String FORMAT = "JSON";
     private static final String SIGN_TYPE = "RSA2";
     @Resource
@@ -222,7 +222,7 @@ public class OrderRecordController {
             1. 调用支付宝接口
             2. 返回支付页面
             """)
-    public Result pay(HttpServletResponse httpResponse, @PathVariable int orderId) throws IOException {
+    public void pay(HttpServletResponse httpResponse, @PathVariable int orderId) throws IOException {
         AlipayClient alipayClient = new DefaultAlipayClient("https://openapi-sandbox.dl.alipaydev.com/gateway.do",
                 aliPayConfig.getAppId(), aliPayConfig.getAppPrivateKey(), FORMAT, CHARSET,
                 aliPayConfig.getAlipayPublicKey(), SIGN_TYPE);
@@ -253,7 +253,6 @@ public class OrderRecordController {
         httpResponse.getWriter().write(form);
         httpResponse.getWriter().flush();
         httpResponse.getWriter().close();
-        return Result.success(httpResponse);
     }
 
     @PostMapping("/notify") //注意这里必须是POST接口
