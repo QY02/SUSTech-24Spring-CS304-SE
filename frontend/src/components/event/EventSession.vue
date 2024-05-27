@@ -87,16 +87,16 @@
                 style="width: 150px"
             ></t-input-number>
           </t-form-item>
-          <t-form-item label="是否需要选座" name="seat_required">
+          <t-form-item label="是否需要选座" name="seat_required" v-show="Data.registration_required">
             <t-switch v-model="Data.seat_required" :label="['是', '否']"></t-switch>
           </t-form-item>
-          <t-form-item label="座位图" name="seat_map_id" v-show="Data.seat_required">
+          <t-form-item label="座位图" name="seat_map_id" v-show="Data.seat_required&&Data.registration_required">
             <t-cascader v-model="Data.seat_map_id" :options="seat_map_options" clearable/>
           </t-form-item>
-          <t-form-item label="是否需要收费" name="price_required" v-show="!Data.seat_required">
+          <t-form-item label="是否需要收费" name="price_required" v-show="!Data.seat_required&&Data.registration_required">
             <t-switch v-model="Data.price_required" :label="['是', '否']"></t-switch>
           </t-form-item>
-          <t-form-item label="价格" name="price" v-show="Data.price_required &&  !Data.seat_required">
+          <t-form-item label="价格" name="price" v-show="Data.price_required && !Data.seat_required&&Data.registration_required">
             <t-input v-model="Data.price"></t-input>
           </t-form-item>
           <t-form-item label="地址" name="venue">
@@ -110,7 +110,7 @@
               {{ Data.location === null ? "选择位置" : `${Data.location[0]}, ${Data.location[1]}` }}
             </t-button>
           </t-form-item>
-          <t-form-item label="所需额外信息" name="additional_information_required">
+          <t-form-item label="所需额外信息" name="additional_information_required"  v-show="Data.registration_required">
             <t-checkbox-group v-model="Data.additional_information_required" :options="ADDITIONAL_INFO" lazy-load/>
           </t-form-item>
 
@@ -166,14 +166,12 @@ const INITIAL_DATA = {
   seat_required: true,
   seat_map_id: '',
   price_required: true,
-  price: 1,
+  price: 100,
   venue: '',
   location: null,
   additional_information_required: [],
   visible: true,
 }
-const newData = ref({...INITIAL_DATA});
-const modifyData = ref({...INITIAL_DATA});
 const Data = ref({...INITIAL_DATA});
 let state = 0 //0 -> add ; 1 -> modify
 const props = defineProps({
