@@ -16,8 +16,6 @@
 <script>
 import {defineComponent} from "vue";
 import {useColors} from "vuestic-ui";
-
-
 export default defineComponent({
   name: 'HomePage',
   setup() {

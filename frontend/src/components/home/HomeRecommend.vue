@@ -204,40 +204,10 @@ axios.post(`/event/getRecommendEvents`, {
                     // 将图片 URL 赋值给 cover 变量
                     // cover.value = imageUrl;
 
-                  })
-                  .catch((error) => {
-                    if (error.response) {
-                      // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-                      // MessagePlugin.warning(error.response.data.msg);
-                    } else {
-                      // 一些错误是在设置请求的时候触发
-                      // MessagePlugin.warning(error.message);
-                    }
-                  });
-            })
-            .catch((error) => {
-              if (error.response) {
-                // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-                // MessagePlugin.warning(error.response.data.msg);
-              } else {
-                // 一些错误是在设置请求的时候触发
-                // MessagePlugin.warning(error.message);
-              }
-            });
-        // events.value[i].imageUrl =
-        // alert(id)
+                  }).catch();
+            }).catch();
       }
-
-    })
-    .catch((error) => {
-      if (error.response) {
-        // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-        MessagePlugin.warning(error.response.data.msg);
-      } else {
-        // 一些错误是在设置请求的时候触发
-        MessagePlugin.warning(error.message);
-      }
-    });
+    }).catch();
 
 // const eventType = inject('eventType')
 const eventType = ref(sessionStorage.getItem('eventType'))
@@ -275,16 +245,7 @@ const clickEvent = (eventId) => {
   })
       .then((response) => {
 
-      })
-      .catch((error) => {
-        if (error.response) {
-          // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-          MessagePlugin.warning(error.response.data.msg);
-        } else {
-          // 一些错误是在设置请求的时候触发
-          MessagePlugin.warning(error.message);
-        }
-      });
+      }).catch();
 };
 const favEvent = (eventId) => {
   // MessagePlugin.success(`${sessionStorage.getItem('uid')} 喜欢【${eventId}】`);
@@ -301,17 +262,7 @@ const favEvent = (eventId) => {
           favColor.value[eventId] = 'red'
           MessagePlugin.success("收藏成功！");
         })
-        .catch((error) => {
-          // thumbUpColor.value = 'red'
-          if (error.response) {
-
-            // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-            // MessagePlugin.warning(error.response.data.msg);
-          } else {
-            // 一些错误是在设置请求的时候触发
-            MessagePlugin.warning(error.message);
-          }
-        });
+        .catch();
   } else {
     // alert('hhh')
     axios.post(`/favorite/delete`, {

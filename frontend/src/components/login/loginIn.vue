@@ -42,11 +42,9 @@
 
 <script>
 import {computed, ref, watchEffect} from "vue";
-// import NavBarWithOnlyTitle from "@/components/layouts/NavBarWithOnlyTitle.vue";
 import {useRoute} from "vue-router";
 import IDLogin from "./IDLogin.vue"
 import EmailLogin from "./EmailLogin.vue"
-// import GitHubLogin from "./GitHubLogin.vue"
 import {MessagePlugin} from 'tdesign-vue-next';
 
 
@@ -66,9 +64,6 @@ const TABS = [
   // }
 ];
 export default {
-  // components: {
-  //   NavBarWithOnlyTitle
-  // },
 
   setup() {
 

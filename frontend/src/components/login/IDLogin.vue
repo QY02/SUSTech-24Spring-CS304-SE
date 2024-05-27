@@ -30,42 +30,6 @@
       </t-form-item>
     </t-form>
   </div>
-  <!--  <va-form class="form" ref="formRef">-->
-  <!--    <va-input type="text" label="id" class="va-input"-->
-  <!--              v-model="id"-->
-  <!--              placeholder="Enter your 8-digit ID"-->
-  <!--              :rules="[(v) => /^(\d{8})$/.test(v) || 'ID must be 8 digits']"-->
-  <!--    ></va-input>-->
-  <!--    <va-value v-slot="isPasswordVisible" :default-value="false">-->
-  <!--      <va-input-->
-  <!--          v-model="password"-->
-  <!--          :type="isPasswordVisible.value ? 'text' : 'password'"-->
-  <!--          label="Password"-->
-  <!--          placeholder="Enter your password"-->
-  <!--          :rules="[(v) => /^[a-zA-Z0-9/]{8,}$/.test(v) || 'Only numbers, characters, and slash are allowed, minimum length is 8']"-->
-  <!--          @click-append-inner="isPasswordVisible.value = !isPasswordVisible.value"-->
-  <!--      >-->
-  <!--        <template #appendInner>-->
-  <!--          <va-icon-->
-  <!--              :name="isPasswordVisible.value ? 'visibility_off' : 'visibility'"-->
-  <!--              size="small"-->
-  <!--              color="primary"-->
-  <!--          />-->
-  <!--        </template>-->
-  <!--      </va-input>-->
-  <!--    </va-value>-->
-  <!--    <va-button-->
-  <!--        type="submit"-->
-  <!--        class="form-btn"-->
-  <!--        color="primary"-->
-  <!--        size="small"-->
-  <!--        :disabled="!isValid"-->
-  <!--        @click="  handleSubmit"-->
-  <!--    >-->
-  <!--      Log in-->
-  <!--    </va-button>-->
-  <!--  </va-form>-->
-
 </template>
 
 <script setup>
@@ -90,13 +54,6 @@ const onReset = () => {
 };
 
 const loadingg = ref(false);
-
-// const apiUrl = inject('$API_URL');
-// const {isValid, validate} = useForm('formRef')
-// const {init} = useToast();
-
-// const password = ref("");
-// const id = ref("");
 const rules = {
   // account: [{ required: true }, { validator: (v) => /^(\d{8})$/.test(v) , message: 'ID must be 8 digits' }],
   account: [{required: true}, {validator: (v) => /^(\d{8})$/.test(v), message: 'ID 必须为8个数字'}],
