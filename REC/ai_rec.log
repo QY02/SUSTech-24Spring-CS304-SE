@@ -1,0 +1,9 @@
+2024-05-20 15:44:03,546 - __main__ - INFO - System version: 3.9.19 | packaged by conda-forge | (main, Mar 20 2024, 12:50:21) 
+[GCC 12.3.0]
+2024-05-20 15:44:03,547 - __main__ - INFO - PyTorch version: 2.2.2+cu121
+2024-05-20 15:44:03,547 - __main__ - INFO - Cornac version: 1.18
+2024-05-20 15:44:03,725 - __main__ - INFO - Device: NVIDIA GeForce RTX 3060 Ti
+2024-05-20 15:44:03,882 - __main__ - INFO - Number of users: 5
+2024-05-20 15:44:03,882 - __main__ - INFO - Number of items: 15
+2024-05-20 15:44:07,835 - __main__ - INFO - Took 3.9525 seconds for training.
+2024-05-20 15:44:07,892 - __main__ - INFO - Took 0.0567 seconds for prediction.

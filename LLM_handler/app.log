@@ -1,0 +1,148 @@
+2024-04-18 16:34:16,520 - __main__ - INFO - [8462] Consumer started, waiting for messages...
+2024-04-18 16:34:50,173 - __main__ - INFO - [8561] Consumer started, waiting for messages...
+2024-04-18 16:35:27,946 - __main__ - INFO - Received message: Session_ID=12112003, QUERY=1
+2024-04-18 16:35:28,822 - __main__ - ERROR - Error processing message: Error code: 401 - {'error': {'message': 'Incorrect API key provided: TEST. You can find your API key at https://platform.openai.com/account/api-keys.', 'type': 'invalid_request_error', 'param': None, 'code': 'invalid_api_key'}} , Session_ID=12112003, QUERY=1
+2024-04-18 16:35:28,823 - __main__ - INFO - Sent reply: Session_ID=12112003, RESPONSE=对不起，请求失败，请稍后重试
+2024-04-18 16:35:57,012 - __main__ - INFO - Received message: Session_ID=12112003, QUERY=11
+2024-04-18 16:35:57,013 - __main__ - INFO - Sent reply: Session_ID=12112003, RESPONSE=这是一个测试
+2024-04-18 16:35:59,849 - __main__ - INFO - Received message: Session_ID=12112003, QUERY=11
+2024-04-18 16:35:59,850 - __main__ - INFO - Sent reply: Session_ID=12112003, RESPONSE=这是一个测试
+2024-04-18 16:36:01,923 - __main__ - INFO - Received message: Session_ID=12112003, QUERY=11
+2024-04-18 16:36:01,924 - __main__ - INFO - Sent reply: Session_ID=12112003, RESPONSE=这是一个测试
+2024-04-18 16:36:03,830 - __main__ - INFO - Received message: Session_ID=12112003, QUERY=111
+2024-04-18 16:36:03,831 - __main__ - INFO - Sent reply: Session_ID=12112003, RESPONSE=这是一个测试
+2024-04-18 16:38:39,473 - __main__ - INFO - Received message: Session_ID=12112003, QUERY=12345678
+2024-04-18 16:38:40,343 - __main__ - ERROR - Error processing message: Error code: 401 - {'error': {'message': 'Incorrect API key provided: TEST. You can find your API key at https://platform.openai.com/account/api-keys.', 'type': 'invalid_request_error', 'param': None, 'code': 'invalid_api_key'}} , Session_ID=12112003, QUERY=12345678
+2024-04-18 16:38:40,343 - __main__ - INFO - Sent reply: Session_ID=12112003, RESPONSE=对不起，请求失败，请稍后重试
+2024-04-18 16:38:53,598 - __main__ - INFO - Received message: Session_ID=12112003, QUERY=12345678
+2024-04-18 16:38:53,599 - __main__ - INFO - Sent reply: Session_ID=12112003, RESPONSE=这是一个测试
+2024-04-18 17:03:54,386 - __main__ - INFO - Received message: Session_ID=12112003, QUERY=111
+2024-04-18 17:03:54,387 - __main__ - INFO - Sent reply: Session_ID=12112003, RESPONSE=这是一个测试
+2024-04-18 18:02:21,041 - __main__ - INFO - [12694] Consumer started, waiting for messages...
+2024-04-18 18:02:38,319 - __main__ - INFO - Received message: Session_ID=12112003, QUERY=你好
+2024-04-18 18:02:40,055 - __main__ - INFO - Sent reply: Session_ID=12112003, RESPONSE=你好！有什么活动或者表演方面的问题我可以帮你解答吗？
+2024-04-18 18:13:27,014 - __main__ - INFO - [13033] Consumer started, waiting for messages...
+2024-04-18 18:31:32,971 - __main__ - INFO - Received message: Session_ID=12112003, QUERY=你好！
+2024-04-18 18:31:32,976 - __main__ - ERROR - Error processing message: 1 validation error for QianfanChatEndpoint
+__root__
+  qianfan package not found, please install it with `pip install qianfan` (type=value_error) , Session_ID=12112003, QUERY=你好！
+2024-04-18 18:31:32,976 - __main__ - INFO - Sent reply: Session_ID=12112003, RESPONSE=对不起，请求失败，请稍后重试
+2024-04-18 18:32:46,474 - __main__ - INFO - [13386] Consumer started, waiting for messages...
+2024-04-18 18:32:57,714 - __main__ - INFO - Received message: Session_ID=12112003, QUERY=你好
+2024-04-18 18:32:58,137 - __main__ - ERROR - Error processing message: AK(0fc409***) is not correct, please check! AK/SK should be obtained from https://console.bce.baidu.com/qianfan/ais/console/applicationConsole/application , Session_ID=12112003, QUERY=你好
+2024-04-18 18:32:58,138 - __main__ - INFO - Sent reply: Session_ID=12112003, RESPONSE=对不起，请求失败，请稍后重试
+2024-04-18 18:33:55,527 - __main__ - INFO - [13468] Consumer started, waiting for messages...
+2024-04-18 18:34:02,356 - __main__ - INFO - Received message: Session_ID=12112003, QUERY=1
+2024-04-18 18:34:02,890 - __main__ - ERROR - Error processing message: AK(0fc409***) is not correct, please check! AK/SK should be obtained from https://console.bce.baidu.com/qianfan/ais/console/applicationConsole/application , Session_ID=12112003, QUERY=1
+2024-04-18 18:34:02,891 - __main__ - INFO - Sent reply: Session_ID=12112003, RESPONSE=对不起，请求失败，请稍后重试
+2024-04-18 18:34:59,763 - __main__ - INFO - [13558] Consumer started, waiting for messages...
+2024-04-18 18:35:06,209 - __main__ - INFO - Received message: Session_ID=12112003, QUERY=11
+2024-04-18 18:35:06,498 - __main__ - ERROR - Error processing message: AK(0fc409***) is not correct, please check! AK/SK should be obtained from https://console.bce.baidu.com/qianfan/ais/console/applicationConsole/application , Session_ID=12112003, QUERY=11
+2024-04-18 18:35:06,499 - __main__ - INFO - Sent reply: Session_ID=12112003, RESPONSE=对不起，请求失败，请稍后重试
+2024-04-18 18:35:47,385 - __main__ - INFO - [13802] Consumer started, waiting for messages...
+2024-04-18 18:35:50,496 - __main__ - INFO - Received message: Session_ID=12112003, QUERY=1
+2024-04-18 18:35:55,910 - __main__ - ERROR - Error processing message: AK(186b94***) is not correct, please check! AK/SK should be obtained from https://console.bce.baidu.com/qianfan/ais/console/applicationConsole/application , Session_ID=12112003, QUERY=1
+2024-04-18 18:35:55,911 - __main__ - INFO - Sent reply: Session_ID=12112003, RESPONSE=对不起，请求失败，请稍后重试
+2024-04-18 18:41:12,393 - __main__ - INFO - [14145] Consumer started, waiting for messages...
+2024-04-18 18:41:16,827 - __main__ - INFO - Received message: Session_ID=12112003, QUERY=1
+2024-04-18 18:41:17,452 - __main__ - ERROR - Error processing message: api return error, req_id:  code: 17, msg: Open api daily request limit reached , Session_ID=12112003, QUERY=1
+2024-04-18 18:41:17,453 - __main__ - INFO - Sent reply: Session_ID=12112003, RESPONSE=对不起，请求失败，请稍后重试
+2024-04-18 18:42:59,399 - __main__ - INFO - Received message: Session_ID=12112003, QUERY=1
+2024-04-18 18:43:29,400 - __main__ - ERROR - Error processing message:  , Session_ID=12112003, QUERY=1
+2024-04-18 18:43:29,401 - __main__ - INFO - Sent reply: Session_ID=12112003, RESPONSE=对不起，请求失败，请稍后重试
+2024-04-18 18:43:49,582 - __main__ - INFO - Received message: Session_ID=12112003, QUERY=1
+2024-04-18 18:43:51,934 - __main__ - INFO - Sent reply: Session_ID=12112003, RESPONSE=很抱歉，你的问题似乎不完整。请问我能帮你查询哪方面的信息？是关于即将举行的音乐会、讲座、比赛，还是想要了解如何预订门票或座位，或者想查看用户评论？提供更多的细节，我才能更好地为你服务。
+2024-04-18 18:44:08,375 - __main__ - INFO - Received message: Session_ID=12112003, QUERY=1
+2024-04-18 18:44:17,472 - __main__ - INFO - Sent reply: Session_ID=12112003, RESPONSE=
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+
+def plot_function(f, a, b, n=100):
+    x = np.linspace(a, b, n)
+    y = f(x)
+    plt.plot(x, y)
+    plt.show()
+
+def f(x):
+    return np.sin(x)
+
+plot_function(f, 0, np.pi * 2, 1000)
+```
+
+这段代码的功能是绘制函数$f(x) = \sin(x)$在区间$[0, 2\pi]$上的图像。首先，我们定义了一个名为`plot_function`的函数，该函数接受一个函数$f$，两个实数$a$和$b$，以及一个整数$n$作为输入。然后，我们使用`np.linspace`函数在$[a, b]$上生成$n$个等距点，并计算函数$f$在这些点上的值。最后，我们使用`plt.plot`函数绘制这些点的图像，并使用`plt.show`函数显示图像。
+
+接下来，我们定义了一个名为`f`的函数，它接受一个实数$x$作为输入，并返回$\sin(x)$。最后，我们调用`plot_function`函数来绘制函数$f(x) = \sin(x)$在区间$[0, 2\pi]$上的图像，其中我们有1000个等距点。
+2024-05-14 11:34:37,917 - __main__ - INFO - [5654] Consumer started, waiting for messages...
+2024-05-19 22:37:00,891 - __main__ - INFO - [8807] Consumer started, waiting for messages...
+2024-05-19 22:39:19,744 - __main__ - INFO - Received message: Session_ID=12112003, QUERY=你好
+2024-05-19 22:39:21,617 - __main__ - INFO - Sent reply: Session_ID=12112003, RESPONSE=你好！有什么活动或者表演你想了解的吗？我可以帮助你查看相关信息。
+2024-05-19 22:40:04,747 - __main__ - INFO - Received message: Session_ID=12112003, QUERY=你好
+2024-05-19 22:40:04,747 - __main__ - INFO - Sent reply: Session_ID=12112003, RESPONSE=这是一个测试
+2024-05-19 22:40:15,353 - __main__ - INFO - Received message: Session_ID=12112003, QUERY=1
+2024-05-19 22:40:15,354 - __main__ - INFO - Sent reply: Session_ID=12112003, RESPONSE=这是一个测试
+2024-05-19 22:40:19,490 - __main__ - INFO - Received message: Session_ID=12112003, QUERY=1
+2024-05-19 22:40:19,490 - __main__ - INFO - Sent reply: Session_ID=12112003, RESPONSE=这是一个测试
+2024-05-19 22:40:26,518 - __main__ - INFO - Received message: Session_ID=12112003, QUERY=1
+2024-05-19 22:40:26,519 - __main__ - INFO - Sent reply: Session_ID=12112003, RESPONSE=这是一个测试
+2024-05-19 22:40:33,667 - __main__ - INFO - Received message: Session_ID=12112003, QUERY=1
+2024-05-19 22:40:33,668 - __main__ - INFO - Sent reply: Session_ID=12112003, RESPONSE=这是一个测试
+2024-05-19 22:40:34,894 - __main__ - INFO - Received message: Session_ID=12112003, QUERY=1
+2024-05-19 22:40:34,895 - __main__ - INFO - Sent reply: Session_ID=12112003, RESPONSE=这是一个测试
+2024-05-19 22:40:35,968 - __main__ - INFO - Received message: Session_ID=12112003, QUERY=1
+2024-05-19 22:40:35,969 - __main__ - INFO - Sent reply: Session_ID=12112003, RESPONSE=这是一个测试
+2024-05-19 22:40:37,774 - __main__ - INFO - Received message: Session_ID=12112003, QUERY=1
+2024-05-19 22:40:37,774 - __main__ - INFO - Sent reply: Session_ID=12112003, RESPONSE=这是一个测试
+2024-05-19 22:40:39,040 - __main__ - INFO - Received message: Session_ID=12112003, QUERY=1
+2024-05-19 22:40:39,041 - __main__ - INFO - Sent reply: Session_ID=12112003, RESPONSE=这是一个测试
+2024-05-19 22:40:40,197 - __main__ - INFO - Received message: Session_ID=12112003, QUERY=1
+2024-05-19 22:40:40,198 - __main__ - INFO - Sent reply: Session_ID=12112003, RESPONSE=这是一个测试
+2024-05-19 22:40:45,185 - __main__ - INFO - Received message: Session_ID=12112003, QUERY=1
+2024-05-19 22:40:45,186 - __main__ - INFO - Sent reply: Session_ID=12112003, RESPONSE=这是一个测试
+2024-05-19 22:40:47,877 - __main__ - INFO - Received message: Session_ID=12112003, QUERY=1
+2024-05-19 22:40:47,878 - __main__ - INFO - Sent reply: Session_ID=12112003, RESPONSE=这是一个测试
+2024-05-19 22:40:49,785 - __main__ - INFO - Received message: Session_ID=12112003, QUERY=1
+2024-05-19 22:40:49,786 - __main__ - INFO - Sent reply: Session_ID=12112003, RESPONSE=这是一个测试
+2024-05-19 22:40:51,612 - __main__ - INFO - Received message: Session_ID=12112003, QUERY=1
+2024-05-19 22:40:51,612 - __main__ - INFO - Sent reply: Session_ID=12112003, RESPONSE=这是一个测试
+2024-05-19 22:40:53,835 - __main__ - INFO - Received message: Session_ID=12112003, QUERY=1
+2024-05-19 22:40:53,836 - __main__ - INFO - Sent reply: Session_ID=12112003, RESPONSE=这是一个测试
+2024-05-19 22:43:53,596 - __main__ - INFO - Received message: Session_ID=12112003, QUERY=1
+2024-05-19 22:43:53,597 - __main__ - INFO - Sent reply: Session_ID=12112003, RESPONSE=这是一个测试
+2024-05-19 22:43:58,482 - __main__ - INFO - Received message: Session_ID=12112003, QUERY=1
+2024-05-19 22:43:58,483 - __main__ - INFO - Sent reply: Session_ID=12112003, RESPONSE=这是一个测试
+2024-05-19 22:44:18,784 - __main__ - INFO - Received message: Session_ID=12112003, QUERY=1
+2024-05-19 22:44:18,785 - __main__ - INFO - Sent reply: Session_ID=12112003, RESPONSE=这是一个测试
+2024-05-19 22:44:22,507 - __main__ - INFO - Received message: Session_ID=12112003, QUERY=1
+2024-05-19 22:44:22,507 - __main__ - INFO - Sent reply: Session_ID=12112003, RESPONSE=这是一个测试
+2024-05-19 22:44:24,581 - __main__ - INFO - Received message: Session_ID=12112003, QUERY=1
+2024-05-19 22:44:24,581 - __main__ - INFO - Sent reply: Session_ID=12112003, RESPONSE=这是一个测试
+2024-05-19 22:47:20,036 - __main__ - INFO - [9443] Consumer started, waiting for messages...
+2024-05-19 22:47:20,036 - __main__ - INFO - Received message: Session_ID=12112003, QUERY=你是gpt4o吗
+2024-05-19 22:47:22,070 - __main__ - INFO - Sent reply: Session_ID=12112003, RESPONSE=我是基于GPT-4的助手。请告诉我你需要了解哪些南方科技大学的活动信息，或者是否需要帮助预订门票、座位或撰写评论。我会尽力为你提供帮助。
+2024-05-19 22:48:34,897 - __main__ - INFO - Received message: Session_ID=12112003, QUERY=你好
+2024-05-19 22:48:36,894 - __main__ - INFO - Sent reply: Session_ID=12112003, RESPONSE=你好，欢迎使用校园活动与娱乐中心！请问有什么可以帮助您的吗？
+2024-05-19 22:49:09,559 - __main__ - INFO - Received message: Session_ID=12112003, QUERY=你好
+2024-05-19 22:49:09,575 - __main__ - ERROR - Error processing message: Could not import zhipuai package. Please install it via 'pip install zhipuai' , Session_ID=12112003, QUERY=你好
+2024-05-19 22:49:09,576 - __main__ - INFO - Sent reply: Session_ID=12112003, RESPONSE=对不起，请求失败，请稍后重试
+2024-05-19 22:49:47,810 - __main__ - INFO - [9603] Consumer started, waiting for messages...
+2024-05-19 22:49:53,414 - __main__ - INFO - Received message: Session_ID=12112003, QUERY=1
+2024-05-19 22:49:53,428 - __main__ - ERROR - Error processing message: Could not import zhipuai package. Please install it via 'pip install zhipuai' , Session_ID=12112003, QUERY=1
+2024-05-19 22:49:53,429 - __main__ - INFO - Sent reply: Session_ID=12112003, RESPONSE=对不起，请求失败，请稍后重试
+2024-05-19 22:58:18,498 - __main__ - INFO - [9848] Consumer started, waiting for messages...
+2024-05-19 22:58:24,261 - __main__ - INFO - Received message: Session_ID=12112003, QUERY=你好
+2024-05-19 22:58:26,282 - __main__ - INFO - Sent reply: Session_ID=12112003, RESPONSE=你好！有什么我可以帮助你的吗？比如查询活动信息、预订门票或了解座位情况等。
+2024-05-19 22:58:36,622 - __main__ - INFO - Received message: Session_ID=12112003, QUERY=你好
+2024-05-19 22:58:39,008 - __main__ - INFO - Sent reply: Session_ID=12112003, RESPONSE=你好！很高兴为你服务。你想了解关于南方科技大学的哪项活动？是最近的音乐会、讲座、比赛还是其他活动的信息？或者你需要帮助预订票务或查看日程安排？请告诉我具体的需求，我会尽力提供帮助。
+2024-05-19 22:58:45,115 - __main__ - INFO - Received message: Session_ID=12112003, QUERY=你好
+2024-05-19 22:58:48,279 - __main__ - INFO - Sent reply: Session_ID=12112003, RESPONSE=你好，有什么问题我可以帮你解答吗？
+2024-05-19 22:59:05,300 - __main__ - INFO - Received message: Session_ID=12112003, QUERY=你好
+2024-05-19 22:59:08,913 - __main__ - ERROR - Error processing message: api return error, req_id:  code: 17, msg: Open api daily request limit reached , Session_ID=12112003, QUERY=你好
+2024-05-19 22:59:08,914 - __main__ - INFO - Sent reply: Session_ID=12112003, RESPONSE=对不起，请求失败，请稍后重试
+2024-05-19 23:06:14,104 - __main__ - INFO - Received message: Session_ID=12112003, QUERY=1
+2024-05-19 23:06:14,105 - __main__ - INFO - Sent reply: Session_ID=12112003, RESPONSE=这是一个测试
+2024-05-19 23:07:11,179 - __main__ - INFO - Received message: Session_ID=12112003, QUERY=1
+2024-05-19 23:07:11,180 - __main__ - INFO - Sent reply: Session_ID=12112003, RESPONSE=这是一个测试
+2024-05-19 23:07:13,588 - __main__ - INFO - Received message: Session_ID=12112003, QUERY=1
+2024-05-19 23:07:13,588 - __main__ - INFO - Sent reply: Session_ID=12112003, RESPONSE=这是一个测试
