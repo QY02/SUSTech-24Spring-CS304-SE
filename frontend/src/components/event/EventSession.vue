@@ -419,7 +419,8 @@ const onEdit = async (id) => {
   state = 1
   visibleBody.value = true
 };
-const onSubmit = async ({validateResult, firstError}) => {
+const onSubmit = async ({validateResult, firstError,e}) => {
+  e.preventDefault();
   if (validateResult === true) {
     if (state === 0) {
       data.value = [...data.value, Data.value]
