@@ -134,6 +134,17 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <excludes>
+                        <exclude>**/AMapProxyController.*</exclude>
+                        <exclude>**/entity/*</exclude>
+                        <exclude>**/utils/*</exclude>
+                        <exclude>**/config/*</exclude>
+                        <exclude>**/exception/*</exclude>
+                        <exclude>**/component/*</exclude>
+                        <exclude>**/constant/*</exclude>
+                    </excludes>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
