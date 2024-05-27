@@ -29,8 +29,8 @@ public class UserBlogInteractionServiceImpl extends ServiceImpl<UserBlogInteract
     private IUserInteractionService userInteractionService;
 
     @Override
-    public JSONObject getBlog(Integer commentId) {
-        List<UserBlogInteraction> userBlogInteraction = baseMapper.selectList(new QueryWrapper<UserBlogInteraction>().eq("comment_id",commentId));
+    public JSONObject getBlog(Integer commentId, String userId) {
+        List<UserBlogInteraction> userBlogInteraction = baseMapper.selectList(new QueryWrapper<UserBlogInteraction>().eq("comment_id",commentId).eq("user_id",userId));
         if (userBlogInteraction.isEmpty()) {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("voteType", 0);

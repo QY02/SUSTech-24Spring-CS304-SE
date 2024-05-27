@@ -13,7 +13,7 @@
         <t-card
             v-for="(item,index) in curEvents"
             :key="index"
-            :title="item['name']" :subtitle="item['content']" :style="{ width: '400px' }" hover-shadow
+            :title="item['name'].length > 6 ? item['name'].substring(0, 6) + '...' : item['name']" :subtitle="item.content.length > 18 ? item.content.substring(0, 18) + '...' : item.content" :style="{ width: '400px' }" hover-shadow
             @click="clickEvent(item['id'])">
           <template #actions>
             <!--        <t-dropdown :options="options" :min-column-width="112" @click="clickHandler">-->
@@ -156,7 +156,7 @@ const favEvent = (eventId) => {
     })
         .then(() => {
           favColor.value[eventId] = 'red'
-          MessagePlugin.success("Add favorite successfully!");
+          MessagePlugin.success("收藏成功!");
         })
         .catch((error) => {
           // thumbUpColor.value = 'red'
@@ -180,7 +180,7 @@ const favEvent = (eventId) => {
       }
     }).then((response) => {
       favColor.value[eventId] = 'black'
-      MessagePlugin.success("Delete favorite successfully!");
+      MessagePlugin.success("取消收藏成功!");
 
     }).catch(() => {
     })

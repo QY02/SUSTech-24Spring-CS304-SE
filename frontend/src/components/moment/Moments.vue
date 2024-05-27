@@ -65,8 +65,9 @@
         <h1>
         {{momentData.title}}
         </h1>
-        <t-comment :author="momentData.userName" :datetime="momentData.publishDate"
-                   :content="momentData.content">
+        <t-comment :author="momentData.userName" :datetime="momentData.publishDate.replace('T',' ')"
+                   :content="momentData.content" style="white-space: pre-wrap;word-wrap: anywhere;">
+
           <template #avatar>
             <t-avatar v-if="momentData.publisherId===user" size="60px" :image="momentData.avatar"/>
             <t-popconfirm v-if="momentData.publisherId!==user" content="与ta聊天" :cancel-btn="null" @confirm="chat(momentData.publisherId,momentData.userName)">
@@ -122,10 +123,10 @@
     <t-list :split="true" v-loading="commentLoading">
       <t-list-item v-for="(item, index) in commentsData" :key="index">
         <template #content>
-          <t-comment style="margin-bottom: 5px" :avatar="item.avatar" :author="item.author" :datetime="item.publishDate"
+          <t-comment style="margin-bottom: 5px;white-space: pre-wrap;word-wrap: anywhere;" :avatar="item.avatar" :author="item.author" :datetime="item.publishDate.replace('T',' ')"
                      :content="item.content">
             <template #actions>
-              <t-space v-if="item.publisherId===user" key="delete" :size="6" @click="deleteComment(item)">
+              <t-space v-if="item.publisherId===user" key="delete" :size="6" @click="deleteComment(item)" style="color:red">
                 <t-icon name="delete" />
                 <span>删除</span>
               </t-space>

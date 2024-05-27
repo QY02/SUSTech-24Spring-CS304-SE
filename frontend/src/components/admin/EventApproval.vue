@@ -50,7 +50,7 @@
       </div>
       <t-list v-else :split="true">
         <t-list-item v-for="item in listData" :key="item.id">
-          <t-list-item-meta :image="item.avatar" :title="item.title" :description="item.description" />
+          <t-list-item-meta :image="item.avatar" :title="item.title" :description="item.description.length > 16 ? item.description.substring(0, 16) + '...' : item.description" />
           <t-space direction="vertical">
             <t-text>{{ item.date }}</t-text>
             <t-text>{{ item.location }}</t-text>
@@ -234,15 +234,16 @@ onMounted(() => {
               id: item.id,
               title: item.name,
               description: item.content,
-              date: item.startTime,
+              date: item.startTime.replace("T", " "),
               location: item.location,
               price: item.lowestPrice===item.highestPrice && item.highestPrice===0?"免费":"￥"+item.lowestPrice + "起",
+              lowestPrice: item.lowestPrice,
               highestPrice: item.highestPrice,
               policy: item.eventPolicy,
               type: mapEventType(item.type),
               status: item.status,
               publisherId: item.publisherId,
-              publishDate: item.publishDate,
+              publishDate: item.publishDate.replace("T", " "),
               avatar: avatarList[item.avatar]
             }));
             filter_list_data.value = audit_list_data.value;
@@ -280,13 +281,13 @@ const viewHistory = async () => {
     });
     historyData.value = response.data.data.map(item => ({
       name: item.name,
-      startTime: item.startTime,
+      startTime: item.startTime.replace("T", " "),
       location: item.location,
       lowestPrice: item.lowestPrice,
       type: mapEventType(item.type),
       status: item.status,
       publisherId: item.publisherId,
-      publishDate: item.publishDate
+      publishDate: item.publishDate.replace("T", " "),
     }));
     historyPagination.value.total = historyData.value.length;
     historyVisible.value = true;

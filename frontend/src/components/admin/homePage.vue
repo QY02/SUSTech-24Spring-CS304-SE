@@ -129,7 +129,7 @@ const productList = ref([
     type: 3,},
   {
     index: 4,
-    name: '动态审核',
+    name: '动态管理',
     description: '审核动态内容',
     type: 4,},
   // {

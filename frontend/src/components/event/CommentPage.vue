@@ -271,6 +271,8 @@ getComment();
     justify-content: space-between;
     background-color: rgba(255, 255, 255, 1);
     padding: 20px;
+  white-space: pre-wrap;
+  word-wrap: anywhere;
 }
 
 .price_card {

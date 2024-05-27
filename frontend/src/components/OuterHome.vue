@@ -32,7 +32,7 @@ const go_to_login = () => {
 }
 
 .content {
-  padding-bottom: 10%;
+  padding-bottom: 41%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -40,7 +40,7 @@ const go_to_login = () => {
 }
 
 .outer-home-title {
-  margin-top: 0;
+  margin-top: 60%;
   margin-bottom: 0;
   font-size: 50px;
   line-height: 1.2;

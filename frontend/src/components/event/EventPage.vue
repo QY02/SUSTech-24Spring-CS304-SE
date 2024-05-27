@@ -56,7 +56,7 @@
         <t-tab-panel value="about" label="活动细节"></t-tab-panel>
         <t-tab-panel value="price" label="活动票价"></t-tab-panel>
         <t-tab-panel value="policy" label="退换票规则"></t-tab-panel>
-        <t-tab-panel value="gallery" label="动态"></t-tab-panel>
+        <t-tab-panel value="gallery" label="相关动态"></t-tab-panel>
         <t-tab-panel value="reviews" label="评论"></t-tab-panel>
       </t-tabs>
     </el-affix>
@@ -139,7 +139,7 @@
           <div class="line"></div>
         </div>
       </t-space>
-      <div style="margin-left: 25px;margin-right: 25px; margin-bottom: 40px;">
+      <div style="margin-left: 25px;margin-right: 25px; margin-bottom: 40px;white-space: pre-wrap;word-wrap: anywhere;">
         {{ eventDetail.content }}
       </div>
     </div>
@@ -208,7 +208,7 @@
         <!-- <p style="  margin-top: 0.4rem; color: rgb(70, 73, 79);font-weight: 600;">
           Rules
         </p> -->
-        <p v-if="eventDetail.eventPolicy" style="  margin-top: 0.4rem; line-height: 1.625;color: rgb(70, 73, 79);;">
+        <p v-if="eventDetail.eventPolicy" style="  margin-top: 0.4rem; line-height: 1.625;color: rgb(70, 73, 79);white-space: pre-wrap;word-wrap: anywhere;">
           {{ eventDetail.eventPolicy }}
         </p>
         <p v-else style="  margin-top: 0.4rem; line-height: 1.625;color: rgb(70, 73, 79);;">
@@ -224,7 +224,7 @@
     <div :id="`${path}#gallery`" style="height: 60px;"></div>
     <t-space style="display: flex; width: 100%; margin-left: 24px;">
       <div>
-        <div class="title">动态</div>
+        <div class="title">相关动态</div>
         <div class="line"></div>
       </div>
     </t-space>
@@ -325,7 +325,7 @@ const dateToString = (date) => {
 }
 
 const attachmentPath = ref('');
-const photo = ref('https://tdesign.gtimg.com/demo/demo-image-1.png');
+const photo = ref('');
 const photoUrl = ref('https://tdesign.gtimg.com/demo/demo-image-1.png');
 const getAttachment = () => {
   axios.get(`/event/getPhotoById?eventId=${eventId}`, {

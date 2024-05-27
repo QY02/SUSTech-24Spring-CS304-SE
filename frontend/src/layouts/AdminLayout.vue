@@ -29,7 +29,7 @@
               <template #icon>
                 <ChatBubbleErrorIcon/>
               </template>
-              动态审核
+              动态管理
             </t-menu-item>
           </t-menu>
         </t-aside>

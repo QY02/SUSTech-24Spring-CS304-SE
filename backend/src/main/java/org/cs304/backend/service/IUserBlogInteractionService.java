@@ -6,7 +6,7 @@ import org.cs304.backend.entity.UserBlogInteraction;
 import org.springframework.transaction.annotation.Transactional;
 
 public interface IUserBlogInteractionService extends IService<UserBlogInteraction> {
-    JSONObject getBlog(Integer commentId);
+    JSONObject getBlog(Integer commentId, String userId);
     @Transactional(rollbackFor = Exception.class)
     void changeVote(Integer commentId, String userId, Integer voteType);
 }

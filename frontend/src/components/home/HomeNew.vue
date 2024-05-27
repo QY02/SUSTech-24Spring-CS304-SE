@@ -11,7 +11,7 @@
     <t-card
         v-for="(item,index) in curEvents"
         :key="index"
-        :title="item['name']" :subtitle="item['content']" :style="{ width: '400px' }"
+        :title="item['name']"  :subtitle="item.content.length > 18 ? item.content.substring(0, 18) + '...' : item.content" :style="{ width: '400px' }"
         hover-shadow
         @click="clickEvent(item['id'])"
         lazy-load
@@ -266,7 +266,7 @@ const clickShare = (eventId, eventName) => {
 }
 // alert(sessionStorage.getItem('MomentName'))
 const clickEvent = (eventId) => {
-  MessagePlugin.success(`${sessionStorage.getItem('uid')} 选中【${eventId}】`);
+  // MessagePlugin.success(`${sessionStorage.getItem('uid')} 选中【${eventId}】`);
   sessionStorage.setItem('eventId', eventId)
   router.push('/event');
   // router.push('/event');

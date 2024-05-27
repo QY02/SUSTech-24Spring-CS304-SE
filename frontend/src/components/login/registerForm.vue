@@ -132,6 +132,7 @@
         body="自定义底部按钮，直接传入文字"
         :confirm-btn="null"
         :cancel-btn="null"
+        :close-on-overlay-click="false"
     >
       <t-form ref="form1" :data="formData1" :rules="rules1" :colon="true" :label-width="5" @reset="onReset"
               @submit="handleOK"
@@ -312,13 +313,13 @@ const handleSubmit = ({validateResult}) => {
       "favType": formData.favType,
     })
         .then(() => {
-          MessagePlugin.info("Already send the code, please check and enter.");
+          MessagePlugin.info("已发送验证码，请查收");
           visible.value = true;
         })
         .catch(error => {
         });
   } else {
-    MessagePlugin.warning("Please make sure the input format is correct!")
+    MessagePlugin.warning("输入格式错误")
     // alert('lll')
   }
 
@@ -329,17 +330,15 @@ const handleOK = ({validateResult}) => {
     axios.post("/registerEmailVerify", {
       "email": formData.email,
       "code": formData1.code
-    })
-        .then(() => {
-          MessagePlugin.success("User created!");
+    }).then(() => {
+          MessagePlugin.success("账号创建成功！");
           visible.value = !visible.value
           router.push("/login");
         })
         .catch((error) => {
         });
   } else {
-    MessagePlugin.warning("Please make sure the input format is correct!")
-
+    MessagePlugin.warning("输入格式错误")
   }
 };
 //
