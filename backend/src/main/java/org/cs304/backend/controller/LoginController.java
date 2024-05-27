@@ -76,7 +76,7 @@ public class LoginController {
             user = userService.login(user);
         } catch (Exception e) {
             log.error(e.getMessage());
-            return Result.error(response, "400", "非法用户名或密码");
+            return Result.error(response, "400", "用户名或密码错误");
         }
         if (user.getTwoFactorAuthentication()) {
             return Result.success(response);
