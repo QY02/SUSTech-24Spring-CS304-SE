@@ -64,47 +64,15 @@ import {MessagePlugin} from "tdesign-vue-next";
 import {RollbackIcon} from "tdesign-icons-vue-next";
 import router from "@/routers/index.js";
 
-// import {getCurrentInstance} from "vue/dist/vue";
-// import {MessagePlugin} from "tdesign-vue-next";
-// const globalProperties = getCurrentInstance().appContext.config.globalProperties;
-// const apiBaseUrl = globalProperties.$apiBaseUrl;
-// // alert(apiBaseUrl)
-// axios.defaults.baseURL = apiBaseUrl;
 const events = ref({});
 const eventDetail = ref({
   'eventSession': {}
 });
 const index = sessionStorage.getItem('index');
-// sessionStorage.removeItem('index');
-// axios.post(`/orderRecord/getMyOrderRecord`, {
-//   "mode": 3,
-// }, {
-//   params: {},
-//
-//   headers: {
-//     token: sessionStorage.getItem('token')
-//   }
-// })
-//     .then((response) => {
-// alert(index)
 let data = JSON.parse(index);
 
 events.value = data.event;
 eventDetail.value = data;
-
-// alert(JSON.stringify(eventDetail.value))
-// alert(JSON.stringify(new Date(eventDetail.value['eventSession'].registrationStartTime)))
-
-// })
-// .catch((error) => {
-//   if (error.response) {
-//     // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-//     MessagePlugin.warning(error.response.data.msg);
-//   } else {
-//     // 一些错误是在设置请求的时候触发
-//     MessagePlugin.warning(error.message);
-//   }
-// });
 const dateToString = (date: Date) => {
   const dayNameArray = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
   const dayName = dayNameArray[date.getDay()];

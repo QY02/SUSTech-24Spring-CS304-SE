@@ -39,42 +39,6 @@
 
     </t-form>
   </div>
-  <!--  <va-form class="form" ref="formRef">-->
-  <!--    <va-input type="email" label="e-mail" class="va-input"-->
-  <!--              v-model="email"-->
-  <!--              placeholder="Enter your e-mail"-->
-  <!--              :rules="[(v) => /[^@]+@[^@]+\.[a-zA-Z]{2,}$/.test(v) || 'Wrong format']"-->
-  <!--    ></va-input>-->
-  <!--    <va-button-->
-  <!--        preset="secondary"-->
-  <!--        class="form-btn"-->
-  <!--        color="colors.primary"-->
-  <!--        size="small"-->
-  <!--        @click="handleVeri"-->
-  <!--    >-->
-  <!--      Get code-->
-  <!--    </va-button>-->
-  <!--    <va-input-->
-  <!--        v-model="code"-->
-  <!--        type="text"-->
-  <!--        class="input"-->
-  <!--        placeholder="Enter the verification code"-->
-  <!--        label="verification code"-->
-  <!--        :rules="[(v) => /^[0-9]{6}$/.test(v) || 'Code must be a six-digit number']"-->
-  <!--    ></va-input>-->
-
-
-  <!--  </va-form>-->
-  <!--  <va-button-->
-  <!--      type="submit"-->
-  <!--      class="form-btn"-->
-  <!--      color="primary"-->
-  <!--      size="small"-->
-  <!--      @click="handleSubmit"-->
-  <!--      :disabled="!isValid"-->
-  <!--  >-->
-  <!--    Log in-->
-  <!--  </va-button>-->
 
 </template>
 
@@ -99,26 +63,11 @@ const formData = reactive({
 const onReset = () => {
   MessagePlugin.success('重置成功');
 };
-
-
-// const {isValid, validate} = useForm('formRef')
-// const {init} = useToast();
-
-// const password = ref("");
-// const id = ref("");
 const rules = {
   email: [{required: true}, {validator: (v) => /[^@]+@[^@]+\.[a-zA-Z]{2,}$/.test(v), message: '格式错误'}],
   code: [{required: true}, {validator: (v) => /^[0-9]{6}$/.test(v), message: '验证码必须是6位数字'}],
 };
 const countDown = ref(0); // 倒计时变量，初始为 0 表示可点击状态
-
-//   const onSubmit = ({ validateResult, firstError }) => {
-//   if (validateResult === true) {
-//   MessagePlugin.success('提交成功');
-// } else {
-//   console.log('Validate Errors: ', firstError, validateResult);
-//   MessagePlugin.warning(firstError);
-// }
 
 const throttle = (func) => {
   console.log("in")
@@ -144,15 +93,6 @@ const throttle = (func) => {
   }
 
 }
-// };
-
-
-// const {init} = useToast();
-// const {isValid, validate} = useForm('formRef')
-// const code = ref("");
-// const email = ref("");
-// const appConfig = ref(getCurrentInstance().appContext.config.globalProperties).value;
-// 获取全局变量 $apiBaseUrl
 
 const handleSubmit = ({validateResult}) => {
   if (validateResult === true) {
@@ -181,9 +121,7 @@ const handleSubmit = ({validateResult}) => {
             router.push("/HomePage");
           }
 
-        })
-        .catch((error) => {
-        });
+        }).catch();
   } else {
     MessagePlugin.warning("请确保输入格式正确!")
 

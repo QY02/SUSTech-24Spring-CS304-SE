@@ -341,25 +341,6 @@ const handleOK = ({validateResult}) => {
     MessagePlugin.warning("输入格式错误")
   }
 };
-//
-// }
-//   return {
-//     id,
-//     email,
-//     username,
-//     password,
-//     password2,
-//     department,
-//     phoneNumber,
-//     code,
-//     handleSubmit,
-//     handleOK,
-//     showModal,
-//     isValid,
-//     validate, isValidemailVeri, validateemailVeri
-//   };
-
-
 </script>
 
 

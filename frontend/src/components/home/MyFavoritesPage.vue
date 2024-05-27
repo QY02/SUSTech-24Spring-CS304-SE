@@ -160,29 +160,9 @@ axios.post(`/favorite/getByUserId`, {
           } else {
             favColor.value[id] = 'black'
           }
-        }).catch((error) => {
-          if (error.response) {
-            // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-            // MessagePlugin.warning(error.response.data.msg);
-          } else {
-            // 一些错误是在设置请求的时候触发
-            // MessagePlugin.warning(error.message);
-          }
-        });
-        // events.value[i].imageUrl =
-        // alert(id)
+        }).catch();
       }
-
-    })
-    .catch((error) => {
-      if (error.response) {
-        // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-        MessagePlugin.warning(error.response.data.msg);
-      } else {
-        // 一些错误是在设置请求的时候触发
-        MessagePlugin.warning(error.message);
-      }
-    });
+    }).catch();
 
 const clickComment = (eventId) => {
   sessionStorage.setItem('eventId', eventId)
@@ -203,22 +183,10 @@ const favEvent = (eventId) => {
       headers: {
         token: sessionStorage.getItem('token')
       }
-    })
-        .then(() => {
+    }).then(() => {
           favColor.value[eventId] = 'red'
-          MessagePlugin.success("Add favorite successfully!");
-        })
-        .catch((error) => {
-          // thumbUpColor.value = 'red'
-          if (error.response) {
-
-            // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-            // MessagePlugin.warning(error.response.data.msg);
-          } else {
-            // 一些错误是在设置请求的时候触发
-            MessagePlugin.warning(error.message);
-          }
-        });
+          MessagePlugin.success("收藏成功");
+        }).catch();
   } else {
     // alert('hhh')
     axios.post(`/favorite/delete`, {
@@ -230,10 +198,8 @@ const favEvent = (eventId) => {
       }
     }).then((response) => {
       favColor.value[eventId] = 'black'
-      MessagePlugin.success("Delete favorite successfully!");
-
-    }).catch(() => {
-    })
+      MessagePlugin.success("取消收藏成功");
+    }).catch()
   }
 };
 const clickEvent = (eventId) => {
@@ -249,19 +215,7 @@ const clickEvent = (eventId) => {
     headers: {
       token: sessionStorage.getItem('token')
     }
-  })
-      .then((response) => {
-
-      })
-      .catch((error) => {
-        if (error.response) {
-          // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-          MessagePlugin.warning(error.response.data.msg);
-        } else {
-          // 一些错误是在设置请求的时候触发
-          MessagePlugin.warning(error.message);
-        }
-      });
+  }).then((response) => {}).catch();
 };
 
 // const eventType = inject('eventType')
@@ -274,44 +228,13 @@ window.addEventListener('setItem', () => {
   typeValue.value = sessionStorage.getItem('eventType');
   curEvents.value = events.value.filter(events => typeValue.value.includes(events['type'] + 1));
   tmpEvents.value = events.value.filter(events => typeValue.value.includes(events['type'] + 1));
-  // alert(JSON.stringify(tmpEvents.value))
-  // events.value=[]
-  // alert(typeValue.value)
 })
 
 function getSearchNew(message) {
-  // alert(JSON.stringify(tmpEvents.value))
-
-  // curEvents.value =event.content.includes(searchText.value) || event.title.includes(searchText.value)
-  // alert(message)
   curEvents.value = tmpEvents.value.filter(events => events['content'].includes(message) || events['name'].includes(message));
-  // curEvents.value = tmpEvents.value.filter(tmpEvents => tmpEvents['content'].includes(message) || tmpEvents['eventPolicy'].includes(message));
 }
 
 defineExpose({getSearchNew});
-
-
-// const events = [
-//   {
-//     title: "hhh",
-//     content: "haode",
-//     cover: "https://tdesign.gtimg.com/site/source/card-demo.png",
-//
-//   },
-//
-//   {
-//     title: "hhh222",
-//     content: "haode2345",
-//     cover: "https://th.bing.com/th/id/R.c927115ffa24dacf9616d608ad7fdc2b?rik=aBFhSrgygnmG1g&pid=ImgRaw&r=0",
-//   }
-// ];
-
-
-// const {colors} = useColors();
-// colors.primary = sessionStorage.getItem('primary-color')
-// alert(colors.primary)
-
-
 </script>
 <style scoped>
 #event {

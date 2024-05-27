@@ -142,8 +142,7 @@ axios.post(`/event/getAllEvents`, {}, {
   headers: {
     token: sessionStorage.getItem('token')
   }
-})
-    .then((response) => {
+}).then((response) => {
       // alert(response)
       events.value = response.data.data.filter(events => events['status'] === 1)
       curEvents.value = events.value
@@ -182,8 +181,7 @@ axios.post(`/event/getAllEvents`, {}, {
           headers: {
             token: sessionStorage.getItem('token')
           }
-        })
-            .then((response) => {
+        }).then((response) => {
               attachToken.value = response.data.data['filePath']
               // alert(JSON.stringify(response.data.data))
               let attachToken1 = attachToken.value
@@ -195,8 +193,7 @@ axios.post(`/event/getAllEvents`, {}, {
                   token: attachToken1
                 },
                 responseType: 'blob'
-              })
-                  .then((response) => {//
+              }).then((response) => {//
                     // alert(JSON.stringify(response.data))
                     // 将图片 URL 赋值给 cover 变量
                     const blob = new Blob([response.data], {type: 'application/octet-stream'});
@@ -209,39 +206,10 @@ axios.post(`/event/getAllEvents`, {}, {
                     // cover.value = imageUrl;
 
                   })
-                  .catch((error) => {
-                    if (error.response) {
-                      // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-                      // MessagePlugin.warning(error.response.data.msg);
-                    } else {
-                      // 一些错误是在设置请求的时候触发
-                      // MessagePlugin.warning(error.message);
-                    }
-                  });
-            })
-            .catch((error) => {
-              if (error.response) {
-                // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-                // MessagePlugin.warning(error.response.data.msg);
-              } else {
-                // 一些错误是在设置请求的时候触发
-                // MessagePlugin.warning(error.message);
-              }
-            });
-        // events.value[i].imageUrl =
-        // alert(id)
+                  .catch();
+            }).catch();
       }
-
-    })
-    .catch((error) => {
-      if (error.response) {
-        // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-        MessagePlugin.warning(error.response.data.msg);
-      } else {
-        // 一些错误是在设置请求的时候触发
-        MessagePlugin.warning(error.message);
-      }
-    });
+    }).catch();
 
 
 // const eventType = inject('eventType')
@@ -278,19 +246,7 @@ const clickEvent = (eventId) => {
     headers: {
       token: sessionStorage.getItem('token')
     }
-  })
-      .then((response) => {
-
-      })
-      .catch((error) => {
-        if (error.response) {
-          // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-          MessagePlugin.warning(error.response.data.msg);
-        } else {
-          // 一些错误是在设置请求的时候触发
-          MessagePlugin.warning(error.message);
-        }
-      });
+  }).then((response) => {}).catch();
 };
 const favEvent = (eventId) => {
   // MessagePlugin.success(`${sessionStorage.getItem('uid')} 喜欢【${eventId}】`);
@@ -307,17 +263,7 @@ const favEvent = (eventId) => {
           favColor.value[eventId] = 'red'
           MessagePlugin.success("收藏成功！");
         })
-        .catch((error) => {
-          // thumbUpColor.value = 'red'
-          if (error.response) {
-
-            // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-            // MessagePlugin.warning(error.response.data.msg);
-          } else {
-            // 一些错误是在设置请求的时候触发
-            MessagePlugin.warning(error.message);
-          }
-        });
+        .catch();
   } else {
     // alert('hhh')
     axios.post(`/favorite/delete`, {

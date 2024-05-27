@@ -85,25 +85,13 @@
 
 
 <script setup>
-import axios from "axios";
 import {computed, inject, reactive, ref, provide, getCurrentInstance} from "vue";
-// import router from "@/routers";
 import {AddIcon, SearchIcon} from "tdesign-icons-vue-next";
-// import {getSearchNew} from "@/components/home/HomeNew.vue";
-import {ThumbUpIcon, ChatIcon, ShareIcon, MoreIcon} from 'tdesign-icons-vue-next';
-import {MessagePlugin} from 'tdesign-vue-next';
 import HomeHot from "@/components/home/HomeHot.vue";
 import HomeNew from "@/components/home/HomeNew.vue";
 import HomeRecommend from "@/components/home/HomeRecommend.vue";
 sessionStorage.setItem('currentStep', 0)
 const title = '标题';
-
-
-// const {colors} = useColors();
-// colors.primary = sessionStorage.getItem('primary-color')
-// alert(colors.primary)
-
-
 const formData = reactive({
   search: '',
 });

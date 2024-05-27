@@ -209,16 +209,6 @@ const eventType = ref(sessionStorage.getItem('eventType'))
 
 const typeValue = ref([]);  // Initialize with a default value
 
-// Function to handle incoming messages from other tabs
-// window.addEventListener('setItem', () => {
-//   typeValue.value = sessionStorage.getItem('eventType');
-//   curEvents.value = events.value.filter(events => typeValue.value.includes(events['type'] + 1));
-//   tmpEvents.value = events.value.filter(events => typeValue.value.includes(events['type'] + 1));
-//   // alert(JSON.stringify(tmpEvents.value))
-//   // events.value=[]
-//   // alert(typeValue.value)
-// })
-
 function getSearchNew(message) {
   // alert(JSON.stringify(tmpEvents.value))
 
@@ -229,12 +219,6 @@ function getSearchNew(message) {
 }
 
 defineExpose({getSearchNew});
-
-
-// const {colors} = useColors();
-// colors.primary = sessionStorage.getItem('primary-color')
-// alert(colors.primary)
-
 
 </script>
 <style scoped>

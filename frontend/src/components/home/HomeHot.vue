@@ -151,40 +151,12 @@ axios.post(`/event/getHotEvents`, {}, {
                     // 将图片 URL 赋值给 cover 变量
                     // cover.value = imageUrl;
 
-                  })
-                  .catch((error) => {
-                    if (error.response) {
-                      // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-                      // MessagePlugin.warning(error.response.data.msg);
-                    } else {
-                      // 一些错误是在设置请求的时候触发
-                      // MessagePlugin.warning(error.message);
-                    }
-                  });
-            })
-            .catch((error) => {
-              if (error.response) {
-                // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-                // MessagePlugin.warning(error.response.data.msg);
-              } else {
-                // 一些错误是在设置请求的时候触发
-                // MessagePlugin.warning(error.message);
-              }
-            });
+                  }).catch();
+            }).catch();
         // events.value[i].imageUrl =
         // alert(id)
       }
-
-    })
-    .catch((error) => {
-      if (error.response) {
-        // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-        MessagePlugin.warning(error.response.data.msg);
-      } else {
-        // 一些错误是在设置请求的时候触发
-        MessagePlugin.warning(error.message);
-      }
-    });
+    }).catch();
 
 
 
@@ -215,16 +187,7 @@ const clickEvent = (eventId) => {
   })
       .then((response) => {
 
-      })
-      .catch((error) => {
-        if (error.response) {
-          // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-          MessagePlugin.warning(error.response.data.msg);
-        } else {
-          // 一些错误是在设置请求的时候触发
-          MessagePlugin.warning(error.message);
-        }
-      });
+      }).catch();
 };
 
 
