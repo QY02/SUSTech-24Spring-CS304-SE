@@ -53,8 +53,7 @@ public class EventSessionServiceImpl extends ServiceImpl<EventSessionMapper, Eve
                 throw new ServiceException("400", "Invalid registration_time_range");
             }
         }
-
-
+        
         // 设置 start_time 和 end_time
         JSONArray eventTimeRange = sessionData.getJSONArray("event_time_range");
         if (eventTimeRange.size()==2){
@@ -65,7 +64,6 @@ public class EventSessionServiceImpl extends ServiceImpl<EventSessionMapper, Eve
         }else {
             throw new ServiceException("400", "Invalid event_time_range");
         }
-
 
         // 设置 min_size 和 max_size
         int minSize = sessionData.getInteger("min_cnt");

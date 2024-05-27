@@ -78,9 +78,9 @@
               </t-col>
 
               <t-col flex="auto" style="display: inline-flex; justify-content: center">
-                <t-tooltip content="预定">
+                <t-tooltip content="预定详情">
                   <t-button variant="text" shape="square" @click.stop="clickBook(item['id'])">
-                    <data-display-icon/>
+                    <usergroup-icon/>
                   </t-button>
                 </t-tooltip>
               </t-col>
@@ -170,12 +170,12 @@
 import {
   ThumbUpIcon,
   ChatIcon,
-    DataDisplayIcon,
+  DataDisplayIcon,
   ShareIcon,
   MoreIcon,
   RollbackIcon,
   ErrorCircleIcon,
-  ToolsIcon
+  ToolsIcon, UsergroupIcon
 } from 'tdesign-icons-vue-next';
 import { MessagePlugin } from 'tdesign-vue-next';
 import axios from "axios";
