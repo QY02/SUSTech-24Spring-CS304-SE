@@ -121,8 +121,8 @@ jobs:
           tags: events_center_llm_service
       - name: Export Docker image to tar
         run: |
-          docker save -o events_center_llm_service.tar events_center_llm_service
-          chmod 777 events_center_llm_service.tar
+          docker save -o ./LLM_handler/events_center_llm_service.tar events_center_llm_service
+          chmod 777 ./LLM_handler/events_center_llm_service.tar
       - name: Upload Docker image tar to tyc server
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -130,23 +130,26 @@ jobs:
           username: ${{ secrets.TYC_SERVER_USERNAME }}
           password: ${{ secrets.TYC_SERVER_PASSWORD }}
           port: ${{ secrets.TYC_SERVER_PORT }}
-          source: 'events_center_llm_service.tar'
+          source: './LLM_handler/events_center_llm_service.tar'
           target: '/home/shadowfall/Documents/Software_Engineering/auto-deployment/docker-image-tars'
 
   build-recommend-service-docker-image-and-upload-to-tyc-server:
     runs-on: ubuntu-latest
     environment: deploy-to-aliyun
     steps:
-      - name: Build Docker images
-        uses: docker/build-push-action@v5.3.0
+      - name: Checkout
+        uses: actions/checkout@v4.1.2
         with:
-          context: "{{defaultContext}}:REC"
-          push: false
-          tags: events_center_recommend_service
+          ref: deploy
+      - name: Build Docker images
+        working-directory: ./REC
+        run: docker build --no-cache -t events_center_recommend_service .
       - name: Export Docker image to tar
         run: |
-          docker save -o events_center_recommend_service.tar events_center_recommend_service
-          chmod 777 events_center_recommend_service.tar
+          docker save -o ./REC/events_center_recommend_service.tar events_center_recommend_service
+          chmod 777 ./REC/events_center_recommend_service.tar
+      - name: Remove Docker images
+        run: run docker rmi events_center_recommend_service
       - name: Upload Docker image tar to tyc server
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -154,7 +157,7 @@ jobs:
           username: ${{ secrets.TYC_SERVER_USERNAME }}
           password: ${{ secrets.TYC_SERVER_PASSWORD }}
           port: ${{ secrets.TYC_SERVER_PORT }}
-          source: 'events_center_recommend_service.tar'
+          source: './REC/events_center_recommend_service.tar'
           target: '/home/shadowfall/Documents/Software_Engineering/auto-deployment/docker-image-tars'
 
 
