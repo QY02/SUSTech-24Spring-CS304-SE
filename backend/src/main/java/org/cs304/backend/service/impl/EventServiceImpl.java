@@ -293,72 +293,75 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
     @Override
     public void submitBookingData(int userType, String userId, OrderRecord orderRecord) {
         submitBookingDataLock.lock();
-        Event event = baseMapper.selectById(orderRecord.getEventId());
-        if ((event == null) || (event.getStatus() != constant_EventStatus.PASSED) || (!event.getVisible())) {
-            throw new ServiceException("400", "Event not exist");
-        }
-        EventSession eventSession = eventSessionMapper.selectById(orderRecord.getEventSessionId());
-        if ((eventSession == null) || (!eventSession.getVisible()) || (!Objects.equals(eventSession.getEventId(), orderRecord.getEventId()))) {
-            throw new ServiceException("400", "Event session not exist");
-        }
-        if (!eventSession.getRegistrationRequired()) {
-            throw new ServiceException("401", "This event session does not require registration");
-        }
-        if (LocalDateTime.now().isBefore(eventSession.getRegistrationStartTime()) || (!LocalDateTime.now().isBefore(eventSession.getRegistrationEndTime()))) {
-            throw new ServiceException("401", "Not within the registration time period");
-        }
-        if (eventSession.getCurrentSize() >= eventSession.getMaxSize()) {
-            throw new ServiceException("401", "This session is full");
-        }
-        if(eventSession.getSeatMapId()!=-1){
-            Seat seat = seatMapper.selectOne(new QueryWrapper<Seat>().eq("seat_map_id", eventSession.getSeatMapId()).eq("seat_id", orderRecord.getSeatId()));
-            if (seat == null) {
-                throw new ServiceException("400", "Seat not exist");
+        try {
+            Event event = baseMapper.selectById(orderRecord.getEventId());
+            if ((event == null) || (event.getStatus() != constant_EventStatus.PASSED) || (!event.getVisible())) {
+                throw new ServiceException("400", "Event not exist");
             }
-            if (!seat.getAvailability()) {
-                throw new ServiceException("409", "The seat is not available");
+            EventSession eventSession = eventSessionMapper.selectById(orderRecord.getEventSessionId());
+            if ((eventSession == null) || (!eventSession.getVisible()) || (!Objects.equals(eventSession.getEventId(), orderRecord.getEventId()))) {
+                throw new ServiceException("400", "Event session not exist");
             }
-            seat.setAvailability(false);
-            seatMapper.update(seat, new UpdateWrapper<Seat>().eq("seat_map_id", eventSession.getSeatMapId()).eq("seat_id", orderRecord.getSeatId()));
-            orderRecord.setPrice(seat.getPrice());
-        }
-        else{
-            orderRecord.setPrice(orderRecord.getPrice());
-        }
-        List<Integer> statuses = Arrays.asList(PAID, UNPAID, SUBMITTED);
-        OrderRecord order = orderRecordMapper.selectOne(new QueryWrapper<OrderRecord>().eq("user_id", userId).eq("event_id", orderRecord.getEventId()).eq("event_session_id", orderRecord.getEventSessionId())
-                .in("status", statuses));
-        if (order != null) {
-            LocalDateTime submitDateTime = order.getSubmitTime();
-            LocalDateTime currentDateTime = LocalDateTime.now();
-            Duration duration = Duration.between(submitDateTime, currentDateTime);
-            if (duration.toMinutes() >= 10) {
-                order.setStatus(-1);//expired
-                orderRecordMapper.updateById(order);
-                System.out.println("update successful");
+            if (!eventSession.getRegistrationRequired()) {
+                throw new ServiceException("401", "This event session does not require registration");
             }
-            int status = order.getStatus();
-            if (status == SUBMITTED) {
-                throw new ServiceException("400", "您已成功报名。");
+            if (LocalDateTime.now().isBefore(eventSession.getRegistrationStartTime()) || (!LocalDateTime.now().isBefore(eventSession.getRegistrationEndTime()))) {
+                throw new ServiceException("401", "Not within the registration time period");
             }
-            if (status == PAID) {
-                throw new ServiceException("400", "您已成功报名并支付。");
+            if (eventSession.getCurrentSize() >= eventSession.getMaxSize()) {
+                throw new ServiceException("401", "This session is full");
             }
-            if (status == UNPAID) {
-                throw new ServiceException("400", "已报名，等待用户支付中，请限定时间内及时支付。");
+            if(eventSession.getSeatMapId()!=-1){
+                Seat seat = seatMapper.selectOne(new QueryWrapper<Seat>().eq("seat_map_id", eventSession.getSeatMapId()).eq("seat_id", orderRecord.getSeatId()));
+                if (seat == null) {
+                    throw new ServiceException("400", "Seat not exist");
+                }
+                if (!seat.getAvailability()) {
+                    throw new ServiceException("409", "The seat is not available");
+                }
+                seat.setAvailability(false);
+                seatMapper.update(seat, new UpdateWrapper<Seat>().eq("seat_map_id", eventSession.getSeatMapId()).eq("seat_id", orderRecord.getSeatId()));
+                orderRecord.setPrice(seat.getPrice());
             }
-            // status == EXPIRED 就可以重新加入了
-        }
+            else{
+                orderRecord.setPrice(orderRecord.getPrice());
+            }
+            List<Integer> statuses = Arrays.asList(PAID, UNPAID, SUBMITTED);
+            OrderRecord order = orderRecordMapper.selectOne(new QueryWrapper<OrderRecord>().eq("user_id", userId).eq("event_id", orderRecord.getEventId()).eq("event_session_id", orderRecord.getEventSessionId())
+                    .in("status", statuses));
+            if (order != null) {
+                LocalDateTime submitDateTime = order.getSubmitTime();
+                LocalDateTime currentDateTime = LocalDateTime.now();
+                Duration duration = Duration.between(submitDateTime, currentDateTime);
+                if (duration.toMinutes() >= 10) {
+                    order.setStatus(-1);//expired
+                    orderRecordMapper.updateById(order);
+                    System.out.println("update successful");
+                }
+                int status = order.getStatus();
+                if (status == SUBMITTED) {
+                    throw new ServiceException("400", "您已成功报名。");
+                }
+                if (status == PAID) {
+                    throw new ServiceException("400", "您已成功报名并支付。");
+                }
+                if (status == UNPAID) {
+                    throw new ServiceException("400", "已报名，等待用户支付中，请限定时间内及时支付。");
+                }
+                // status == EXPIRED 就可以重新加入了
+            }
 //        if (orderRecordMapper.exists(new QueryWrapper<OrderRecord>().eq("user_id", userId).eq("event_id", orderRecord.getEventId()).eq("event_session_id", orderRecord.getEventSessionId()))) {
 //            throw new ServiceException("400", "The order record already exist");
 //        }
-        orderRecord.setUserId(userId);
-        // orderRecord.setPrice(seat.getPrice());
-        orderRecord.setStatus(SUBMITTED);
-        orderRecord.setSubmitTime(LocalDateTime.now());
-        orderRecord.setPaymentTime(null);
-        orderRecordMapper.insert(orderRecord);
-        submitBookingDataLock.unlock();
+            orderRecord.setUserId(userId);
+            // orderRecord.setPrice(seat.getPrice());
+            orderRecord.setStatus(SUBMITTED);
+            orderRecord.setSubmitTime(LocalDateTime.now());
+            orderRecord.setPaymentTime(null);
+            orderRecordMapper.insert(orderRecord);
+        } finally {
+            submitBookingDataLock.unlock();
+        }
     }
 
 
