@@ -31,7 +31,7 @@
             />
 
             <!--          <t-list-item-meta :title="item.title" :description="item.content" style="display: flex; align-items: center;"/>-->
-            <t-list-item-meta class="t-list-item-meta-description" :title="item.name" :description="item.content"
+            <t-list-item-meta class="t-list-item-meta-description" :title="item.name" :description="item.content.length > 140 ? item.content.substring(0, 140) + '...' : item.content"
                               style="display: flex; align-items: center;">
               <!--            <p class="t-list-item-meta-description">{{ item.content }}</p>-->
             </t-list-item-meta>

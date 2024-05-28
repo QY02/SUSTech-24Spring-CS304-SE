@@ -428,7 +428,7 @@ const onSubmit = async ({validateResult, firstError,e}) => {
       // alert(JSON.stringify(newData.value))
       Data.value = {...INITIAL_DATA}
       // alert(JSON.stringify(newData.value))
-      await MessagePlugin.success('提交成功');
+      await MessagePlugin.success('创建场次信息成功');
     } else {
       const id = Data.value.key
       // 找到要修改的数据在 data.value 中的索引

@@ -156,7 +156,7 @@
     </t-space>
     <div class="ticket_card" style="margin-left: 55px; margin-top: -10px;">
       <p style="  color: rgba(7, 63, 216, 1); font-size: 18px; font-weight: 700; letter-spacing: 1px;">
-        贩卖信息
+        场次信息
       </p>
       <div v-show="sessionInformation.length > 0">
         <p style="  margin-top: 0.4rem; color: rgb(70, 73, 79);font-weight: 600;">
@@ -172,7 +172,7 @@
             }} </p>
             </p>
             <p v-else class="choose-session-detail-text">
-            <p>场次{{ index }}: 无需报名</p>
+            <p>场次{{ Number(index+1) }}: 无需报名</p>
             </p>
           </div>
         </div>
@@ -181,16 +181,13 @@
         <p style="  color: rgba(7, 63, 216, 1); font-size: 18px; font-weight: 700; letter-spacing: 1px;">
           价格标准
         </p>
-        <p style="  margin-top: 0.4rem; line-height: 1.625; color: rgb(70, 73, 79);;" v-show="eventDetail.highestPrice!=0">
+        <p style="  margin-top: 0.4rem; line-height: 1.625; color: rgb(70, 73, 79);;" v-show="eventDetail.highestPrice===0">
           不需要购买
         </p>
-        <p style="  margin-top: 0.4rem; line-height: 1.625; color: rgb(70, 73, 79);;" v-show="eventDetail.highestPrice>0&& eventDetail.highestPrice!==eventDetail.lowestPrice">
+        <p style="  margin-top: 0.4rem; line-height: 1.625; color: rgb(70, 73, 79);;" v-show="eventDetail.highestPrice>0&& eventDetail.highestPrice===eventDetail.lowestPrice">
           门票价格：¥{{ eventDetail.lowestPrice }}
         </p>
-        <p style="  margin-top: 0.4rem; line-height: 1.625; color: rgb(70, 73, 79);;" v-show="eventDetail.highestPrice>0 && eventDetail.highestPrice===eventDetail.lowestPrice">
-          门票价格：¥{{ eventDetail.lowestPrice }} - ¥{{ eventDetail.highestPrice }}
-        </p>
-        <p style="  margin-top: 0.4rem; line-height: 1.625; color: rgb(70, 73, 79);;">
+        <p style="  margin-top: 0.4rem; line-height: 1.625; color: rgb(70, 73, 79);;" v-show="eventDetail.highestPrice>0 && eventDetail.highestPrice!==eventDetail.lowestPrice">
           门票价格：¥{{ eventDetail.lowestPrice }} - ¥{{ eventDetail.highestPrice }}
         </p>
       </div>

@@ -342,7 +342,7 @@ const clickShare = (eventId, eventName) => {
 
 
 const clickEvent = (eventId, status) => {
-  if (status !== 2) {//除了审核未通过
+  if (status === 1) {//除了审核未通过
     // MessagePlugin.success(`${sessionStorage.getItem('uid')} 选中【${eventId}】`);
     sessionStorage.setItem('eventId', eventId)
     router.push('/event');

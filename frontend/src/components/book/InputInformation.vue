@@ -6,7 +6,7 @@
       <div class="input-information-button-div">
         <t-space size="medium">
           <t-button theme="default" @click="currentStep--">上一步</t-button>
-          <t-button theme="primary" @click="onSubmit">下一步</t-button>
+          <t-button theme="primary" @click="chooseNext">下一步</t-button>
         </t-space>
       </div>
     </div>

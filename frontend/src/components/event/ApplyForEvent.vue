@@ -152,7 +152,7 @@ const sendEvent = async () => {
       }
   ).then(response => {
         console.log(response)
-        MessagePlugin.success('提交成功');
+        // MessagePlugin.success('提交活动信息成功，等待审核');
         fileUrl.value = response.data.data.fileToken;
       }
   ).catch();
@@ -179,7 +179,7 @@ const onSubmit = async ({validateResult, firstError, e}) => {
         console.log(JSON.stringify(reason));
       });
       loading.value = false;
-      await MessagePlugin.success('提交成功');
+      await MessagePlugin.success('提交活动信息成功，等待审核');
       await router.push("/HomePage");
     } else {
       console.log('至少添加一个场次');
