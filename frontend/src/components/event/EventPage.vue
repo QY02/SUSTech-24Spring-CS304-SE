@@ -172,7 +172,7 @@
             }} </p>
             </p>
             <p v-else class="choose-session-detail-text">
-            <p>场次{{ index }}: 无需报名</p>
+            <p>场次{{ Number(index+1) }}: 无需报名</p>
             </p>
           </div>
         </div>
