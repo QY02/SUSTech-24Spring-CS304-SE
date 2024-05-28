@@ -41,7 +41,7 @@
     <div v-if="event.policy">
         <t-space style="display: flex; width: 100%;">
             <div>
-                <div class="title">退换票规则</div>
+                <div class="title">活动规则</div>
                 <div class="line"></div>
             </div>
         </t-space>
