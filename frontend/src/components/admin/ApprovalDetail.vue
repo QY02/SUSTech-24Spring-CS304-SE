@@ -1,7 +1,7 @@
 <template>
     <t-space style="display: flex; width: 100%;">
         <div>
-            <div class="title">活动细节</div>
+            <div class="title">活动简介</div>
             <div class="line"></div>
         </div>
     </t-space>
