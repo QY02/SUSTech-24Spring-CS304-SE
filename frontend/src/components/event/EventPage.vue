@@ -53,7 +53,7 @@
     <el-affix :offset="55">
       <t-tabs :value="value_lable" size="large" @change="onTabChange" :affix-props="{ offsetTop: 150 }">
         <t-tab-panel value="events" label="活动场次"></t-tab-panel>
-        <t-tab-panel value="about" label="活动细节"></t-tab-panel>
+        <t-tab-panel value="about" label="活动简介"></t-tab-panel>
         <t-tab-panel value="price" label="活动票价"></t-tab-panel>
         <t-tab-panel value="policy" label="额外信息"></t-tab-panel>
         <t-tab-panel value="gallery" label="相关动态"></t-tab-panel>
