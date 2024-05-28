@@ -150,11 +150,12 @@ public class ChatMessageController {
                 List<User> userList = userMapper.selectBatchIds(users);
                 returnObj.put("unread", userList);
             }
-            users = chatMessageMapper.selectList(new QueryWrapper<ChatMessage>().select("sender_id").eq("receiver_id", userID).eq("has_read", true).groupBy("sender_id")).stream().map(ChatMessage::getSenderId).toList();
-            if (users.isEmpty()) {
+            List<String> users2 = chatMessageMapper.selectList(new QueryWrapper<ChatMessage>().select("sender_id").eq("receiver_id", userID).eq("has_read", true).groupBy("sender_id")).stream().map(ChatMessage::getSenderId).toList();
+            users2 = users2.stream().filter(s -> !users.contains(s)).toList();
+            if (users2.isEmpty()) {
                 returnObj.put("read", List.of());
             }else {
-                List<User> userList = userMapper.selectBatchIds(users);
+                List<User> userList = userMapper.selectBatchIds(users2);
                 returnObj.put("read", userList);
             }
             return Result.success(response, returnObj);

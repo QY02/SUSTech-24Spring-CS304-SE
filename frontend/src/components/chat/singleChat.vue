@@ -109,7 +109,7 @@ const initChat = async () => {
         // initChat();
         return;
       }
-      createContent(chatPartner.value, null, msg.data.text);
+      createContent(chatPartner.value, null, JSON.parse(msg.data).text);
     };
 
     socket.onclose = function () {
