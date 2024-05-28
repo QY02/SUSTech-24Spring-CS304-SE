@@ -22,7 +22,7 @@
                 <p class="choose-session-detail-text">{{ `人数限制: ${session.minSize} - ${session.maxSize}` }}</p>
                 <p class="choose-session-detail-text">{{ `当前人数: ${session.currentSize}` }}</p>
               </div>
-              <t-button @click="showMapDialog(index)">
+              <t-button theme="default" variant="outline" @click="showMapDialog(index)">
                 <template #icon>
                   <MapInformation2Icon/>
                 </template>
