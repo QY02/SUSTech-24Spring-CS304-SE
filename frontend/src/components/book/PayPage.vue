@@ -86,10 +86,12 @@ const prePay = () => {
     bookingInformation.chosenSeat = "门票"
   }
   console.log(bookingInformation.chosenSeat)
+  console.log(bookingInformation.chosenSeat)
   axios.post("/orderRecord/prePay", {
     eventId: bookingInformation.eventId,
     eventSessionId: sessionInformation[bookingInformation.chosenSession].eventSessionId,
     seatId: bookingInformation.chosenSeat,
+    price: bookingInformation.seatPrice,
     additionalInformation: JSON.stringify(bookingInformation.additionalInformation.map(item => ({
       name: item.name,
       nameEng: item.nameEng,
