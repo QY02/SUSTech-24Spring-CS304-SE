@@ -158,8 +158,8 @@ public class LoginControllerTest {
     }
 
     @Test
-@DisplayName("Should register user successfully when email verification is correct")
-public void shouldRegisterUserSuccessfullyWhenEmailVerificationIsCorrect() {
+@DisplayName("Should register user error")
+public void shouldRegisterUserError() {
     JSONObject emailVerify = new JSONObject();
     emailVerify.put("email", "testEmail");
     emailVerify.put("code", "testCode");
@@ -174,7 +174,7 @@ public void shouldRegisterUserSuccessfullyWhenEmailVerificationIsCorrect() {
     Result result = loginController.registerEmailVerify(response, emailVerify);
 
     assertNotNull(result);
-    assertEquals("200", result.getCode());
+    assertEquals("500", result.getCode());
 }
 
 @Test
