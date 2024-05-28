@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import org.cs304.backend.constant.constant_AttachmentType;
 import org.cs304.backend.constant.constant_EventStatus;
+import org.cs304.backend.constant.constant_OrderRecordStatus;
 import org.cs304.backend.constant.constant_User;
 import org.cs304.backend.entity.*;
 import org.cs304.backend.exception.ServiceException;
@@ -282,7 +283,10 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
         if ((userType != constant_User.ADMIN) && (!event.getVisible())) {
             throw new ServiceException("400", "Event not exist");
         }
-        return eventSessionMapper.selectList(new QueryWrapper<EventSession>().eq("event_id", eventId)).stream().filter(eventSession -> (userType == constant_User.ADMIN) || (eventSession.getVisible())).collect(Collectors.toList());
+        return eventSessionMapper.selectList(new QueryWrapper<EventSession>().eq("event_id", eventId)).stream().filter(eventSession -> (userType == constant_User.ADMIN) || (eventSession.getVisible())).peek(eventSession -> {
+            long currentSize = orderRecordMapper.selectCount(new QueryWrapper<OrderRecord>().eq("event_session_id", eventSession.getEventSessionId()).ne("status", EXPIRED));
+            eventSession.setCurrentSize((int) currentSize);
+        }).collect(Collectors.toList());
     }
 
 
