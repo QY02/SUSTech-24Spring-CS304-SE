@@ -15,7 +15,7 @@
             :autosize="{ minRows: 6, maxRows: 10 }"
         />
         <div style="position: absolute; bottom: 10px; right: 10px;">
-          <t-button @click="send">发送</t-button>
+          <t-button @click="send" theme="primary" variant="outline">发送</t-button>
         </div>
       </div>
     </div>

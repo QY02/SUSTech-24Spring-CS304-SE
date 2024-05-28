@@ -9,7 +9,7 @@
           </t-form-item>
 
           <t-form-item label="简介" name="content">
-            <t-textarea v-model="formData.content" placeholder="请简单描述项目内容" clearable/>
+            <t-textarea v-model="formData.content" placeholder="请简单描述活动内容" clearable/>
           </t-form-item>
           <t-form-item label="类型" name="type">
             <t-radio-group variant="primary-filled" v-model="formData.type">
@@ -46,7 +46,7 @@
 <!--            <t-switch v-model="formData.visible" :label="['是', '否']"></t-switch>-->
 <!--          </t-form-item>-->
           <t-form-item label="活动规则" name="event_policy">
-            <t-textarea v-model="formData.event_policy" placeholder="请简单描述项目活动规则" clearable/>
+            <t-textarea v-model="formData.event_policy" placeholder="请简单描述活动规则" clearable/>
           </t-form-item>
           <event-session v-model:sessionData="eventSessionData"></event-session>
         </div>

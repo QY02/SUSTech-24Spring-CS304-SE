@@ -105,8 +105,8 @@
              :status="deleteTips ? 'error' : ''"
              @change="onDeleteChange"/>
     <template #footer>
+      <t-button @click="closeDelete" theme="default">取消</t-button>
       <t-button theme="danger" @click="onClickConfirm">确定</t-button>
-      <t-button @click="closeDelete">取消</t-button>
     </template>
   </t-dialog>
   <t-dialog
