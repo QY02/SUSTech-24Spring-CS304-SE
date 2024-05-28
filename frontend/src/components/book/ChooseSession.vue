@@ -93,9 +93,9 @@ const getChooseButtonStatus = (index: number) => {
   } else if (sessionInformation[index].registered) {
     return [true, '已报名', 'success'];
   } else if ((timeNow < sessionInformation[index].registrationStartTime) || (timeNow > sessionInformation[index].registrationEndTime)) {
-    return [true, '不在报名时间段内', 'primary'];
+    return [true, '不在报名时间段内', 'default'];
   } else if (sessionInformation[index].currentSize >= sessionInformation[index].maxSize) {
-    return [true, '容量已满', 'primary'];
+    return [true, '容量已满', 'warning'];
   } else if (bookingInformation.chosenSession === index) {
     return [false, '已选择', 'success'];
   } else {
