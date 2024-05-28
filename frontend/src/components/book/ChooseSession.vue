@@ -81,7 +81,7 @@ const choose = (index: number) => {
   }
   else{
     bookingInformation.seatPrice = sessionInformation[index].price;
-    bookingInformation.chosenSeat = "活动门票"
+    // bookingInformation.chosenSeat = "活动门票"
     toNextStep();
   }
 }

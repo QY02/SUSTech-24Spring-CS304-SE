@@ -15,7 +15,7 @@
         sessionInformation[chosenSession].venue
       }}
       </t-descriptions-item>
-      <t-descriptions-item label="座位" v-if="bookingInformation.chosenSeat">{{ bookingInformation.chosenSeat }}</t-descriptions-item>
+      <t-descriptions-item label="座位" v-if="bookingInformation.chosenSeat && bookingInformation.chosenSeat!=='门票'">{{ bookingInformation.chosenSeat }}</t-descriptions-item>
       <t-descriptions-item label="价格">{{ bookingInformation.seatPrice }}</t-descriptions-item>
     </t-descriptions>
     <t-descriptions v-show="bookingInformation.seatPrice===0" column="1">
@@ -75,12 +75,17 @@ const getEventDetail = () => {
   }).catch(() => {
   })
 }
+
 getEventDetail();
 const result = ref(0);
 const orderId = ref(-1)
 const prePay = () => {
   loadingPay.value = true
   console.log('startPay')
+  if(bookingInformation.chosenSeat===null){
+    bookingInformation.chosenSeat = "门票"
+  }
+  console.log(bookingInformation.chosenSeat)
   axios.post("/orderRecord/prePay", {
     eventId: bookingInformation.eventId,
     eventSessionId: sessionInformation[bookingInformation.chosenSession].eventSessionId,
@@ -106,9 +111,8 @@ const prePay = () => {
     })
     .catch((error) => {
       loadingPay.value = false;
-    })
+    })}
     console.log('endpay')
-}
 
 const bookEvent = () => {
   loadingSubmit.value = true
