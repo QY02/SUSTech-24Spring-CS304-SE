@@ -19,6 +19,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -155,6 +156,43 @@ public class LoginControllerTest {
         when(userMapper.selectById(123)).thenReturn(user);
 
     }
+
+    @Test
+@DisplayName("Should register user successfully when email verification is correct")
+public void shouldRegisterUserSuccessfullyWhenEmailVerificationIsCorrect() {
+    JSONObject emailVerify = new JSONObject();
+    emailVerify.put("email", "testEmail");
+    emailVerify.put("code", "testCode");
+
+    when(redisUtil.get("testCode", false, true)).thenReturn("testEmail");
+    when(redisUtil.get("testEmail", false, false)).thenReturn("{\"user\": \"{\\\"password\\\": \\\"testPassword\\\"}\"}");
+
+    User user = new User();
+    user.setPassword("testPassword");
+    when(userMapper.insert(any(User.class))).thenReturn(1);
+
+    Result result = loginController.registerEmailVerify(response, emailVerify);
+
+    assertNotNull(result);
+    assertEquals("200", result.getCode());
+}
+
+@Test
+@DisplayName("Should return error when exception is thrown during registration")
+public void shouldReturnErrorWhenExceptionIsThrownDuringRegistration() {
+    JSONObject emailVerify = new JSONObject();
+    emailVerify.put("email", "testEmail");
+    emailVerify.put("code", "testCode");
+
+    when(redisUtil.get("testCode", false, true)).thenReturn("testEmail");
+    when(redisUtil.get("testEmail", false, false)).thenThrow(new RuntimeException("Registration failed"));
+
+    Result result = loginController.registerEmailVerify(response, emailVerify);
+
+    assertNotNull(result);
+    assertEquals("500", result.getCode());
+    assertEquals("Registration failed", result.getMsg());
+}
 
 
 }
