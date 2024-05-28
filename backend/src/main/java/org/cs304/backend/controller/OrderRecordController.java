@@ -242,7 +242,7 @@ public class OrderRecordController {
 //        bizContent.put("product_code", "JSAPI_PAY");
         bizContent.put("product_code", "FAST_INSTANT_TRADE_PAY");
         request.setBizContent(bizContent.toString());
-        request.setReturnUrl("http://localhost:5173/book");
+        request.setReturnUrl("http://47.107.113.54:25577/book");
         request.setNotifyUrl("http://47.107.113.54:25571/orderRecord/notify");
         String form = "";
         try {
