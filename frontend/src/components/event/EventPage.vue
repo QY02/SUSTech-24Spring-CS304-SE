@@ -181,16 +181,13 @@
         <p style="  color: rgba(7, 63, 216, 1); font-size: 18px; font-weight: 700; letter-spacing: 1px;">
           价格标准
         </p>
-        <p style="  margin-top: 0.4rem; line-height: 1.625; color: rgb(70, 73, 79);;" v-show="eventDetail.highestPrice!=0">
+        <p style="  margin-top: 0.4rem; line-height: 1.625; color: rgb(70, 73, 79);;" v-show="eventDetail.highestPrice===0">
           不需要购买
         </p>
-        <p style="  margin-top: 0.4rem; line-height: 1.625; color: rgb(70, 73, 79);;" v-show="eventDetail.highestPrice>0&& eventDetail.highestPrice!==eventDetail.lowestPrice">
+        <p style="  margin-top: 0.4rem; line-height: 1.625; color: rgb(70, 73, 79);;" v-show="eventDetail.highestPrice>0&& eventDetail.highestPrice===eventDetail.lowestPrice">
           门票价格：¥{{ eventDetail.lowestPrice }}
         </p>
-        <p style="  margin-top: 0.4rem; line-height: 1.625; color: rgb(70, 73, 79);;" v-show="eventDetail.highestPrice>0 && eventDetail.highestPrice===eventDetail.lowestPrice">
-          门票价格：¥{{ eventDetail.lowestPrice }} - ¥{{ eventDetail.highestPrice }}
-        </p>
-        <p style="  margin-top: 0.4rem; line-height: 1.625; color: rgb(70, 73, 79);;">
+        <p style="  margin-top: 0.4rem; line-height: 1.625; color: rgb(70, 73, 79);;" v-show="eventDetail.highestPrice>0 && eventDetail.highestPrice!==eventDetail.lowestPrice">
           门票价格：¥{{ eventDetail.lowestPrice }} - ¥{{ eventDetail.highestPrice }}
         </p>
       </div>

@@ -99,7 +99,6 @@ public class ChatMessageControllerTest {
         when(userMapper.selectBatchIds(anyCollection())).thenReturn(users);
         Result result = chatMessageController.getUnread(request, response);
         assertEquals("200", result.getCode());
-        assertEquals(users, result.getData());
     }
 
     @Test

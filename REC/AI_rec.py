@@ -49,10 +49,10 @@ if __name__ == '__main__':
     )
     cursor = db_connection.cursor()
     
-    delete_stmt = "DELETE FROM events_center.user_interaction WHERE update_type = 0"
+    delete_stmt = "DELETE FROM user_interaction WHERE update_type = 0"
     cursor.execute(delete_stmt)
     db_connection.commit()
-    cursor.execute("SELECT * FROM events_center.user_interaction")
+    cursor.execute("SELECT * FROM user_interaction")
     results = cursor.fetchall()
     results = [row[:2] + row[3:] for row in results]
     data = pd.DataFrame(
