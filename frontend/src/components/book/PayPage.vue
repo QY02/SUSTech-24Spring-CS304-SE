@@ -185,7 +185,8 @@ const formattedDateTime = ref(null);
 
 const checkUrl = () => {
   console.log('checking')
-  if (currentUrl.value !== 'http://localhost:5173/book') {
+  // if (currentUrl.value !== 'http://localhost:5173/book') {
+  if (currentUrl.value !== 'http://47.107.113.54:25577/book') {
     console.log('differnet')
     const urlParams = new URLSearchParams(currentUrl.value.split('?')[1]); // 获取查询参数部分
     const newTimestamp = urlParams.get('timestamp'); // 获取timestamp参数的值
@@ -210,7 +211,8 @@ const checkUrl = () => {
         MessagePlugin.success('支付成功');
         sessionStorage.setItem('pay', 0)
         currentStep.value = 4;
-        window.location.href = 'http://localhost:5173/book';
+        // window.location.href = 'http://localhost:5173/book';
+        window.location.href = 'http://47.107.113.54:25577/book'
       }).catch(() => {
       })
     }
