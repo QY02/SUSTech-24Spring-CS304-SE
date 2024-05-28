@@ -26,11 +26,16 @@
             </a>
             <!--        {{ events.type }}-->
           </t-descriptions-item>
-          <t-descriptions-item label="该场次报名时间">
-            {{ `${dateToString(new Date(eventDetail.eventSession.registrationStartTime))} - ${dateToString(new Date(eventDetail.eventSession.registrationEndTime))}` }}
+          <t-descriptions-item label="该场次报名时间 ">
+            {{
+              `${dateToString(new Date(eventDetail.eventSession.registrationStartTime))} - ${dateToString(new Date(eventDetail.eventSession.registrationEndTime))}`
+            }}
           </t-descriptions-item>
+
           <t-descriptions-item label="活动时间">
-            {{ `${dateToString(new Date(eventDetail.eventSession.startTime))} - ${dateToString(new Date(eventDetail.eventSession.endTime))}` }}
+            {{
+              `${dateToString(new Date(eventDetail.eventSession.startTime))} - ${dateToString(new Date(eventDetail.eventSession.endTime))}`
+            }}
 
             <!--        {{`${dateToString(sessionInformation[chosenSession].startTime)} - ${dateToString(sessionInformation[chosenSession].startTime)}`}}-->
           </t-descriptions-item>
@@ -38,8 +43,24 @@
               eventDetail.eventSession.venue
             }}
           </t-descriptions-item>
-          <t-descriptions-item label="座位">{{ eventDetail.seatId }}</t-descriptions-item>
-          <t-descriptions-item label="价格">{{ eventDetail.price }}</t-descriptions-item>
+
+
+          <t-descriptions-item label="座位" v-if="eventDetail.seatId">{{
+              eventDetail.seatId
+            }}
+          </t-descriptions-item>
+
+
+<!--          <t-descriptions-item label="座位" v-else> 无</t-descriptions-item>-->
+
+
+          <t-descriptions-item label="价格" v-if="eventDetail.price">{{
+              eventDetail.price
+            }}
+          </t-descriptions-item>
+
+<!--          <t-descriptions-item label="价格" v-else> 无</t-descriptions-item>-->
+
         </t-descriptions>
       </div>
     </div>
@@ -70,9 +91,12 @@ const eventDetail = ref({
 });
 const index = sessionStorage.getItem('index');
 let data = JSON.parse(index);
+// alert(JSON.stringify(data))
+
 
 events.value = data.event;
 eventDetail.value = data;
+// alert(JSON.stringify(eventDetail.value.price))
 const dateToString = (date: Date) => {
   const dayNameArray = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
   const dayName = dayNameArray[date.getDay()];
