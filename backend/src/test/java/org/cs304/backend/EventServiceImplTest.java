@@ -227,6 +227,7 @@ public class EventServiceImplTest {
         EventSession eventSession = new EventSession();
         eventSession.setVisible(true);
         eventSession.setEventId(1);
+        eventSession.setSeatMapId(1);
         eventSession.setRegistrationRequired(true);
         eventSession.setRegistrationStartTime(LocalDateTime.now().minusDays(1));
         eventSession.setRegistrationEndTime(LocalDateTime.now().plusDays(1));
