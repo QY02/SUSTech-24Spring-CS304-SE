@@ -428,6 +428,7 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event> implements
         List<UserInteraction> userInteractionList = userInteractionMapper.selectList(new QueryWrapper<UserInteraction>().eq("user_id", userId).eq("update_type", 0));
         if (userInteractionList != null && !userInteractionList.isEmpty()) {
             List<Integer> eventIdList = userInteractionList.stream().map(UserInteraction::getEventId).collect(Collectors.toList());
+            eventIdList = eventIdList.stream().filter(eventId -> !list.stream().map(Event::getId).toList().contains(eventId)).collect(Collectors.toList());
             List<Event> eventList = listByIds(eventIdList);
             list.addAll(eventList);
         }

@@ -22,7 +22,7 @@
                 <p class="choose-session-detail-text">{{ `人数限制: ${session.minSize} - ${session.maxSize}` }}</p>
                 <p class="choose-session-detail-text">{{ `当前人数: ${session.currentSize}` }}</p>
               </div>
-              <t-button @click="showMapDialog(index)">
+              <t-button theme="default" variant="outline" @click="showMapDialog(index)">
                 <template #icon>
                   <MapInformation2Icon/>
                 </template>
@@ -81,7 +81,7 @@ const choose = (index: number) => {
   }
   else{
     bookingInformation.seatPrice = sessionInformation[index].price;
-    bookingInformation.chosenSeat = "活动门票"
+    // bookingInformation.chosenSeat = "活动门票"
     toNextStep();
   }
 }
@@ -93,9 +93,9 @@ const getChooseButtonStatus = (index: number) => {
   } else if (sessionInformation[index].registered) {
     return [true, '已报名', 'success'];
   } else if ((timeNow < sessionInformation[index].registrationStartTime) || (timeNow > sessionInformation[index].registrationEndTime)) {
-    return [true, '不在报名时间段内', 'primary'];
+    return [true, '不在报名时间段内', 'default'];
   } else if (sessionInformation[index].currentSize >= sessionInformation[index].maxSize) {
-    return [true, '容量已满', 'primary'];
+    return [true, '容量已满', 'warning'];
   } else if (bookingInformation.chosenSession === index) {
     return [false, '已选择', 'success'];
   } else {

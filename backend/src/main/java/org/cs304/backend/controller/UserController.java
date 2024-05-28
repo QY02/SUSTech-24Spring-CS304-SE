@@ -131,7 +131,7 @@ public class UserController {
             if (user.getPassword() == null || user.getEmail() == null || user.getType() == null || user.getName() == null) {
                 throw new RuntimeException("User information incomplete");
             }
-
+            user.setPassword(Encryption.encrypt(user.getPassword()));
 
             userService.save(user);
         } catch (Exception e) {
@@ -207,6 +207,7 @@ public class UserController {
             if (userService.getOne(new QueryWrapper<User>().eq("id", user.getId())) != null) {
                 throw new DuplicateKeyException("User already exists: " + user.getId());
             } else {
+                user.setPassword(Encryption.encrypt(user.getPassword()));
                 userService.save(user);
             }
         });
