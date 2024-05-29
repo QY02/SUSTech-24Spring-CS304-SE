@@ -114,7 +114,7 @@ Since automation was not feasible for certain parts of the project, we resorted 
 4. **Regression Testing**: After fixes were implemented, regression testing was conducted to ensure that the issues were resolved and no new issues were introduced.
 By combining automated and manual testing, we ensured thorough coverage and reliability of our project, delivering a robust and stable application.
 
-# Build
+# Build (All buildfiles can be found in this repository)
 
 ## Backend server and File Server
 
@@ -160,7 +160,7 @@ We use Docker to containerize the project. For each component of the system (bac
 
 Also, we use Github Actions to automatically deploy the project. When someone push some changes to github, the pipeline in Github Actions will run automatically. The test, build and deploy process will be performed in the pipeline.
 
-**The Dockerfiles can be found in the following****directories:**
+**The Dockerfiles can be found in the following directories in this repository:**
 
 **Backend:** `backend/Dockerfile`
 
