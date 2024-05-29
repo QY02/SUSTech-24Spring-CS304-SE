@@ -19,6 +19,7 @@ We use **PMD** to calculate this metric.
 ## NcssCount
 
 >This rule uses the NCSS (Non-Commenting Source Statements) metric to determine the number of lines of code in a class, method or constructor. NCSS ignores comments, blank lines, and only counts actual statements. For more details on the calculation, see the documentation of the [NCSS metric](https://docs.pmd-code.org/pmd-doc-6.55.0/pmd_java_metrics_index.html#non-commenting-source-statements-ncss).
+
 The results are too long and can be viewed in `Line_of_Code_Results.pdf`.
 
 ## Number of packages/modules 
@@ -167,9 +168,9 @@ Also, we use Github Actions to automatically deploy the project. When someone pu
 
 **Frontend:** `frontend/Dockerfile`
 
-**LLM service: `**LLM_handler/Dockerfile`
+**LLM service**: `LLM_handler/Dockerfile`
 
-**Recommend service: `**REC/Dockerfile`
+**Recommend service**: `REC/Dockerfile`
 
 **The proof of successful containerization is showed below:**
 
