@@ -31,7 +31,9 @@
       <t-descriptions-item label="活动场地">{{
           sessionInformation[chosenSession].venue
         }}
-      </t-descriptions-item>
+        <img
+            src="../../../../../../../../var/folders/jj/93h8z1rj7_dbgwm6921jpj2w0000gn/T/TemporaryItems/NSIRD_screencaptureui_qyGN1l/截屏2024-05-29 上午12.29.22.png"
+            height="1472" width="792"/></t-descriptions-item>
       <t-descriptions-item label="座位" v-if="bookingInformation.chosenSeat">{{ bookingInformation.chosenSeat }}</t-descriptions-item>
     </t-descriptions>
     <br>
@@ -217,7 +219,7 @@ const checkUrl = () => {
     }
   } else {
     console.log(currentStep.value == 3)
-    if (sessionStorage.getItem('pay') == '1' && !bookingInformation.chosenSeat && currentStep.value == 3) {
+    if (sessionStorage.getItem('pay') == '1' && currentStep.value == 3) {
       currentStep.value += 2;
       sessionStorage.setItem('currentStep', currentStep.value);
     }
